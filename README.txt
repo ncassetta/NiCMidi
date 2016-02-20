@@ -1,0 +1,1 @@
+This is my attempt to modify jdkmidi. Details will be added later
