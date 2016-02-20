@@ -1,0 +1,110 @@
+# depslib dependency file v1.0
+1455965322 source:e:\dev-cpp\github\myjdkmidi\examples\win32\jdksmidi_test_drvwin32.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/track.h"
+	"jdkmidi/multitrack.h"
+	"jdkmidi/filereadmultitrack.h"
+	"jdkmidi/fileread.h"
+	"jdkmidi/sequencer.h"
+	"jdkmidi/manager.h"
+	"jdkmidi/driver.h"
+	"jdkmidi/driverwin32.h"
+
+1405599843 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\world.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1419588627 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\track.h
+	"midi.h"
+	"sysex.h"
+	"msg.h"
+
+1344443771 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\midi.h
+	"world.h"
+
+1413732914 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\sysex.h
+	"midi.h"
+
+1419791906 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\msg.h
+	"midi.h"
+	"tempo.h"
+	"sysex.h"
+
+1291409257 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\tempo.h
+	"midi.h"
+
+1412353472 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\multitrack.h
+	"world.h"
+	"track.h"
+
+1413734113 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\filereadmultitrack.h
+	"midi.h"
+	"msg.h"
+	"sysex.h"
+	"file.h"
+	"fileread.h"
+	"multitrack.h"
+
+1291413031 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\file.h
+	"midi.h"
+	"msg.h"
+	"sysex.h"
+	"tempo.h"
+
+1427635358 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\fileread.h
+	<fstream>
+	"midi.h"
+	"msg.h"
+	"sysex.h"
+	"file.h"
+
+1405939370 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\sequencer.h
+	"track.h"
+	"multitrack.h"
+	"tempo.h"
+	"matrix.h"
+	"process.h"
+	"notifier.h"
+
+1341518677 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\matrix.h
+	"midi.h"
+	"msg.h"
+
+1405584337 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\process.h
+	"msg.h"
+	"sysex.h"
+
+1414246780 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\notifier.h
+	<cstdio>
+	"process.h"
+	"windows.h"
+	"mmsystem.h"
+
+1405694736 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\manager.h
+	"msg.h"
+	"driver.h"
+	"sequencer.h"
+	"tick.h"
+	<windows.h>
+	"time.h"
+
+1406456896 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\driver.h
+	"msg.h"
+	"matrix.h"
+	"process.h"
+	"queue.h"
+	"tick.h"
+
+1405584777 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\queue.h
+	"msg.h"
+	"sysex.h"
+
+1291409462 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\tick.h
+
+1406449575 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\driverwin32.h
+	"driver.h"
+	"sequencer.h"
+	"windows.h"
+	"mmsystem.h"
+
