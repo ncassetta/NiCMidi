@@ -30,7 +30,16 @@
 **	without the written permission given by J.D. Koftinoff Software, Ltd.
 **
 */
-
+//
+// Copyright (C) 2010 V.R.Madgazin
+// www.vmgames.com vrm@vmgames.com
+//
+/*
+** Copyright 2016 By N. Cassetta
+** myjdkmidi library
+**
+** CHECKED with jdksmidi.  NO CHANGES:
+*/
 
 #ifndef _JDKMIDI_FILE_H
 #define _JDKMIDI_FILE_H
@@ -41,12 +50,10 @@
 #include "tempo.h"
 
 
-
-//
-// The MIDIFile class contains definitions and utilities to deal with
-// reading and writing midi files.
-//
-
+///
+/// This class is used internally to read/write MIDI files. It contains basic definitions
+/// and utilities, and it is overriden by MIDIFileRead and MIDIFileWrite
+///
 
   const unsigned long _MThd=OSTYPE('M','T','h','d');
   const unsigned long  _MTrk=OSTYPE('M','T','r','k');

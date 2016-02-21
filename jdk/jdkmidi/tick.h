@@ -21,20 +21,28 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
+/*
+** Copyright 2016 By N. Cassetta
+** myjdkmidi library
+**
+** CHECKED with jdksmidi. NO CHANGES
+*/
+
+
 #ifndef _JDKMIDI_TICK_H
 #define _JDKMIDI_TICK_H
 
+///
+/// A pure virtual class designed to implement callback functions executed in a separate thread at
+/// every tick of a timer.
+///
 
-  class MIDITick
-    {
+class MIDITick {
     public:
-      MIDITick()
-        {
-        }
+        MIDITick() {}
+        virtual ~MIDITick();
 
-      virtual ~MIDITick();
-
-      virtual void TimeTick( unsigned long sys_time ) = 0;
-    };
+        virtual void TimeTick( unsigned long sys_time ) = 0;
+};
 
 #endif

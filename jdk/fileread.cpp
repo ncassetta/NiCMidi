@@ -34,7 +34,11 @@
 // Copyright (C) 2010 V.R.Madgazin
 // www.vmgames.com vrm@vmgames.com
 //
-// Modified by Nicola Cassetta to allow I/O by C++ streams
+/*
+** Copyright 2016 By N. Cassetta
+** myjdkmidi library
+** see header for changes against jdksmidi
+*/
 
 #include "jdkmidi/world.h"
 #include "jdkmidi/fileread.h"
@@ -46,46 +50,38 @@
 // to do: decide which way is right for this flag and fix it - The standard midi file format specs are (were?) unclear
 #define MIDIFRD_ALLOW_STATUS_ACROSS_META_EVENT 0 // correct value is 0 !
 
-MIDIFileReadStreamFile::MIDIFileReadStreamFile( const char *fname ) : f(0), del(true) {
+
+MIDIFileReadStreamFile::MIDIFileReadStreamFile( const char *fname ) : del(true) {
     infs = new std::ifstream( fname, std::ios::in | std::ios::binary );
+    if (!infs->fail()) {
+        delete infs;
+        infs = 0;
+    }
 }
 
-MIDIFileReadStreamFile::MIDIFileReadStreamFile( std::istream* ifs ) : f(0), infs(ifs), del(false) {
-}
-
-MIDIFileReadStreamFile::MIDIFileReadStreamFile( FILE *f_ ) : f(f_), infs(0), del(true) {
-}
+MIDIFileReadStreamFile::MIDIFileReadStreamFile( std::istream* ifs ) : infs(ifs), del(false) {}
 
 MIDIFileReadStreamFile::~MIDIFileReadStreamFile() {
-    if( f )
-        fclose(f);
     if (infs && del) {
         delete infs;
     }
 }
 
 void MIDIFileReadStreamFile::Rewind() {
-    if ( f )
-        rewind ( f );
-    if ( infs )
-        infs->seekg( 0, infs->beg );
-}
-
-bool MIDIFileReadStreamFile::IsValid() {
-    return f != 0 || infs != 0;
+    infs->seekg( 0, infs->beg );
 }
 
 int MIDIFileReadStreamFile::ReadChar() {
-    int r=-1;
+    int r = -1;
 
-    if( f && !feof(f) && !ferror(f) )
-        r=fgetc(f);
     if( infs && infs->good())
         r = infs->get();
-
     return r;
 }
 
+bool MIDIFileReadStreamFile::IsValid() {
+    return infs != 0;
+}
 
 
 

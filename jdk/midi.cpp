@@ -75,9 +75,9 @@
   const bool	lut_is_white[12] =
   {
 //
-//	C C#  D D#  E    F F# G G# A A# B
+//	C C# D D# E F F# G G# A A# B
 //
-    1,0,  1,0,  1,   1,0, 1,0, 1,0, 1
+    1,0, 1,0, 1,1,0, 1,0, 1,0, 1
   };
 
 

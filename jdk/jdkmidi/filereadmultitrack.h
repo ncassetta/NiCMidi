@@ -30,6 +30,12 @@
 **	without the written permission given by J.D. Koftinoff Software, Ltd.
 **
 */
+/*
+** Copyright 2016 By N. Cassetta
+** myjdkmidi library
+**
+** CHECKED with jdksmidi. NO CHANGES
+*/
 
 #ifndef _JDKMIDI_FILEREADMULTITRACK_H
 #define _JDKMIDI_FILEREADMULTITRACK_H

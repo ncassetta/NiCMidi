@@ -6,8 +6,8 @@
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
-			<Target title="Debug">
-				<Option output="examples" prefix_auto="1" extension_auto="1" />
+			<Target title="test_advancedsequencer">
+				<Option output="test_advancedsequencer" prefix_auto="1" extension_auto="1" />
 				<Option object_output="E:/Dev-Cpp/Github/myjdkmidi/examples/.objs" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -15,29 +15,54 @@
 					<Add option="-g" />
 				</Compiler>
 			</Target>
-			<Target title="Release">
-				<Option output="examples" prefix_auto="1" extension_auto="1" />
+			<Target title="test_stepsequencer">
+				<Option output="test_stepsequencer" prefix_auto="1" extension_auto="1" />
 				<Option object_output="E:/Dev-Cpp/Github/myjdkmidi/examples/.objs" />
-				<Option type="0" />
+				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-O2" />
+					<Add option="-g" />
 				</Compiler>
-				<Linker>
-					<Add option="-s" />
-				</Linker>
+			</Target>
+			<Target title="test_win32_player">
+				<Option output="test_win32_player" prefix_auto="1" extension_auto="1" />
+				<Option object_output="E:/Dev-Cpp/Github/myjdkmidi/examples/.objs" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
 			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add directory="../jdk" />
 		</Compiler>
 		<Linker>
 			<Add library="gdi32" />
 			<Add library="user32" />
 			<Add library="kernel32" />
 			<Add library="comctl32" />
+			<Add library="../libmyjdkmidi.a" />
 		</Linker>
-		<Unit filename="main.cpp" />
+		<Unit filename="win32/jdksmidi_test_drvwin32.cpp">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
+		<Unit filename="win32/test_advancedsequencer.cpp">
+			<Option target="test_advancedsequencer" />
+		</Unit>
+		<Unit filename="win32/test_stepsequencer.cpp">
+			<Option target="test_stepsequencer" />
+		</Unit>
+		<Unit filename="win32/test_stepsequencer.h">
+			<Option target="test_stepsequencer" />
+		</Unit>
+		<Unit filename="win32/test_win32_player.cpp">
+			<Option target="test_win32_player" />
+		</Unit>
+		<Unit filename="win32/test_win32_player.h">
+			<Option target="test_win32_player" />
+		</Unit>
 		<Extensions>
 			<code_completion />
 			<envvars />

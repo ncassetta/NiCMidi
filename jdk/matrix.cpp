@@ -30,28 +30,17 @@
 **	without the written permission given by J.D. Koftinoff Software, Ltd.
 **
 */
-
+/*
+** Copyright 2016 By N. Cassetta
+** myjdkmidi library
+** see header for changes against jdksmidi
+*/
 
 #include "jdkmidi/world.h"
-
 #include "jdkmidi/matrix.h"
-
-#ifndef DEBUG_MDMATRIX
-# define DEBUG_MDMATRIX	0
-#endif
-
-#if DEBUG_MDMATRIX
-# undef DBG
-# define DBG(a)	a
-#endif
-
-
-
 
   MIDIMatrix::MIDIMatrix()
   {
-    ENTER("MIDIMatrix::MIDIMatrix()");
-
     for( int channel=0; channel<16; channel++ )
     {
       channel_count[channel]=0;
@@ -65,14 +54,11 @@
 
   MIDIMatrix::~MIDIMatrix()
   {
-    ENTER("MIDIMatrix::~MIDIMatrix()");
   }
 
 
   void 	MIDIMatrix::DecNoteCount( const MIDIMessage &, int channel, int note )
   {
-    ENTER( "MIDIMatrix::DecNoteCount()" );
-
     if( note_on_count[channel][note]>0 )
     {
       --note_on_count[channel][note];
@@ -83,8 +69,6 @@
 
   void 	MIDIMatrix::IncNoteCount( const MIDIMessage &, int channel, int note )
   {
-    ENTER( "MIDIMatrix::IncNoteCount()" );
-
     ++note_on_count[channel][note];
     ++channel_count[channel];
     ++total_count;
@@ -92,15 +76,11 @@
 
   void	MIDIMatrix::OtherMessage( const MIDIMessage & )
   {
-    ENTER( "MIDIMatrix::OtherMessage()" );
-
   }
 
 
   bool	MIDIMatrix::Process( const MIDIMessage &m )
   {
-    ENTER( "MIDIMatrix::Process()" );
-
     bool status=false;
 
     if( m.IsChannelMsg() )
@@ -148,8 +128,6 @@
 
   void	MIDIMatrix::Clear()
   {
-    ENTER( "MIDIMatrix::Clear()" );
-
     for( int channel=0; channel<16; ++channel )
     {
       ClearChannel( channel );
@@ -159,8 +137,6 @@
 
   void	MIDIMatrix::ClearChannel( int channel )
   {
-    ENTER( "MIDIMatrix::ClearChannel()" );
-
     for( int note=0; note<128; ++note )
     {
       total_count -= note_on_count[channel][note];
@@ -169,5 +145,3 @@
     channel_count[channel]=0;
     hold_pedal[channel]=0;
   }
-
-

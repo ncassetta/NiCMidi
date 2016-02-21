@@ -34,6 +34,54 @@
 				</Linker>
 			</Target>
 		</Build>
+		<Unit filename="jdk/advancedsequencer.cpp" />
+		<Unit filename="jdk/driver.cpp" />
+		<Unit filename="jdk/driverwin32.cpp" />
+		<Unit filename="jdk/dump_tracks.cpp" />
+		<Unit filename="jdk/file.cpp" />
+		<Unit filename="jdk/fileread.cpp" />
+		<Unit filename="jdk/filereadmultitrack.cpp" />
+		<Unit filename="jdk/filewrite.cpp" />
+		<Unit filename="jdk/filewritemultitrack.cpp" />
+		<Unit filename="jdk/jdkmidi/advancedsequencer.h" />
+		<Unit filename="jdk/jdkmidi/driver.h" />
+		<Unit filename="jdk/jdkmidi/driverwin32.h" />
+		<Unit filename="jdk/jdkmidi/dump_tracks.h" />
+		<Unit filename="jdk/jdkmidi/file.h" />
+		<Unit filename="jdk/jdkmidi/fileread.h" />
+		<Unit filename="jdk/jdkmidi/filereadmultitrack.h" />
+		<Unit filename="jdk/jdkmidi/filewrite.h" />
+		<Unit filename="jdk/jdkmidi/filewritemultitrack.h" />
+		<Unit filename="jdk/jdkmidi/manager.h" />
+		<Unit filename="jdk/jdkmidi/matrix.h" />
+		<Unit filename="jdk/jdkmidi/midi.h" />
+		<Unit filename="jdk/jdkmidi/msg.h" />
+		<Unit filename="jdk/jdkmidi/multitrack.h" />
+		<Unit filename="jdk/jdkmidi/notifier.h" />
+		<Unit filename="jdk/jdkmidi/old multitrack.h" />
+		<Unit filename="jdk/jdkmidi/old sequencer.h" />
+		<Unit filename="jdk/jdkmidi/process.h" />
+		<Unit filename="jdk/jdkmidi/queue.h" />
+		<Unit filename="jdk/jdkmidi/sequencer.h" />
+		<Unit filename="jdk/jdkmidi/smpte.h" />
+		<Unit filename="jdk/jdkmidi/sysex.h" />
+		<Unit filename="jdk/jdkmidi/tempo.h" />
+		<Unit filename="jdk/jdkmidi/tick.h" />
+		<Unit filename="jdk/jdkmidi/track.h" />
+		<Unit filename="jdk/jdkmidi/world.h" />
+		<Unit filename="jdk/manager.cpp" />
+		<Unit filename="jdk/matrix.cpp" />
+		<Unit filename="jdk/midi.cpp" />
+		<Unit filename="jdk/msg.cpp" />
+		<Unit filename="jdk/multitrack.cpp" />
+		<Unit filename="jdk/notifier.cpp" />
+		<Unit filename="jdk/process.cpp" />
+		<Unit filename="jdk/queue.cpp" />
+		<Unit filename="jdk/sequencer.cpp" />
+		<Unit filename="jdk/smpte.cpp" />
+		<Unit filename="jdk/sysex.cpp" />
+		<Unit filename="jdk/tick.cpp" />
+		<Unit filename="jdk/track.cpp" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>

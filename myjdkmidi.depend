@@ -1,0 +1,328 @@
+# depslib dependency file v1.0
+1419765757 source:e:\dev-cpp\github\myjdkmidi\jdk\dump_tracks.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/track.h"
+	"jdkmidi/multitrack.h"
+
+1455995295 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\world.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1419588627 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\track.h
+	"midi.h"
+	"sysex.h"
+	"msg.h"
+
+1456005550 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\midi.h
+	"world.h"
+
+1413732914 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\sysex.h
+	"midi.h"
+
+1419791906 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\msg.h
+	"midi.h"
+	"tempo.h"
+	"sysex.h"
+
+1291409257 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\tempo.h
+	"midi.h"
+
+1412353472 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\multitrack.h
+	"world.h"
+	"track.h"
+
+1406459833 source:e:\dev-cpp\github\myjdkmidi\jdk\midi_advancedsequencer.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/advancedsequencer.h"
+	"jdkmidi/fileread.h"
+	"jdkmidi/filereadmultitrack.h"
+	"jdkmidi/driverwin32.h"
+	<iostream>
+
+1451808266 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\advancedsequencer.h
+	<vector>
+	<windows.h>
+	<unistd.h>
+	"msg.h"
+	"driver.h"
+	"multitrack.h"
+	"sequencer.h"
+	"manager.h"
+	"world.h"
+	"midi.h"
+	"msg.h"
+	"sysex.h"
+	"multitrack.h"
+	"filereadmultitrack.h"
+	"sequencer.h"
+	"manager.h"
+	"driver.h"
+	"driverwin32.h"
+	"driverdump.h"
+	<vector>
+
+1406456896 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\driver.h
+	"msg.h"
+	"matrix.h"
+	"process.h"
+	"queue.h"
+	"tick.h"
+
+1456078932 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\matrix.h
+	"midi.h"
+	"msg.h"
+
+1456079132 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\process.h
+	"msg.h"
+	"sysex.h"
+
+1456080081 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\queue.h
+	"msg.h"
+	"sysex.h"
+
+1455971593 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\tick.h
+
+1405939370 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\sequencer.h
+	"track.h"
+	"multitrack.h"
+	"tempo.h"
+	"matrix.h"
+	"process.h"
+	"notifier.h"
+
+1414246780 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\notifier.h
+	<cstdio>
+	"process.h"
+	"windows.h"
+	"mmsystem.h"
+
+1405694736 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\manager.h
+	"msg.h"
+	"driver.h"
+	"sequencer.h"
+	"tick.h"
+	<windows.h>
+	"time.h"
+
+1455998135 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\filereadmultitrack.h
+	"midi.h"
+	"msg.h"
+	"sysex.h"
+	"file.h"
+	"fileread.h"
+	"multitrack.h"
+
+1455971786 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\file.h
+	"midi.h"
+	"msg.h"
+	"sysex.h"
+	"tempo.h"
+
+1455997032 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\fileread.h
+	<fstream>
+	"midi.h"
+	"msg.h"
+	"sysex.h"
+	"file.h"
+
+1406449575 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\driverwin32.h
+	"driver.h"
+	"sequencer.h"
+	"windows.h"
+	"mmsystem.h"
+
+1406459554 source:e:\dev-cpp\github\myjdkmidi\jdk\midi_driver.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/driver.h"
+
+1413985749 source:e:\dev-cpp\github\myjdkmidi\jdk\midi_driverwin32.cpp
+	"jdkmidi/world.h"
+	<iostream>
+	"jdkmidi/driverwin32.h"
+
+1291413085 source:e:\dev-cpp\github\myjdkmidi\jdk\midi_file.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/file.h"
+
+1413973527 source:e:\dev-cpp\github\myjdkmidi\jdk\midi_filereadmultitrack.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/filereadmultitrack.h"
+
+1455997506 source:e:\dev-cpp\github\myjdkmidi\jdk\midi_filewrite.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/filewrite.h"
+
+1455997032 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\filewrite.h
+	<fstream>
+	"midi.h"
+	"msg.h"
+	"sysex.h"
+	"file.h"
+
+1427635933 source:e:\dev-cpp\github\myjdkmidi\jdk\midi_filewritemultitrack.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/filewritemultitrack.h"
+
+1455998105 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\filewritemultitrack.h
+	"filewrite.h"
+	"multitrack.h"
+
+1451908418 source:e:\dev-cpp\github\myjdkmidi\jdk\midi_manager.cpp
+	<iostream>
+	"jdkmidi/world.h"
+	"jdkmidi/manager.h"
+
+1291412690 source:e:\dev-cpp\github\myjdkmidi\jdk\midi_matrix.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/matrix.h"
+
+1291409318 source:e:\dev-cpp\github\myjdkmidi\jdk\midi_midi.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/midi.h"
+
+1414246780 source:e:\dev-cpp\github\myjdkmidi\jdk\midi_msg.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/sysex.h"
+	"jdkmidi/msg.h"
+
+1419588627 source:e:\dev-cpp\github\myjdkmidi\jdk\midi_multitrack.cpp
+	"jdkmidi/multitrack.h"
+	"jdkmidi/dump_tracks.h"
+
+1405447354 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\dump_tracks.h
+	"multitrack.h"
+
+1406365512 source:e:\dev-cpp\github\myjdkmidi\jdk\midi_notifier.cpp
+	"jdkmidi/notifier.h"
+	"jdkmidi/sequencer.h"
+
+1291412780 source:e:\dev-cpp\github\myjdkmidi\jdk\midi_process.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/process.h"
+
+1405584699 source:e:\dev-cpp\github\myjdkmidi\jdk\midi_queue.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/queue.h"
+
+1405939370 source:e:\dev-cpp\github\myjdkmidi\jdk\midi_sequencer.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/sequencer.h"
+
+1405585402 source:e:\dev-cpp\github\myjdkmidi\jdk\midi_smpte.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/smpte.h"
+
+1405585379 e:\dev-cpp\github\myjdkmidi\jdk\jdkmidi\smpte.h
+
+1446896522 source:e:\dev-cpp\github\myjdkmidi\jdk\midi_sysex.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/sysex.h"
+	<iostream>
+
+1291409582 source:e:\dev-cpp\github\myjdkmidi\jdk\midi_tick.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/tick.h"
+
+1419792085 source:e:\dev-cpp\github\myjdkmidi\jdk\midi_track.cpp
+	"jdkmidi/track.h"
+	"jdkmidi/matrix.h"
+
+1446667746 source:e:\dev-cpp\github\myjdkmidi\main.c
+
+1455996400 source:e:\dev-cpp\github\myjdkmidi\jdk\midi_fileread.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/fileread.h"
+
+1406459833 source:e:\dev-cpp\github\myjdkmidi\jdk\advancedsequencer.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/advancedsequencer.h"
+	"jdkmidi/fileread.h"
+	"jdkmidi/filereadmultitrack.h"
+	"jdkmidi/driverwin32.h"
+	<iostream>
+
+1406459554 source:e:\dev-cpp\github\myjdkmidi\jdk\driver.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/driver.h"
+
+1413985749 source:e:\dev-cpp\github\myjdkmidi\jdk\driverwin32.cpp
+	"jdkmidi/world.h"
+	<iostream>
+	"jdkmidi/driverwin32.h"
+
+1455997614 source:e:\dev-cpp\github\myjdkmidi\jdk\file.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/file.h"
+
+1455996400 source:e:\dev-cpp\github\myjdkmidi\jdk\fileread.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/fileread.h"
+
+1455997506 source:e:\dev-cpp\github\myjdkmidi\jdk\filewrite.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/filewrite.h"
+
+1451908418 source:e:\dev-cpp\github\myjdkmidi\jdk\manager.cpp
+	<iostream>
+	"jdkmidi/world.h"
+	"jdkmidi/manager.h"
+
+1456078984 source:e:\dev-cpp\github\myjdkmidi\jdk\matrix.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/matrix.h"
+
+1456005840 source:e:\dev-cpp\github\myjdkmidi\jdk\midi.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/midi.h"
+
+1414246780 source:e:\dev-cpp\github\myjdkmidi\jdk\msg.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/sysex.h"
+	"jdkmidi/msg.h"
+
+1419588627 source:e:\dev-cpp\github\myjdkmidi\jdk\multitrack.cpp
+	"jdkmidi/multitrack.h"
+	"jdkmidi/dump_tracks.h"
+
+1406365512 source:e:\dev-cpp\github\myjdkmidi\jdk\notifier.cpp
+	"jdkmidi/notifier.h"
+	"jdkmidi/sequencer.h"
+
+1291412780 source:e:\dev-cpp\github\myjdkmidi\jdk\process.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/process.h"
+
+1405584699 source:e:\dev-cpp\github\myjdkmidi\jdk\queue.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/queue.h"
+
+1405939370 source:e:\dev-cpp\github\myjdkmidi\jdk\sequencer.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/sequencer.h"
+
+1405585402 source:e:\dev-cpp\github\myjdkmidi\jdk\smpte.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/smpte.h"
+
+1446896522 source:e:\dev-cpp\github\myjdkmidi\jdk\sysex.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/sysex.h"
+	<iostream>
+
+1455997873 source:e:\dev-cpp\github\myjdkmidi\jdk\tick.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/tick.h"
+
+1419792085 source:e:\dev-cpp\github\myjdkmidi\jdk\track.cpp
+	"jdkmidi/track.h"
+	"jdkmidi/matrix.h"
+
+1455998186 source:e:\dev-cpp\github\myjdkmidi\jdk\filereadmultitrack.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/filereadmultitrack.h"
+
+1455998723 source:e:\dev-cpp\github\myjdkmidi\jdk\filewritemultitrack.cpp
+	"jdkmidi/world.h"
+	"jdkmidi/filewritemultitrack.h"
+

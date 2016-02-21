@@ -30,46 +30,33 @@
 **	without the written permission given by J.D. Koftinoff Software, Ltd.
 **
 */
-
-// Modified by Nicola Cassetta to allow I/O by C++ streams
+/*
+** Copyright 2016 By N. Cassetta
+** myjdkmidi library
+** see header for changes against jdksmidi
+*/
 
 #include "jdkmidi/world.h"
 #include "jdkmidi/filewrite.h"
 
-#ifndef DEBUG_MDFWR
-# define DEBUG_MDFWR	0
-#endif
 
-#if DEBUG_MDFWR
-# undef DBG
-# define DBG(a)	a
-#endif
-
-
-
-MIDIFileWriteStreamFile::MIDIFileWriteStreamFile( const char *fname ) : f(0), begin(0), del(true) {
+MIDIFileWriteStreamFile::MIDIFileWriteStreamFile( const char *fname ) : begin(0), del(true) {
     outfs = new std::ofstream( fname, std::ios::out | std::ios::binary );
+    if (!outfs->fail()) {
+        delete outfs;
+        outfs = 0;
+    }
 }
 
 MIDIFileWriteStreamFile::MIDIFileWriteStreamFile( std::ostream* ofs ) :
-    f(0), outfs(ofs), begin(ofs->tellp()), del(false) {}
-
-MIDIFileWriteStreamFile::MIDIFileWriteStreamFile( FILE *f_ ) : f(f_), outfs(0), begin(0), del(false) {
-}
+    outfs(ofs), begin(ofs->tellp()), del(false) {}
 
 MIDIFileWriteStreamFile::~MIDIFileWriteStreamFile() {
-    if( f )
-        fclose(f);
     if ( outfs && del )
         delete outfs;
 }
 
 long MIDIFileWriteStreamFile::Seek( long pos, int whence ) {
-
-    // TODO: this is different between the class constructed with FILE or stream
-    if ( f )
-        return fseek( f, pos, whence );
-
     std::streamoff offs = pos;
 
     switch (whence) {
@@ -87,10 +74,7 @@ long MIDIFileWriteStreamFile::Seek( long pos, int whence ) {
 }
 
 int MIDIFileWriteStreamFile::WriteChar( int c ) {
-    if ( f )
-        return ( fputc( c, f )==EOF ) ? -1 : 0;
-
-    else if ( outfs) {
+    if ( outfs) {
         outfs->put(c);
         return outfs->good() ? 0 : -1;
     }
@@ -98,18 +82,8 @@ int MIDIFileWriteStreamFile::WriteChar( int c ) {
 }
 
 bool MIDIFileWriteStreamFile::IsValid() {
-    if ( outfs != 0 )
-        return outfs->good();
-    else
-        return f!=0;
+    return outfs != 0;
 }
-
-
-
-
-
-
-
 
 
 

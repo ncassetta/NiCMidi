@@ -30,8 +30,13 @@
 **	without the written permission given by J.D. Koftinoff Software, Ltd.
 **
 */
-
-// Left old jdkmidi world.h (better than jdksmidi!)
+/*
+** Copyright 2016 By N. Cassetta
+** myjdkmidi library
+**
+** CHECKED with jdksmidi. CHANGES:
+**  - left old jdkmidi world.h (better than jdksmidi!)
+*/
 
 #ifndef _JDKMIDI_WORLD_H
 #define _JDKMIDI_WORLD_H

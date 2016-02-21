@@ -30,10 +30,13 @@
 **	without the written permission given by J.D. Koftinoff Software, Ltd.
 **
 */
-
+/*
+** Copyright 2016 By N. Cassetta
+** myjdkmidi library
+** see header for changes against jdksmidi
+*/
 
 #include "jdkmidi/world.h"
-
 #include "jdkmidi/filereadmultitrack.h"
 
 

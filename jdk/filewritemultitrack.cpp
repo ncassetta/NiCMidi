@@ -21,6 +21,13 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
+/*
+** Copyright 2016 By N. Cassetta
+** myjdkmidi library
+** see header for changes against jdksmidi
+** avoided a warning
+*/
+
 #include "jdkmidi/world.h"
 #include "jdkmidi/filewritemultitrack.h"
 
@@ -64,8 +71,6 @@
 
       const MIDITrack *t = multitrack->GetTrack(i);
 
-      MIDIClockTime last_event_time=0;
-
       writer.WriteTrackHeader(0); // will be rewritten later
 
       if( t )
@@ -75,7 +80,6 @@
           const MIDITimedBigMessage *ev = t->GetEventAddress( event_num );
           if( ev && !ev->IsNoOp() )
           {
-            last_event_time = ev->GetTime();
 
             if( !ev->IsDataEnd() )
             {

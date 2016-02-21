@@ -21,8 +21,12 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
-
-// AGGIORNATO A jdksmidi in AutoComp 0.10
+/*
+** Copyright 2016 By N. Cassetta
+** myjdkmidi library
+**
+** CHECKED with jdksmidi. NO CHANGES
+*/
 
 #ifndef _JDKMIDI_PROCESS_H
 #define _JDKMIDI_PROCESS_H

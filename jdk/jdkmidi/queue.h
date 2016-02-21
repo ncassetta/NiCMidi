@@ -21,6 +21,15 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
+/*
+** Copyright 2016 By N. Cassetta
+** myjdkmidi library
+**
+** CHECKED with jdksmidi. CHANGES:
+**  - moved CanPut() and CanGet() implementations here
+*/
+
+
 #ifndef _JDKMIDI_QUEUE_H
 #define _JDKMIDI_QUEUE_H
 
@@ -36,9 +45,15 @@
 
       void Clear();
 
-      bool CanPut() const;
+      bool CanPut() const
+        {
+          return next_out != ((next_in+1)%bufsize);
+        }
 
-      bool CanGet() const;
+      bool CanGet() const
+        {
+          return next_in != next_out;
+        }
 
       bool IsFull() const
         {

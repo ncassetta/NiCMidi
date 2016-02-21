@@ -30,8 +30,16 @@
 **	without the written permission given by J.D. Koftinoff Software, Ltd.
 **
 */
+/*
+** Copyright 2016 By N. Cassetta
+** myjdkmidi library
+**
+** CHECKED with jdksmidi. CHANGES:
+**  - used fstreams for reading - writing. Dropped old c FILE objects
+**  - merged class MIDIFileWriteStreamFileName into MIDIFileWriteStreamFile (symmetrical to MIDIFileReadReadFile)
+**  - revised doxygen comments
+*/
 
-// Modified by Nicola Cassetta to allow I/O by C++ streams
 
 #ifndef _JDKMIDI_FILEWRITE_H
 #define _JDKMIDI_FILEWRITE_H
@@ -44,34 +52,47 @@
 #include "file.h"
 
 
+///
+/// This class is used internally for writing MIDI files. It is pure virtual and implements a stream of *char*
+/// to be be written to a MIDI file
+///
+
 class MIDIFileWriteStream {
 public:
     MIDIFileWriteStream() {}
     virtual ~MIDIFileWriteStream() {}
 
+    /// Positions the write pointer
     virtual long Seek( long pos, int whence=SEEK_SET ) = 0;
+    /// Writrd a *char*
     virtual int WriteChar( int c ) = 0;
 };
 
 
-/* Inherited from MIDIFileWriteStream, is used by FileReadMultiTrack for saving MIDI files
- * My version uses fstreams and doesn't open/close them, so it can be used for appending
- * (as we do in CompSong::Save)
-*/
+///
+/// This class is used internally for writing MIDI files. It inherits from MIDIFileWriteStream and writes
+/// a stream of *char* to a C++ ostream object,
+///
 
 class MIDIFileWriteStreamFile : public MIDIFileWriteStream {
 public:
+    /// In this constructor you must specify the filename.\ The constructor tries to open the file, you
+    /// should call IsValid() for checking if it was successful
     MIDIFileWriteStreamFile( const char *fname );
+    /// In this constructor you must specify and already open ostream object, so you can write to whatever
+    /// output stream
     MIDIFileWriteStreamFile(std::ostream* ofs);
-    MIDIFileWriteStreamFile( FILE *f_ );
+    /// The destructor deletes the ostream if it was opened by the ctor
     virtual ~MIDIFileWriteStreamFile();
 
+    /// Implements pure virtual parent function
     long Seek( long pos, int whence=SEEK_SET );
+    /// Implements pure virtual parent function
     int WriteChar( int c );
+    /// Returns *true* if the ostream is open
     bool IsValid();
 
 private:
-    FILE *f;
     std::ostream* outfs;
     std::streampos begin;
     bool del;
@@ -79,8 +100,9 @@ private:
 
 
 
-
-
+///
+/// This class is used internally for writing MIDI files.
+///
 
   class MIDIFileWrite : protected MIDIFile
     {
@@ -89,11 +111,11 @@ private:
       virtual   	~MIDIFileWrite();
 
 
-      bool ErrorOccurred()          	{ return error;         }
+      bool ErrorOccurred()          	      { return error;         }
       unsigned long   GetFileLength()         { return file_length;   }
       unsigned long   GetTrackLength()        { return track_length;  }
-      void    ResetTrackLength()      { track_length=0;       }
-      void    ResetTrackTime()        { track_time=0;         }
+      void    ResetTrackLength()              { track_length=0;       }
+      void    ResetTrackTime()                { track_time=0;         }
 
       void    WriteFileHeader(
         int format,
