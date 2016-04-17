@@ -33,6 +33,11 @@
 #include "tick.h"
 
 
+
+
+#include <vector>
+
+
 #ifdef _WIN32
 #include <windows.h>
 
@@ -63,7 +68,7 @@ inline unsigned long jdks_get_system_time_ms()
 
 class MIDIManager : public MIDITick {
 public:
-                                MIDIManager( MIDIDriver *drv, MIDISequencerGUIEventNotifier *n=0,
+                                MIDIManager( MIDISequencerGUIEventNotifier *n=0,
                                              MIDISequencer *seq_=0 );
 
     virtual                     ~MIDIManager()          {}
@@ -76,7 +81,7 @@ public:
     const MIDISequencer*        GetSeq() const          { return sequencer; }
 
         // to get the driver that we use
-    MIDIDriver*                 GetDriver()             { return driver; }
+    MIDIOutDriver*              GetDriver(int n)             { return MIDI_outs[n]; }
 
         // to set and get the system time offset
     void                        SetTimeOffset( unsigned long off )
@@ -109,13 +114,18 @@ public:
         // inherited from MIDITick
     virtual void                TimeTick( unsigned long sys_time );
 
+           // The default timer resolution is 1 msec (public: used by AdvancedSequencer)
+    static const int            DEFAULT_TIMER_RESOLUTION = 1;
+
+
 protected:
 
     virtual void                TimeTickPlayMode( unsigned long sys_time_ );
     virtual void                TimeTickStopMode( unsigned long sys_time_ );
 
-    MIDIDriver*                 driver;
+    std::vector<MIDIOutDriver*> MIDI_outs;
     MIDISequencer*              sequencer;
+    MIDISequencerGUIEventNotifier *notifier;
 
     unsigned long               sys_time_offset;
     unsigned long               seq_time_offset;
@@ -123,11 +133,13 @@ protected:
     volatile bool               play_mode;
     volatile bool               stop_mode;
 
-    MIDISequencerGUIEventNotifier *notifier;
+
 
     volatile bool               repeat_play_mode;
     long                        repeat_start_measure;
     long                        repeat_end_measure;
+
+
 };
 
 

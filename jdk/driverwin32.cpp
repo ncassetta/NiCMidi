@@ -27,7 +27,7 @@
 #include "jdkmidi/world.h"
 #include <iostream>
 
-#ifdef _WIN32
+#ifdef XXXXXXXXX
 #include "jdkmidi/driverwin32.h"
 
 

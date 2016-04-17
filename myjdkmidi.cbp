@@ -9,7 +9,6 @@
 			<Target title="Debug">
 				<Option output="myjdkmidi" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
-				<Option object_output="E:/Dev-Cpp/Github/myjdkmidi/.objs" />
 				<Option type="2" />
 				<Option compiler="gcc" />
 				<Option createDefFile="1" />
@@ -34,6 +33,9 @@
 				</Linker>
 			</Target>
 		</Build>
+		<Compiler>
+			<Add option="-D__WINDOWS_MM__" />
+		</Compiler>
 		<Unit filename="jdk/advancedsequencer.cpp" />
 		<Unit filename="jdk/driver.cpp" />
 		<Unit filename="jdk/driverwin32.cpp" />
@@ -85,6 +87,8 @@
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="rtmidi-2.1.1/RtMidi.cpp" />
+		<Unit filename="rtmidi-2.1.1/RtMidi.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

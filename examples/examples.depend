@@ -108,3 +108,136 @@
 	"windows.h"
 	"mmsystem.h"
 
+1460123415 source:c:\users\nicola\cplusplus\github\myjdkmidi\examples\win32\test_advancedsequencer.cpp
+	"jdkmidi/advancedsequencer.h"
+	<iostream>
+	<string>
+
+1451811866 c:\users\nicola\cplusplus\github\myjdkmidi\jdk\jdkmidi\advancedsequencer.h
+	<vector>
+	<windows.h>
+	<unistd.h>
+	"msg.h"
+	"driver.h"
+	"multitrack.h"
+	"sequencer.h"
+	"manager.h"
+	"world.h"
+	"midi.h"
+	"msg.h"
+	"sysex.h"
+	"multitrack.h"
+	"filereadmultitrack.h"
+	"sequencer.h"
+	"manager.h"
+	"driver.h"
+	"driverwin32.h"
+	"driverdump.h"
+	<vector>
+
+1419795506 c:\users\nicola\cplusplus\github\myjdkmidi\jdk\jdkmidi\msg.h
+	"midi.h"
+	"tempo.h"
+	"sysex.h"
+
+1456009150 c:\users\nicola\cplusplus\github\myjdkmidi\jdk\jdkmidi\midi.h
+	"world.h"
+
+1455998895 c:\users\nicola\cplusplus\github\myjdkmidi\jdk\jdkmidi\world.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1291412857 c:\users\nicola\cplusplus\github\myjdkmidi\jdk\jdkmidi\tempo.h
+	"midi.h"
+
+1413740114 c:\users\nicola\cplusplus\github\myjdkmidi\jdk\jdkmidi\sysex.h
+	"midi.h"
+
+1406464096 c:\users\nicola\cplusplus\github\myjdkmidi\jdk\jdkmidi\driver.h
+	"msg.h"
+	"matrix.h"
+	"process.h"
+	"queue.h"
+	"tick.h"
+
+1456082532 c:\users\nicola\cplusplus\github\myjdkmidi\jdk\jdkmidi\matrix.h
+	"midi.h"
+	"msg.h"
+
+1456082732 c:\users\nicola\cplusplus\github\myjdkmidi\jdk\jdkmidi\process.h
+	"msg.h"
+	"sysex.h"
+
+1456083681 c:\users\nicola\cplusplus\github\myjdkmidi\jdk\jdkmidi\queue.h
+	"msg.h"
+	"sysex.h"
+
+1455975193 c:\users\nicola\cplusplus\github\myjdkmidi\jdk\jdkmidi\tick.h
+
+1412360672 c:\users\nicola\cplusplus\github\myjdkmidi\jdk\jdkmidi\multitrack.h
+	"world.h"
+	"track.h"
+
+1419592227 c:\users\nicola\cplusplus\github\myjdkmidi\jdk\jdkmidi\track.h
+	"midi.h"
+	"sysex.h"
+	"msg.h"
+
+1405946570 c:\users\nicola\cplusplus\github\myjdkmidi\jdk\jdkmidi\sequencer.h
+	"track.h"
+	"multitrack.h"
+	"tempo.h"
+	"matrix.h"
+	"process.h"
+	"notifier.h"
+
+1414253980 c:\users\nicola\cplusplus\github\myjdkmidi\jdk\jdkmidi\notifier.h
+	<cstdio>
+	"process.h"
+	"windows.h"
+	"mmsystem.h"
+
+1460144568 c:\users\nicola\cplusplus\github\myjdkmidi\jdk\jdkmidi\manager.h
+	"msg.h"
+	"driver.h"
+	"sequencer.h"
+	"tick.h"
+	"../../rtmidi-2.1.1/RtMidi.h"
+	<vector>
+	<windows.h>
+	"time.h"
+
+1456001735 c:\users\nicola\cplusplus\github\myjdkmidi\jdk\jdkmidi\filereadmultitrack.h
+	"midi.h"
+	"msg.h"
+	"sysex.h"
+	"file.h"
+	"fileread.h"
+	"multitrack.h"
+
+1455975386 c:\users\nicola\cplusplus\github\myjdkmidi\jdk\jdkmidi\file.h
+	"midi.h"
+	"msg.h"
+	"sysex.h"
+	"tempo.h"
+
+1456000632 c:\users\nicola\cplusplus\github\myjdkmidi\jdk\jdkmidi\fileread.h
+	<fstream>
+	"midi.h"
+	"msg.h"
+	"sysex.h"
+	"file.h"
+
+1406456775 c:\users\nicola\cplusplus\github\myjdkmidi\jdk\jdkmidi\driverwin32.h
+	"driver.h"
+	"sequencer.h"
+	"windows.h"
+	"mmsystem.h"
+
+1455390612 c:\users\nicola\cplusplus\github\myjdkmidi\rtmidi-2.1.1\rtmidi.h
+	<exception>
+	<iostream>
+	<string>
+	<vector>
+

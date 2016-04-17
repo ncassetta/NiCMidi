@@ -33,20 +33,23 @@
 
 
 MIDIManager::MIDIManager(
-    MIDIDriver *drv,
     MIDISequencerGUIEventNotifier *n,
     MIDISequencer *seq_ ) :
-    driver(drv),
     sequencer(seq_),
+    notifier( n ),
     sys_time_offset(0),
     seq_time_offset(0),
     play_mode(false),
     stop_mode(true),
-    notifier( n ),
     repeat_play_mode(false),
     repeat_start_measure(0),
-    repeat_end_measure(0) {
-    driver->SetTickProc( this );
+    repeat_end_measure(0)
+
+{
+    RtMidiOut temp_MIDI_out;
+    for (int i = 0; i < temp_MIDI_out.getPortCount(); i++)
+        MIDI_outs.push_back(new MIDIOutDriver(i));
+    //driver->SetTickProc( this );
 }
 
 
@@ -124,9 +127,9 @@ void MIDIManager::TimeTick( unsigned long sys_time_ ) {
 }
 
 
-  void MIDIManager::TimeTickPlayMode( unsigned long sys_time_ )
-  {
-     static unsigned long old_sys_ = 0;     // debug
+void MIDIManager::TimeTickPlayMode( unsigned long sys_time_ )
+{
+    static unsigned long old_sys_ = 0;     // debug
 
 
     double sys_time = (double)sys_time_ - (double)sys_time_offset;
@@ -136,27 +139,27 @@ void MIDIManager::TimeTick( unsigned long sys_time_ ) {
 
     // if we are in repeat mode, repeat if we hit end of the repeat region
     if( repeat_play_mode
-        && sequencer->GetCurrentMeasure()>=repeat_end_measure
+            && sequencer->GetCurrentMeasure()>=repeat_end_measure
       )
     {
-      // yes we hit the end of our repeat block
-      // shut off all notes on
-      driver->AllNotesOff();
+        // yes we hit the end of our repeat block
+        // shut off all notes on
+        MIDI_outs[0]->AllNotesOff();
 
-      // now move the sequencer to our start position
+        // now move the sequencer to our start position
 
-      sequencer->GoToMeasure( repeat_start_measure );
+        sequencer->GoToMeasure( repeat_start_measure );
 
-      // our current raw system time is now the new system time offset
+        // our current raw system time is now the new system time offset
 
-      sys_time_offset = sys_time_;
+        sys_time_offset = sys_time_;
 
-      sys_time = 0;
+        sys_time = 0;
 
-      // the sequencer time offset now must be reset to the
-      // time in milliseconds of the sequence start point
+        // the sequencer time offset now must be reset to the
+        // time in milliseconds of the sequence start point
 
-      seq_time_offset = (unsigned long)sequencer->GetCurrentTimeInMs();
+        seq_time_offset = (unsigned long)sequencer->GetCurrentTimeInMs();
     }
 
     // find all events that exist before or at this time,
@@ -167,52 +170,71 @@ void MIDIManager::TimeTick( unsigned long sys_time_ ) {
     int output_count=100;
 
     while(
-      sequencer->GetNextEventTimeMs( &next_event_time )
-      && (next_event_time-seq_time_offset)<=sys_time
-      && driver->CanOutputMessage()
-      && (--output_count)>0
-      )
+        sequencer->GetNextEventTimeMs( &next_event_time )
+        && (next_event_time-seq_time_offset)<=sys_time
+        && MIDI_outs[0]->CanOutputMessage()
+        && (--output_count)>0
+    )
     {
-      // found an event! get it!
+        // found an event! get it!
 
-      if( sequencer->GetNextEvent( &ev_track, &ev ) )
-      {
-        // ok, tell the driver the send this message now
+        if( sequencer->GetNextEvent( &ev_track, &ev ) )
+        {
+            // ok, tell the driver the send this message now
 
-        driver->OutputMessage( ev );
-        ev.Clear();     // we always must delete eventual sysex pointers before reassigning to ev
-      }
+            MIDI_outs[0]->OutputMessage( ev );
+            ev.Clear();     // we always must delete eventual sysex pointers before reassigning to ev
+        }
     }
 
     // auto stop at end of sequence
 
     if( !(repeat_play_mode && sequencer->GetCurrentMeasure()>=repeat_end_measure) &&
-        !sequencer->GetNextEventTimeMs( &next_event_time ) )
+            !sequencer->GetNextEventTimeMs( &next_event_time ) )
     {
-      // no events left
-      stop_mode = true;
-      play_mode = false;
+        // no events left
+        stop_mode = true;
+        play_mode = false;
 
-      if( notifier )
-      {
-        notifier->Notify( sequencer,
-                          MIDISequencerGUIEvent(
-                            MIDISequencerGUIEvent::GROUP_TRANSPORT,
-                            0,
-                            MIDISequencerGUIEvent::GROUP_TRANSPORT_MODE
-                            ) );
+        if( notifier )
+        {
+            notifier->Notify( sequencer,
+                              MIDISequencerGUIEvent(
+                                  MIDISequencerGUIEvent::GROUP_TRANSPORT,
+                                  0,
+                                  MIDISequencerGUIEvent::GROUP_TRANSPORT_MODE
+                              ) );
 
-        notifier->Notify( sequencer,
-                          MIDISequencerGUIEvent(
-                            MIDISequencerGUIEvent::GROUP_TRANSPORT,
-                            0,
-                            MIDISequencerGUIEvent::GROUP_TRANSPORT_ENDOFSONG
-                            ) );
+            notifier->Notify( sequencer,
+                              MIDISequencerGUIEvent(
+                                  MIDISequencerGUIEvent::GROUP_TRANSPORT,
+                                  0,
+                                  MIDISequencerGUIEvent::GROUP_TRANSPORT_ENDOFSONG
+                              ) );
 
-      }
+        }
     }
 
-  }
+// THIS IS THE OLD driver time tick
+
+    // feed as many midi messages from out_queue to the hardware out port
+    // as we can
+
+    while(MIDI_outs[0]->GetQueue()->CanGet()) {
+        // use the Peek() function to avoid allocating memory for
+        // a duplicate sysex
+
+        if(MIDI_outs[0]->HardwareMsgOut( *(MIDI_outs[0]->GetQueue()->Peek() ) ) == true ) {
+            // ok, got and sent a message - update our out_queue now
+            // added by me: we always must delete eventual sysex pointers before reassigning to ev ????? TODO
+            MIDI_outs[0]->GetQueue()->Next();
+        }
+        else {
+            // cant send any more, stop now.
+            break;
+        }
+    }
+}
 
 
 void MIDIManager::TimeTickStopMode( unsigned long sys_time_ ) {

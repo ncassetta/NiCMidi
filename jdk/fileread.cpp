@@ -53,7 +53,7 @@
 
 MIDIFileReadStreamFile::MIDIFileReadStreamFile( const char *fname ) : del(true) {
     infs = new std::ifstream( fname, std::ios::in | std::ios::binary );
-    if (!infs->fail()) {
+    if (infs->fail()) {
         delete infs;
         infs = 0;
     }

@@ -154,14 +154,14 @@ class AdvancedSequencer {
 
 
         bool                                OpenMIDI ( int in_port, int out_port,
-                                                       int timer_resolution = MIDIDriver::DEFAULT_TIMER_RESOLUTION );
+                                                       int timer_resolution = MIDIManager::DEFAULT_TIMER_RESOLUTION );
         void                                CloseMIDI();
 
         void                                ExtractWarpPositions(void);
         void                                CatchEventsBefore(void);
         void                                CatchEventsBefore(int trk);
 
-        MIDIDriver*                         driver;
+        MIDIOutDriver*                      driver;
         MIDISequencerGUIEventNotifier*      notifier;
         MIDIMultiTrack*                     tracks;
         MIDISequencer*                      seq;

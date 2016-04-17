@@ -8,16 +8,10 @@
 
 
 AdvancedSequencer::AdvancedSequencer(MIDISequencerGUIEventNotifier *n) :
-#ifdef _WIN32
-    driver( new MIDIDriverWin32() ),  /* NEW BY NC: queue_size given as default parameter */
-#else
-    driver( new MIDIDriverDump(128, stdout) ),
-#endif // WIN32
-
     notifier( n ),
     tracks ( new MIDIMultiTrack ( 17 ) ),
     seq ( new MIDISequencer ( tracks, notifier ) ),
-    mgr ( new MIDIManager ( driver, notifier, seq ) ),
+    mgr ( new MIDIManager ( notifier, seq ) ),
 
     thru_processor ( 2 ),
     thru_transposer(),
@@ -47,16 +41,10 @@ AdvancedSequencer::AdvancedSequencer(MIDISequencerGUIEventNotifier *n) :
 
 
 AdvancedSequencer::AdvancedSequencer(MIDIMultiTrack* mlt, MIDISequencerGUIEventNotifier *n) :
-#ifdef WIN32
-    driver( new MIDIDriverWin32() ),  /* NEW BY NC: queue_size given as default parameter */
-#else
-    driver( new MIDIDriverDump(128, stdout) ),
-#endif // WIN32
-
     notifier( n ),
     tracks ( mlt ),
     seq ( new MIDISequencer ( tracks, notifier ) ),
-    mgr ( new MIDIManager ( driver, notifier, seq ) ),
+    mgr ( new MIDIManager ( notifier, seq ) ),
 
     thru_processor ( 2 ),
     thru_transposer(),
@@ -83,12 +71,6 @@ AdvancedSequencer::AdvancedSequencer(MIDIMultiTrack* mlt, MIDISequencerGUIEventN
 
 
 AdvancedSequencer::AdvancedSequencer(MIDIManager *mg) :
-#ifdef WIN32
-    driver( new MIDIDriverWin32() ),  /* NEW BY NC: queue_size given as default parameter */
-#else
-    driver( new MIDIDriverDump(128, stdout) ),
-#endif // WIN32
-
     notifier( mg->GetSeq()->GetState()->notifier ),
     tracks ( ( MIDIMultiTrack * ) ( mg->GetSeq()->GetState()->multitrack ) ),
     seq ( mgr->GetSeq() ),
@@ -755,7 +737,7 @@ void AdvancedSequencer::SetChanged()
 // protected members
 //
 
-
+/* Ported to MiDIManager
 bool AdvancedSequencer::OpenMIDI ( int in_port, int out_port, int timer_resolution )
 {
     CloseMIDI();
@@ -785,6 +767,9 @@ void AdvancedSequencer::CloseMIDI()
     driver->CloseMIDIInPort();
     driver->CloseMIDIOutPort();
 }
+*/
+
+
 
 
 int AdvancedSequencer::FindFirstChannelOnTrack ( int trk )

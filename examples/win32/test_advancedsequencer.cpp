@@ -137,7 +137,7 @@ void DumpMIDITimedBigMessage( const MIDITimedBigMessage *msg )
             fprintf ( stdout, "%8ld : %s", msg->GetTime(), msg->MsgToText ( msgbuf ) );
         }
 
-        if ( msg->IsSystemExclusive() )
+        if ( msg->IsSysEx() )
         {
             fprintf ( stdout, "SYSEX length: %d", msg->GetSysEx()->GetLengthSE() );
         }
@@ -149,7 +149,7 @@ void DumpMIDITimedBigMessage( const MIDITimedBigMessage *msg )
 void DumpMIDIMultiTrack( MIDIMultiTrack *mlt )
 {
     MIDIMultiTrackIterator i ( mlt );
-    const MIDITimedBigMessage *msg;
+    MIDITimedBigMessage *msg;
     fprintf ( stdout , "Clocks per beat: %d\n\n", mlt->GetClksPerBeat() );
     i.GoToTime ( 0 );
 
@@ -177,6 +177,7 @@ void DumpMIDIMultiTrack( MIDIMultiTrack *mlt )
 
 int main( int argc, char **argv )
 {
+    CoInitializeEx(NULL, COINIT_MULTITHREADED);
     cout << "TYPE help TO GET A LIST OF AVAILABLE COMMANDS" << endl << endl;
     sequencer.SetMIDIThruEnable( true );
     while ( command != "quit" )                     // main loop
@@ -373,6 +374,7 @@ int main( int argc, char **argv )
             cout << "Unrecognized command" << endl;
         }
     }
+    CoUninitialize();
     return EXIT_SUCCESS;
 }
 

@@ -33,7 +33,7 @@
 #include "driver.h"
 #include "sequencer.h"
 
-#ifdef _WIN32
+#ifdef XXXXXX
 #include "windows.h"
 #include "mmsystem.h"
 

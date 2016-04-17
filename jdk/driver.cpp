@@ -27,39 +27,26 @@
 #include "jdkmidi/world.h"
 #include "jdkmidi/driver.h"
 
-unsigned int MIDIDriver::num_in_devs = 0;
-unsigned int MIDIDriver::num_out_devs = 0;
-char** MIDIDriver::in_dev_names = 0;
-char** MIDIDriver::out_dev_names = 0;
+
+MIDIOutDriver::MIDIOutDriver(int id, int queue_size) :
+    out_queue(queue_size == -1 ? DEFAULT_QUEUE_SIZE : queue_size),
+    out_proc(0), thru_proc(0), thru_enable(false), port_id(id) {
+
+    port = new RtMidiOut;
+}
 
 
-  MIDIDriver::MIDIDriver( int queue_size )
-    :
-    in_queue(queue_size),
-    out_queue(queue_size),
-    in_proc(0),
-    out_proc(0),
-    thru_proc(0),
-    thru_enable(false),
-    tick_proc(0)
-  {
+MIDIOutDriver::~MIDIOutDriver() {
+    port->closePort();
+    delete port;
+}
 
-  }
 
-  MIDIDriver::~MIDIDriver()
-  {
-
-  }
-
-  void MIDIDriver::Reset()
-  {
-    in_queue.Clear();
-    out_queue.Clear();
+void MIDIOutDriver::Reset() {
     out_matrix.Clear();
-  }
+}
 
-  void MIDIDriver::AllNotesOff( int chan )
-  {
+void MIDIOutDriver::AllNotesOff( int chan ) {
     MIDITimedBigMessage msg;
 
     // send a note off for every note on in the out_matrix
@@ -87,16 +74,18 @@ char** MIDIDriver::out_dev_names = 0;
 
   }
 
-  void MIDIDriver::AllNotesOff()
-  {
+
+void MIDIOutDriver::AllNotesOff()
+{
     for( int i=0; i<16; ++i )
     {
       AllNotesOff(i);
     }
   }
 
-  void MIDIDriver::OutputMessage ( MIDITimedBigMessage &msg )
-  {
+
+void MIDIOutDriver::OutputMessage ( MIDITimedBigMessage &msg )
+{
     if ( ( out_proc && out_proc->Process ( &msg ) ) || !out_proc )
     {
       	out_matrix.Process( msg );
@@ -104,7 +93,152 @@ char** MIDIDriver::out_dev_names = 0;
     }
   }
 
-  bool MIDIDriver::HardwareMsgIn( MIDITimedBigMessage &msg )
+
+
+/* ALL IS MOVED TO MIDIManager: driver no more inherits from MIDITick
+  void MIDIDriver::TimeTick( unsigned long sys_time )
+  {
+    // run the additional tick procedure if we need to
+    if( tick_proc )
+    {
+      tick_proc->TimeTick( sys_time );
+    }
+
+    // feed as many midi messages from out_queue to the hardware out port
+    // as we can
+
+    while( out_queue.CanGet() )
+    {
+      // use the Peek() function to avoid allocating memory for
+      // a duplicate sysex
+
+      if( HardwareMsgOut( *(out_queue.Peek() ) )==true )
+      {
+        // ok, got and sent a message - update our out_queue now
+        // added by me: we always must delete eventual sysex pointers before reassigning to ev
+        out_queue.Next();
+      }
+      else
+      {
+        // cant send any more, stop now.
+        break;
+      }
+
+    }
+
+  }
+  */
+
+
+bool MIDIOutDriver::HardwareMsgOut(const MIDITimedBigMessage &msg) {
+    if (!port->isPortOpen())
+        return false;
+    msg_bytes.clear();
+    if (msg.IsChannelMsg()) {
+        msg_bytes.push_back(msg.GetStatus());
+        msg_bytes.push_back(msg.GetByte1());
+        msg_bytes.push_back(msg.GetByte2());
+
+    }
+
+
+    else if (msg.IsSysEx()) {
+        msg_bytes.push_back(msg.GetStatus());
+        for (int i = 0; i < msg.GetSysEx()->GetLength(); i++)
+        msg_bytes.push_back(msg.GetSysEx()->GetData(i));
+    }
+    else {
+        char s[100];
+        std::cout << "Driver skipped message " << msg.MsgToText(s) << std::endl;
+    }
+
+    port->sendMessage(&msg_bytes);
+    return true;
+
+}
+
+
+
+/* jdksmidi window only version
+bool MIDIDriverWin32::HardwareMsgOut ( const MIDITimedBigMessage &msg )
+{
+    if ( out_open )
+    {
+        // msg is a channel message
+        if ( msg.IsChannelMsg() )
+        {
+            DWORD winmsg;
+            winmsg =
+                ( ( ( DWORD ) msg.GetStatus() & 0xFF )       )
+                | ( ( ( DWORD ) msg.GetByte1()  & 0xFF ) <<  8 )
+                | ( ( ( DWORD ) msg.GetByte2()  & 0xFF ) << 16 );
+
+            if ( midiOutShortMsg ( out_handle, winmsg ) != MMSYSERR_NOERROR )
+            {
+                char s[100];
+                std::cout << "Driver FAILED to send short message " << msg.MsgToText(s) << std::endl;
+                return false;
+            }
+        }
+
+        else if ( msg.IsSysEx() )
+        {
+            MIDIHDR hdr;
+// TODO: the buffer of the MIDISystemExclusive class holds only sysex bytes, without the 0xF0 status, so we
+// need sysex_buffer and put 0xF0 as 1st charachter. If the status byte would be held
+// in the MIDISystemExclusive this function would be simpler. This is possible, but perhaps there are
+// compatibility problems with older software using GetBuf(). WHAT TO DO?
+
+
+            if ( msg.GetSysEx()->GetLength() + 1 > sysex_buffer_size )
+            {   // reallocate sysex_buffer
+                delete[] sysex_buffer;
+                sysex_buffer_size = msg.GetSysEx()->GetLength() + 1;
+                sysex_buffer = new CHAR[ sysex_buffer_size ];
+            }
+
+            sysex_buffer[0] = msg.GetStatus();
+            memcpy(sysex_buffer + 1, msg.GetSysEx()->GetBuf(), msg.GetSysEx()->GetLength());
+            hdr.lpData = sysex_buffer;
+            hdr.dwBufferLength = msg.GetSysEx()->GetLength() + 1;
+            hdr.dwFlags = 0;
+
+            if ( midiOutPrepareHeader( out_handle, &hdr, sizeof ( MIDIHDR ) ) != MMSYSERR_NOERROR ) {
+                char s[100];
+                std::cout << "Driver FAILED to send SysEx on PrepareHeader " << msg.MsgToText(s) << std::endl;
+                return false;
+            }
+
+            if ( midiOutLongMsg( out_handle, &hdr, sizeof ( MIDIHDR ) ) != MMSYSERR_NOERROR )
+            {
+                char s[100];
+                std::cout << "Driver FAILED to send SysEx on OurLongMsg " << msg.MsgToText(s) << std::endl;
+                return false;
+            }
+            while ( midiOutUnprepareHeader( out_handle, &hdr, sizeof( MIDIHDR ) ) == MIDIERR_STILLPLAYING )
+            {
+                // Should put a delay in here rather than a busy-wait
+            }
+            char s[100];
+            std::cout << "Driver sent Sysex msg " << msg.MsgToText(s) << std::endl;
+        }
+
+        else
+        {
+            char s[100];
+            std::cout << "Driver skipped message " << msg.MsgToText(s) << std::endl;
+        }
+
+        return true;
+    }
+
+    // std::cout << "Driver not open!" << std::endl;
+    return false;
+}
+*/
+
+/*
+bool MIDIInDriver::HardwareMsgIn( MIDITimedBigMessage &msg )
   {
     // put input midi messages thru the in processor
 
@@ -158,37 +292,4 @@ char** MIDIDriver::out_dev_names = 0;
 
     return true;
   }
-
-  void MIDIDriver::TimeTick( unsigned long sys_time )
-  {
-    // run the additional tick procedure if we need to
-    if( tick_proc )
-    {
-      tick_proc->TimeTick( sys_time );
-    }
-
-    // feed as many midi messages from out_queue to the hardware out port
-    // as we can
-
-    while( out_queue.CanGet() )
-    {
-      // use the Peek() function to avoid allocating memory for
-      // a duplicate sysex
-
-      if( HardwareMsgOut( *(out_queue.Peek() ) )==true )
-      {
-        // ok, got and sent a message - update our out_queue now
-        // added by me: we always must delete eventual sysex pointers before reassigning to ev
-        out_queue.Next();
-      }
-      else
-      {
-        // cant send any more, stop now.
-        break;
-      }
-
-    }
-
-  }
-
-
+*/
