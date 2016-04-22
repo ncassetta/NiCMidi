@@ -1,8 +1,8 @@
-#include "jdkmidi/world.h"
-#include "jdkmidi/advancedsequencer.h"
-#include "jdkmidi/fileread.h"
-#include "jdkmidi/filereadmultitrack.h"
-#include "jdkmidi/driverwin32.h"
+#include "../include/world.h"
+#include "../include/advancedsequencer.h"
+#include "../include/fileread.h"
+#include "../include/filereadmultitrack.h"
+#include "../include/driverwin32.h"
 
 #include <iostream>
 
@@ -35,7 +35,7 @@ AdvancedSequencer::AdvancedSequencer(MIDISequencerGUIEventNotifier *n) :
  * is this right? perhaps we should open/close only in Play/Stop (but what if thru is enabled?)
  * What is better?
  */
-    OpenMIDI(in_port, out_port);
+    //OpenMIDI(in_port, out_port);
     SetClksPerBeat ( DEFAULT_CLK_PER_BEAT );
 }
 
@@ -66,7 +66,7 @@ AdvancedSequencer::AdvancedSequencer(MIDIMultiTrack* mlt, MIDISequencerGUIEventN
  * is this right? perhaps we should open/close only in Play/Stop (but what if thru is enabled?)
  * What is better?
  */
-    OpenMIDI(in_port, out_port);
+    //OpenMIDI(in_port, out_port);
 }
 
 
@@ -96,19 +96,18 @@ AdvancedSequencer::AdvancedSequencer(MIDIManager *mg) :
  * is this right? perhaps we should open/close only in Play/Stop (but what if thru is enabled?)
  * What is better?
  */
-    OpenMIDI(in_port, out_port);
+    //OpenMIDI(in_port, out_port);
 }
 
 
 AdvancedSequencer::~AdvancedSequencer()
 {
     Stop();
-    CloseMIDI();
+    //CloseMIDI();
     if ( ctor_type != CTOR_3)
     {
         delete mgr;
         delete seq;
-        delete driver;
     }
     if ( ctor_type == CTOR_1 )
     {
@@ -120,32 +119,32 @@ AdvancedSequencer::~AdvancedSequencer()
 void AdvancedSequencer::SetOutputPort( int p)
 {
     Stop();
-    CloseMIDI();
+    //CloseMIDI();
     out_port = p;
-    OpenMIDI(in_port, out_port);
+    //OpenMIDI(in_port, out_port);
 }
 
 
 void AdvancedSequencer::SetInputPort( int p)
 {
     Stop();
-    CloseMIDI();
+    //CloseMIDI();
     in_port = p;
-    OpenMIDI(in_port, out_port);
+    //OpenMIDI(in_port, out_port);
 }
 
 
 void AdvancedSequencer::SetMIDIThruChannel ( int chan )
 {
     thru_rechannelizer.SetAllRechan ( chan );
-    driver->AllNotesOff();
+    mgr->AllNotesOff();
 }
 
 
 void AdvancedSequencer::SetMIDIThruTranspose ( int val )
 {
     thru_transposer.SetAllTranspose ( val );
-    driver->AllNotesOff();
+    mgr->AllNotesOff();
 }
 
 
@@ -166,7 +165,7 @@ bool AdvancedSequencer::Load ( const char *fname )
     }
 
     Stop();
-    driver->AllNotesOff();
+    mgr->AllNotesOff();
     tracks->Clear();
 
     MIDIFileReadStreamFile mfreader_stream ( realname );
@@ -204,14 +203,14 @@ void AdvancedSequencer::UnLoad()    /* NEW BY NC */
 void AdvancedSequencer::Reset()
 {
     Stop();
-    jdks_wait(500);    // pauses for 0.5 sec (TROUBLE WITHOUT THIS!!!! I DON'T KNOW WHY)
+    Wait(500);    // pauses for 0.5 sec (TROUBLE WITHOUT THIS!!!! I DON'T KNOW WHY)
     UnmuteAllTracks();
     UnSoloTrack();
     SetTempoScale ( 1.00 );
     SetRepeatPlay(false, 0, 0 );
     seq->ResetAllTracks();
     seq->GoToZero();
-    driver->Reset();    // clear queues
+    mgr->Reset();    // clear queues
 }
 
 
@@ -335,8 +334,8 @@ void AdvancedSequencer::Stop()
     if ( !mgr->IsSeqStop() )
     {
         mgr->SeqStop();
-        driver->AllNotesOff();
-        //driver->Reset();
+        mgr->AllNotesOff();
+        mgr->Reset();
         GoToMeasure(seq->GetState()->cur_measure, seq->GetState()->cur_beat);
         // stops on a beat (and clear midi matrix)
     }
@@ -347,11 +346,11 @@ void AdvancedSequencer::Stop()
 void AdvancedSequencer::OutputMessage( MIDITimedBigMessage& msg ) {
     for (int i = 1; i < 1000; i++)  // retry for 1 second
     {
-        if (driver->CanOutputMessage()) {
-            driver->OutputMessage( msg );
+        if (mgr->GetDriver(0)->CanOutputMessage()) {
+            mgr->GetDriver(0)->OutputMessage( msg );
             return;
         }
-        jdks_wait( 1 );
+        Wait( 1 );
         // note by NC: this may not be accurate, however we only want to wait for a minimum period
     }
     std::cerr << "OutputMessage failed!" << std::endl;
@@ -411,7 +410,7 @@ void AdvancedSequencer::SoloTrack ( int trk )
     for (int i = 0; i < seq->GetNumTracks(); ++i)
     {
         if (i == trk) continue;
-        driver->AllNotesOff(FindFirstChannelOnTrack(i) - 1);
+        mgr->GetDriver(0)->AllNotesOff(FindFirstChannelOnTrack(i) - 1);
         seq->GetTrackState (i)->note_matrix.Clear();
     }
 }
@@ -441,7 +440,7 @@ void AdvancedSequencer::SetTrackMute ( int trk, bool f )
     {
         if ( f )
         {
-            driver->AllNotesOff( FindFirstChannelOnTrack(trk) - 1 );  // TODO: tieni conto del rechannelize
+            mgr->GetDriver(0)->AllNotesOff( FindFirstChannelOnTrack(trk) - 1 );  // TODO: tieni conto del rechannelize
         }
         else
         {
@@ -465,7 +464,7 @@ void AdvancedSequencer::UnmuteAllTracks()
             seq->GetTrackProcessor ( i )->mute = false;
         }
     }
-    driver->AllNotesOff();
+    mgr->AllNotesOff();
     if (IsPlay())
     {
         CatchEventsBefore(); // this set appropriate CC, PC, etc for previously muted tracks
@@ -646,7 +645,7 @@ void AdvancedSequencer::SetTrackRechannelize ( int trk, int chan )
         return;
     }
     seq->GetTrackProcessor ( trk )->rechannel = chan;
-    driver->AllNotesOff();
+    mgr->AllNotesOff();
     seq->GetTrackState ( trk )->note_matrix.Clear();
 }
 
@@ -689,7 +688,7 @@ void AdvancedSequencer::SetTrackTranspose ( int trk, int trans )
     if ( was_playing )
     {
         // driver->ResetMIDIOut(); // is this needed?
-        driver->AllNotesOff();
+        mgr->AllNotesOff();
         seq->GetTrackState ( trk )->note_matrix.Clear();
         mgr->SeqPlay();
     }
@@ -938,7 +937,7 @@ void AdvancedSequencer::CatchEventsBefore()
         if ( msg.IsSysEx() )  // TODO: which SysEx should we send?
         {
             OutputMessage(msg);
-            jdks_wait( 10 );
+            Wait( 10 );
         }
         else
         {   // TODO: which other messages should we send???
@@ -982,7 +981,7 @@ void AdvancedSequencer::CatchEventsBefore(int trk) {
         if ( msg.IsSysEx() )      // TODO: which SysEx should we send???
         {
             OutputMessage(msg);
-            jdks_wait( 10 );
+            Wait( 10 );
         }
         else
         {   // TODO: which other messages should we send???

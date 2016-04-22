@@ -27,8 +27,8 @@
 ** see header for changes against jdksmidi
 */
 
-#include "jdkmidi/world.h"
-#include "jdkmidi/queue.h"
+#include "../include/world.h"
+#include "../include/queue.h"
 
 
   MIDIQueue::MIDIQueue( int num_msgs )

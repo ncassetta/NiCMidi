@@ -30,43 +30,13 @@
 #include "msg.h"
 #include "driver.h"
 #include "sequencer.h"
-#include "tick.h"
-
-
+#include "timer.h"
 
 
 #include <vector>
 
 
-#ifdef _WIN32
-#include <windows.h>
-
-inline unsigned long jdks_get_system_time_ms()
-{
-    return timeGetTime();
-}
-
-#elif __linux__
-#include "time.h"
-
-inline unsigned long jdks_get_system_time_ms()
-{
-    static struct timespec tspec;
-    clock_gettime(CLOCK_MONOTONIC, &tspec);
-    return (unsigned long)tspec.tv_sec + (unsigned long)(tspec.tv_nsec / 1000000);
-}
-
-#else
-
-inline unsigned long jdks_get_system_time_ms()
-{
-    return 0;
-}
-
-#endif // _WIN32
-
-
-class MIDIManager : public MIDITick {
+class MIDIManager {
 public:
                                 MIDIManager( MIDISequencerGUIEventNotifier *n=0,
                                              MIDISequencer *seq_=0 );
@@ -77,21 +47,25 @@ public:
 
         // to set and get the current sequencer
     void                        SetSeq( MIDISequencer *seq );
-    MIDISequencer*              GetSeq()                { return sequencer; }
-    const MIDISequencer*        GetSeq() const          { return sequencer; }
+    MIDISequencer*              GetSeq()                        { return sequencer; }
+    const MIDISequencer*        GetSeq() const                  { return sequencer; }
 
         // to get the driver that we use
-    MIDIOutDriver*              GetDriver(int n)             { return MIDI_outs[n]; }
+    static int                  GetNumMIDIOuts()                { return MIDI_out_names.size(); }
+    static const std::string&   GetMIDIOutName(int n)           { return MIDI_out_names[n]; }
+    static int                  GetNumMIDIIns()                 { return 0; }
+    static const std::string&   GetMIDIInName(int n)            { return std::string("For now no inputs!"); }
+    MIDIOutDriver*              GetDriver(int n)                { return MIDI_outs[n]; }
 
         // to set and get the system time offset
     void                        SetTimeOffset( unsigned long off )
-                                                        { sys_time_offset = off; }
-    unsigned long               GetTimeOffset()         { return sys_time_offset; }
+                                                                { sys_time_offset = off; }
+    unsigned long               GetTimeOffset()                 { return sys_time_offset; }
 
         // to get the time in ms from the sequencer start
     unsigned long GetCurrentTimeInMs() const {
         if ( play_mode )
-            return jdks_get_system_time_ms() + seq_time_offset - sys_time_offset;
+            return timer->GetSysTimeMs() + seq_time_offset - sys_time_offset;
         else
             return 0;
     }
@@ -106,32 +80,37 @@ public:
     void                        SeqStop();
     void                        SetRepeatPlay( bool flag, unsigned long start_measure, unsigned long end_measure );
 
+       // To set and get the MIDI thru
+    void                        SetThruEnable( bool f )                 { thru_enable = f; }
+    bool                        GetThruEnable() const                   { return thru_enable; }
+
+    void                        AllNotesOff();
+
         // status request functions
     bool                        IsSeqPlay() const       { return play_mode; }
     bool                        IsSeqStop() const       { return stop_mode; }
     bool                        IsSeqRepeat() const     { return repeat_play_mode && play_mode; }
 
-        // inherited from MIDITick
-    virtual void                TimeTick( unsigned long sys_time );
-
-           // The default timer resolution is 1 msec (public: used by AdvancedSequencer)
-    static const int            DEFAULT_TIMER_RESOLUTION = 1;
-
+    static void                 TickProc(unsigned long sys_time, void* p);
 
 protected:
 
-    virtual void                TimeTickPlayMode( unsigned long sys_time_ );
-    virtual void                TimeTickStopMode( unsigned long sys_time_ );
+    void                        TimeTickPlayMode( unsigned long sys_time_ );
+    void                        TimeTickStopMode( unsigned long sys_time_ );
 
     std::vector<MIDIOutDriver*> MIDI_outs;
+    static std::vector<std::string> MIDI_out_names;
     MIDISequencer*              sequencer;
     MIDISequencerGUIEventNotifier *notifier;
+
+    MIDITimer*                  timer;
 
     unsigned long               sys_time_offset;
     unsigned long               seq_time_offset;
 
     volatile bool               play_mode;
     volatile bool               stop_mode;
+    bool                        thru_enable;
 
 
 

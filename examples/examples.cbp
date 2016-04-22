@@ -11,6 +11,7 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-std=c++11" />
 					<Add option="-g" />
 				</Compiler>
 			</Target>
@@ -43,7 +44,7 @@
 			<Add library="kernel32" />
 			<Add library="comctl32" />
 			<Add library="ole32" />
-			<Add library="../libmyjdkmidi.a" />
+			<Add library="../lib/libmyjdkmidi_d.a" />
 			<Add library="winmm" />
 		</Linker>
 		<Unit filename="win32/jdksmidi_test_drvwin32.cpp">

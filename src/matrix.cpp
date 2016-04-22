@@ -36,8 +36,8 @@
 ** see header for changes against jdksmidi
 */
 
-#include "jdkmidi/world.h"
-#include "jdkmidi/matrix.h"
+#include "../include/world.h"
+#include "../include/matrix.h"
 
   MIDIMatrix::MIDIMatrix()
   {

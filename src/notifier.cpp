@@ -1,5 +1,5 @@
-#include "jdkmidi/notifier.h"
-#include "jdkmidi/sequencer.h"
+#include "../include/notifier.h"
+#include "../include/sequencer.h"
 
 
 void MIDISequencerGUIEventNotifierText::Notify( const MIDISequencer *seq, MIDISequencerGUIEvent e ) {

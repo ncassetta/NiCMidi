@@ -42,9 +42,9 @@
 
 // QUESTO FILE E' MODIFICATO SOLO IN PARTE: LASCIATI I MESSAGGI DI 4 BYTE
 
-#include "jdkmidi/world.h"
-#include "jdkmidi/sysex.h"
-#include "jdkmidi/msg.h"
+#include "../include/world.h"
+#include "../include/sysex.h"
+#include "../include/msg.h"
 
 //#include <mss121/mss.h>
 

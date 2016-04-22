@@ -36,8 +36,8 @@
 ** see header for changes against jdksmidi
 */
 
-#include "jdkmidi/world.h"
-#include "jdkmidi/filereadmultitrack.h"
+#include "../include/world.h"
+#include "../include/filereadmultitrack.h"
 
 
 

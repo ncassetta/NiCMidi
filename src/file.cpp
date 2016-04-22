@@ -36,8 +36,8 @@
 ** see header for changes against jdksmidi
 */
 
-#include "jdkmidi/world.h"
-#include "jdkmidi/file.h"
+#include "../include/world.h"
+#include "../include/file.h"
 
 
 

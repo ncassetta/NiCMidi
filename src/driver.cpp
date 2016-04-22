@@ -22,10 +22,9 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// Updated to reflect changes in jdksmidi
 
-#include "jdkmidi/world.h"
-#include "jdkmidi/driver.h"
+#include "../include/world.h"
+#include "../include/driver.h"
 
 
 MIDIOutDriver::MIDIOutDriver(int id, int queue_size) :
@@ -43,6 +42,8 @@ MIDIOutDriver::~MIDIOutDriver() {
 
 
 void MIDIOutDriver::Reset() {
+    port->closePort();
+    out_queue.Clear();
     out_matrix.Clear();
 }
 
@@ -51,19 +52,14 @@ void MIDIOutDriver::AllNotesOff( int chan ) {
 
     // send a note off for every note on in the out_matrix
 
-    if( out_matrix.GetChannelCount(chan)>0 )
-    {
-      for( int note=0; note<128; ++note )
-      {
-        while( out_matrix.GetNoteCount(chan,note)>0 )
-        {
-          // make a note off with note on msg, velocity 0
-          msg.SetNoteOn( (unsigned char)chan,
-                         (unsigned char)note, 0 );
-
-          OutputMessage( msg );
+    if(out_matrix.GetChannelCount(chan) > 0) {
+        for(int note = 0; note < 128; ++note) {
+            while(out_matrix.GetNoteCount(chan,note) > 0) {
+                    // make a note off with note on msg, velocity 0
+                msg.SetNoteOn( (unsigned char)chan, (unsigned char)note, 0 );
+                OutputMessage( msg );
+            }
         }
-      }
     }
 
     msg.SetControlChange(chan,C_DAMPER,0 );
@@ -71,27 +67,22 @@ void MIDIOutDriver::AllNotesOff( int chan ) {
 
     msg.SetAllNotesOff( (unsigned char)chan );
     OutputMessage( msg );
-
   }
 
 
 void MIDIOutDriver::AllNotesOff()
 {
-    for( int i=0; i<16; ++i )
-    {
-      AllNotesOff(i);
-    }
-  }
+    for(int i = 0; i < 16; ++i)
+        AllNotesOff(i);
+}
 
 
-void MIDIOutDriver::OutputMessage ( MIDITimedBigMessage &msg )
-{
-    if ( ( out_proc && out_proc->Process ( &msg ) ) || !out_proc )
-    {
+void MIDIOutDriver::OutputMessage (MIDITimedBigMessage &msg) {
+    if ((out_proc && out_proc->Process (&msg)) || !out_proc ) {
       	out_matrix.Process( msg );
 		out_queue.Put ( msg );
     }
-  }
+}
 
 
 
@@ -141,7 +132,6 @@ bool MIDIOutDriver::HardwareMsgOut(const MIDITimedBigMessage &msg) {
 
     }
 
-
     else if (msg.IsSysEx()) {
         msg_bytes.push_back(msg.GetStatus());
         for (int i = 0; i < msg.GetSysEx()->GetLength(); i++)
@@ -154,7 +144,6 @@ bool MIDIOutDriver::HardwareMsgOut(const MIDITimedBigMessage &msg) {
 
     port->sendMessage(&msg_bytes);
     return true;
-
 }
 
 

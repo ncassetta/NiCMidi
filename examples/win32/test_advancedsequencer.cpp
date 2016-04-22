@@ -27,7 +27,7 @@
 // ncassetta@tiscali.it
 //
 
-#include "jdkmidi/advancedsequencer.h"
+#include "../../include/advancedsequencer.h"
 //using namespace jdksmidi;
 
 #include <iostream>
@@ -197,24 +197,24 @@ int main( int argc, char **argv )
         }
         else if ( command == "ports")               // enumerates the midi ports
         {
-            if ( MIDIDriver::GetNumMIDIInDevs() )
+            if ( MIDIManager::GetNumMIDIIns() )
             {
                 cout << "MIDI IN PORTS:" << endl;
-                for ( unsigned int i = 0; i < MIDIDriver::GetNumMIDIInDevs(); i++ )
+                for ( unsigned int i = 0; i < MIDIManager::GetNumMIDIIns(); i++ )
                 {
-                    cout << i << ": " << MIDIDriver::GetMIDIInDevName( i ) << endl;
+                    cout << i << ": " << MIDIManager::GetMIDIInName( i ) << endl;
                 }
             }
             else
             {
                 cout << "NO MIDI IN PORTS" << endl;
             }
-            if ( MIDIDriver::GetNumMIDIOutDevs() )
+            if ( MIDIManager::GetNumMIDIOuts() )
             {
                 cout << "MIDI OUT PORTS:" << endl;
-                for ( unsigned int i = 0; i < MIDIDriver::GetNumMIDIOutDevs(); i++ )
+                for ( unsigned int i = 0; i < MIDIManager::GetNumMIDIOuts(); i++ )
                 {
-                    cout << i << ": " << MIDIDriver::GetMIDIOutDevName( i ) << endl;
+                    cout << i << ": " << MIDIManager::GetMIDIOutName( i ) << endl;
                 }
             }
             else

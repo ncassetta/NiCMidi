@@ -28,8 +28,8 @@
 */
 
 
-#include "jdkmidi/world.h"
-#include "jdkmidi/process.h"
+#include "../include/world.h"
+#include "../include/process.h"
 
 
 

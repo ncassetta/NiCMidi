@@ -28,8 +28,8 @@
 ** avoided a warning
 */
 
-#include "jdkmidi/world.h"
-#include "jdkmidi/filewritemultitrack.h"
+#include "../include/world.h"
+#include "../include/filewritemultitrack.h"
 
 
 

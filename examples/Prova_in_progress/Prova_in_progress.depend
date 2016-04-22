@@ -1,0 +1,87 @@
+# depslib dependency file v1.0
+1461325682 source:c:\users\nicola\cplusplus\github\myjdkmidi\examples\prova_in_progress\main.cpp
+	<iostream>
+	"../../include/manager.h"
+
+1461308941 c:\users\nicola\cplusplus\github\myjdkmidi\include\manager.h
+	"msg.h"
+	"driver.h"
+	"sequencer.h"
+	"timer.h"
+	<vector>
+
+1419795506 c:\users\nicola\cplusplus\github\myjdkmidi\include\msg.h
+	"midi.h"
+	"tempo.h"
+	"sysex.h"
+
+1456009150 c:\users\nicola\cplusplus\github\myjdkmidi\include\midi.h
+	"world.h"
+
+1455998895 c:\users\nicola\cplusplus\github\myjdkmidi\include\world.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1291412857 c:\users\nicola\cplusplus\github\myjdkmidi\include\tempo.h
+	"midi.h"
+
+1413740114 c:\users\nicola\cplusplus\github\myjdkmidi\include\sysex.h
+	"midi.h"
+
+1461305417 c:\users\nicola\cplusplus\github\myjdkmidi\include\driver.h
+	"msg.h"
+	"matrix.h"
+	"process.h"
+	"queue.h"
+	"../rtmidi-2.1.1/RtMidi.h"
+	<vector>
+	<string>
+
+1456082532 c:\users\nicola\cplusplus\github\myjdkmidi\include\matrix.h
+	"midi.h"
+	"msg.h"
+
+1456082732 c:\users\nicola\cplusplus\github\myjdkmidi\include\process.h
+	"msg.h"
+	"sysex.h"
+
+1456083681 c:\users\nicola\cplusplus\github\myjdkmidi\include\queue.h
+	"msg.h"
+	"sysex.h"
+
+1455390612 c:\users\nicola\cplusplus\github\myjdkmidi\rtmidi-2.1.1\rtmidi.h
+	<exception>
+	<iostream>
+	<string>
+	<vector>
+
+1405946570 c:\users\nicola\cplusplus\github\myjdkmidi\include\sequencer.h
+	"track.h"
+	"multitrack.h"
+	"tempo.h"
+	"matrix.h"
+	"process.h"
+	"notifier.h"
+
+1419592227 c:\users\nicola\cplusplus\github\myjdkmidi\include\track.h
+	"midi.h"
+	"sysex.h"
+	"msg.h"
+
+1412360672 c:\users\nicola\cplusplus\github\myjdkmidi\include\multitrack.h
+	"world.h"
+	"track.h"
+
+1414253980 c:\users\nicola\cplusplus\github\myjdkmidi\include\notifier.h
+	<cstdio>
+	"process.h"
+	"windows.h"
+	"mmsystem.h"
+
+1461326528 c:\users\nicola\cplusplus\github\myjdkmidi\include\timer.h
+	<chrono>
+	<thread>
+	<atomic>
+	<iostream>
+

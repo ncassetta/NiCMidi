@@ -35,8 +35,8 @@
 // www.vmgames.com vrm@vmgames.com
 //
 
-#include "jdkmidi/world.h"
-#include "jdkmidi/sysex.h"
+#include "../include/world.h"
+#include "../include/sysex.h"
 
 #ifndef DEBUG_MDSYSEX
 # define DEBUG_MDSYSEX 0

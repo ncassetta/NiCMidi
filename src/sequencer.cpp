@@ -21,8 +21,8 @@
 
 
 
-#include "jdkmidi/world.h"
-#include "jdkmidi/sequencer.h"
+#include "../include/world.h"
+#include "../include/sequencer.h"
 
 
   static void FixQuotes( char *s_ )

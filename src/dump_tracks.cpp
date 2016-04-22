@@ -24,9 +24,9 @@
 
 // FILE AGGIORNATO IN AutoComp 0.10
 
-#include "jdkmidi/world.h"
-#include "jdkmidi/track.h"
-#include "jdkmidi/multitrack.h"
+#include "../include/world.h"
+#include "../include/track.h"
+#include "../include/multitrack.h"
 
 
 void DumpMIDITimedBigMessage ( MIDITimedBigMessage *msg )

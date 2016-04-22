@@ -26,11 +26,12 @@
 
 #include <iostream>         // DEBUG! togliere
 
-#include "jdkmidi/world.h"
-#include "jdkmidi/manager.h"
+#include "../include/world.h"
+#include "../include/manager.h"
 
 
 
+std::vector<std::string> MIDIManager::MIDI_out_names;
 
 MIDIManager::MIDIManager(
     MIDISequencerGUIEventNotifier *n,
@@ -41,15 +42,19 @@ MIDIManager::MIDIManager(
     seq_time_offset(0),
     play_mode(false),
     stop_mode(true),
+    thru_enable(false),
     repeat_play_mode(false),
     repeat_start_measure(0),
     repeat_end_measure(0)
 
 {
     RtMidiOut temp_MIDI_out;
-    for (int i = 0; i < temp_MIDI_out.getPortCount(); i++)
+    for (unsigned int i = 0; i < temp_MIDI_out.getPortCount(); i++) {
         MIDI_outs.push_back(new MIDIOutDriver(i));
-    //driver->SetTickProc( this );
+        MIDI_out_names.push_back(temp_MIDI_out.getPortName(i));
+    }
+    timer = new MIDITimer();
+    timer->SetMIDITick(TickProc, this);
 }
 
 
@@ -61,69 +66,87 @@ void MIDIManager::Reset() {
     stop_mode = true;
     if( notifier )
         notifier->Notify( sequencer, MIDISequencerGUIEvent( MIDISequencerGUIEvent::GROUP_ALL ) );
+    for(unsigned int i = 0; i < MIDI_outs.size(); i++)
+        MIDI_outs[i]->Reset();
 }
 
 
 // to set and get the current sequencer
 void MIDIManager::SetSeq ( MIDISequencer *seq ) {
-    if ( notifier )
+    if (notifier)
         notifier->Notify ( sequencer, MIDISequencerGUIEvent ( MIDISequencerGUIEvent::GROUP_ALL ) );
     sequencer = seq;
 }
 
 
 // to manage the playback of the sequencer
-void MIDIManager::SeqPlay()
-{
-    seq_time_offset = ( unsigned long ) sequencer->GetCurrentTimeInMs();
-    sys_time_offset = jdks_get_system_time_ms();
+void MIDIManager::SeqPlay() {
+    if (sequencer) {
+        MIDI_outs[0]->OpenPort();
 
-    stop_mode = false;
-    play_mode = true;
+        seq_time_offset = (unsigned long) sequencer->GetCurrentTimeInMs();
+        sys_time_offset = timer->GetSysTimeMs();
+        stop_mode = false;
+        play_mode = true;
+        timer->Start();
 
-    if ( notifier )
-    {
-        notifier->Notify ( sequencer,
-                           MIDISequencerGUIEvent (
-                               MIDISequencerGUIEvent::GROUP_TRANSPORT,
-                               0,
-                               MIDISequencerGUIEvent::GROUP_TRANSPORT_MODE
-                           ) );
+        if (notifier) {
+            notifier->Notify ( sequencer,
+                               MIDISequencerGUIEvent (
+                                   MIDISequencerGUIEvent::GROUP_TRANSPORT,
+                                   0,
+                                   MIDISequencerGUIEvent::GROUP_TRANSPORT_MODE
+                               ) );
+        }
+    }
+}
+
+
+void MIDIManager::SeqStop() {
+    if (sequencer) {
+        timer->Stop();
+        play_mode = false;
+        stop_mode = true;
+
+        if (notifier) {
+            notifier->Notify ( sequencer,
+                               MIDISequencerGUIEvent (
+                                   MIDISequencerGUIEvent::GROUP_TRANSPORT,
+                                   0,
+                                   MIDISequencerGUIEvent::GROUP_TRANSPORT_MODE
+                               ) );
+        }
+        MIDI_outs[0]->ClosePort();
     }
 }
 
 
 // to manage the repeat playback of the sequencer
 void MIDIManager::SetRepeatPlay ( bool flag, unsigned long start_measure, unsigned long end_measure ) {
-    // shut off repeat play while we muck with values
+        // shut off repeat play while we muck with values
     repeat_play_mode = false;
     repeat_start_measure = start_measure;
     repeat_end_measure = end_measure;
-    // set repeat mode flag to how we want it.
+        // set repeat mode flag to how we want it.
     repeat_play_mode = flag;
 }
 
-void MIDIManager::SeqStop() {
-    play_mode = false;
-    stop_mode = true;
 
-    if ( notifier )
-    {
-        notifier->Notify ( sequencer,
-                           MIDISequencerGUIEvent (
-                               MIDISequencerGUIEvent::GROUP_TRANSPORT,
-                               0,
-                               MIDISequencerGUIEvent::GROUP_TRANSPORT_MODE
-                           ) );
-    }
+void MIDIManager::AllNotesOff() {
+    for (unsigned int i = 0; i < MIDI_outs.size(); i++)
+        MIDI_outs[i]->AllNotesOff();
 }
 
 
-void MIDIManager::TimeTick( unsigned long sys_time_ ) {
-    if( play_mode )
-        TimeTickPlayMode(sys_time_);
-    else if( stop_mode )
-        TimeTickStopMode(sys_time_);
+void MIDIManager::TickProc( unsigned long sys_time_, void* p ) {
+
+    MIDIManager* manager = static_cast<MIDIManager *>(p);
+    if( manager->play_mode )
+        manager->TimeTickPlayMode(sys_time_);
+    else if( manager->stop_mode )
+        manager->TimeTickStopMode(sys_time_);
+
+    //std::cout << "MIDIManager TickProc" << std::endl;
 }
 
 

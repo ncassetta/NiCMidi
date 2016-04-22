@@ -33,8 +33,8 @@
 
 // MANTENUTO IL VECCHIO MODELLO PRE jdksmidi, in quanto c'erano troppe modifiche rispetto a questo (che funziona)
 
-#include "jdkmidi/world.h"
-#include "jdkmidi/smpte.h"
+#include "../include/world.h"
+#include "../include/smpte.h"
 
 #ifndef DEBUG_MDSMPTE
 # define DEBUG_MDSMPTE	0

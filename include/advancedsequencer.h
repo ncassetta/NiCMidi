@@ -5,29 +5,9 @@
 #ifndef _JDKMIDI_ADVANCEDSEQUENCER_H
 #define _JDKMIDI_ADVANCEDSEQUENCER_H
 
-//#include <mss121/no_mss.h>
-
 #include <vector>
 
-// NOTE BY NC: this is a temporary hack: we'll use <chrono>
 
-#ifdef WIN32
-#include <windows.h>
-inline void jdks_wait( unsigned int ms )
-{
-    Sleep( ms );
-}
-#elif __linux__
-#include <unistd.h>
-inline void jdks_wait( unsigned int ms )
-{
-    usleep ( ms );
-}
-#else
-inline void jdks_wait( unsigned int ms )
-{
-}
-#endif // WIN32
 
 
 //#include "midi.h"
@@ -54,8 +34,8 @@ class AdvancedSequencer {
         void                SetInputPort( int p);
         int                 GetInputPort() const            { return in_port; }
 
-        void                SetMIDIThruEnable (bool f)      { driver->SetThruEnable (f); };
-        bool                GetMIDIThruEnable() const       { return driver->GetThruEnable(); };
+        void                SetMIDIThruEnable (bool f)      { mgr->SetThruEnable (f); };
+        bool                GetMIDIThruEnable() const       { return mgr->GetThruEnable(); };
         void                SetMIDIThruChannel (int chan);
         int                 GetMIDIThruChannel() const      { return thru_rechannelizer.GetRechanMap(0); };
         void                SetMIDIThruTranspose (int val);
@@ -153,15 +133,18 @@ class AdvancedSequencer {
         static const int                    DEFAULT_CLK_PER_BEAT = 120;
 
 
+
+        /*
         bool                                OpenMIDI ( int in_port, int out_port,
                                                        int timer_resolution = MIDIManager::DEFAULT_TIMER_RESOLUTION );
         void                                CloseMIDI();
+        */
+
 
         void                                ExtractWarpPositions(void);
         void                                CatchEventsBefore(void);
         void                                CatchEventsBefore(int trk);
 
-        MIDIOutDriver*                      driver;
         MIDISequencerGUIEventNotifier*      notifier;
         MIDIMultiTrack*                     tracks;
         MIDISequencer*                      seq;

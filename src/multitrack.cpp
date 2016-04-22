@@ -38,9 +38,9 @@
 // Aggiunte però le funzioni di editing di jdksmidi. Le funzioni di copia e incolla sono nuove ed esistono
 // solo qui
 
-#include "jdkmidi/multitrack.h"
+#include "../include/multitrack.h"
 
-#include "jdkmidi/dump_tracks.h"    // DEBUG:
+#include "../include/dump_tracks.h"    // DEBUG:
 
 
 

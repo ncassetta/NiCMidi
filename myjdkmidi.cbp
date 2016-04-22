@@ -7,7 +7,7 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output="myjdkmidi" prefix_auto="1" extension_auto="1" />
+				<Option output="lib/myjdkmidi_d" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option type="2" />
 				<Option compiler="gcc" />
@@ -18,7 +18,7 @@
 				</Compiler>
 			</Target>
 			<Target title="Release">
-				<Option output="myjdkmidi" prefix_auto="1" extension_auto="1" />
+				<Option output="lib/myjdkmidi" prefix_auto="1" extension_auto="1" />
 				<Option working_dir="" />
 				<Option object_output="E:/Dev-Cpp/Github/myjdkmidi/.objs" />
 				<Option type="2" />
@@ -34,61 +34,58 @@
 			</Target>
 		</Build>
 		<Compiler>
+			<Add option="-std=c++11" />
 			<Add option="-D__WINDOWS_MM__" />
 		</Compiler>
-		<Unit filename="jdk/advancedsequencer.cpp" />
-		<Unit filename="jdk/driver.cpp" />
-		<Unit filename="jdk/driverwin32.cpp" />
-		<Unit filename="jdk/dump_tracks.cpp" />
-		<Unit filename="jdk/file.cpp" />
-		<Unit filename="jdk/fileread.cpp" />
-		<Unit filename="jdk/filereadmultitrack.cpp" />
-		<Unit filename="jdk/filewrite.cpp" />
-		<Unit filename="jdk/filewritemultitrack.cpp" />
-		<Unit filename="jdk/jdkmidi/advancedsequencer.h" />
-		<Unit filename="jdk/jdkmidi/driver.h" />
-		<Unit filename="jdk/jdkmidi/driverwin32.h" />
-		<Unit filename="jdk/jdkmidi/dump_tracks.h" />
-		<Unit filename="jdk/jdkmidi/file.h" />
-		<Unit filename="jdk/jdkmidi/fileread.h" />
-		<Unit filename="jdk/jdkmidi/filereadmultitrack.h" />
-		<Unit filename="jdk/jdkmidi/filewrite.h" />
-		<Unit filename="jdk/jdkmidi/filewritemultitrack.h" />
-		<Unit filename="jdk/jdkmidi/manager.h" />
-		<Unit filename="jdk/jdkmidi/matrix.h" />
-		<Unit filename="jdk/jdkmidi/midi.h" />
-		<Unit filename="jdk/jdkmidi/msg.h" />
-		<Unit filename="jdk/jdkmidi/multitrack.h" />
-		<Unit filename="jdk/jdkmidi/notifier.h" />
-		<Unit filename="jdk/jdkmidi/old multitrack.h" />
-		<Unit filename="jdk/jdkmidi/old sequencer.h" />
-		<Unit filename="jdk/jdkmidi/process.h" />
-		<Unit filename="jdk/jdkmidi/queue.h" />
-		<Unit filename="jdk/jdkmidi/sequencer.h" />
-		<Unit filename="jdk/jdkmidi/smpte.h" />
-		<Unit filename="jdk/jdkmidi/sysex.h" />
-		<Unit filename="jdk/jdkmidi/tempo.h" />
-		<Unit filename="jdk/jdkmidi/tick.h" />
-		<Unit filename="jdk/jdkmidi/track.h" />
-		<Unit filename="jdk/jdkmidi/world.h" />
-		<Unit filename="jdk/manager.cpp" />
-		<Unit filename="jdk/matrix.cpp" />
-		<Unit filename="jdk/midi.cpp" />
-		<Unit filename="jdk/msg.cpp" />
-		<Unit filename="jdk/multitrack.cpp" />
-		<Unit filename="jdk/notifier.cpp" />
-		<Unit filename="jdk/process.cpp" />
-		<Unit filename="jdk/queue.cpp" />
-		<Unit filename="jdk/sequencer.cpp" />
-		<Unit filename="jdk/smpte.cpp" />
-		<Unit filename="jdk/sysex.cpp" />
-		<Unit filename="jdk/tick.cpp" />
-		<Unit filename="jdk/track.cpp" />
-		<Unit filename="main.c">
-			<Option compilerVar="CC" />
-		</Unit>
+		<Linker>
+			<Add library="winmm" />
+		</Linker>
+		<Unit filename="include/advancedsequencer.h" />
+		<Unit filename="include/driver.h" />
+		<Unit filename="include/dump_tracks.h" />
+		<Unit filename="include/file.h" />
+		<Unit filename="include/fileread.h" />
+		<Unit filename="include/filereadmultitrack.h" />
+		<Unit filename="include/filewrite.h" />
+		<Unit filename="include/filewritemultitrack.h" />
+		<Unit filename="include/manager.h" />
+		<Unit filename="include/matrix.h" />
+		<Unit filename="include/midi.h" />
+		<Unit filename="include/msg.h" />
+		<Unit filename="include/multitrack.h" />
+		<Unit filename="include/notifier.h" />
+		<Unit filename="include/process.h" />
+		<Unit filename="include/queue.h" />
+		<Unit filename="include/sequencer.h" />
+		<Unit filename="include/smpte.h" />
+		<Unit filename="include/sysex.h" />
+		<Unit filename="include/tempo.h" />
+		<Unit filename="include/timer.h" />
+		<Unit filename="include/track.h" />
+		<Unit filename="include/world.h" />
 		<Unit filename="rtmidi-2.1.1/RtMidi.cpp" />
 		<Unit filename="rtmidi-2.1.1/RtMidi.h" />
+		<Unit filename="src/advancedsequencer.cpp" />
+		<Unit filename="src/driver.cpp" />
+		<Unit filename="src/dump_tracks.cpp" />
+		<Unit filename="src/file.cpp" />
+		<Unit filename="src/fileread.cpp" />
+		<Unit filename="src/filereadmultitrack.cpp" />
+		<Unit filename="src/filewrite.cpp" />
+		<Unit filename="src/filewritemultitrack.cpp" />
+		<Unit filename="src/manager.cpp" />
+		<Unit filename="src/matrix.cpp" />
+		<Unit filename="src/midi.cpp" />
+		<Unit filename="src/msg.cpp" />
+		<Unit filename="src/multitrack.cpp" />
+		<Unit filename="src/notifier.cpp" />
+		<Unit filename="src/process.cpp" />
+		<Unit filename="src/queue.cpp" />
+		<Unit filename="src/sequencer.cpp" />
+		<Unit filename="src/smpte.cpp" />
+		<Unit filename="src/sysex.cpp" />
+		<Unit filename="src/timer.cpp" />
+		<Unit filename="src/track.cpp" />
 		<Extensions>
 			<code_completion />
 			<envvars />

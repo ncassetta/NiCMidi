@@ -32,9 +32,9 @@
 */
 
 
-#include "jdkmidi/world.h"
+#include "../include/world.h"
 
-#include "jdkmidi/midi.h"
+#include "../include/midi.h"
 
 
 

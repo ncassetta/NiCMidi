@@ -36,8 +36,8 @@
 ** see header for changes against jdksmidi
 */
 
-#include "jdkmidi/world.h"
-#include "jdkmidi/filewrite.h"
+#include "../include/world.h"
+#include "../include/filewrite.h"
 
 
 MIDIFileWriteStreamFile::MIDIFileWriteStreamFile( const char *fname ) : begin(0), del(true) {

@@ -21,8 +21,8 @@
 
 // Questo file e il relativo .h sono stati confrontati con l'equivalente in jdksmid ed aggiornati
 
-#include "jdkmidi/track.h"
-#include "jdkmidi/matrix.h"
+#include "../include/track.h"
+#include "../include/matrix.h"
 
 
 /* ************************************************************************************/
