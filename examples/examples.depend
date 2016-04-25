@@ -108,7 +108,7 @@
 	"windows.h"
 	"mmsystem.h"
 
-1461309115 source:c:\users\nicola\cplusplus\github\myjdkmidi\examples\win32\test_advancedsequencer.cpp
+1461528777 source:c:\users\nicola\cplusplus\github\myjdkmidi\examples\win32\test_advancedsequencer.cpp
 	"../../include/advancedsequencer.h"
 	<iostream>
 	<string>
@@ -261,7 +261,7 @@
 	"driverdump.h"
 	<vector>
 
-1419795506 c:\users\nicola\cplusplus\github\myjdkmidi\include\msg.h
+1461573852 c:\users\nicola\cplusplus\github\myjdkmidi\include\msg.h
 	"midi.h"
 	"tempo.h"
 	"sysex.h"
@@ -280,7 +280,7 @@
 1413740114 c:\users\nicola\cplusplus\github\myjdkmidi\include\sysex.h
 	"midi.h"
 
-1461330127 c:\users\nicola\cplusplus\github\myjdkmidi\include\driver.h
+1461584624 c:\users\nicola\cplusplus\github\myjdkmidi\include\driver.h
 	"msg.h"
 	"matrix.h"
 	"process.h"
@@ -288,6 +288,8 @@
 	"../rtmidi-2.1.1/RtMidi.h"
 	<vector>
 	<string>
+	<mutex>
+	<atomic>
 
 1456082532 c:\users\nicola\cplusplus\github\myjdkmidi\include\matrix.h
 	"midi.h"
@@ -301,7 +303,7 @@
 	"msg.h"
 	"sysex.h"
 
-1412360672 c:\users\nicola\cplusplus\github\myjdkmidi\include\multitrack.h
+1461497737 c:\users\nicola\cplusplus\github\myjdkmidi\include\multitrack.h
 	"world.h"
 	"track.h"
 
@@ -324,14 +326,14 @@
 	"windows.h"
 	"mmsystem.h"
 
-1461308941 c:\users\nicola\cplusplus\github\myjdkmidi\include\manager.h
+1461529828 c:\users\nicola\cplusplus\github\myjdkmidi\include\manager.h
 	"msg.h"
 	"driver.h"
 	"sequencer.h"
 	"timer.h"
 	<vector>
 
-1461328513 c:\users\nicola\cplusplus\github\myjdkmidi\include\timer.h
+1461487734 c:\users\nicola\cplusplus\github\myjdkmidi\include\timer.h
 	<chrono>
 	<thread>
 	<atomic>
@@ -363,4 +365,15 @@
 	"sequencer.h"
 	"windows.h"
 	"mmsystem.h"
+
+1461576458 source:c:\users\nicola\cplusplus\github\myjdkmidi\examples\win32\test_win32_player.cpp
+	"test_win32_player.h"
+	<cwchar>
+
+1461417824 c:\users\nicola\cplusplus\github\myjdkmidi\examples\win32\test_win32_player.h
+	<windows.h>
+	"../../include/advancedsequencer.h"
+	"../../include/smpte.h"
+
+1461434704 c:\users\nicola\cplusplus\github\myjdkmidi\include\smpte.h
 

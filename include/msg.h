@@ -180,7 +180,7 @@ class 	MIDIMessage {
         void	                SetByte3( unsigned char b )		{ byte3=b; }
         void	                SetNote( unsigned char n ) 		{ byte1=n; }
         void	                SetVelocity(unsigned char v) 	{ byte2=v; }
-        void	                SetPGValue(unsigned char v) 	{ byte1=v; }
+        void	                SetProgramValue(unsigned char v){ byte1=v; }
         void	                SetController(unsigned char c) 	{ byte1=c; }
         void	                SetControllerValue(unsigned char v ) { byte2=v; }
         void	                SetBenderValue( short v);
@@ -190,6 +190,10 @@ class 	MIDIMessage {
         void	                SetNoteOff( unsigned char chan, unsigned char note, unsigned char vel );
         void	                SetPolyPressure( unsigned char chan, unsigned char note, unsigned char pres );
         void	                SetControlChange( unsigned char chan, unsigned char ctrl, unsigned char val );
+        void                    SetVolumeChange ( unsigned char chan, unsigned char val )
+                                            { SetControlChange( chan, C_MAIN_VOLUME, val); }
+        void                    SetPanChange ( unsigned char chan, unsigned char val )
+                                            { SetControlChange( chan, C_PAN, val); }
         void	                SetProgramChange( unsigned char chan, unsigned char val );
         void	                SetChannelPressure( unsigned char chan, unsigned char val );
         void	                SetPitchBend( unsigned char chan, short val );

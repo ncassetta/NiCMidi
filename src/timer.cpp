@@ -1,13 +1,10 @@
 #include "../include/timer.h"
 
-
-void Wait(unsigned int msecs) {
-    std::this_thread::sleep_for(milliseconds(msecs));
-}
+MIDITimer::timepoint MIDITimer::sys_clock_base = steady_clock::now();
 
 
 MIDITimer::MIDITimer(int res) : resolution(res), tick(0), tick_param(0),
-                                timer_on(false), sys_clock_base(steady_clock::now()) {}
+                                timer_on(false) {}
 
 
 void MIDITimer::SetResolution(int res) {
@@ -29,6 +26,9 @@ bool MIDITimer::Start () {
 
     timer_on = true;
     bg_thread = std::thread(ThreadProc, this);
+
+    std::cout << "Timer open with " << resolution << " msecs resolution" << std::endl;
+
     return true;
 }
 
@@ -37,6 +37,8 @@ void MIDITimer::Stop() {
     if (timer_on) {
         timer_on = false;
         bg_thread.join();
+
+        std:: cout << "Timer stopped" << std::endl;
     }
 }
 

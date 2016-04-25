@@ -360,13 +360,6 @@ void MIDITrack::ChangeChannel(int ch) {
 }
 
 
-/* WARNING! THESE ARE DIFFERENT FROM ANALOGUE IN int_track.cpp:
-    1) IN A MIDI TRACK WE MUST CLOSE OPEN EVENTS WHEN COPYING OR DELETING INTERVALS
-    2) DEALING WITH META EVENTS (timesigs, keysig, text, markers, etc) IS TOO DIFFICULT AT
-       THIS (low) LEVEL, SO ONLY sysex DATA IS COPIED (if requested). FOR ADJUSTING META DATA
-       IS MUCH EASIER RECOMPOSE TRACK 0 BY THE MasterTrackComposer
-*/
-
 
 void MIDITrack::InsertInterval(MIDIClockTime start, MIDIClockTime length, bool sysex, const MIDITrack* src) {
     if (length == 0) return;

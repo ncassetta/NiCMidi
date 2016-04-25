@@ -629,7 +629,7 @@ bool MIDISequencer::GetNextEvent( int *tracknum, MIDITimedBigMessage *msg ) {
         GetNextEventTime( &new_clock );
         GetNextEventTimeMs( &new_time_ms );
 
-        // must set cur_clock AFTER GetnextEventTimeMs() is called
+        // must set cur_clock AFTER GetNextEventTimeMs() is called
         // since GetNextEventTimeMs() uses cur_clock to calculate
 
         state.cur_clock = new_clock;

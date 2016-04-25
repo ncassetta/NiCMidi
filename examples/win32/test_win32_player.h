@@ -33,11 +33,10 @@
 
 #include <windows.h>
 
-#include "jdkmidi/advancedsequencer.h"
-#include "jdkmidi/smpte.h"
+#include "../../include/advancedsequencer.h"
+#include "../../include/smpte.h"
 
 
-//using namespace jdksmidi;
 
 const char GMpatches[][128] = {
 

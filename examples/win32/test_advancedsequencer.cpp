@@ -28,7 +28,6 @@
 //
 
 #include "../../include/advancedsequencer.h"
-//using namespace jdksmidi;
 
 #include <iostream>
 #include <string>
@@ -200,7 +199,7 @@ int main( int argc, char **argv )
             if ( MIDIManager::GetNumMIDIIns() )
             {
                 cout << "MIDI IN PORTS:" << endl;
-                for ( unsigned int i = 0; i < MIDIManager::GetNumMIDIIns(); i++ )
+                for ( int i = 0; i < MIDIManager::GetNumMIDIIns(); i++ )
                 {
                     cout << i << ": " << MIDIManager::GetMIDIInName( i ) << endl;
                 }

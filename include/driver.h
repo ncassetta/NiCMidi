@@ -37,12 +37,14 @@
 
 #include <vector>
 #include <string>
+#include <mutex>
+#include <atomic>
 
 
 class MIDIOutDriver {
 public:
 
-                            MIDIOutDriver(int id, int queue_size = -1 );
+                            MIDIOutDriver (int id);
     virtual                 ~MIDIOutDriver();
 
         // Clears the queue and the matrix
@@ -50,33 +52,22 @@ public:
 
     std::string             GetPortName()                           { return port->getPortName(port_id); }
 
-
-        // Returns true if the output queue is not full
-    bool                    CanOutputMessage() const                { return out_queue.CanPut(); }
-
-        // To get the message queue
-    MIDIQueue*              GetQueue()                              { return &out_queue; }
-
-        // To set the midi processors used for thru, out, and in
-    void                    SetThruProcessor( MIDIProcessor *proc ) { thru_proc = proc; }
-    void                    SetOutProcessor( MIDIProcessor *proc )  { out_proc = proc; }
-
-         // Processes the message with the OutProcessor and then puts it in the out_queue
-    void                    OutputMessage( MIDITimedBigMessage &msg );
-
         // Send all notes off message
     void                    AllNotesOff(int chan);
     void                    AllNotesOff();
 
+    void                    OutputMessage(const MIDITimedBigMessage& msg);
+
 
         // Open the MIDI out port _id_
-    virtual bool            OpenPort()              { port->openPort(port_id); return true; }
+    virtual void            OpenPort();
 
           // Close the open MIDI out port
-    virtual void            ClosePort()             { port->closePort(); }
+    virtual void            ClosePort();
 
-        // Sends the message to the hardware open MIDI port
-    bool                    HardwareMsgOut( const MIDITimedBigMessage &msg );
+    bool                    IsPortOpen() const      { return port->isPortOpen();}
+
+
 
 
 /*
@@ -95,29 +86,25 @@ public:
 
 protected:
 
-        // the out queue
-    MIDIQueue               out_queue;
 
-    static const int        DEFAULT_QUEUE_SIZE = 128;
-
-        // the processors
-    MIDIProcessor*          out_proc;
-    MIDIProcessor*          thru_proc;
-
-    bool                    thru_enable;
+         // Processes the message with the OutProcessor and then  ends it to the hardware MIDI port
+    virtual void            HardwareMsgOut( const MIDITimedBigMessage &msg );
 
         // additional TimeTick procedure
 /*
     MIDITick*               tick_proc;
 */
 
-
-        // to keep track of notes on going to MIDI out
-    MIDIMatrix out_matrix;
-
         // the hardware port
     RtMidiOut*                      port;
     const int                       port_id;
+
+        //std::recursive_mutex    out_mutex;
+
+    std::atomic<unsigned char> busy;        // TODO: use the mutex???
+
+        // to keep track of notes on going to MIDI out
+    MIDIMatrix out_matrix;
 
         // this vector is used by HardwareMsgOut to feed the port
     std::vector<unsigned char>      msg_bytes;

@@ -35,10 +35,14 @@ void DumpMIDITimedBigMessage ( MIDITimedBigMessage *msg )
   {
     char msgbuf[1024];
 
-    printf ( "%8ld : %s\n", msg->GetTime(), msg->MsgToText ( msgbuf ) );
+    printf ( "%8ld : %s", msg->GetTime(), msg->MsgToText ( msgbuf ) );
     if ( msg->IsSysEx() )
     {
       printf ( "\tSYSEX length: %d\n", msg->GetSysEx()->GetLength() );
+    }
+    else
+    {
+        printf("\n");
     }
 
   }

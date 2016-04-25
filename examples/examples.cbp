@@ -11,9 +11,11 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-std=c++11" />
 					<Add option="-g" />
 				</Compiler>
+				<Linker>
+					<Add library="ole32" />
+				</Linker>
 			</Target>
 			<Target title="test_stepsequencer">
 				<Option output="test_stepsequencer" prefix_auto="1" extension_auto="1" />
@@ -26,24 +28,28 @@
 			</Target>
 			<Target title="test_win32_player">
 				<Option output="test_win32_player" prefix_auto="1" extension_auto="1" />
-				<Option object_output="E:/Dev-Cpp/Github/myjdkmidi/examples/.objs" />
+				<Option object_output=".objs/win32" />
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
+				<Linker>
+					<Add library="gdi32" />
+					<Add library="user32" />
+					<Add library="kernel32" />
+					<Add library="comctl32" />
+					<Add library="ole32" />
+					<Add library="comdlg32" />
+				</Linker>
 			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add option="-std=c++11" />
 			<Add directory="../jdk" />
 		</Compiler>
 		<Linker>
-			<Add library="gdi32" />
-			<Add library="user32" />
-			<Add library="kernel32" />
-			<Add library="comctl32" />
-			<Add library="ole32" />
 			<Add library="../lib/libmyjdkmidi_d.a" />
 			<Add library="winmm" />
 		</Linker>

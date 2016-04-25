@@ -33,6 +33,7 @@
  */
 
 #include "test_win32_player.h"
+#include <cwchar>
 
 
 // Declare jdks objects
@@ -116,6 +117,9 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
 
     // Make the window visible on the screen
     ShowWindow (hMainWin, nCmdShow);
+
+    // Requested by WIN 10 to run Wavetable synth
+    CoInitializeEx(NULL, COINIT_MULTITHREADED);
 
     // Run the message loop. It will run until GetMessage() returns 0
     while (GetMessage (&messages, NULL, 0, 0))
@@ -231,7 +235,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             // For every track ...
             for (int i = 0; i < 16; i++) {
                 wchar_t s[5];
-                swprintf(s, L"%d", i+1);
+                _snwprintf(s, 5, L"%d", i+1);   // ??? Should be swprintf, but MINGW says "not defined"
 
                 // Track number text box
                 CreateWindowW(L"static", s,
@@ -410,7 +414,7 @@ VOID SetControls() {
             SetWindowText (hTrackChans[i], "---" );
         }
         else {
-            sprintf(s, "ch: %d", sequencer->FindFirstChannelOnTrack(i+1));
+            sprintf(s, "ch: %d", sequencer->FindFirstChannelOnTrack(i+1) + 1);
             SetWindowText(hTrackChans[i], s);
         }
 
@@ -418,7 +422,7 @@ VOID SetControls() {
             SetWindowText(hTrackPrgrs[i], "---");
         }
         else {
-            if (sequencer->FindFirstChannelOnTrack(i+1) == 10) {
+            if (sequencer->FindFirstChannelOnTrack(i+1) == 9) { // channel 10
                 SetWindowText(hTrackPrgrs[i], GMDrumKits[sequencer->GetTrackProgram(i+1)]);
             }
             else {
@@ -469,6 +473,7 @@ const char* GetSmpteString() {
 
         case MIDISequencerGUIEvent::GROUP_ALL:
         // This is a general GUI reset event: update all rextboxes
+
             SetControls();
             break;
 
@@ -501,6 +506,7 @@ const char* GetSmpteString() {
         case MIDISequencerGUIEvent::GROUP_TRANSPORT:
         // This is an event regarding transport (start, stop, etc): we monitor only
         // beat events to update the meas - beat box
+
             if (ev.GetEventItem() == MIDISequencerGUIEvent::GROUP_TRANSPORT_BEAT) {
                 sprintf (s, "%d:%d", sequencer->GetMeasure()+1, sequencer->GetBeat()+1);
                 SetWindowText ( hMeas, s );
@@ -509,10 +515,11 @@ const char* GetSmpteString() {
 
         case MIDISequencerGUIEvent::GROUP_TRACK: {
         // This is a track event: find the track (GetEventSubGroup) and the type (GetEventItem) and proceed
+
             int track = ev.GetEventSubGroup();
             if (ev.GetEventItem() == MIDISequencerGUIEvent::GROUP_TRACK_PG) {
                 if (track > 0) {
-                    if (sequencer->FindFirstChannelOnTrack(track) == 10) {
+                    if (sequencer->FindFirstChannelOnTrack(track) == 9) {   // channel 10
                         SetWindowText( hTrackPrgrs[track-1], GMDrumKits[sequencer->GetTrackProgram( track )] );
                     }
                     else {

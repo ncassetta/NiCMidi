@@ -50,30 +50,35 @@ public:
     MIDISequencer*              GetSeq()                        { return sequencer; }
     const MIDISequencer*        GetSeq() const                  { return sequencer; }
 
-        // to get the driver that we use
+        // to setand get the open and close ports policy
+    void                        SetOpenPolicy(int p)            { open_policy = p; }
+    int                         GetOpenpolicy() const           { return open_policy; }
+
+        // to get the MIDI in and out ports
     static int                  GetNumMIDIOuts()                { return MIDI_out_names.size(); }
     static const std::string&   GetMIDIOutName(int n)           { return MIDI_out_names[n]; }
     static int                  GetNumMIDIIns()                 { return 0; }
     static const std::string&   GetMIDIInName(int n)            { return std::string("For now no inputs!"); }
     MIDIOutDriver*              GetDriver(int n)                { return MIDI_outs[n]; }
+    void                        OpenOutPorts();
+    void                        CloseOutPorts();
 
+        // to get the time in ms from the sequencer start
+    tMsecs                      GetCurrentTimeInMs() const
+                                                { return play_mode ?
+                                                         timer->GetSysTimeMs() + seq_time_offset - sys_time_offset : 0; }
+
+/* THESE ARE MANAGED INTERNALLY. NO USER UTILITY
         // to set and get the system time offset
     void                        SetTimeOffset( unsigned long off )
                                                                 { sys_time_offset = off; }
-    unsigned long               GetTimeOffset()                 { return sys_time_offset; }
-
-        // to get the time in ms from the sequencer start
-    unsigned long GetCurrentTimeInMs() const {
-        if ( play_mode )
-            return timer->GetSysTimeMs() + seq_time_offset - sys_time_offset;
-        else
-            return 0;
-    }
+    tMsecs                      GetTimeOffset()                 { return sys_time_offset; }
 
         // to set and get the sequencer time offset
     void                        SetSeqOffset( unsigned long seqoff )
                                                         { seq_time_offset = seqoff; }
     unsigned long               GetSeqOffset()          { return seq_time_offset; }
+*/
 
         // to manage the playback of the sequencer
     void                        SeqPlay();
@@ -93,6 +98,8 @@ public:
 
     static void                 TickProc(unsigned long sys_time, void* p);
 
+    enum { AUTO_OPEN, EXT_OPEN };
+
 protected:
 
     void                        TimeTickPlayMode( unsigned long sys_time_ );
@@ -105,20 +112,18 @@ protected:
 
     MIDITimer*                  timer;
 
-    unsigned long               sys_time_offset;
-    unsigned long               seq_time_offset;
+    tMsecs                      sys_time_offset;
+    tMsecs                      seq_time_offset;
 
-    volatile bool               play_mode;
+    volatile bool               play_mode;  // TODO: why two members? Could we eliminate stop_mode and TimeTickStopMode() ?
     volatile bool               stop_mode;
     bool                        thru_enable;
-
-
 
     volatile bool               repeat_play_mode;
     long                        repeat_start_measure;
     long                        repeat_end_measure;
 
-
+    int                         open_policy;
 };
 
 

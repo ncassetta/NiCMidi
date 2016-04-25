@@ -15,6 +15,7 @@
 				<Compiler>
 					<Add option="-Wall" />
 					<Add option="-g" />
+					<Add option="-D__RTMIDI_DEBUG__" />
 				</Compiler>
 			</Target>
 			<Target title="Release">

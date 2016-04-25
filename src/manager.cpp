@@ -45,7 +45,8 @@ MIDIManager::MIDIManager(
     thru_enable(false),
     repeat_play_mode(false),
     repeat_start_measure(0),
-    repeat_end_measure(0)
+    repeat_end_measure(0),
+    open_policy(AUTO_OPEN)
 
 {
     RtMidiOut temp_MIDI_out;
@@ -79,10 +80,27 @@ void MIDIManager::SetSeq ( MIDISequencer *seq ) {
 }
 
 
+void MIDIManager::OpenOutPorts() {
+    for (unsigned int i = 0; i < MIDI_outs.size(); i++)
+        if (!MIDI_outs[i]->IsPortOpen())
+            MIDI_outs[i]->OpenPort();
+}
+
+
+void MIDIManager::CloseOutPorts() {
+    for (unsigned int i = 0; i < MIDI_outs.size(); i++)
+        if (MIDI_outs[i]->IsPortOpen())
+            MIDI_outs[i]->ClosePort();
+}
+
+
 // to manage the playback of the sequencer
 void MIDIManager::SeqPlay() {
     if (sequencer) {
-        MIDI_outs[0]->OpenPort();
+
+        std::cout << "The MIDIManager is starting the sequencer ..." << std::endl;
+
+        OpenOutPorts();
 
         seq_time_offset = (unsigned long) sequencer->GetCurrentTimeInMs();
         sys_time_offset = timer->GetSysTimeMs();
@@ -103,7 +121,7 @@ void MIDIManager::SeqPlay() {
 
 
 void MIDIManager::SeqStop() {
-    if (sequencer) {
+    if (sequencer && play_mode == true) {
         timer->Stop();
         play_mode = false;
         stop_mode = true;
@@ -116,7 +134,10 @@ void MIDIManager::SeqStop() {
                                    MIDISequencerGUIEvent::GROUP_TRANSPORT_MODE
                                ) );
         }
-        MIDI_outs[0]->ClosePort();
+        if (open_policy == AUTO_OPEN)
+            CloseOutPorts();
+
+        std::cout << "The MidiManager has stopped the sequencer" << std::endl;
     }
 }
 
@@ -149,7 +170,7 @@ void MIDIManager::TickProc( unsigned long sys_time_, void* p ) {
     //std::cout << "MIDIManager TickProc" << std::endl;
 }
 
-
+/*  OLD WORKING FUNCTION WITH QUEUE
 void MIDIManager::TimeTickPlayMode( unsigned long sys_time_ )
 {
     static unsigned long old_sys_ = 0;     // debug
@@ -255,6 +276,83 @@ void MIDIManager::TimeTickPlayMode( unsigned long sys_time_ )
         else {
             // cant send any more, stop now.
             break;
+        }
+    }
+}
+*/
+
+
+// NEW FUNCTION WITH DIRECT SEND WITH HardwareMsgOut
+void MIDIManager::TimeTickPlayMode( unsigned long sys_time_ )
+{
+    double sys_time = (double)sys_time_ - (double)sys_time_offset;
+    float next_event_time = 0.0;
+    int ev_track;
+    MIDITimedBigMessage ev;
+
+    // if we are in repeat mode, repeat if we hit end of the repeat region
+    if(repeat_play_mode && sequencer->GetCurrentMeasure() >= repeat_end_measure) {
+        // yes we hit the end of our repeat block
+        // shut off all notes on
+        MIDI_outs[0]->AllNotesOff();
+
+        // now move the sequencer to our start position
+        sequencer->GoToMeasure( repeat_start_measure );
+
+        // our current raw system time is now the new system time offset
+        sys_time_offset = sys_time_;
+        sys_time = 0;
+
+        // the sequencer time offset now must be reset to the
+        // time in milliseconds of the sequence start point
+        seq_time_offset = (unsigned long)sequencer->GetCurrentTimeInMs();
+    }
+
+    // find all events that exist before or at this time,
+    // but only if we have space in the output queue to do so!
+    // also limit ourselves to 100 midi events max.
+    int output_count=100;
+
+    while(
+        sequencer->GetNextEventTimeMs( &next_event_time )
+        && (next_event_time - seq_time_offset) <= sys_time
+        //&& MIDI_outs[0]->CanOutputMessage()
+        && (--output_count)>0 ) {
+
+        // found an event! get it!
+        if(sequencer->GetNextEvent(&ev_track, &ev) &&
+           !ev.IsMetaEvent()) {
+
+            // ok, tell the driver the send this message now
+
+            MIDI_outs[0]->OutputMessage(ev);
+            ev.Clear();     // we always must delete eventual sysex pointers before reassigning to ev TODO: is it true????
+        }
+    }
+
+    // auto stop at end of sequence
+
+    if( !(repeat_play_mode && sequencer->GetCurrentMeasure()>=repeat_end_measure) &&
+            !sequencer->GetNextEventTimeMs( &next_event_time ) ) {
+        // no events left
+        stop_mode = true;
+        play_mode = false;
+
+        if(notifier) {
+            notifier->Notify( sequencer,
+                              MIDISequencerGUIEvent(
+                                  MIDISequencerGUIEvent::GROUP_TRANSPORT,
+                                  0,
+                                  MIDISequencerGUIEvent::GROUP_TRANSPORT_MODE
+                              ) );
+
+            notifier->Notify( sequencer,
+                              MIDISequencerGUIEvent(
+                                  MIDISequencerGUIEvent::GROUP_TRANSPORT,
+                                  0,
+                                  MIDISequencerGUIEvent::GROUP_TRANSPORT_ENDOFSONG
+                              ) );
+
         }
     }
 }

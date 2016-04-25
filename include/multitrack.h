@@ -79,13 +79,21 @@ class MIDIMultiTrack {
         void                    EditReplace(MIDIClockTime start, int tr_start, int times,
                                             bool sysex, MIDIEditMultiTrack* edit);
 
+                /// V. Magdazin functions (temporary)
+
+
+        bool                    CreateObject ( int num_tracks_, bool deletable_ );
+        bool                    ClearAndResize ( int num_tracks_ );
+        bool                    AssignEventsToTracks ( const MIDITrack *src );
+        int                     GetNumTracksWithEvents() const;
+
     private:
 
         int 	                clks_per_beat;      // not a const! When loading a multitrack it may change
         const int               max_num_tracks;
         int                     num_tracks;
         MIDITrack**             tracks;
-
+        bool                    deletable;
 };
 
 

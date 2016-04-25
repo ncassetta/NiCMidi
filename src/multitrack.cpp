@@ -41,17 +41,8 @@
 #include "../include/multitrack.h"
 
 #include "../include/dump_tracks.h"    // DEBUG:
+#include <iostream>
 
-
-
-#ifndef DEBUG_MDMLTTRK
-# define DEBUG_MDMLTTRK	0
-#endif
-
-#if DEBUG_MDMLTTRK
-# undef DBG
-# define DBG(a)	a
-#endif
 
 
 
@@ -480,4 +471,101 @@ void MIDIEditMultiTrack::CopyAll(MIDIMultiTrack* m) {
         InsertTrack(i);
         *GetTrack(i) = *(m->GetTrack(i));
     }
+}
+
+
+
+
+
+
+//
+// Copyright (C) 2010 V.R.Madgazin
+// www.vmgames.com vrm@vmgames.com
+//
+
+
+
+
+
+
+bool MIDIMultiTrack::CreateObject ( int num_tracks_, bool deletable_ )
+{
+    // delete old multitrack object
+    if ( tracks )
+        this->~MIDIMultiTrack();
+
+    num_tracks = num_tracks_;
+    deletable = deletable_;
+
+    tracks = new MIDITrack * [num_tracks];
+    if ( !tracks )
+        return false;
+
+    if ( deletable )
+    {
+        for ( int i = 0; i < num_tracks; ++i )
+        {
+            tracks[i] = new MIDITrack;
+            if ( !tracks[i] ) return false;
+        }
+    }
+    else
+    {
+        for ( int i = 0; i < num_tracks; ++i )
+            tracks[i] = 0;
+    }
+
+    return true;
+}
+
+bool MIDIMultiTrack::ClearAndResize ( int num_tracks_ )
+{
+    return CreateObject ( num_tracks_, this->deletable );
+}
+
+bool MIDIMultiTrack::AssignEventsToTracks ( const MIDITrack *src )
+{
+    MIDITrack tmp( *src ); // make copy of src track
+
+    std::cout << "Multitrack before AssignEventsToTracks\n";
+    DumpMIDIMultiTrack(this);
+
+    // renew multitrack object with 17 tracks:
+    // tracks 1-16 for channel events, and track 0 for other types of events
+    ClearAndResize( 17 );
+
+    // move events to tracks 0-16 according it's types/channels
+    for ( int i = 0; i < tmp.GetNumEvents(); ++i )
+    {
+        const MIDITimedBigMessage *msg;
+        msg = tmp.GetEventAddress ( i );
+
+        int track_num = 0;
+        if ( msg->IsChannelMsg() )
+            track_num = 1 + msg->GetChannel();
+
+        if ( !GetTrack ( track_num )->InsertEvent(*msg ) )
+            return false;
+    }
+
+    std::cout << "Multitrack before AssignEventsToTracks\n";
+    DumpMIDIMultiTrack(this);
+
+
+    return true;
+}
+
+
+
+int MIDIMultiTrack::GetNumTracksWithEvents() const
+{
+    int i;
+
+    for ( i = num_tracks - 1; i >= 0; --i )
+    {
+        if ( !(tracks[i]->GetNumEvents() == 1) )
+            break;
+    }
+
+    return i+1;
 }

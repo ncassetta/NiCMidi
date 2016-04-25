@@ -26,11 +26,10 @@
 #include "../include/world.h"
 #include "../include/driver.h"
 
+#include "../include/timer.h"
 
-MIDIOutDriver::MIDIOutDriver(int id, int queue_size) :
-    out_queue(queue_size == -1 ? DEFAULT_QUEUE_SIZE : queue_size),
-    out_proc(0), thru_proc(0), thru_enable(false), port_id(id) {
 
+MIDIOutDriver::MIDIOutDriver(int id) : port_id(id), busy(0) {
     port = new RtMidiOut;
 }
 
@@ -43,47 +42,79 @@ MIDIOutDriver::~MIDIOutDriver() {
 
 void MIDIOutDriver::Reset() {
     port->closePort();
-    out_queue.Clear();
     out_matrix.Clear();
 }
 
-void MIDIOutDriver::AllNotesOff( int chan ) {
-    MIDITimedBigMessage msg;
+
+void MIDIOutDriver::AllNotesOff( int chan ) {   // TODO: can we avoid to send a NOTE OFF for every note?
+    MIDITimedBigMessage msg;                    // we could eliminate the MIDIMatrix
 
     // send a note off for every note on in the out_matrix
 
+    //out_mutex.lock();
+    busy++;
     if(out_matrix.GetChannelCount(chan) > 0) {
         for(int note = 0; note < 128; ++note) {
             while(out_matrix.GetNoteCount(chan,note) > 0) {
                     // make a note off with note on msg, velocity 0
                 msg.SetNoteOn( (unsigned char)chan, (unsigned char)note, 0 );
-                OutputMessage( msg );
+                HardwareMsgOut(msg);
             }
         }
     }
 
     msg.SetControlChange(chan,C_DAMPER,0 );
-    OutputMessage( msg );
+    HardwareMsgOut(msg);
 
     msg.SetAllNotesOff( (unsigned char)chan );
-    OutputMessage( msg );
-  }
-
-
-void MIDIOutDriver::AllNotesOff()
-{
-    for(int i = 0; i < 16; ++i)
-        AllNotesOff(i);
+    HardwareMsgOut(msg);
+    //out_mutex.unlock();
+    busy--;
 }
 
 
-void MIDIOutDriver::OutputMessage (MIDITimedBigMessage &msg) {
-    if ((out_proc && out_proc->Process (&msg)) || !out_proc ) {
-      	out_matrix.Process( msg );
-		out_queue.Put ( msg );
+void MIDIOutDriver::AllNotesOff() {
+    //out_mutex.lock();
+    busy++;
+    for(int i = 0; i < 16; ++i)
+        AllNotesOff(i);
+    //out_mutex.unlock();
+    busy--;
+}
+
+
+
+// TODO: this could be unneeded. We only could use HardwareMsgOut with mutex
+
+void MIDIOutDriver::OutputMessage(const MIDITimedBigMessage& msg) {
+    int i = 0;
+    for( ; i < 100; i++) {
+        if (!busy) {
+            HardwareMsgOut(msg);
+            break;
+        }
+        std::cout << "driver busy ... " << std::endl;
+        MIDITimer::Wait(1);
+    }
+    if (i == 100)
+        std::cout << "MIDIOutDriver::OutputMessage() failed!" << std::endl;
+}
+
+
+void MIDIOutDriver::OpenPort() {
+    if (!port->isPortOpen()) {
+        port->openPort(port_id);
+        std::cout << "Port " << port->getPortName() << " opened" << std::endl;
     }
 }
 
+
+void MIDIOutDriver::ClosePort() {
+    if (port->isPortOpen()) {
+        port->closePort();
+        std::cout << "Port " << port->getPortName() << "closed" << std::endl;
+    }
+}
 
 
 /* ALL IS MOVED TO MIDIManager: driver no more inherits from MIDITick
@@ -121,29 +152,36 @@ void MIDIOutDriver::OutputMessage (MIDITimedBigMessage &msg) {
   */
 
 
-bool MIDIOutDriver::HardwareMsgOut(const MIDITimedBigMessage &msg) {
+void MIDIOutDriver::HardwareMsgOut(const MIDITimedBigMessage &msg) {
     if (!port->isPortOpen())
-        return false;
+        return;
+    //out_mutex.lock();
+    busy++;
     msg_bytes.clear();
     if (msg.IsChannelMsg()) {
+        out_matrix.Process (msg);
         msg_bytes.push_back(msg.GetStatus());
         msg_bytes.push_back(msg.GetByte1());
         msg_bytes.push_back(msg.GetByte2());
-
+        //std::cout << "Driver sent channel message ... ";
     }
 
     else if (msg.IsSysEx()) {
-        msg_bytes.push_back(msg.GetStatus());
         for (int i = 0; i < msg.GetSysEx()->GetLength(); i++)
-        msg_bytes.push_back(msg.GetSysEx()->GetData(i));
+            msg_bytes.push_back(msg.GetSysEx()->GetData(i));
+        std::cout << "Driver sent sysex of " << msg.GetSysEx()->GetLength() << " bytes ... ";
+        MIDITimer::Wait( 50 );
     }
     else {
         char s[100];
-        std::cout << "Driver skipped message " << msg.MsgToText(s) << std::endl;
+        msg.MsgToText(s);
+        std::cout << "Driver skipped message ... " << s;
     }
-
-    port->sendMessage(&msg_bytes);
-    return true;
+    if (msg_bytes.size() > 0)
+        port->sendMessage(&msg_bytes);
+    //out_mutex.unlock();
+    //std::cout << "done!" << std::endl;
+    busy--;
 }
 
 
