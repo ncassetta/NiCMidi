@@ -287,8 +287,8 @@ const MIDISequencerState& MIDISequencerState::operator= ( const MIDISequencerSta
 
 
 void MIDISequencerState::Reset() {      // new : added by me
-    iterator.GoToTime(0);
     iterator.GetState().SetNumTracks(multitrack->GetNumTracks());
+    iterator.GoToTime(0);
     cur_clock = 0;
     cur_time_ms = 0.0;
     cur_beat = 0;

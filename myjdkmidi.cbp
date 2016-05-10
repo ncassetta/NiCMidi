@@ -39,6 +39,7 @@
 			<Add option="-D__WINDOWS_MM__" />
 		</Compiler>
 		<Linker>
+			<Add library="ole32" />
 			<Add library="winmm" />
 		</Linker>
 		<Unit filename="include/advancedsequencer.h" />

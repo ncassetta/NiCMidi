@@ -2,29 +2,47 @@
 #include "../include/sequencer.h"
 
 
+const char MIDISequencerGUIEvent::group_names[][10] =
+        { "All      ", "Conductor", "Transport", "Track    " };
+        const char MIDISequencerGUIEvent::conductor_items_names[][10] =
+        { "All      ", "Tempo    ", "Timesig  ", "Keysig   ", "Marker   " };
+        const char MIDISequencerGUIEvent::transport_items_names[][10] =
+        { "All      ", "Mode     ", "Measure  ", "Beat     ", "EndOfSong" };
+        const char MIDISequencerGUIEvent::track_items_names[][10] =
+        { "All      ", "Name     ", "Patch    ", "Note     ", "Volume   " };
+
+
 void MIDISequencerGUIEventNotifierText::Notify( const MIDISequencer *seq, MIDISequencerGUIEvent e ) {
     if( en ) {
-        fprintf( f, "GUI EVENT: G=%d, SG=%d, ITEM=%d\n",
-                e.GetEventGroup(),
-                e.GetEventSubGroup(),
-                e.GetEventItem() );
+        ost << "GUI EVENT: " << MIDISequencerGUIEvent::group_names[e.GetEventGroup()] << " ";
 
-        if( e.GetEventGroup() == MIDISequencerGUIEvent::GROUP_TRANSPORT ) {
-            if( e.GetEventItem() == MIDISequencerGUIEvent::GROUP_TRANSPORT_BEAT )
-                fprintf( f, "MEAS %3d BEAT %3d\n",
-                        seq->GetCurrentMeasure()+1,
-                        seq->GetCurrentBeat()+1 );
-
+        switch(e.GetEventGroup()) {
+            case MIDISequencerGUIEvent::GROUP_ALL:
+                break;
+            case MIDISequencerGUIEvent::GROUP_TRANSPORT:
+                switch (e.GetEventItem()) {
+                    case MIDISequencerGUIEvent::GROUP_TRANSPORT_BEAT:
+                        ost << "MEAS " << seq->GetCurrentMeasure()+1 << " " << "BEAT "<< seq->GetCurrentBeat()+1;
+                    case MIDISequencerGUIEvent::GROUP_TRANSPORT_ENDOFSONG:
+                        ost << "ENDOFSONG";}
+                break;
+            case MIDISequencerGUIEvent::GROUP_CONDUCTOR:
+                switch (e.GetEventItem()) {
+                    case MIDISequencerGUIEvent::GROUP_CONDUCTOR_TEMPO:
+                        ost << "TEMPO: " << seq->GetState()->tempobpm ;
+                    case MIDISequencerGUIEvent::GROUP_CONDUCTOR_TIMESIG:
+                        ost << "TIMESIG: " << seq->GetState()->timesig_numerator << "/" <<
+                        seq->GetState()->timesig_denominator;
+                    case MIDISequencerGUIEvent::GROUP_CONDUCTOR_KEYSIG:
+                        ost << "TIMESIG: ";
+                    case MIDISequencerGUIEvent::GROUP_CONDUCTOR_MARKER:
+                        ost << "MARKER: ";
+                }
+                break;
+            case MIDISequencerGUIEvent::GROUP_TRACK:
+                break;
         }
-        else if( e.GetEventGroup() == MIDISequencerGUIEvent::GROUP_CONDUCTOR ) {
-            if( e.GetEventItem() == MIDISequencerGUIEvent::GROUP_CONDUCTOR_TIMESIG )
-                fprintf( f, "TIMESIG: %d/%d\n",
-                        seq->GetState()->timesig_numerator,
-                        seq->GetState()->timesig_denominator );
-            if(e.GetEventItem() == MIDISequencerGUIEvent::GROUP_CONDUCTOR_TEMPO)
-                fprintf( f, "TEMPO: %3.2f\n",
-                        seq->GetState()->tempobpm );
-        }
+        ost << std::endl;
     }
 }
 

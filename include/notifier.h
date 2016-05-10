@@ -2,7 +2,7 @@
 #define _JDKMIDI_NOTIFIER_H
 
 
-#include <cstdio>
+#include <iostream>
 #include "process.h"
 
 
@@ -60,6 +60,11 @@ class MIDISequencerGUIEvent {
             GROUP_TRACK_VOLUME
         };
 
+        static const char group_names[][10];
+        static const char conductor_items_names[][10];
+        static const char transport_items_names[][10];
+        static const char track_items_names[][10];
+
     private:
         unsigned long bits;
 };
@@ -77,14 +82,14 @@ class MIDISequencerGUIEventNotifier {
 
 class MIDISequencerGUIEventNotifierText : public MIDISequencerGUIEventNotifier {
     public:
-                        MIDISequencerGUIEventNotifierText(FILE *f_) : f(f_), en(true) {}
+                        MIDISequencerGUIEventNotifierText(std::ostream& o = std::cout) : ost(o), en(true) {}
         virtual         ~MIDISequencerGUIEventNotifierText()                          {}
         virtual void    Notify( const MIDISequencer *seq, MIDISequencerGUIEvent e );
         virtual bool    GetEnable() const               { return en; }
         virtual void    SetEnable( bool f )             { en = f; }
 
     private:
-        FILE *f;
+        std::ostream& ost;
         bool en;
 };
 
@@ -105,7 +110,7 @@ class MIDISequencerTrackNotifier : public MIDIProcessor {
         void            NotifyConductor( int item );
 
     protected:
-        MIDISequencer   *seq;
+        MIDISequencer*  seq;
         int             track_num;
         MIDISequencerGUIEventNotifier *notifier;
 };

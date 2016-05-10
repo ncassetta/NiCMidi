@@ -169,18 +169,18 @@ void MIDIOutDriver::HardwareMsgOut(const MIDITimedBigMessage &msg) {
     else if (msg.IsSysEx()) {
         for (int i = 0; i < msg.GetSysEx()->GetLength(); i++)
             msg_bytes.push_back(msg.GetSysEx()->GetData(i));
-        std::cout << "Driver sent sysex of " << msg.GetSysEx()->GetLength() << " bytes ... ";
+        //std::cout << "Driver sent sysex of " << msg.GetSysEx()->GetLength() << " bytes ... ";
         MIDITimer::Wait( 50 );
     }
     else {
         char s[100];
         msg.MsgToText(s);
-        std::cout << "Driver skipped message ... " << s;
+        //std::cout << "Driver skipped message ... " << s;
     }
     if (msg_bytes.size() > 0)
         port->sendMessage(&msg_bytes);
     //out_mutex.unlock();
-    //std::cout << "done!" << std::endl;
+    std::cout << "done!" << std::endl;
     busy--;
 }
 

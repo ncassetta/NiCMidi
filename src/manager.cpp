@@ -49,6 +49,9 @@ MIDIManager::MIDIManager(
     open_policy(AUTO_OPEN)
 
 {
+#ifdef WIN32    //TODO: this is temporary, needed by WINDOWS10
+     CoInitializeEx(NULL, COINIT_MULTITHREADED);
+#endif // WIN32
     RtMidiOut temp_MIDI_out;
     for (unsigned int i = 0; i < temp_MIDI_out.getPortCount(); i++) {
         MIDI_outs.push_back(new MIDIOutDriver(i));
@@ -56,6 +59,13 @@ MIDIManager::MIDIManager(
     }
     timer = new MIDITimer();
     timer->SetMIDITick(TickProc, this);
+}
+
+
+MIDIManager::~MIDIManager() {
+#ifdef WIN32
+    CoUninitialize();
+#endif // WIN32
 }
 
 
@@ -324,14 +334,12 @@ void MIDIManager::TimeTickPlayMode( unsigned long sys_time_ )
            !ev.IsMetaEvent()) {
 
             // ok, tell the driver the send this message now
-
             MIDI_outs[0]->OutputMessage(ev);
             ev.Clear();     // we always must delete eventual sysex pointers before reassigning to ev TODO: is it true????
         }
     }
 
     // auto stop at end of sequence
-
     if( !(repeat_play_mode && sequencer->GetCurrentMeasure()>=repeat_end_measure) &&
             !sequencer->GetNextEventTimeMs( &next_event_time ) ) {
         // no events left

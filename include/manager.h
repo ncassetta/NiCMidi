@@ -41,7 +41,7 @@ public:
                                 MIDIManager( MIDISequencerGUIEventNotifier *n=0,
                                              MIDISequencer *seq_=0 );
 
-    virtual                     ~MIDIManager()          {}
+    virtual                     ~MIDIManager();
 
     void                        Reset();
 

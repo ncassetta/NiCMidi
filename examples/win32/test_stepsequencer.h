@@ -26,9 +26,9 @@
  */
 
 
-/* This is a very basic, and not comfortable, step sequencer, made for demostrating
+/* This is a very basic, and not comfortable, step sequencer, made for demonstrating
    editing capabilities of the jdksmidi library. It creates an AdvancedSequencer class instance,
-   gets it MultiTrack, and allow the user to edit it.
+   gets it MultiTrack, and allows the user to edit it.
    You can load and save MIDI files, play them, view the file content, edit the file.
    You can insert, delete or change these MIDI events: note, control (in particular volume and pan)
    patch and tempo. For changing an event, insert a new event (same note, control, patch, tempo) at
@@ -40,7 +40,7 @@
 #define TEST_STEPSEQUENCER_H_INCLUDED
 
 
-#include "jdkmidi/advancedsequencer.h"
+#include "../../include/advancedsequencer.h"
 //using namespace jdksmidi;
 
 
@@ -54,6 +54,7 @@ static const char helpstring[] =
    stop                : Stops playback\n\
    dump                : Prints a dump of all midi events in the file\n\
    dump n              : Prints a dump of track n\n\
+   notify on/off       : Sets events notifying on or off\n\
    goto meas [beat]    : Move current time to given meas and beat\n\
                          (numbered from 1)\n\
    <<                  : Rewind\n\
@@ -72,13 +73,14 @@ static const char helpstring[] =
    patch val           : Inserts a patch event at current position\n\
    tempo val           : Inserts a tempo event at current position\n\
    note nn *, volume *, etc... (followed by an asterisk)\n\
-                       : Deletes the event (event must be at cur time and track)\
+                       : Deletes the event (event must be at cur time and track)\n\
    help                : Prints this help screen\n\
    quit                : Exits\n\n\
    note names must be introduced as C5 (middle C), a#3, Bb6, etc.\n\
-   (the note name can be lower or upper case)\n\\n\
+   (the note name can be lower or upper case)\n\n\
    NOTE: when playing, the sequencer notifier will print beat messages,\n\
-   messing up the program input prompt. You can still type your commands\n\n";
+   messing up the program input prompt. You can turn it off with the ""notify""\n\
+   command. However you can still type your commands during playback.\n\n";
 
 
 void GetCommand();
