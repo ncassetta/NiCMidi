@@ -38,7 +38,7 @@
 
 class MIDIManager {
 public:
-                                MIDIManager( MIDISequencerGUIEventNotifier *n=0,
+                                MIDIManager( MIDISequencerGUINotifier *n=0,
                                              MIDISequencer *seq_=0 );
 
     virtual                     ~MIDIManager();
@@ -108,7 +108,7 @@ protected:
     std::vector<MIDIOutDriver*> MIDI_outs;
     static std::vector<std::string> MIDI_out_names;
     MIDISequencer*              sequencer;
-    MIDISequencerGUIEventNotifier *notifier;
+    MIDISequencerGUINotifier*   notifier;
 
     MIDITimer*                  timer;
 

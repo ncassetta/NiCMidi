@@ -109,7 +109,7 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
 
     // Now create the jdksmidi objects: the GUI notifier and the sequencer (to send messages to the window
     // the notifier needs its handle and the message id)
-    MIDISequencerGUIEventNotifierWin32 notifier (
+    MIDISequencerGUINotifierWin32 notifier (
         hMainWin                        // The window handle to which send messages
         );
     NotifierMessage = notifier.GetMsgId();
@@ -392,18 +392,18 @@ VOID SetControls() {
     sprintf (s, "%d:%d", sequencer->GetMeasure()+1, sequencer->GetBeat()+1);
     SetWindowText ( hMeas, s );
     SetWindowText ( hSmpte, GetSmpteString());
-    if ( strlen(sequencer->GetCurrentMarker()) == 0) {
+    if ( sequencer->GetCurrentMarker().length() == 0) {
         SetWindowText (hMarker, "---");
     }
     else {
-        SetWindowText (hMarker, sequencer->GetCurrentMarker());
+        SetWindowText (hMarker, sequencer->GetCurrentMarker().c_str());
     }
 
     // for every track, update the name, channel, program, volume boxes
     for (int i = 0; i < 16; i++) {
 
-        if ( strlen(sequencer->GetTrackName(i+1)) ) {
-            SetWindowText (hTrackNames[i], sequencer->GetTrackName (i+1));
+        if ( sequencer->GetTrackName(i+1).length() ) {
+            SetWindowText (hTrackNames[i], sequencer->GetTrackName (i+1).c_str());
         }
         else {
             sprintf(s, "(track %d)", i+1);
@@ -498,7 +498,7 @@ const char* GetSmpteString() {
                     break;
                 case MIDISequencerGUIEvent::GROUP_CONDUCTOR_MARKER:
                 // Marker is changed
-                    SetWindowText (hMarker, sequencer->GetCurrentMarker());
+                    SetWindowText (hMarker, sequencer->GetCurrentMarker().c_str());
                     break;
             }
             break;
@@ -517,7 +517,7 @@ const char* GetSmpteString() {
         // This is a track event: find the track (GetEventSubGroup) and the type (GetEventItem) and proceed
 
             int track = ev.GetEventSubGroup();
-            if (ev.GetEventItem() == MIDISequencerGUIEvent::GROUP_TRACK_PG) {
+            if (ev.GetEventItem() == MIDISequencerGUIEvent::GROUP_TRACK_PROGRAM) {
                 if (track > 0) {
                     if (sequencer->FindFirstChannelOnTrack(track) == 9) {   // channel 10
                         SetWindowText( hTrackPrgrs[track-1], GMDrumKits[sequencer->GetTrackProgram( track )] );

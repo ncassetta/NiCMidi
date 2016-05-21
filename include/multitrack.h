@@ -154,11 +154,11 @@ class MIDIMultiTrackIteratorState {
             /// The equal operator.
         const MIDIMultiTrackIteratorState& operator=(const MIDIMultiTrackIteratorState &m);
             /// Gets the number of tracks of the state.
-        int	                    GetNumTracks()		                    { return num_tracks; }
+        int	                    GetNumTracks() const	                { return num_tracks; }
             /// Gets the track of the next event.
-        int	                    GetCurEventTrack()						{ return cur_event_track; }
+        int	                    GetCurEventTrack() const    			{ return cur_event_track; }
             /// Gets current time.
-        MIDIClockTime           GetCurTime()				    	    { return cur_time; }
+        MIDIClockTime           GetCurTime() const				    	{ return cur_time; }
             /// Changes the number of tracks (this causes a reset of the state).
         void                    SetNumTracks(int n);
             /// Sets the time to 0 and an undefined first event and track.
@@ -178,10 +178,11 @@ class MIDIMultiTrackIteratorState {
 
 
 ///
-/// This class is a forward iterator for moving along a MIDIMultiTrack. It defines a current event (initially
-/// the first event), and you can get it, move to the next event (in temporal order) in the multitrack, or move
-/// to the first event with a given time. When the iterator reaches the end of the multitrack the current event
-/// become undefined, and the get methods will return **false**.
+/// This class is a forward iterator for moving along a MIDIMultiTrack. It defines a current time (initially 0)
+/// and a current event. You can skip to any time in the MultiTrack and get its events in temporal order, beginning
+/// with the first event with time greater or equal current time, regardless their track.
+/// When the iterator reaches the end of the multitrack the current event become undefined, and the get methods
+/// will return **false**.
 ///
 class MIDIMultiTrackIterator {
     public:
@@ -190,19 +191,36 @@ class MIDIMultiTrackIterator {
                                 MIDIMultiTrackIterator( MIDIMultiTrack *mlt );
             /// The destructor.
         virtual                ~MIDIMultiTrackIterator();
-            /// Syncs _num_tracks_ with the multitrack and goes to 0.
+            /// Syncs _num_tracks_ with the multitrack and resets time to 0.
         void                    Reset();
-            /// Goes to the given time, which becomes the current time. If at _time_ there are
-            /// events, you can get them all with GetCurEvent()
+            /// Goes to the given time, which becomes the current time, and sets then the current event as the
+            /// first event (in any track) with time greater or equal to _time_. If there are more events with
+            /// same time in different tracks their order is not defined, as the iterator tries to rotate
+            /// across the tracks rather than to get first all events in a single track. However, temporal order
+            /// is always granted.
         void                    GoToTime(MIDIClockTime time);
             /// Gets the current time of the iterator.
         MIDIClockTime           GetCurTime() const  { return state.GetCurTime(); }
             /// Gets the time of the next event in the multitrack (it can be different from current
             /// time if at the current time there aren't events).
+            /// @param t here we get the time of next event, if valid.
+            /// @return *true* if there is effectively a next event (we aren't at the end of the
+            /// MIDIMultiTrack, *false* otherwise (*t doesn't contain a valid time).
         bool                    GetCurEventTime(MIDIClockTime *t) const;
+            /// Gets the next event in the multitrack (it can be different from current
+            /// time if at the current time there aren't events).
+            /// @param track the track of the event, if valid.
+            /// @param *msg a pointer to the event in the MidiMultiTrack
+            /// @return *true* if there is effectively a next event (we aren't at the end of the
+            /// MIDIMultiTrack, *false* otherwise (*track and **msg don't contain valid values).
         bool                    GetCurEvent(int *track, MIDITimedBigMessage **msg);
-
+            /// Discards the current event and set as current the subsequent.
+            /// @return *true* if there is effectively a next event (we aren't at the end of the
+            /// MIDIMultiTrack, *false* otherwise.
         bool                    GoToNextEvent();
+            /// Set as current the next event on track _track_.
+            /// @return *true* if there is effectively a next event (we aren't at the end of the
+            /// MIDIMultiTrack, *false* otherwise.
         bool                    GoToNextEventOnTrack(int track);
             /// Gets the current MIDIMultiTackIteratorState. You can save and then restore it for a
             /// faster processing in GoTo operations (admitting the contents of the multitrack are not

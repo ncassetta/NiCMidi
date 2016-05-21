@@ -206,7 +206,7 @@ bool MIDIMultiTrack::DeleteNote(int trk, const MIDITimedBigMessage& msg) {
 //TODO: these must be revised
 void MIDIMultiTrack::EditCopy(MIDIClockTime start, MIDIClockTime end,
                                 int tr_start, int tr_end, MIDIEditMultiTrack* edit) {
-    if (tr_start < 0 || tr_end >= GetNumTracks()) return;
+    if (tr_start < 0 || (unsigned int)tr_end >= GetNumTracks()) return;
 
     edit->Clear();
     for (int i = 0; i <= tr_end; i++)
@@ -375,7 +375,6 @@ int MIDIMultiTrackIteratorState::FindTrackOfFirstEvent() {
         int i = (j + cur_event_track + 1) % num_tracks;
 
     // skip any tracks that have a current event number less than 0 - these are finished already
-
         if(next_event_number[i] >= 0 && next_event_time[i] < minimum_time) {
             minimum_time = next_event_time[i];
             minimum_time_track = i;
@@ -417,7 +416,7 @@ void MIDIMultiTrackIterator::GoToTime(MIDIClockTime time) {
 
     // transfer info from the first events in each track in the
     // multitrack object to our current state.
-    for(int i = 0; i < multitrack->GetNumTracks(); ++i) {
+    for(unsigned int i = 0; i < multitrack->GetNumTracks(); ++i) {
         MIDITrack *track = multitrack->GetTrack(i);
 
     // extract the time of the first event of the track (already one exists)
@@ -444,7 +443,7 @@ void MIDIMultiTrackIterator::GoToTime(MIDIClockTime time) {
 
 
 
-bool MIDIMultiTrackIterator::GetCurEventTime(MIDIClockTime *t) {
+bool MIDIMultiTrackIterator::GetCurEventTime(MIDIClockTime *t) const {
     // if there is a next event, then set *t to the time of the event and return true
     if(state.GetCurEventTrack() != -1) {
         *t = state.GetCurTime();
@@ -543,7 +542,7 @@ bool MIDIMultiTrackIterator::GoToNextEventOnTrack(int track_num) {
 // Don't implement Cut, Edit, Paste... (see header)
 void MIDIEditMultiTrack::CopyAll(MIDIMultiTrack* m) {
     Clear();
-    for (int i = 0; i < m->GetNumTracks(); i++) {
+    for (unsigned int i = 0; i < m->GetNumTracks(); i++) {
         InsertTrack(i);
         *GetTrack(i) = *(m->GetTrack(i));
     }

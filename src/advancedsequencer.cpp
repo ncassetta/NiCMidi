@@ -7,7 +7,7 @@
 #include <iostream>
 
 
-AdvancedSequencer::AdvancedSequencer(MIDISequencerGUIEventNotifier *n) :
+AdvancedSequencer::AdvancedSequencer(MIDISequencerGUINotifier *n) :
     notifier( n ),
     tracks ( new MIDIMultiTrack ( 17 ) ),
     seq ( new MIDISequencer ( tracks, notifier ) ),
@@ -41,7 +41,7 @@ AdvancedSequencer::AdvancedSequencer(MIDISequencerGUIEventNotifier *n) :
 }
 
 
-AdvancedSequencer::AdvancedSequencer(MIDIMultiTrack* mlt, MIDISequencerGUIEventNotifier *n) :
+AdvancedSequencer::AdvancedSequencer(MIDIMultiTrack* mlt, MIDISequencerGUINotifier *n) :
     notifier( n ),
     tracks ( mlt ),
     seq ( new MIDISequencer ( tracks, notifier ) ),
@@ -197,7 +197,7 @@ void AdvancedSequencer::UnLoad()    /* NEW BY NC */
     warp_positions.clear();
     num_measures = 0;
     file_loaded = false;
-    SetClksPerBeat( DEFAULT_CLK_PER_BEAT );
+    SetClksPerBeat(DEFAULT_CLK_PER_BEAT);
 }
 
 
@@ -209,7 +209,7 @@ void AdvancedSequencer::Reset()
     UnSoloTrack();
     SetTempoScale ( 1.00 );
     SetRepeatPlay(false, 0, 0 );
-    seq->ResetAllTracks();
+    seq->Reset();
     seq->GoToZero();
     mgr->Reset();    // clear queues
 }
@@ -533,7 +533,7 @@ int AdvancedSequencer::GetTrackNoteCount (int trk) const {
 }
 
 
-const char *AdvancedSequencer::GetTrackName (int trk) const {
+std::string AdvancedSequencer::GetTrackName (int trk) const {
     if (!file_loaded)
         return "";
     return seq->GetTrackState (trk)->track_name;
@@ -550,7 +550,7 @@ int AdvancedSequencer::GetTrackVolume (int trk) const {
 int AdvancedSequencer::GetTrackProgram (int trk) const {
     if (!file_loaded)
         return 0;
-    return seq->GetTrackState ( trk )->pg;
+    return seq->GetTrackState ( trk )->program;
 }
 
 
@@ -613,10 +613,10 @@ int AdvancedSequencer::GetTrackTranspose (int trk) const {
 }
 
 
-const char* AdvancedSequencer::GetCurrentMarker() const {
+std::string AdvancedSequencer::GetCurrentMarker() const {
     if (!file_loaded)
         return "";
-    return seq->GetState()->markertext;
+    return seq->GetState()->marker_text;
 }
 
 void AdvancedSequencer::SetChanged() {
@@ -770,7 +770,7 @@ void AdvancedSequencer::ExtractWarpPositions()
     {
         notifier->SetEnable ( notifier_mode );
         // cause a full gui refresh now
-        notifier->Notify ( seq, MIDISequencerGUIEvent::GROUP_ALL );
+        notifier->Notify ( MIDISequencerGUIEvent::GROUP_ALL );
     }
 }
 
@@ -824,7 +824,7 @@ void AdvancedSequencer::CatchEventsBefore()
             if (channel == -1)
                 continue;
             const MIDISequencerTrackState* state = seq->GetTrackState(i);
-            msg.SetProgramChange(channel, state->pg);
+            msg.SetProgramChange(channel, state->program);
             OutputMessage(msg);
             msg.SetVolumeChange(channel, state->volume);
             OutputMessage(msg);

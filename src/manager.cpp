@@ -34,7 +34,7 @@
 std::vector<std::string> MIDIManager::MIDI_out_names;
 
 MIDIManager::MIDIManager(
-    MIDISequencerGUIEventNotifier *n,
+    MIDISequencerGUINotifier *n,
     MIDISequencer *seq_ ) :
     sequencer(seq_),
     notifier( n ),
@@ -76,7 +76,7 @@ void MIDIManager::Reset() {
     play_mode = false;
     stop_mode = true;
     if( notifier )
-        notifier->Notify( sequencer, MIDISequencerGUIEvent( MIDISequencerGUIEvent::GROUP_ALL ) );
+        notifier->Notify(MIDISequencerGUIEvent( MIDISequencerGUIEvent::GROUP_ALL));
     for(unsigned int i = 0; i < MIDI_outs.size(); i++)
         MIDI_outs[i]->Reset();
 }
@@ -85,7 +85,7 @@ void MIDIManager::Reset() {
 // to set and get the current sequencer
 void MIDIManager::SetSeq ( MIDISequencer *seq ) {
     if (notifier)
-        notifier->Notify ( sequencer, MIDISequencerGUIEvent ( MIDISequencerGUIEvent::GROUP_ALL ) );
+        notifier->Notify (MIDISequencerGUIEvent (MIDISequencerGUIEvent::GROUP_ALL));
     sequencer = seq;
 }
 
@@ -119,8 +119,7 @@ void MIDIManager::SeqPlay() {
         timer->Start();
 
         if (notifier) {
-            notifier->Notify ( sequencer,
-                               MIDISequencerGUIEvent (
+            notifier->Notify ( MIDISequencerGUIEvent (
                                    MIDISequencerGUIEvent::GROUP_TRANSPORT,
                                    0,
                                    MIDISequencerGUIEvent::GROUP_TRANSPORT_MODE
@@ -137,8 +136,7 @@ void MIDIManager::SeqStop() {
         stop_mode = true;
 
         if (notifier) {
-            notifier->Notify ( sequencer,
-                               MIDISequencerGUIEvent (
+            notifier->Notify ( MIDISequencerGUIEvent (
                                    MIDISequencerGUIEvent::GROUP_TRANSPORT,
                                    0,
                                    MIDISequencerGUIEvent::GROUP_TRANSPORT_MODE
@@ -296,7 +294,7 @@ void MIDIManager::TimeTickPlayMode( unsigned long sys_time_ )
 void MIDIManager::TimeTickPlayMode( unsigned long sys_time_ )
 {
     double sys_time = (double)sys_time_ - (double)sys_time_offset;
-    float next_event_time = 0.0;
+    double next_event_time = 0.0;
     int ev_track;
     MIDITimedBigMessage ev;
 
@@ -347,15 +345,13 @@ void MIDIManager::TimeTickPlayMode( unsigned long sys_time_ )
         play_mode = false;
 
         if(notifier) {
-            notifier->Notify( sequencer,
-                              MIDISequencerGUIEvent(
+            notifier->Notify( MIDISequencerGUIEvent(
                                   MIDISequencerGUIEvent::GROUP_TRANSPORT,
                                   0,
                                   MIDISequencerGUIEvent::GROUP_TRANSPORT_MODE
                               ) );
 
-            notifier->Notify( sequencer,
-                              MIDISequencerGUIEvent(
+            notifier->Notify( MIDISequencerGUIEvent(
                                   MIDISequencerGUIEvent::GROUP_TRANSPORT,
                                   0,
                                   MIDISequencerGUIEvent::GROUP_TRANSPORT_ENDOFSONG

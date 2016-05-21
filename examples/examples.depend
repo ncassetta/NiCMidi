@@ -241,8 +241,9 @@
 	<string>
 	<vector>
 
-1461308215 c:\users\nicola\cplusplus\github\myjdkmidi\include\advancedsequencer.h
+1463152065 c:\users\nicola\cplusplus\github\myjdkmidi\include\advancedsequencer.h
 	<vector>
+	<string>
 	"msg.h"
 	"driver.h"
 	"multitrack.h"
@@ -269,7 +270,7 @@
 1456009150 c:\users\nicola\cplusplus\github\myjdkmidi\include\midi.h
 	"world.h"
 
-1455998895 c:\users\nicola\cplusplus\github\myjdkmidi\include\world.h
+1463083790 c:\users\nicola\cplusplus\github\myjdkmidi\include\world.h
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
@@ -303,31 +304,32 @@
 	"msg.h"
 	"sysex.h"
 
-1462384712 c:\users\nicola\cplusplus\github\myjdkmidi\include\multitrack.h
+1463083817 c:\users\nicola\cplusplus\github\myjdkmidi\include\multitrack.h
 	"track.h"
 	<vector>
 
-1462626563 c:\users\nicola\cplusplus\github\myjdkmidi\include\track.h
+1462914344 c:\users\nicola\cplusplus\github\myjdkmidi\include\track.h
 	"midi.h"
 	"sysex.h"
 	"msg.h"
 	<vector>
 
-1405946570 c:\users\nicola\cplusplus\github\myjdkmidi\include\sequencer.h
+1463510214 c:\users\nicola\cplusplus\github\myjdkmidi\include\sequencer.h
 	"track.h"
 	"multitrack.h"
 	"tempo.h"
 	"matrix.h"
 	"process.h"
 	"notifier.h"
+	<string>
 
-1462722954 c:\users\nicola\cplusplus\github\myjdkmidi\include\notifier.h
+1463151887 c:\users\nicola\cplusplus\github\myjdkmidi\include\notifier.h
 	<iostream>
 	"process.h"
 	"windows.h"
 	"mmsystem.h"
 
-1462656154 c:\users\nicola\cplusplus\github\myjdkmidi\include\manager.h
+1463152065 c:\users\nicola\cplusplus\github\myjdkmidi\include\manager.h
 	"msg.h"
 	"driver.h"
 	"sequencer.h"
@@ -367,7 +369,7 @@
 	"windows.h"
 	"mmsystem.h"
 
-1461576458 source:c:\users\nicola\cplusplus\github\myjdkmidi\examples\win32\test_win32_player.cpp
+1463236649 source:c:\users\nicola\cplusplus\github\myjdkmidi\examples\win32\test_win32_player.cpp
 	"test_win32_player.h"
 	<cwchar>
 

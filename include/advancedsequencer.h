@@ -6,6 +6,7 @@
 #define _JDKMIDI_ADVANCEDSEQUENCER_H
 
 #include <vector>
+#include <string>
 
 
 
@@ -24,8 +25,8 @@ class AdvancedSequencer {
     public:
 
 
-                            AdvancedSequencer(MIDISequencerGUIEventNotifier *n = 0);
-                            AdvancedSequencer(MIDIMultiTrack* mlt, MIDISequencerGUIEventNotifier *n = 0);
+                            AdvancedSequencer(MIDISequencerGUINotifier *n = 0);
+                            AdvancedSequencer(MIDIMultiTrack* mlt, MIDISequencerGUINotifier *n = 0);
                             AdvancedSequencer(MIDIManager* mg);
         virtual             ~AdvancedSequencer();
 
@@ -111,7 +112,7 @@ class AdvancedSequencer {
         int                 GetKeySigSharpFlat() const;
         int                 GetKeySigMode() const;
         int                 GetTrackNoteCount(int trk) const;
-        const char *        GetTrackName(int trk) const;
+        std::string         GetTrackName(int trk) const;
         int                 GetTrackVolume(int trk) const;
         int                 GetTrackProgram ( int trk ) const;
         void                SetTrackVelocityScale(int trk, double scale);
@@ -120,7 +121,7 @@ class AdvancedSequencer {
         int                 GetTrackRechannelize(int trk) const;
         void                SetTrackTranspose(int trk, int trans);
         int                 GetTrackTranspose(int trk) const;
-        const char*         GetCurrentMarker() const;
+        std::string         GetCurrentMarker() const;
 
         int                 FindFirstChannelOnTrack(int trk);
         void                SetChanged();
@@ -145,7 +146,7 @@ class AdvancedSequencer {
         void                                CatchEventsBefore(void);
         void                                CatchEventsBefore(int trk);
 
-        MIDISequencerGUIEventNotifier*      notifier;
+        MIDISequencerGUINotifier*           notifier;
         MIDIMultiTrack*                     tracks;
         MIDISequencer*                      seq;
         MIDIManager*                        mgr;

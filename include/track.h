@@ -125,7 +125,7 @@ class  MIDITrack {
             /// method SetInsertMode(), otherwise you may override it giving the last parameter. For details see
             /// @ref INSMODE_DEFAULT (default), @ref INSMODE_REPLACE, @ref INSMODE_INSERT_OR_REPLACE,
             /// @ref INSMODE_INSERT_OR_REPLACE_BUT_NOTE.
-            /// @returns **false** in some situations in which the method cannot insert:
+            /// @return **false** in some situations in which the method cannot insert:
             /// + _msg_ was an EndOfTrack (you cannot insert it)
             /// + __ins_mode_ was INSMODE_REPLACE but there is no event to replace
             /// + a memory error occurred.
@@ -141,7 +141,7 @@ class  MIDITrack {
             /// clocks in the track.
             /// @param _ins_mode the same for InsertEvent() (when replacing a note, the method finds and deletes both
             /// the old Note On and Note Off events).
-            /// @returns **false** in some situations in which the method cannot insert:
+            /// @return **false** in some situations in which the method cannot insert:
             /// + _msg_ was not a Note On event
             /// + _ins_mode_ was INSMODE_REPLACE but there is no event to replace
             /// + a memory error occurred
@@ -153,12 +153,12 @@ class  MIDITrack {
             /// Deletes an event from the track. Use DeleteNote() for safe deleting both Note On and Note Off. You cannot
             /// delete the EndOfTrack event.
             /// @param msg a copy of the event to delete.
-            /// @returns **false** if an exact copy of the event was not found, or if a memory error occurred, otherwise **true**.
+            /// @return **false** if an exact copy of the event was not found, or if a memory error occurred, otherwise **true**.
         bool                        DeleteEvent( const MIDITimedBigMessage& msg );
             /// Deletes a Note On and corresponding Note Off events from the track. Don't use DeleteEvent() for deleting
             /// notes.
             /// @param msg a copy of the Note On event to delete.
-            /// @returns **false** if an exact copy of the event was not found, or if a memory error occurred, otherwise **true**.
+            /// @return **false** if an exact copy of the event was not found, or if a memory error occurred, otherwise **true**.
             /// @bug In the latter case the method could leave the track in an inconsistent state (a Note On without
             /// corresponding Note Off or viceversa).
         bool                        DeleteNote( const MIDITimedBigMessage& msg );
@@ -187,7 +187,7 @@ class  MIDITrack {
             /// + @ref COMPMODE_EQUAL : the event must be equal to *msg*.
             /// + @ref COMPMODE_SAMEKIND : the event is a same kind event (see MIDITimedBigMessage::IsSameKind()).
             /// + @ref COMPMODE_TIME : the behaviour is the same of FindEventNumber(time, event_num).
-            /// @returns **true** if an event matching _msg_ was found, *false* otherwise.
+            /// @return **true** if an event matching _msg_ was found, *false* otherwise.
         bool                        FindEventNumber( const MIDITimedBigMessage& msg, int *event_num,
                                                      int mode = COMPMODE_EQUAL) const;
 
@@ -195,7 +195,7 @@ class  MIDITrack {
             /// @param[in] time the time to look for.
             /// @param[out] event_num contains the event number in the track if an event was found; otherwise it contains
             /// **-1** if *time* was invalid, or the number of the last event before *time*.
-            /// @returns **true** if an event with given time was found, **false** otherwise.
+            /// @return **true** if an event with given time was found, **false** otherwise.
         bool                        FindEventNumber (MIDIClockTime time, int *event_num) const;
 
 
