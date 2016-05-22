@@ -114,7 +114,7 @@ void MIDIMultiTrack::ClearTracks(bool mantain_end) {
 
 
 // TODO: Revise this
-bool MIDIMultiTrack::AssignEventsToTracks ( const MIDITrack *src )
+void MIDIMultiTrack::AssignEventsToTracks ( const MIDITrack *src )
 {
     MIDITrack tmp( *src ); // make copy of src track
 
@@ -135,15 +135,11 @@ bool MIDIMultiTrack::AssignEventsToTracks ( const MIDITrack *src )
         if ( msg->IsChannelMsg() )
             track_num = 1 + msg->GetChannel();
 
-        if ( !GetTrack ( track_num )->InsertEvent(*msg ) )
-            return false;
+        tracks[track_num]->PushEvent(*msg);
     }
 
-    std::cout << "Multitrack before AssignEventsToTracks\n";
+    std::cout << "Multitrack after AssignEventsToTracks\n";
     DumpMIDIMultiTrack(this);
-
-
-    return true;
 }
 
 

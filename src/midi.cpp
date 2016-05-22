@@ -33,8 +33,97 @@
 
 
 #include "../include/world.h"
-
 #include "../include/midi.h"
+
+
+
+const char* chan_msg_name[16] = {
+    "ERROR 0x00  ",		// 0x00
+    "ERROR 0x10  ",		// 0x10
+    "ERROR 0x20  ",		// 0x20
+    "ERROR 0x30  ",     // 0x30
+    "ERROR 0x40  ",     // 0x40
+    "ERROR 0x50  ",     // 0x50
+    "ERROR 0x60  ",   	// 0x60
+    "ERROR 0x70  ",    	// 0x70
+    "NOTE OFF    ",		// 0x80
+    "NOTE ON     ",		// 0x90
+    "POLY PRES.  ",		// 0xa0
+    "CTRL CHANGE ",		// 0xb0
+    "PG CHANGE   ",		// 0xc0
+    "CHAN PRES.  ",		// 0xd0
+    "BENDER      ",		// 0xe0
+    "SYSTEM      " 		// 0xf0
+};
+
+
+const char* sys_msg_name[16] = {
+    "SYSEX    ",		// 0xf0
+    "MTC      ",		// 0xf1
+    "SONG POS ",		// 0xf2
+    "SONG SEL ",		// 0xf3
+    "ERROR    ",		// 0xf4
+    "ERROR    ",		// 0xf5
+    "TUNE REQ ",		// 0xf6
+    "SYSEX END",		// 0xf7
+    "CLOCK    ",		// 0xf8
+    "MEAS END ",		// 0xf9
+    "START    ",		// 0xfa
+    "CONTINUE ",		// 0xfb
+    "STOP     ",        // 0xfc
+    "ERROR    ",        // 0xfd
+    "SENSE    ",		// 0xfe
+    "META EV  "		    // 0xff
+};
+
+
+const char* get_meta_name(unsigned char b) {
+    static const char* meta_msg_names[18] {
+        "SEQUENCE NUMBER ",	    // 0x00,	// value=16 bits. type 2 files
+        "GENERIC TEXT    ",     // 0x01,	// value=16 bits, text item #
+        "COPYRIGHT       ",		// 0x02,	// value=17 bits, text item #
+        "INSTRUMENT NAME ",	    // 0x03,
+        "TRACK NAME      ",		// 0x04,
+        "LYRIC TEXT      ",		// 0x05,
+        "MARKER TEXT     ",	    // 0x06,
+        "CUE TEXT        ",		// 0x07,
+        "OUTPUT CABLE    ",     // 0x21,
+        "TRACK LOOP      ",     // 0x2E,
+        "END OF TRACK    ",     // 0x2F,
+        "TEMPO           ",     // 0x51,	// value=16 bits, tempo(bpm)*256
+        "SMPTE           ",     // 0x54,	// what for?
+        "TIMESIG         ",     // 0x58,  // value=num, denom
+        "KEYSIG	         ",     // 0x59,  // value=# of sharps/flats, major/minor
+        "BEAT MARKER     ",     // 0x7e,
+        "NO OPERATION    ",     // 0x7f
+        "META ERROR      "      // others
+    };
+    if (b < 0x08)
+        return meta_msg_names[b];
+    switch(b) {
+        case 0x21:
+            return meta_msg_names[8];
+        case 0x2E:
+            return meta_msg_names[9];
+        case 0x2F:
+            return meta_msg_names[10];
+        case 0x51:
+            return meta_msg_names[11];
+        case 0x54:
+            return meta_msg_names[12];
+        case 0x58:
+            return meta_msg_names[13];
+        case 0x59:
+            return meta_msg_names[14];
+        case 0x7E:
+            return meta_msg_names[15];
+        case 0x7F:
+            return meta_msg_names[16];
+        default:
+            return meta_msg_names[17];
+    }
+}
+
 
 
 

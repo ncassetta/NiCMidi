@@ -189,10 +189,14 @@
 
     };
 
-  extern	const	signed 	char	lut_msglen[16];
-  extern 	const	signed	char	lut_sysmsglen[16];
-  extern	const	bool	lut_is_white[12];
+extern const signed char	lut_msglen[16];
+extern const signed char	lut_sysmsglen[16];
+extern const bool	        lut_is_white[12];
 
+
+extern const char*          chan_msg_name[16];
+extern const char*          sys_msg_name[16];
+const char*                 get_meta_name(unsigned char b);
 
   //
   // Message Length functions. Not valid for Meta-events (0xff)

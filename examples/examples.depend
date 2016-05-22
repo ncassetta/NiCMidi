@@ -108,8 +108,9 @@
 	"windows.h"
 	"mmsystem.h"
 
-1461528777 source:c:\users\nicola\cplusplus\github\myjdkmidi\examples\win32\test_advancedsequencer.cpp
+1463930892 source:c:\users\nicola\cplusplus\github\myjdkmidi\examples\win32\test_advancedsequencer.cpp
 	"../../include/advancedsequencer.h"
+	"../../include/dump_tracks.h"
 	<iostream>
 	<string>
 
@@ -241,7 +242,7 @@
 	<string>
 	<vector>
 
-1463152065 c:\users\nicola\cplusplus\github\myjdkmidi\include\advancedsequencer.h
+1463916709 c:\users\nicola\cplusplus\github\myjdkmidi\include\advancedsequencer.h
 	<vector>
 	<string>
 	"msg.h"
@@ -262,12 +263,12 @@
 	"driverdump.h"
 	<vector>
 
-1461573852 c:\users\nicola\cplusplus\github\myjdkmidi\include\msg.h
+1463914957 c:\users\nicola\cplusplus\github\myjdkmidi\include\msg.h
 	"midi.h"
 	"tempo.h"
 	"sysex.h"
 
-1456009150 c:\users\nicola\cplusplus\github\myjdkmidi\include\midi.h
+1463906255 c:\users\nicola\cplusplus\github\myjdkmidi\include\midi.h
 	"world.h"
 
 1463083790 c:\users\nicola\cplusplus\github\myjdkmidi\include\world.h
@@ -278,7 +279,7 @@
 1291412857 c:\users\nicola\cplusplus\github\myjdkmidi\include\tempo.h
 	"midi.h"
 
-1413740114 c:\users\nicola\cplusplus\github\myjdkmidi\include\sysex.h
+1463914632 c:\users\nicola\cplusplus\github\myjdkmidi\include\sysex.h
 	"midi.h"
 
 1461609310 c:\users\nicola\cplusplus\github\myjdkmidi\include\driver.h
@@ -304,11 +305,11 @@
 	"msg.h"
 	"sysex.h"
 
-1463083817 c:\users\nicola\cplusplus\github\myjdkmidi\include\multitrack.h
+1463862038 c:\users\nicola\cplusplus\github\myjdkmidi\include\multitrack.h
 	"track.h"
 	<vector>
 
-1462914344 c:\users\nicola\cplusplus\github\myjdkmidi\include\track.h
+1463862037 c:\users\nicola\cplusplus\github\myjdkmidi\include\track.h
 	"midi.h"
 	"sysex.h"
 	"msg.h"
@@ -369,7 +370,7 @@
 	"windows.h"
 	"mmsystem.h"
 
-1463236649 source:c:\users\nicola\cplusplus\github\myjdkmidi\examples\win32\test_win32_player.cpp
+1463935952 source:c:\users\nicola\cplusplus\github\myjdkmidi\examples\win32\test_win32_player.cpp
 	"test_win32_player.h"
 	<cwchar>
 
@@ -387,4 +388,7 @@
 
 1462725950 c:\users\nicola\cplusplus\github\myjdkmidi\examples\win32\test_stepsequencer.h
 	"../../include/advancedsequencer.h"
+
+1463932146 c:\users\nicola\cplusplus\github\myjdkmidi\include\dump_tracks.h
+	"multitrack.h"
 

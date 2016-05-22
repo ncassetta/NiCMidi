@@ -313,6 +313,15 @@ bool MIDITrack::DeleteNote( const MIDITimedBigMessage& msg ) {
     return true;
 }
 
+// NEW
+void MIDITrack::PushEvent(const MIDITimedBigMessage& msg) {
+    if (msg.IsDataEnd()) return;                        // DATA_END only auto managed
+
+    if (GetEndTime() < msg.GetTime())
+        SetEndTime(msg.GetTime());                      // adjust DATA_END
+    events.insert(events.end() - 1, msg);               // insert just before DATA_END
+}
+
 
 void MIDITrack::InsertInterval(MIDIClockTime start, MIDIClockTime length, const MIDITrack* src) {
     if (length == 0) return;

@@ -22,47 +22,30 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// FILE AGGIORNATO IN AutoComp 0.10
+/* NOTE BY NC: enhanced functions MIDIMessage::MsgToText() and MIDITimedBigMessage::MsgToText to
+   allow better output to console */
+// TODO: use cout instead of printf()
 
-#include "../include/world.h"
+#include "../include/midi.h"
 #include "../include/track.h"
 #include "../include/multitrack.h"
 
 
-void DumpMIDITimedBigMessage ( MIDITimedBigMessage *msg )
-{
-  if ( msg )
-  {
+void DumpMIDITimedBigMessage (MIDITimedBigMessage *msg) {
     char msgbuf[1024];
-
-    printf ( "%8ld : %s", msg->GetTime(), msg->MsgToText ( msgbuf ) );
-    if ( msg->IsSysEx() )
-    {
-      printf ( "\tSYSEX length: %d\n", msg->GetSysEx()->GetLength() );
-    }
-    else
-    {
-        printf("\n");
-    }
-
-  }
-
+    if (msg)
+        printf(msg->MsgToText(msgbuf));
 }
 
-void DumpMIDITrack ( MIDITrack *t )
-{
-  MIDITimedBigMessage *msg;
 
-  printf ( "Track dump\n");
-  for ( int i=0; i<t->GetNumEvents(); ++i )
-  {
-    msg = t->GetEventAddress ( i );
-    printf("#%4d", i + 1);
-    DumpMIDITimedBigMessage ( msg );
+void DumpMIDITrack (MIDITrack *t) {
+    MIDITimedBigMessage *msg;
 
-  }
-
+    printf ( "Track dump\n");
+    for (unsigned int i = 0; i < t->GetNumEvents(); ++i)
+        DumpMIDITimedBigMessage (t->GetEventAddress (i));
 }
+
 
 void DumpAllTracks ( MIDIMultiTrack *mlt )
 {
@@ -85,25 +68,20 @@ void DumpAllTracks ( MIDIMultiTrack *mlt )
 }
 
 
-void DumpMIDIMultiTrack ( MIDIMultiTrack *mlt )
-{
-  MIDIMultiTrackIterator i ( mlt );
-  MIDITimedBigMessage *msg;
-  int trk_num;
+void DumpMIDIMultiTrack (MIDIMultiTrack *mlt) {
+    MIDIMultiTrackIterator i (mlt);
+    MIDITimedBigMessage *msg;
+    int trk_num;
 
-  fprintf ( stdout, "DUMP OF MIDI MULTITRACK\n");
-  fprintf ( stdout , "Clocks per beat: %d\n\n", mlt->GetClksPerBeat() );
+    fprintf ( stdout, "DUMP OF MIDI MULTITRACK\n");
+    fprintf ( stdout , "Clocks per beat: %d\n\n", mlt->GetClksPerBeat() );
 
-  i.GoToTime ( 0 );
+    i.GoToTime (0);
 
-  do
-  {
-    if ( i.GetCurEvent ( &trk_num, &msg )  )
-    {
-      fprintf ( stdout, "#%2d - ", trk_num );
-      DumpMIDITimedBigMessage ( msg );
-    }
-  }
-  while ( i.GoToNextEvent() );
-
+    do {
+        if (i.GetCurEvent (&trk_num, &msg)) {
+            fprintf (stdout, "#%2d - ", trk_num);
+            DumpMIDITimedBigMessage (msg);
+        }
+    } while (i.GoToNextEvent());
 }

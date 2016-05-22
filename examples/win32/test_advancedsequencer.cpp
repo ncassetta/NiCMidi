@@ -28,6 +28,7 @@
 //
 
 #include "../../include/advancedsequencer.h"
+#include "../../include/dump_tracks.h"
 
 #include <iostream>
 #include <string>
@@ -117,7 +118,7 @@ void GetCommand()
     par2 = command_buf.substr (pos1, pos2 - pos1);
 }
 
-
+/*
 void DumpMIDITimedBigMessage( const MIDITimedBigMessage *msg )
 {
     if ( msg )
@@ -144,34 +145,35 @@ void DumpMIDITimedBigMessage( const MIDITimedBigMessage *msg )
         fprintf ( stdout, "\n" );
     }
 }
+*/
 
-void DumpMIDIMultiTrack( MIDIMultiTrack *mlt )
-{
-    MIDIMultiTrackIterator i ( mlt );
+
+void DumpMIDIMultiTrackWithPauses (MIDIMultiTrack *mlt) {
+    MIDIMultiTrackIterator i (mlt);
     MIDITimedBigMessage *msg;
-    fprintf ( stdout , "Clocks per beat: %d\n\n", mlt->GetClksPerBeat() );
-    i.GoToTime ( 0 );
-
+    int trk_num;
     int num_lines = 0;
-    do
-    {
-        int trk_num;
 
-        if ( i.GetCurEvent ( &trk_num, &msg ) )
-        {
-            fprintf ( stdout, "#%2d - ", trk_num );
-            DumpMIDITimedBigMessage ( msg );
+    printf ("DUMP OF MIDI MULTITRACK\n");
+    printf ("Clocks per beat: %d\n\n", mlt->GetClksPerBeat() );
+
+    i.GoToTime (0);
+
+    do {
+        if (i.GetCurEvent (&trk_num, &msg)) {
+            printf ("Tr %2d - ", trk_num);
+            DumpMIDITimedBigMessage (msg);
+            num_lines++;
         }
-        num_lines++;
-        if (num_lines == 100)
-        {
-            system ("PAUSE");
+        if (num_lines == 80) {
+            printf ("Press <ENTER> to continue or q + <ENTER> to exit ...\n");
+            char ch = std::cin.get();
+            if (tolower(ch) == 'q')
+                return;
             num_lines = 0;
         }
-    }
-    while ( i.GoToNextEvent() );
+    } while (i.GoToNextEvent());
 }
-
 
 
 int main( int argc, char **argv )
@@ -283,7 +285,7 @@ int main( int argc, char **argv )
         }
         else if ( command == "dump")                    // prints a dump of the sequencer contents
         {
-            DumpMIDIMultiTrack( sequencer.GetMultiTrack() );
+            DumpMIDIMultiTrackWithPauses(sequencer.GetMultiTrack());
         }
         else if ( command == "solo")                    // soloes a track
         {

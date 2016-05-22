@@ -78,21 +78,21 @@ class AdvancedSequencer {
 
         /// Returns 'now' MIDI clock time.
         /// It is effective even during playback
-        unsigned long GetCurrentMIDIClockTime() const; /* NEW BY NC */
+        MIDIClockTime       GetCurrentMIDIClockTime() const; /* NEW BY NC */
 
         /// Returns 'now' time in milliseconds.
         /// When playing or jumping from one time to another, you can use this to feed a SMPTE
-        unsigned long GetCurrentTimeInMs() const; /* NEW BY NC */
+        tMsecs              GetCurrentTimeInMs() const; /* NEW BY NC */
 
         /// Set MIDI ticks per beat (quarter note).
         /// \return **true** if clocks per beat are effectively changed
         /// \note  Currently the user is allowed to change this only when the sequencer is empty; default value is
         /// 120 clocks per quarter beat. However, LoadFile() can change this according to the file clock, and Unload()
         /// resets it to 120
-        bool SetClksPerBeat ( unsigned int cpb );
+        bool                SetClksPerBeat ( unsigned int cpb );
 
         /// Returns the base MIDI ticks per beat of the internal MIDIMultiTrack
-        int GetClksPerBeat() const  /* NEW BY NC */
+        int                 GetClksPerBeat() const  /* NEW BY NC */
                                     { return tracks->GetClksPerBeat(); }
 
         /// Returns the number of tracks of the sequencer
@@ -131,7 +131,7 @@ class AdvancedSequencer {
     protected:
 
         static const int                    MEASURES_PER_WARP = 4;
-        static const int                    DEFAULT_CLK_PER_BEAT = 120;
+        //static const int                    DEFAULT_CLK_PER_BEAT = 120;
 
 
 

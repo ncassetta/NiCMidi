@@ -58,7 +58,7 @@ class 	MIDIMessage {
         void	                Clear();
         void	                Copy( const MIDIMessage & m );  // TODO: DELETE THIS!
 
-        char *	                MsgToText( char *txt ) const;
+        virtual char *	        MsgToText( char *txt ) const;
 
       //
       // The equal operator
@@ -221,9 +221,6 @@ class 	MIDIMessage {
         friend bool             operator== ( const MIDIMessage &m1, const MIDIMessage &m2 );
 
     protected:
-
-        static	const char* 	chan_msg_name[16];
-        static	const char* 	sys_msg_name[16];
 
         unsigned char	        status;
         unsigned char	        byte1;
@@ -451,6 +448,7 @@ class 	MIDITimedBigMessage : public MIDIBigMessage {
     // replaced by operator==
     //static bool BitwiseEqual(const MIDITimedBigMessage& m1, const MIDITimedBigMessage& m2);
 
+        virtual char*           MsgToText(char* txt) const;
 
     protected:
 

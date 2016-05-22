@@ -36,7 +36,7 @@ AdvancedSequencer::AdvancedSequencer(MIDISequencerGUINotifier *n) :
  * What is better?
  */
     //OpenMIDI(in_port, out_port);
-    SetClksPerBeat ( DEFAULT_CLK_PER_BEAT );
+    SetClksPerBeat ( DEFAULT_CLKS_PER_BEAT );
     mgr->SetOpenPolicy(MIDIManager::EXT_OPEN);
 }
 
@@ -172,19 +172,13 @@ bool AdvancedSequencer::Load ( const char *fname )
     MIDIFileReadStreamFile mfreader_stream ( realname );
     MIDIFileReadMultiTrack track_loader ( tracks );
     MIDIFileRead reader ( &mfreader_stream, &track_loader );
-    if ( reader.Parse() )
-    {
+    if (reader.Parse()) {
         file_loaded = true;
-        Reset();
-        // GoToMeasure ( 0 ); OLD: it used warp_positions, not even initialized!!! However,
-        // this is already done by Reset();
+        Reset();                // synchronizes the sequencer with the multitrack and goes to 0
         ExtractWarpPositions();
     }
-
     else
-    {
         file_loaded = false;
-    }
 
     return file_loaded;
 }
@@ -192,12 +186,12 @@ bool AdvancedSequencer::Load ( const char *fname )
 
 void AdvancedSequencer::UnLoad()    /* NEW BY NC */
 {
-    Reset();
     tracks->Clear();
+    Reset();
     warp_positions.clear();
     num_measures = 0;
     file_loaded = false;
-    SetClksPerBeat(DEFAULT_CLK_PER_BEAT);
+    SetClksPerBeat(DEFAULT_CLKS_PER_BEAT);
 }
 
 
@@ -205,13 +199,13 @@ void AdvancedSequencer::Reset()
 {
     Stop();
     MIDITimer::Wait(500);    // pauses for 0.5 sec (TROUBLE WITHOUT THIS!!!! I DON'T KNOW WHY)
-    UnmuteAllTracks();
-    UnSoloTrack();
-    SetTempoScale ( 1.00 );
-    SetRepeatPlay(false, 0, 0 );
-    seq->Reset();
-    seq->GoToZero();
-    mgr->Reset();    // clear queues
+    //UnmuteAllTracks();
+    //UnSoloTrack();
+    mgr->Reset();       // closes ports and clear matrices
+    seq->Reset();       // syncronize the num of tracks and reset track processors
+    seq->GoToZero();    // update the sequencer state
+    SetTempoScale (1.00);
+    SetRepeatPlay(false, 0, 0);
 }
 
 
@@ -642,7 +636,7 @@ void AdvancedSequencer::SetChanged() {
 int AdvancedSequencer::FindFirstChannelOnTrack ( int trk )
 {
     int first_channel = -1;
-    if ( !file_loaded )
+    if ( !file_loaded || trk >= GetNumTracks() )
     {
         return first_channel;
     }

@@ -83,10 +83,10 @@ class MIDIMultiTrack {
             /// It remakes the MIDIMultiTrack object with 17 tracks (_src_ track can be a member of multitrack obiect
             /// himself), moves _src_ track channel events to tracks 1-16 according their channel, and all other types
             /// of events to track 0.
-        bool                    AssignEventsToTracks ( const MIDITrack *src );
+        void                    AssignEventsToTracks ( const MIDITrack *src );
 
             /// The same as previous, but argument is track number of multitrack object himself
-        bool                    AssignEventsToTracks (int track_num = 0)
+        void                    AssignEventsToTracks (int track_num = 0)
                                         { return AssignEventsToTracks(GetTrack(track_num)); }
 
             /// Inserts a new empty track at position _trk_ (_trk_ must be in the range 0 ... GetNumTracks() - 1). If

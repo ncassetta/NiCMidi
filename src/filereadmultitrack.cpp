@@ -82,9 +82,9 @@
 
       if( t )
       {
-        MIDITimedBigMessage bmsg(msg);      // changed by me
-        bmsg.SetSysEx(sysex);               //
-        t->InsertEvent( bmsg );             //
+        MIDITimedBigMessage bmsg(msg);                  // changed by me
+        bmsg.SetSysEx(sysex);                           //
+        t->InsertEvent( bmsg, INSMODE_INSERT );         //
       }
     }
   }
@@ -101,10 +101,11 @@
     division = division_;
 
     multitrack->SetClksPerBeat( division );
-    while ( multitrack->GetNumTracks() < ntrks_ )
-    {
-        multitrack->InsertTrack();      // modified by me
-    }
+    if (the_format == 0)                        // this is modified by me
+        // split format 0 files into separate tracks, one for each channel,
+        multitrack->ClearAndResize(17);         //
+    else
+        multitrack->ClearAndResize(num_tracks); //
   }
 
 

@@ -180,7 +180,7 @@ void MIDIOutDriver::HardwareMsgOut(const MIDITimedBigMessage &msg) {
     if (msg_bytes.size() > 0)
         port->sendMessage(&msg_bytes);
     //out_mutex.unlock();
-    std::cout << "done!" << std::endl;
+    //std::cout << "done!" << std::endl;
     busy--;
 }
 

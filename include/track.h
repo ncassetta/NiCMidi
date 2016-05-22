@@ -163,6 +163,11 @@ class  MIDITrack {
             /// corresponding Note Off or viceversa).
         bool                        DeleteNote( const MIDITimedBigMessage& msg );
 
+            /// Inserts the event as last, adjusting the EndOfTrack. This function should be used with caution, as it doesn't
+            /// check temporal order and track consistency. You could use it if you would manually copy tracks
+            /// (MultiTrack::AssignEventsToTracks() does it).
+        void                        PushEvent( const MIDITimedBigMessage& msg);
+
         void                        InsertInterval(MIDIClockTime start, MIDIClockTime length, const MIDITrack* src = 0);
                                                     // if src == 0 only shift events of length clocks
         MIDITrack*                  MakeInterval(MIDIClockTime start, MIDIClockTime end, MIDITrack* interval) const;

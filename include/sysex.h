@@ -73,6 +73,9 @@ class  MIDISystemExclusive {
         bool	                IsFull() const              { return cur_len>=max_len; }
         unsigned char*          GetBuf()                    { return buf; }
         const unsigned char*    GetBuf() const              { return buf; }
+        bool                    IsGMReset() const           { return memcmp(buf, GMReset_data, cur_len) == 0; }
+        bool                    IsGSReset() const           { return memcmp(buf, GSReset_data, cur_len) == 0; }
+        bool                    IsXGReset() const           { return memcmp(buf, XGReset_data, cur_len) == 0; }
 
     private:
         unsigned char*          buf;

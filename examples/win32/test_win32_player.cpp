@@ -355,20 +355,6 @@ VOID LoadFile() {
             );
         }
         else {                              // File loading OK
-/* NOTE: currently the notifier is totally fooled by format 0 MIDIFiles (all events in track 0) and reports
- * incorrect informations on track names, volumes, etc. This patch makes a 17-tracks multitrack from the
- * original 1-track, modifying the midifile: be careful if you use this in contests in which you may re-save
- * the file. TODO: adding an option for saving in different MIDI formats in filewrite.h
- */
-            if (sequencer->GetMultiTrack()->GetNumTracksWithEvents() == 1)   // all events in one track: format 0
-            {
-                // redistributes channel events in separate tracks
-                sequencer->GetMultiTrack()->AssignEventsToTracks(
-                        sequencer->GetMultiTrack()->GetTrack(0) );
-
-                // IMPORTANT: when you edit events you always must call this to update the AdvancedSequencer
-                sequencer->SetChanged();
-            }
 
             // update the filename textbox
             SetWindowText( hFileName, szFileName );
@@ -400,7 +386,7 @@ VOID SetControls() {
     }
 
     // for every track, update the name, channel, program, volume boxes
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < sequencer->GetNumTracks() - 1; i++) {
 
         if ( sequencer->GetTrackName(i+1).length() ) {
             SetWindowText (hTrackNames[i], sequencer->GetTrackName (i+1).c_str());
