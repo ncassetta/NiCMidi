@@ -23,7 +23,7 @@
 
 */
 //
-// Copyright (C) 2013 N. Cassetta
+// Copyright (C) 2013 - 2016 N. Cassetta
 // ncassetta@tiscali.it
 //
 
@@ -42,7 +42,7 @@ AdvancedSequencer *sequencer;                       // the sequencer
 SMPTE smpte;                                        // milliseconds to smpte converter
 
 
-// Declare handles to the window controls (In a real application you may wanr to subclass your
+// Declare handles to the window controls (In a real application you may want to subclass your
 // window class and make them local)
 
 HWND hMainWin;                      // our main window

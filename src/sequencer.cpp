@@ -24,7 +24,7 @@
 #include "../include/world.h"
 #include "../include/sequencer.h"
 
-
+/* Now unused
   static void FixQuotes( char *s_ )
   {
     unsigned char *s = (unsigned char *)s_;
@@ -45,7 +45,7 @@
       s++;
     }
   }
-
+*/
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -130,23 +130,21 @@ MIDISequencerTrackState::MIDISequencerTrackState():
     bender_value(0), notes_are_on(false), note_matrix(), got_good_track_name(false) {}
 
 
-void MIDISequencerTrackState::GoToZero() {
+void MIDISequencerTrackState::Reset() {
     program = -1;
     volume = 100;
     pan = 64;
     rev = 0;
     chr = 0;
+    track_name = "";
     notes_are_on = false;
     bender_value = 0;
     note_matrix.Clear();
-}
-
-
-void MIDISequencerTrackState::Reset() {
-    GoToZero();
-    track_name = "";
     got_good_track_name = false;
 }
+// Note by NC: I eliminated GoToZero()
+
+
 
 /*  MOVED TO MIDISequencerState
 bool MIDISequencerTrackState::Process( MIDITimedBigMessage *msg ) {
@@ -209,16 +207,17 @@ bool MIDISequencerTrackState::Process( MIDITimedBigMessage *msg ) {
 }
 */
 
+
 ////////////////////////////////////////////////////////////////////////////
 //                      class MIDISequencerState                          //
 ////////////////////////////////////////////////////////////////////////////
 
 
 MIDISequencerState::MIDISequencerState(MIDIMultiTrack *m, MIDISequencerGUINotifier *n) :
-    notifier(n), multitrack(m), iterator(m), last_event_track(-1),
-    cur_clock(0), cur_time_ms(0), cur_beat(0), cur_measure(0), next_beat_time(0),
+    notifier(n), multitrack(m), iterator(m), cur_clock(0), cur_time_ms(0),
+    cur_beat(0), cur_measure(0), next_beat_time(0),
     tempobpm(120.0), timesig_numerator(4), timesig_denominator(4),
-    keysig_sharpflat(0), keysig_mode(0)
+    keysig_sharpflat(0), keysig_mode(0), last_event_track(-1)
 {
     track_states.resize(m->GetNumTracks());
 }
@@ -226,11 +225,12 @@ MIDISequencerState::MIDISequencerState(MIDIMultiTrack *m, MIDISequencerGUINotifi
 
 MIDISequencerState::MIDISequencerState(const MIDISequencerState& s) :
     notifier(s.notifier), multitrack(s.multitrack), iterator(s.iterator),
-    last_event_track(s.last_event_track), cur_clock(s.cur_clock), cur_time_ms(s.cur_time_ms),
-    cur_beat(s.cur_beat), cur_measure(s.cur_measure), next_beat_time(s.next_beat_time),
+    cur_clock(s.cur_clock), cur_time_ms(s.cur_time_ms), cur_beat(s.cur_beat),
+    cur_measure(s.cur_measure), next_beat_time(s.next_beat_time),
     tempobpm(s.tempobpm), timesig_numerator(s.timesig_numerator),
     timesig_denominator(s.timesig_denominator), keysig_sharpflat(s.keysig_sharpflat),
-    keysig_mode(s. keysig_mode), marker_text(s.marker_text), track_states(s.track_states)
+    keysig_mode(s. keysig_mode), marker_text(s.marker_text), track_states(s.track_states),
+    last_event_track(s.last_event_track)
 {}
 
 
@@ -434,7 +434,13 @@ void MIDISequencerState::NotifyTrack(int item) const {
     }
 }
 
+
+
 ////////////////////////////////////////////////////////////////////////////
+//                        class MIDISequencer                             //
+////////////////////////////////////////////////////////////////////////////
+
+
 MIDISequencer::MIDISequencer (MIDIMultiTrack *m, MIDISequencerGUINotifier *n) :
     solo_mode (false), tempo_scale (100), state (m, n) {
     if (n)
@@ -487,6 +493,48 @@ void MIDISequencer::SetSoloMode(bool m, int trk)  {
     }
 }
 
+// These are new
+bool MIDISequencer::InsertTrack(int trk) {
+    if (trk == -1) trk = GetNumTracks();                // if trk = -1 (default) append track
+    if (state.multitrack->InsertTrack(trk)) {
+        track_processors.insert(track_processors.begin() + trk, new MIDISequencerTrackProcessor);
+        MIDIClockTime now = state.cur_clock;            // remember current time
+        state.Reset();                                  // reset the state (syncs the iterator)
+        GoToTime(now);                                  // returns to current time
+        return true;
+    }
+    return false;
+}
+
+
+bool MIDISequencer::DeleteTrack(int trk) {
+    if (state.multitrack->DeleteTrack(trk)) {
+        track_processors.erase(track_processors.begin() + trk);
+        MIDIClockTime now = state.cur_clock;            // remember current time
+        state.Reset();                                  // reset the state (syncs the iterator)
+        GoToTime(now);                                  // returns to current time
+        return true;
+    }
+    return false;
+}
+
+
+bool MIDISequencer::MoveTrack(int from, int to) {
+    if (from == to) return true;                    // nothing to do
+    if (state.multitrack->MoveTrack(from, to)) {
+        MIDISequencerTrackProcessor* temp = track_processors[from];
+        track_processors.erase(track_processors.begin() + from);
+        if (from < to)
+            to--;
+        track_processors.insert(track_processors.begin() + to, temp);
+        MIDIClockTime now = state.cur_clock;            // remember current time
+        state.Reset();                                  // reset the state (syncs the iterator)
+        GoToTime(now);                                  // returns to current time
+        return true;
+    }
+    return false;
+}
+
 // OK WITH JDKSMIDI
 void MIDISequencer::GoToZero() {
     // go to time zero
@@ -510,7 +558,10 @@ bool MIDISequencer::GoToTime(MIDIClockTime time_clk) {
         state.notifier->SetEnable(false);
     }
 
-    if(time_clk < state.cur_clock || time_clk == 0)
+    // OLD VERSION if(time_clk < state.cur_clock || time_clk == 0)
+    if(time_clk <= state.cur_clock)     // we must restart also if cur_clock is equal to cur_clock, as we could
+                                        // already have got some event. Moreover this is good if we have edited the
+                                        // multitrack
         // start from zero if desired time is before where we are
         state.Reset();
 
@@ -560,7 +611,11 @@ bool MIDISequencer::GoToTimeMs(double time_ms) {
         state.notifier->SetEnable(false);
     }
 
-    if(time_ms < state.cur_time_ms || time_ms == 0.0)
+    // OLD VERSION if(time_ms < state.cur_time_ms || time_ms == 0.0)
+    if(time_ms <= state.cur_time_ms)
+                                        // we must restart also if cur_clock is equal to cur_clock, as we could
+                                        // already have got some event. Moreover this is good if we have edited the
+                                        // multitrack
         // start from zero if desired time is before where we are
         state.Reset();
 
@@ -614,10 +669,13 @@ bool MIDISequencer::GoToMeasure (int measure, int beat) {
         state.notifier->SetEnable (false);
     }
 
+//    if (measure < state.cur_measure ||
+//         // ADDED FOLLOWING LINE:  this failed in this case!!!
+//        (measure == state.cur_measure && beat < state.cur_beat) ||
+//        (measure == 0 && beat == 0))
     if (measure < state.cur_measure ||
-         // ADDED FOLLOWING LINE:  this failed in this case!!!
-        (measure == state.cur_measure && beat < state.cur_beat) ||
-        (measure == 0 && beat == 0))
+            // ANOTHER CORRECTION!!!
+        (measure == state.cur_measure && beat <= state.cur_beat))
         state.Reset();
 
     int trk;

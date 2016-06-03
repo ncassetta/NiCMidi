@@ -84,34 +84,34 @@
 
   enum
     {
-      C_LSB		    =0x20,	// add this to a non-switch controller
+      C_LSB		        =0x20,	// add this to a non-switch controller
       // to access the LSB.
 
-      C_GM_BANK	    =0x00,	// general midi bank select
-      C_MODULATION	=0x01,	// modulation
-      C_BREATH	    =0x02,	// breath controller
-      C_FOOT		=0x04,	// foot controller
-      C_PORTA_TIME	=0x05,	// portamento time
-      C_DATA_ENTRY	=0x06,	// data entry value
-      C_MAIN_VOLUME	=0x07,	// main volume control
-      C_BALANCE	    =0x08,	// balance control
-      C_PAN		    =0x0a,	// panpot stereo control
-      C_EXPRESSION	=0x0b,	// expression control
-      C_GENERAL_1	=0x10,	// general purpose controller 1
-      C_GENERAL_2	=0x11,	// general purpose controller 2
-      C_GENERAL_3	=0x12,	// general purpose controller 3
-      C_GENERAL_4	=0x13,	// general purpose controller 4
+      C_GM_BANK	        =0x00,	// general midi bank select
+      C_MODULATION	    =0x01,	// modulation
+      C_BREATH	        =0x02,	// breath controller
+      C_FOOT		    =0x04,	// foot controller
+      C_PORTA_TIME	    =0x05,	// portamento time
+      C_DATA_ENTRY	    =0x06,	// data entry value
+      C_MAIN_VOLUME 	=0x07,	// main volume control
+      C_BALANCE	        =0x08,	// balance control
+      C_PAN		        =0x0a,	// panpot stereo control
+      C_EXPRESSION	    =0x0b,	// expression control
+      C_GENERAL_1	    =0x10,	// general purpose controller 1
+      C_GENERAL_2	    =0x11,	// general purpose controller 2
+      C_GENERAL_3	    =0x12,	// general purpose controller 3
+      C_GENERAL_4	    =0x13,	// general purpose controller 4
 
-      C_DAMPER	    =0x40,	// hold pedal (sustain)
-      C_PORTA		=0x41,	// portamento switch
-      C_SOSTENUTO	=0x42,	// sostenuto switch
-      C_SOFT_PEDAL	=0x43,	// soft pedal
-      C_HOLD_2	    =0x45,	// hold pedal 2
+      C_DAMPER	        =0x40,	// hold pedal (sustain)
+      C_PORTA		    =0x41,	// portamento switch
+      C_SOSTENUTO	    =0x42,	// sostenuto switch
+      C_SOFT_PEDAL	    =0x43,	// soft pedal
+      C_HOLD_2	        =0x45,	// hold pedal 2
 
-      C_GENERAL_5	=0x50,	// general purpose controller 5
-      C_GENERAL_6	=0x51,	// general purpose controller 6
-      C_GENERAL_7	=0x52,	// general purpose controller 7
-      C_GENERAL_8	=0x53,	// general purpose controller 8
+      C_GENERAL_5	    =0x50,	// general purpose controller 5
+      C_GENERAL_6	    =0x51,	// general purpose controller 6
+      C_GENERAL_7	    =0x52,	// general purpose controller 7
+      C_GENERAL_8	    =0x53,	// general purpose controller 8
 
       C_EFFECT_DEPTH	=0x5b,	// external effects depth
       C_TREMELO_DEPTH	=0x5c,	// tremelo depth
@@ -119,25 +119,25 @@
       C_CELESTE_DEPTH	=0x5e,	// celeste (detune) depth
       C_PHASER_DEPTH	=0x5f,	// phaser effect depth
 
-      C_DATA_INC	=0x60,	// increment data value
-      C_DATA_DEC	=0x61,	// decrement data value
+      C_DATA_INC	    =0x60,	// increment data value
+      C_DATA_DEC	    =0x61,	// decrement data value
 
-      C_NONRPN_LSB	=0x62,	// non registered parameter LSB
-      C_NONRPN_MSB	=0x63,	// non registered parameter MSB
+      C_NONRPN_LSB	    =0x62,	// non registered parameter LSB
+      C_NONRPN_MSB	    =0x63,	// non registered parameter MSB
 
-      C_RPN_LSB	    =0x64,	// registered parameter LSB
-      C_RPN_MSB	    =0x65,	// registered parameter MSB
+      C_RPN_LSB	        =0x64,	// registered parameter LSB
+      C_RPN_MSB	        =0x65,	// registered parameter MSB
 
 
 
-      C_RESET		=0x79,	// reset all controllers
+      C_RESET		    =0x79,	// reset all controllers
 
-      C_LOCAL		=0x79,	// local control on/off
+      C_LOCAL		    =0x79,	// local control on/off
       C_ALL_NOTES_OFF	=0x7a,	// all notes off
-      C_OMNI_OFF	=0x7c,	// omni off, all notes off
-      C_OMNI_ON	    =0x7d,	// omni on, all notes off
-      C_MONO		=0x7e,	// mono on, all notes off
-      C_POLY		=0x7f	// poly on, all notes off
+      C_OMNI_OFF	    =0x7c,	// omni off, all notes off
+      C_OMNI_ON	        =0x7d,	// omni on, all notes off
+      C_MONO		    =0x7e,	// mono on, all notes off
+      C_POLY		    =0x7f	// poly on, all notes off
     };
 
 

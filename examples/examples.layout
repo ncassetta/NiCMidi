@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
-	<ActiveTarget name="test_advancedsequencer" />
+	<ActiveTarget name="test_win32_player" />
+	<File name="win32\test_win32_player.h" open="1" top="1" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="5972" topLine="294" />
+		</Cursor>
+	</File>
+	<File name="win32\test_win32_player.cpp" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="933" topLine="25" />
+		</Cursor>
+	</File>
 	<File name="win32\test_stepsequencer.cpp" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="1829" topLine="41" />
-		</Cursor>
-	</File>
-	<File name="win32\jdksmidi_test_drvwin32.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1951" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="win32\test_win32_player.cpp" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="16260" topLine="384" />
 		</Cursor>
 	</File>
 	<File name="win32\test_stepsequencer.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -22,14 +22,14 @@
 			<Cursor1 position="4534" topLine="81" />
 		</Cursor>
 	</File>
-	<File name="win32\test_win32_player.h" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="1131" topLine="21" />
-		</Cursor>
-	</File>
 	<File name="win32\test_advancedsequencer.cpp" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="6382" topLine="178" />
+		</Cursor>
+	</File>
+	<File name="win32\jdksmidi_test_drvwin32.cpp" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1951" topLine="0" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

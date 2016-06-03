@@ -215,3 +215,22 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+
+
+################# ADDED BY ME ####################
+
+##################
+## CodeBlocks
+##################
+
+.cbp
+.layout
+.cscope_file_list
+.depend
+
+############################
+## Executables and libraries
+############################
+
+.exe
+.a

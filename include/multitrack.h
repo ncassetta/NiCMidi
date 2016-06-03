@@ -91,17 +91,21 @@ class MIDIMultiTrack {
 
             /// Inserts a new empty track at position _trk_ (_trk_ must be in the range 0 ... GetNumTracks() - 1). If
             /// _trk_ == -1 append the track at the end.
+            /// \return *true* if the track was effectively inserted
         bool                    InsertTrack(int trk = -1);
 
             /// Deletes the track _trk_ and its events. _trk_ must be in the range 0 ... GetNumTracks() - 1.
+            /// \return *true* if the track was effectively deleted
         bool                    DeleteTrack(int trk);
 
             /// Moves a track from the position _from_ to the position _to_. ( _from_ e _to_ must be in the range
             /// 0 ... GetNumTracks() - 1).
+            /// \return *true* if the track was effectively moved
         bool                    MoveTrack(int from, int to);
 
 
             /// Inserts the event _msg_ in the track _trk_. See MIDITrack::InsertEvent() for details.
+            /// \return *true* if the event was effectively inserted
         bool                    InsertEvent(int trk,  const MIDITimedBigMessage& msg, int _ins_mode = INSMODE_DEFAULT);
 
             /// Inserts a Note On and a Note Off event into the track. See MIDITrack::InsertNote() for details.
