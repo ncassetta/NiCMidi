@@ -291,7 +291,7 @@ MIDIMessage::~MIDIMessage() {
 
 
 char MIDIMessage::GetLength() const {
-    if((status&0xf0) == 0xf0)
+    if((status & 0xf0) == 0xf0)
         return GetSystemMessageLength(status);
     else
         return GetMessageLength(status);
@@ -388,16 +388,15 @@ void MIDIMessage::SetPitchBend(unsigned char chan, short val) {
 void MIDIMessage::SetSysEx(const MIDISystemExclusive* se) {
     status=SYSEX_START;
     byte1 = 0;
+    byte2 = 0;
+    byte3 = 0;
+    CopySysExData(*se);
+}
 
-    int num = 0;
-    byte2=(unsigned char)(num&0xff);
-    byte3=(unsigned char)((num>>8)&0xff);
-  }
 
-
-void MIDIMessage::SetMTC(unsigned char field, unsigned char v) {
+void MIDIMessage::SetMTC(unsigned char field, unsigned char val) {
     status = MTC;
-    byte1 = (unsigned char)((field << 4) | v);
+    byte1 = (unsigned char)((field << 4) | val);
     byte2 = 0;
     byte3 = 0;
     ClearSysEx();
@@ -405,28 +404,28 @@ void MIDIMessage::SetMTC(unsigned char field, unsigned char v) {
 
 
 void MIDIMessage::SetSongPosition(short pos) {
-    status=SONG_POSITION;
-    byte1=(unsigned char)(pos&0x7f);
-    byte2=(unsigned char)((pos>>7)&0x7f);
-    byte3=0;
+    status = SONG_POSITION;
+    byte1 = (unsigned char)(pos & 0x7f);
+    byte2 = (unsigned char)((pos >> 7) & 0x7f);
+    byte3 = 0;
     ClearSysEx();
 }
 
 
 void MIDIMessage::SetSongSelect(unsigned char sng) {
-    status=SONG_SELECT;
-    byte1=sng;
-    byte2=0;
-    byte3=0;
+    status = SONG_SELECT;
+    byte1 = sng;
+    byte2 = 0;
+    byte3 = 0;
     ClearSysEx();
 }
 
 
 void MIDIMessage::SetTuneRequest() {
-    status=TUNE_REQUEST;
-    byte1=0;
-    byte2=0;
-    byte3=0;
+    status = TUNE_REQUEST;
+    byte1 = 0;
+    byte2 = 0;
+    byte3 = 0;
     ClearSysEx();
 }
 
@@ -459,19 +458,10 @@ void MIDIMessage::SetAllNotesOff(unsigned char chan, unsigned char type) {
 
 
 void MIDIMessage::SetLocal(unsigned char chan, unsigned char v) {
-    status=(unsigned char)(chan|CONTROL_CHANGE);
-    byte1=C_LOCAL;
-    byte2=v;
-    byte3=0;
-    ClearSysEx();
-}
-
-
-void MIDIMessage::SetNoOp() {
-    status=META_EVENT;
-    byte1=META_NO_OPERATION;
-    byte2=0;
-    byte3=0;
+    status = (unsigned char)(chan | CONTROL_CHANGE);
+    byte1 = C_LOCAL;
+    byte2 = v;
+    byte3 = 0;
     ClearSysEx();
 }
 
@@ -481,10 +471,12 @@ void MIDIMessage::SetTempo32(unsigned short tempo_times_32) {
 }
 
 
-  void	MIDIMessage::SetText( unsigned short text_num, unsigned char type)
-  {
-    SetMetaEvent( type, text_num );
-  }
+void MIDIMessage::SetText(const char* text, unsigned char type) {
+    SetMetaEvent(type, 0);
+    sysex = new MIDISystemExclusive(len(text));
+    for( int i = 0; i < len(text); ++i)
+        sysex->PutSysByte(text[i]);
+}
 
 
 

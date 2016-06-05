@@ -41,7 +41,7 @@
       MIDIProcessor();
       virtual ~MIDIProcessor();
 
-      virtual bool Process( MIDITimedBigMessage *msg ) = 0;
+      virtual bool Process( MIDITimedMessage *msg ) = 0;
     };
 
   class MIDIMultiProcessor : public MIDIProcessor
@@ -74,10 +74,10 @@
           processors[position] = 0;
         }
 
-      virtual bool Process( MIDITimedBigMessage *msg );
+      virtual bool Process( MIDITimedMessage *msg );
 
     private:
-      MIDIProcessor **processors;
+      MIDIProcessor **processors;           // TODO: use a vector
       int num_processors;
     };
 
@@ -99,7 +99,7 @@
 
       void SetAllTranspose( int trans );
 
-      virtual bool Process( MIDITimedBigMessage *msg );
+      virtual bool Process( MIDITimedMessage *msg );
     private:
       int trans_amount[16];
     };
@@ -122,7 +122,7 @@
 
       void SetAllRechan( int dest_chan );
 
-      virtual bool Process( MIDITimedBigMessage *msg );
+      virtual bool Process( MIDITimedMessage *msg );
 
     private:
 

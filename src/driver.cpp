@@ -47,7 +47,7 @@ void MIDIOutDriver::Reset() {
 
 
 void MIDIOutDriver::AllNotesOff( int chan ) {   // TODO: can we avoid to send a NOTE OFF for every note?
-    MIDITimedBigMessage msg;                    // we could eliminate the MIDIMatrix
+    MIDITimedMessage msg;                       // we could eliminate the MIDIMatrix
 
     // send a note off for every note on in the out_matrix
 
@@ -86,7 +86,7 @@ void MIDIOutDriver::AllNotesOff() {
 
 // TODO: this could be unneeded. We only could use HardwareMsgOut with mutex
 
-void MIDIOutDriver::OutputMessage(const MIDITimedBigMessage& msg) {
+void MIDIOutDriver::OutputMessage(const MIDITimedMessage& msg) {    // TODO: MIDIMessage ???
     int i = 0;
     for( ; i < 100; i++) {
         if (!busy) {
@@ -152,7 +152,7 @@ void MIDIOutDriver::ClosePort() {
   */
 
 
-void MIDIOutDriver::HardwareMsgOut(const MIDITimedBigMessage &msg) {
+void MIDIOutDriver::HardwareMsgOut(const MIDITimedMessage &msg) {   // TODO: MIDIMessage ???
     if (!port->isPortOpen())
         return;
     //out_mutex.lock();

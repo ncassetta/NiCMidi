@@ -33,7 +33,7 @@
 
   MIDIQueue::MIDIQueue( int num_msgs )
     :
-    buf( new MIDITimedBigMessage[ num_msgs ] ),
+    buf( new MIDITimedMessage[ num_msgs ] ),
     bufsize( num_msgs ),
     next_in(0),
     next_out(0)

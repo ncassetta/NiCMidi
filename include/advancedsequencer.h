@@ -56,7 +56,7 @@ class AdvancedSequencer {
 
         void                Play();
         void                Stop();
-        void                OutputMessage(MIDITimedBigMessage& msg);
+        void                OutputMessage(MIDITimedMessage& msg);       // TODO: MIDIMessage ???
         void                SetRepeatPlay(bool enable, int start_measure, int end_measure);
         bool                GetRepeatPlay() const           { return repeat_play_mode; }
         int                 GetRepeatPlayStart() const      { return repeat_start_measure; }

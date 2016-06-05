@@ -254,7 +254,7 @@ void AdvancedSequencer::GoToTime (MIDIClockTime t) {
     {
         seq->SetState (&warp_positions[warp_to_item]);
         seq->GoToTime (t);
-        for (int i = 0; i < seq->GetNumTracks(); ++i)
+        for (unsigned int i = 0; i < seq->GetNumTracks(); ++i)
         {
             seq->GetTrackState ( i )->note_matrix.Clear();
         }
@@ -289,7 +289,7 @@ void AdvancedSequencer::GoToMeasure ( int measure, int beat )
     {
         seq->SetState ( &warp_positions[warp_to_item] );
         seq->GoToMeasure ( measure, beat );
-        for ( int i = 0; i < seq->GetNumTracks(); ++i )
+        for ( unsigned int i = 0; i < seq->GetNumTracks(); ++i )
         {
             seq->GetTrackState ( i )->note_matrix.Clear();
         }
@@ -338,14 +338,14 @@ void AdvancedSequencer::Stop()
 
 
 /* NEW BY NC */
-void AdvancedSequencer::OutputMessage( MIDITimedBigMessage& msg ) {
+void AdvancedSequencer::OutputMessage(MIDITimedMessage& msg) {
     bool was_open = true;
     MIDIOutDriver* driver = mgr->GetDriver(0);
     if (!driver->IsPortOpen()) {
         was_open = false;
         driver->OpenPort();
     }
-    driver->OutputMessage( msg );
+    driver->OutputMessage(msg);
     if (!was_open)
         mgr->GetDriver(0)->ClosePort();
 }
@@ -398,8 +398,8 @@ void AdvancedSequencer::SoloTrack (int trk) {
         // not previously sent
         CatchEventsBefore(trk);
     seq->SetSoloMode (true, trk);
-    for (int i = 0; i < seq->GetNumTracks(); ++i) {
-        if (i == trk) continue;
+    for (unsigned int i = 0; i < seq->GetNumTracks(); ++i) {
+        if (i == (unsigned)trk) continue;
         mgr->GetDriver(0)->AllNotesOff(FindFirstChannelOnTrack(i));
         seq->GetTrackState (i)->note_matrix.Clear();
     }
@@ -433,7 +433,7 @@ void AdvancedSequencer::SetTrackMute (int trk, bool f) {
 void AdvancedSequencer::UnmuteAllTracks() {
     if (!file_loaded)
         return;
-    for ( int i = 0; i < seq->GetNumTracks(); ++i) {
+    for (unsigned int i = 0; i < seq->GetNumTracks(); ++i) {
         if (seq->GetTrackProcessor(i)->mute) {
             seq->GetTrackState ( i )->note_matrix.Clear();
             seq->GetTrackProcessor (i)->mute = false;
@@ -586,15 +586,15 @@ void AdvancedSequencer::SetTrackTranspose (int trk, int trans) {
     if (was_playing)
         mgr->SeqStop();         // TODO: this should be buggy if we close the ports
 
-    if (trk == -1)
-        for ( trk = 0; trk < seq->GetNumTracks(); ++trk )
+    if (trk == -1)              // TODO: BUGGY! Don't allow general transpose!
+        for (unsigned int i = 0; i < seq->GetNumTracks(); ++i )
             seq->GetTrackProcessor ( trk )->transpose = trans;
     else
         seq->GetTrackProcessor ( trk )->transpose = trans;
 
     if (was_playing) {
         mgr->AllNotesOff();
-        seq->GetTrackState (trk)->note_matrix.Clear();
+        seq->GetTrackState (trk)->note_matrix.Clear();  // this is the bug
         mgr->SeqPlay();
     }
 }
@@ -648,15 +648,15 @@ int AdvancedSequencer::FindFirstChannelOnTrack ( int trk )
         // go through all events
         // until we find a channel message
         // and then return the channel number plus 1
-        for ( int i = 0; i < t->GetNumEvents(); ++i )
+        for (unsigned int i = 0; i < t->GetNumEvents(); ++i)
         {
-            MIDITimedBigMessage *m = t->GetEventAddress ( i );
+            MIDITimedMessage *msg = t->GetEventAddress ( i );
 
-            if ( m )
+            if ( msg )
             {
-                if ( m->IsChannelMsg() )
+                if ( msg->IsChannelMsg() )
                 {
-                    first_channel = m->GetChannel();
+                    first_channel = msg->GetChannel();
                     break;
                 }
             }
@@ -771,8 +771,8 @@ void AdvancedSequencer::ExtractWarpPositions()
 
 void AdvancedSequencer::CatchEventsBefore()
 {
-    MIDITimedBigMessage msg;
-    MIDITimedBigMessage *msgp;
+    MIDITimedMessage msg;
+    MIDITimedMessage *msgp;
     MIDIMultiTrackIterator iter( seq->GetState()->multitrack );
     int trk;
     int events_sent = 0;
@@ -838,10 +838,10 @@ void AdvancedSequencer::CatchEventsBefore()
 
 
 void AdvancedSequencer::CatchEventsBefore(int trk) {
-    MIDITimedBigMessage msg;
+    MIDITimedMessage msg;
     MIDITrack* t = tracks->GetTrack(trk);
 
-    for (int i = 0; i < t->GetNumEvents(); ++i )
+    for (unsigned int i = 0; i < t->GetNumEvents(); ++i )
     {
         msg = t->GetEvent( i );
         if ( msg.GetTime() >= seq->GetCurrentMIDIClockTime() )

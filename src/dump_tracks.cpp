@@ -31,7 +31,7 @@
 #include "../include/multitrack.h"
 
 
-void DumpMIDITimedBigMessage (MIDITimedBigMessage *msg) {
+void DumpMIDITimedMessage (MIDITimedMessage *msg) {
     char msgbuf[1024];
     if (msg)
         printf(msg->MsgToText(msgbuf));
@@ -39,11 +39,11 @@ void DumpMIDITimedBigMessage (MIDITimedBigMessage *msg) {
 
 
 void DumpMIDITrack (MIDITrack *t) {
-    MIDITimedBigMessage *msg;
+    MIDITimedMessage *msg;
 
     printf ( "Track dump\n");
     for (unsigned int i = 0; i < t->GetNumEvents(); ++i)
-        DumpMIDITimedBigMessage (t->GetEventAddress (i));
+        DumpMIDITimedMessage (t->GetEventAddress (i));
 }
 
 
@@ -59,7 +59,7 @@ void DumpAllTracks ( MIDIMultiTrack *mlt )
     {
       printf ( "DUMP OF TRACK #%2d:\n", i );
       for (int j=0; j<mlt->GetTrack( i )->GetNumEvents(); j++)
-        DumpMIDITimedBigMessage( mlt->GetTrack ( i )->GetEventAddress(j) );
+        DumpMIDITimedMessage( mlt->GetTrack ( i )->GetEventAddress(j) );
       printf ( "\n" );
     }
 
@@ -70,7 +70,7 @@ void DumpAllTracks ( MIDIMultiTrack *mlt )
 
 void DumpMIDIMultiTrack (MIDIMultiTrack *mlt) {
     MIDIMultiTrackIterator i (mlt);
-    MIDITimedBigMessage *msg;
+    MIDITimedMessage *msg;
     int trk_num;
 
     fprintf ( stdout, "DUMP OF MIDI MULTITRACK\n");
@@ -81,7 +81,7 @@ void DumpMIDIMultiTrack (MIDIMultiTrack *mlt) {
     do {
         if (i.GetCurEvent (&trk_num, &msg)) {
             fprintf (stdout, "#%2d - ", trk_num);
-            DumpMIDITimedBigMessage (msg);
+            DumpMIDITimedMessage (msg);
         }
     } while (i.GoToNextEvent());
 }

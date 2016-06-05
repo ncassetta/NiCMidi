@@ -56,7 +56,7 @@ public:
     void                    AllNotesOff(int chan);
     void                    AllNotesOff();
 
-    void                    OutputMessage(const MIDITimedBigMessage& msg);
+    void                    OutputMessage(const MIDITimedMessage& msg);     // TODO: MIDIMessage ???
 
 
         // Open the MIDI out port _id_
@@ -88,7 +88,7 @@ protected:
 
 
          // Processes the message with the OutProcessor and then  ends it to the hardware MIDI port
-    virtual void            HardwareMsgOut( const MIDITimedBigMessage &msg );
+    virtual void            HardwareMsgOut( const MIDITimedMessage &msg );      // TODO: MIDIMessage ???
 
         // additional TimeTick procedure
 /*

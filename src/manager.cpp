@@ -296,7 +296,7 @@ void MIDIManager::TimeTickPlayMode( unsigned long sys_time_ )
     double sys_time = (double)sys_time_ - (double)sys_time_offset;
     double next_event_time = 0.0;
     int ev_track;
-    MIDITimedBigMessage ev;
+    MIDITimedMessage ev;
 
     // if we are in repeat mode, repeat if we hit end of the repeat region
     if(repeat_play_mode && sequencer->GetCurrentMeasure() >= repeat_end_measure) {

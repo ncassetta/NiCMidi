@@ -55,7 +55,7 @@ class MIDISequencerTrackProcessor : public MIDIProcessor {
         /// Resets all values to default state
         virtual void    Reset();
         /// Processes message msg, changing its parameters according to the state of the processor
-        virtual bool    Process ( MIDITimedBigMessage *msg );
+        virtual bool    Process ( MIDITimedMessage *msg );
 
         bool            mute;                   ///< track is muted
         bool            solo;                   ///< track is soloed
@@ -132,7 +132,7 @@ class MIDISequencerState {
         /// This is the process function inherited from MIDIProcessor. When you get a MIDI message
         /// from the sequencer, it is processed by the state, which update its parameters and
         /// notifies the GUI. The user hadn't to worry about this.
-        bool                    Process( MIDITimedBigMessage* msg );
+        bool                    Process( MIDITimedMessage* msg );
 
         /// These are used internally for notifying the GUI when a something happens (a parameter
         /// was changed, time is moved, etc.)
@@ -279,7 +279,7 @@ class MIDISequencer {
         /// \param[out] msg the MIDI event
         /// \return _true_ if there is effectively a next event (and the parameters are valid), _false_ otherwise
         /// (parameters are undefined)
-        bool                            GetNextEvent (int *trk, MIDITimedBigMessage *msg);
+        bool                            GetNextEvent (int *trk, MIDITimedMessage *msg);
 
         /// Converts the time_time_clk_, given in MIDi ticks, into milliseconds, taking account of tempo changes.
         double                          MIDItoMs(MIDIClockTime time_clk);  // new : added by me
@@ -294,7 +294,7 @@ class MIDISequencer {
          /// Internal use: scans events at 'now' time upgrading the sequencer state
          void                           ScanEventsAtThisTime();
 
-        MIDITimedBigMessage             beat_marker_msg;
+        MIDITimedMessage                beat_marker_msg;
         bool                            solo_mode;
         int                             tempo_scale;
         std::vector<MIDISequencerTrackProcessor*>
@@ -483,7 +483,7 @@ public:
 
     /// Processes the message msg: if it is a channel message (or a track name meta) send it to a
     /// MIDISequencerTrackState, otherwise notify the GUI directly
-    bool Process( MIDITimedBigMessage* msg );           /* NC */    // new
+    bool Process(MIDITimedMessage* msg);                /* NC */    // new
 
     /// Notifies events to GUI
     void Notify( int group, int item = 0 );             /* NC */    // new
@@ -666,7 +666,7 @@ public:
     /// \param[out] tracknum: the track of the next event
     /// \param[out] msg the MIDI event
     /// \return _true_ if there is a next event (and the paraneters are valid), _false_ otherwise (parameters undefined)
-    bool GetNextEvent ( int *tracknum, MIDITimedBigMessage *msg );
+    bool GetNextEvent ( int *tracknum, MIDITimedMessage *msg );
 
 
 
@@ -678,7 +678,7 @@ protected:
     /// Internal use: scans events at 'now' time upgrading the sequencer status
     void ScanEventsAtThisTime();
 
-    MIDITimedBigMessage beat_marker_msg;
+    MIDITimedMessage beat_marker_msg;
 
     bool solo_mode;
     int tempo_scale;

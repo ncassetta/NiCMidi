@@ -87,12 +87,12 @@ class  MIDITrack {
         bool                        IsTrackEmpty() const        { return events.size() == 1; }
             /// Returns the address of the _ev_num_ event in the track (_ev_num_ must be
             /// in the range 0 ... GetNumEvents() - 1).
-        MIDITimedBigMessage*        GetEventAddress(int ev_num)       { return &events[ev_num]; }
-        const MIDITimedBigMessage*  GetEventAddress(int ev_num) const { return &events[ev_num]; }
+        MIDITimedMessage*           GetEventAddress(int ev_num)       { return &events[ev_num]; }
+        const MIDITimedMessage*     GetEventAddress(int ev_num) const { return &events[ev_num]; }
             /// Returns a reference to the _ev_num_ event in the track (_ev_num_ must be
             /// in the range 0 ... GetNumEvents() - 1).
-        MIDITimedBigMessage&        GetEvent(int ev_num)               { return events[ev_num]; }
-        const MIDITimedBigMessage&  GetEvent(int ev_num) const         { return events[ev_num]; }
+        MIDITimedMessage&           GetEvent(int ev_num)               { return events[ev_num]; }
+        const MIDITimedMessage&     GetEvent(int ev_num) const         { return events[ev_num]; }
             ///  Gets the time of the EOT event
         MIDIClockTime               GetEndTime() const                 { return events.back().GetTime(); }
             /// Sets the time of the EOT event to _end_. If there are events of other type after _end_
@@ -105,7 +105,7 @@ class  MIDITrack {
                                                 { return (0 <= ev_num && (unsigned int)ev_num < events.size()); }
             /// Returns the length in MIDI clocks of the given note. _msg_ must be a Note On event present in the track
             /// (otherwise the function will return 0).
-        MIDIClockTime               GetNoteLength (const MIDITimedBigMessage& msg) const;
+        MIDIClockTime               GetNoteLength (const MIDITimedMessage& msg) const;
             /// Sets the default behaviour for the methods InsertEvent() and InsertNote(). This can be overriden
             /// by them by mean of the last (default) parameter.
             /// @param m one of @ref INSMODE_INSERT, @ref INSMODE_REPLACE, @ref INSMODE_INSERT_OR_REPLACE,
@@ -130,7 +130,7 @@ class  MIDITrack {
             /// + __ins_mode_ was INSMODE_REPLACE but there is no event to replace
             /// + a memory error occurred.
             /// otherwise **true**.
-        bool                        InsertEvent( const MIDITimedBigMessage& msg, int mode = INSMODE_DEFAULT );
+        bool                        InsertEvent( const MIDITimedMessage& msg, int mode = INSMODE_DEFAULT );
             /// Inserts a Note On and a Note Off event into the track. Use this method for inserting note messages as
             /// InsertEvent() could be dangerous in some situations. It handles automatically the EndOfTrack message,
             /// moving it if needed, so you must not deal with it. It also determines
@@ -148,25 +148,25 @@ class  MIDITrack {
             /// otherwise **true**.
             /// @bug In the latter case the method could leave the track in an inconsistent state (a Note On without
             /// corresponding Note Off or viceversa).
-        bool                        InsertNote( const MIDITimedBigMessage& msg, MIDIClockTime len,
+        bool                        InsertNote( const MIDITimedMessage& msg, MIDIClockTime len,
                                                 int mode = INSMODE_DEFAULT );
             /// Deletes an event from the track. Use DeleteNote() for safe deleting both Note On and Note Off. You cannot
             /// delete the EndOfTrack event.
             /// @param msg a copy of the event to delete.
             /// @return **false** if an exact copy of the event was not found, or if a memory error occurred, otherwise **true**.
-        bool                        DeleteEvent( const MIDITimedBigMessage& msg );
+        bool                        DeleteEvent( const MIDITimedMessage& msg );
             /// Deletes a Note On and corresponding Note Off events from the track. Don't use DeleteEvent() for deleting
             /// notes.
             /// @param msg a copy of the Note On event to delete.
             /// @return **false** if an exact copy of the event was not found, or if a memory error occurred, otherwise **true**.
             /// @bug In the latter case the method could leave the track in an inconsistent state (a Note On without
             /// corresponding Note Off or viceversa).
-        bool                        DeleteNote( const MIDITimedBigMessage& msg );
+        bool                        DeleteNote( const MIDITimedMessage& msg );
 
             /// Inserts the event as last, adjusting the EndOfTrack. This function should be used with caution, as it doesn't
             /// check temporal order and track consistency. You could use it if you would manually copy tracks
             /// (MultiTrack::AssignEventsToTracks() does it).
-        void                        PushEvent( const MIDITimedBigMessage& msg);
+        void                        PushEvent( const MIDITimedMessage& msg);
 
         void                        InsertInterval(MIDIClockTime start, MIDIClockTime length, const MIDITrack* src = 0);
                                                     // if src == 0 only shift events of length clocks
@@ -193,7 +193,7 @@ class  MIDITrack {
             /// + @ref COMPMODE_SAMEKIND : the event is a same kind event (see MIDITimedBigMessage::IsSameKind()).
             /// + @ref COMPMODE_TIME : the behaviour is the same of FindEventNumber(time, event_num).
             /// @return **true** if an event matching _msg_ was found, *false* otherwise.
-        bool                        FindEventNumber( const MIDITimedBigMessage& msg, int *event_num,
+        bool                        FindEventNumber( const MIDITimedMessage& msg, int *event_num,
                                                      int mode = COMPMODE_EQUAL) const;
 
             /// Finds the first event in the track with the given time.
@@ -206,7 +206,7 @@ class  MIDITrack {
 
 
     protected :
-        std::vector<MIDITimedBigMessage>
+        std::vector<MIDITimedMessage>
                                     events;
         static int                  ins_mode;
 };
@@ -233,14 +233,14 @@ class MIDITrackIterator {
         int                         NotesOn() const             { return num_notes_on; }
         char                        IsNoteOn(uchar n) const     { return notes_on[n]; }
         bool                        IsPedalOn() const           { return controls[64] > 64; }
-        bool                        FindNoteOff(uchar note, MIDITimedBigMessage** msg);
-        bool                        FindPedalOff(MIDITimedBigMessage** msg);
-        bool                        GetCurEvent(MIDITimedBigMessage** msg, MIDIClockTime end = TIME_INFINITE);
+        bool                        FindNoteOff(uchar note, MIDITimedMessage** msg);
+        bool                        FindPedalOff(MIDITimedMessage** msg);
+        bool                        GetCurEvent(MIDITimedMessage** msg, MIDIClockTime end = TIME_INFINITE);
                                         // in **msg next event on track,
                                         // true if msg is valid and cur_time <= end
         MIDIClockTime               GetCurEventTime() const;
                                         // returns TIME_INFINITE if we are at end of track
-        bool                        EventIsNow(const MIDITimedBigMessage& msg);
+        bool                        EventIsNow(const MIDITimedMessage& msg);
                                         // true if at cur_time there is msg
 
         bool                        GoToNextEvent();
@@ -250,7 +250,7 @@ class MIDITrackIterator {
     private:
 
         void                        FindChannel();
-        bool                        Process(const MIDITimedBigMessage *msg);
+        bool                        Process(const MIDITimedMessage *msg);
         void                        ScanEventsAtThisTime();
                                         // warning: this can be used only when we reach the first
                                         // event at a new time!

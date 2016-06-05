@@ -128,7 +128,7 @@ void MIDIMultiTrack::AssignEventsToTracks ( const MIDITrack *src )
     // move events to tracks 0-16 according it's types/channels
     for (unsigned int i = 0; i < tmp.GetNumEvents(); ++i)
     {
-        const MIDITimedBigMessage *msg;
+        const MIDITimedMessage *msg;
         msg = tmp.GetEventAddress ( i );
 
         int track_num = 0;
@@ -171,28 +171,28 @@ bool MIDIMultiTrack::MoveTrack(int from, int to) {
 }
 
 
-bool MIDIMultiTrack::InsertEvent(int trk, const MIDITimedBigMessage& msg, int _ins_mode) {
+bool MIDIMultiTrack::InsertEvent(int trk, const MIDITimedMessage& msg, int _ins_mode) {
     if (IsValidTrackNumber(trk))
         return tracks[trk]->InsertEvent(msg, _ins_mode);
     return false;
 }
 
 
-bool MIDIMultiTrack::InsertNote(int trk, const MIDITimedBigMessage& msg, MIDIClockTime len, int _ins_mode) {
+bool MIDIMultiTrack::InsertNote(int trk, const MIDITimedMessage& msg, MIDIClockTime len, int _ins_mode) {
     if (IsValidTrackNumber(trk))
         return tracks[trk]->InsertNote(msg, len, _ins_mode);
     return false;
 }
 
 
-bool MIDIMultiTrack::DeleteEvent(int trk, const MIDITimedBigMessage& msg) {
+bool MIDIMultiTrack::DeleteEvent(int trk, const MIDITimedMessage& msg) {
     if (IsValidTrackNumber(trk))
         return tracks[trk]->DeleteEvent(msg);
     return false;
 }
 
 
-bool MIDIMultiTrack::DeleteNote(int trk, const MIDITimedBigMessage& msg) {
+bool MIDIMultiTrack::DeleteNote(int trk, const MIDITimedMessage& msg) {
     if (IsValidTrackNumber(trk))
         return tracks[trk]->DeleteNote(msg);
     return false;
@@ -416,7 +416,7 @@ void MIDIMultiTrackIterator::GoToTime(MIDIClockTime time) {
         MIDITrack *track = multitrack->GetTrack(i);
 
     // extract the time of the first event of the track (already one exists)
-        MIDITimedBigMessage *msg = track->GetEventAddress(0);
+        MIDITimedMessage *msg = track->GetEventAddress(0);
 
     // Keep track of the event number and the event time.
         state.next_event_number[i] = 0;
@@ -450,7 +450,7 @@ bool MIDIMultiTrackIterator::GetCurEventTime(MIDIClockTime *t) const {
 }
 
 
-bool MIDIMultiTrackIterator::GetCurEvent(int *track, MIDITimedBigMessage **msg) {
+bool MIDIMultiTrackIterator::GetCurEvent(int *track, MIDITimedMessage **msg) {
     int t = state.GetCurEventTrack();
 
     if(t != -1) {
@@ -522,7 +522,7 @@ bool MIDIMultiTrackIterator::GoToNextEventOnTrack(int track_num) {
     }
     else {
     // not at end of track yet - get the time of the event
-        MIDITimedBigMessage *msg;
+        MIDITimedMessage *msg;
         msg = track->GetEventAddress( *event_num );
         state.next_event_time[track_num] = msg->GetTime();
     }

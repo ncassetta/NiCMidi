@@ -6,7 +6,7 @@
 
 #include "multitrack.h"
 
-void DumpMIDITimedBigMessage (MIDITimedBigMessage *msg);
+void DumpMIDITimedMessage (MIDITimedMessage *msg);
 void DumpMIDITrack (MIDITrack *t);
 void DumpAllTracks (MIDIMultiTrack *mlt);
 void DumpMIDIMultiTrack (MIDIMultiTrack *mlt);

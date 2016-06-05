@@ -162,9 +162,6 @@ class 	MIDIMessage {
         /// then call GetChannel() for further information.
         bool                    IsPedalOff() const          { return IsControlChange() && GetController() == C_DAMPER &&
                                                                                           !(GetControllerValue() & 0x40); }
-        /// Returns *true* if the message is a all notes off message (a control change with control >= 0x7A).
-        bool	                IsAllNotesOff() const       { return ((status&0xf0) == CONTROL_CHANGE ) &&
-                                                                      (byte1 >= C_ALL_NOTES_OFF); }
         /// Returns *true if the message is a program change message.  You can then call GetChannel()
         /// and GetProgramValue() for further information.
         bool	                IsProgramChange() const     { return ((status & 0xf0) == PROGRAM_CHANGE); }
@@ -174,13 +171,16 @@ class 	MIDIMessage {
         /// Returns *true* if the message is a bender message. You can then call GetChannel()
         /// and GetBenderValue() for further information.
         bool	                IsPitchBend() const         { return ((status & 0xf0) == PITCH_BEND); }
+        /// Returns *true* if the message is a all notes off message (a control change with control >= 0x7A).
+        bool	                IsAllNotesOff() const       { return ((status & 0xf0) == CONTROL_CHANGE) &&
+                                                                      (byte1 >= C_ALL_NOTES_OFF); }
         /// Returns *true* if the message is a system message (the status byte is 0xf0 or higher).
         bool	                IsSystemMessage() const     { return (status & 0xf0) == 0xf0; }
         /// Returns*true* if the message is a system exclusive message.
         /// \note Sysex messages are not stored in the MIDIMessage object. \see MIDIBigMessage
         bool	                IsSysEx() const             { return (status == SYSEX_START); }
 
-        short	                GetSysExNum() const         { return (short)((byte3<<8) | byte2); }
+        // now unused short	                GetSysExNum() const         { return (short)((byte3<<8) | byte2); }
         /// Returns true if the message is a midi time code message.
         bool	                IsMTC() const               { return (status == MTC); }
         /// Returns true if the message is a song position message.
@@ -204,8 +204,6 @@ class 	MIDIMessage {
         /// Returns *true* if the message is a marker text meta-message.
         /// \note the text is not stored in the MIDIMessage object. \see MIDIBigMessage
         bool                    IsMarkerText() const        { return (IsTextEvent() && GetMetaType() == META_MARKER_TEXT); }
-        /// Returns *true* if the message is a no operation meta-message.
-        bool	                IsNoOp() const              { return (status == META_EVENT) && (byte1 == META_NO_OPERATION); }
         /// Returns *true* if the message is a tempo change meta-message.
         bool	                IsTempo() const             { return (status == META_EVENT) && (byte1 == META_TEMPO); }
         /// Returns *true* if the message is a data end (i.e. end of track) meta-message.
@@ -218,6 +216,9 @@ class 	MIDIMessage {
         bool	                IsKeySig() const            { return (status == META_EVENT) && (byte1 == META_KEYSIG); }
         /// Returns *true* if the message is a beat marker meta-message.
         bool 	                IsBeatMarker() const        { return (status == META_EVENT) && (byte1 == META_BEAT_MARKER); }
+
+        /// Returns *true* if the status is not a valid MIDI status.
+        bool	                IsNoOp() const              { return (status & 0xF0) == 0; }
         //@}
 
         ///@name The 'Set' methods
@@ -278,28 +279,30 @@ class 	MIDIMessage {
         void	                SetProgramChange(unsigned char chan, unsigned char prog);
         /// Makes the message a channel pressure message with given channel and pressure. Frees the sysex pointer.
         void	                SetChannelPressure(unsigned char chan, unsigned char pres);
-        /// Makes the message a pitch bend message with given channel and value (signed 14 bit).
+        /// Makes the message a pitch bend message with given channel and value (unsigned 14 bit).
         /// Frees the sysex pointer.
         void	                SetPitchBend( unsigned char chan, short val );
         /// Makes the message a system exclusive message with given MIDISystemExclusive object. The eventual old
         /// sysex is freed and the MIDISystemExclusive is copied, so the message owns its object.
         void	                SetSysEx(const MIDISystemExclusive* se);
-        /// Makes the message a song position system message with given position.
-        void	                SetMTC( unsigned char field, unsigned char v );
-        /// Makes the message a song position system message with given position.
+        /// Makes the message a MIDI time code message with given field (3 bits) and value (4 bits). Frees the sysex
+        /// pointer.
+        void	                SetMTC(unsigned char field, unsigned char val);
+        /// Makes the message a song position system message with given position (14 bits). Frees the sysex pointer.
         void	                SetSongPosition( short pos );
-        /// Makes the message a song select system message with given song.
+        /// Makes the message a song select system message with given song. Frees the sysex pointer.
         void	                SetSongSelect(unsigned char sng);
-        /// Makes the message a tune request system message.
+        /// Makes the message a tune request system message. Frees the sysex pointer.
         void	                SetTuneRequest();
         void	                SetMetaEvent(unsigned char type, unsigned char v1, unsigned char v2);
         void	                SetMetaEvent(unsigned char type, unsigned short v);
         void	                SetAllNotesOff(unsigned char chan, unsigned char type = C_ALL_NOTES_OFF);
         void	                SetLocal(unsigned char chan, unsigned char v);
-        void	                SetNoOp();
+        //void	                SetNoOp(); use Reset() instead
         void	                SetTempo32( unsigned short tempo_times_32 );
-        /// Makes the message a text meta-message with given type
-        void	                SetText(unsigned short text_num, unsigned char type = META_GENERIC_TEXT);
+        /// Makes the message a text meta-message with given type; text is a C string containing the ascii characters.
+        /// The text is held in the sysex pointer (the eventual old pointer is freed).
+        void	                SetText(const char* text, unsigned char type = META_GENERIC_TEXT);
         /// Makes the message a data end (i.e. end of track) meta-message.
         void	                SetDataEnd()                        { SetMetaEvent(META_DATA_END, 0); }
         /// Makes the message a time signature meta-message with given time (numerator and denominator).
@@ -595,25 +598,13 @@ class 	MIDITimedMessage : public MIDIMessage {
 
 
 
-#ifndef JDKSMIDI_MSG_H
-#define JDKSMIDI_MSG_H
-
-
-namespace jdksmidi
-{
-
-
-
-class MIDIMessage
-{
-public:
-
-
-
 
 
 
 /*
+class MIDIMessage
+{
+public:
 
 
     /// If the message is a normal system exclusive marker, IsSysExN() will return true.
@@ -759,7 +750,7 @@ public:
     void SetKeySig ( signed char sharp_flats, unsigned char major_minor );
 
     void SetBeatMarker();
-*/
+
 
     friend bool operator == ( const MIDIMessage &m1, const MIDIMessage &m2 );
 
@@ -782,9 +773,11 @@ protected:
     unsigned char byte6; // Meta events or SysExURT events last data byte (#5)
     unsigned char data_length; // number of data bytes in Meta events or SysExURT events (0...5)
 };
+*/
 
 
 
+/*
 class MIDIBigMessage : public MIDIMessage
 {
 public:
@@ -941,49 +934,6 @@ protected:
 
 
 
-class MIDIDeltaTimedMessage : public MIDIMessage
-{
-public:
-
-    //
-    // Constructors
-    //
-
-    MIDIDeltaTimedMessage();
-
-    MIDIDeltaTimedMessage ( const MIDIDeltaTimedMessage &m );
-
-    MIDIDeltaTimedMessage ( const MIDIMessage &m );
-
-    void Clear();
-
-    void Copy ( const MIDIDeltaTimedMessage &m );
-
-    //
-    // operator =
-    //
-
-    const MIDIDeltaTimedMessage &operator = ( const MIDIDeltaTimedMessage &m );
-
-    const MIDIDeltaTimedMessage &operator = ( const MIDIMessage &m );
-
-    //
-    // 'Get' methods
-    //
-
-    MIDIClockTime GetDeltaTime() const;
-
-    //
-    // 'Set' methods
-    //
-
-    void SetDeltaTime ( MIDIClockTime t );
-
-
-protected:
-    MIDIClockTime dtime;
-};
-
 
 ///
 /// The MIDITimedBigMessage inherits ftom a MIDIBigMessage and adds the features of a MIDITimedMessage.
@@ -1102,10 +1052,5 @@ protected:
     MIDIClockTime time;
 };
 
-
-
-}
-
-
-#endif
+*/
 

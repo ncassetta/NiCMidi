@@ -67,7 +67,7 @@ void MIDISequencerTrackProcessor::Reset() {
 }
 
 
-bool MIDISequencerTrackProcessor::Process( MIDITimedBigMessage *msg ) {
+bool MIDISequencerTrackProcessor::Process( MIDITimedMessage *msg ) {
     // are we muted?
     if(mute)
         // yes, ignore event.
@@ -281,7 +281,7 @@ void MIDISequencerState::Reset() {
 
 
 
-bool MIDISequencerState::Process( MIDITimedBigMessage *msg ) {
+bool MIDISequencerState::Process( MIDITimedMessage *msg ) {
     MIDISequencerTrackState& t_state = track_states[last_event_track];
 
     // is the event a NoOp?
@@ -322,7 +322,7 @@ bool MIDISequencerState::Process( MIDITimedBigMessage *msg ) {
         }
         else if( msg->IsProgramChange() ) { // is it a program change event?
             // yes, update the current program change value
-            t_state.program = msg->GetPGValue();
+            t_state.program = msg->GetProgramValue();
             NotifyTrack( MIDISequencerGUIEvent::GROUP_TRACK_PROGRAM );
         }
         // pass the message to our note matrix to keep track of all notes on
@@ -362,7 +362,7 @@ bool MIDISequencerState::Process( MIDITimedBigMessage *msg ) {
             Notify(MIDISequencerGUIEvent::GROUP_CONDUCTOR,
                    MIDISequencerGUIEvent::GROUP_CONDUCTOR_KEYSIG);
         }
-        else if ( msg->IsTextMarker()) {
+        else if ( msg->IsMarkerText()) {
             marker_text = std::string((const char *)msg->GetSysEx()->GetBuf(), msg->GetSysEx()->GetLength());
             Notify(MIDISequencerGUIEvent::GROUP_CONDUCTOR,
                    MIDISequencerGUIEvent::GROUP_CONDUCTOR_MARKER);
@@ -486,7 +486,7 @@ void MIDISequencer::SetSoloMode(bool m, int trk)  {
     solo_mode = m;
 
     for(unsigned int i = 0; i < GetNumTracks(); ++i ) {
-        if(i == trk)
+        if(i == (unsigned)trk)
             track_processors[i]->solo = true;
         else
             track_processors[i]->solo = false;
@@ -567,7 +567,7 @@ bool MIDISequencer::GoToTime(MIDIClockTime time_clk) {
 
     MIDIClockTime t;
     int trk;
-    MIDITimedBigMessage ev;
+    MIDITimedMessage ev;
 
     while (state.cur_clock < time_clk) {
         if (!GetNextEventTime(&t)) {    // no other events: we can't reach time_clk and return false
@@ -621,7 +621,7 @@ bool MIDISequencer::GoToTimeMs(double time_ms) {
 
     double t;
     int trk;
-    MIDITimedBigMessage ev;
+    MIDITimedMessage ev;
 
     while (state.cur_time_ms < time_ms) {
         if (!GetNextEventTimeMs(&t)) {  // no other events: we can't reach time_clk and return false
@@ -679,7 +679,7 @@ bool MIDISequencer::GoToMeasure (int measure, int beat) {
         state.Reset();
 
     int trk;
-    MIDITimedBigMessage ev;
+    MIDITimedMessage ev;
 
         // iterate thru all the events until cur-measure and cur_beat are
         // where we want them.
@@ -736,7 +736,7 @@ bool MIDISequencer::GetNextEventTimeMs(double *time_ms) {
 }
 
 // REVISED
-bool MIDISequencer::GetNextEvent(int *trk, MIDITimedBigMessage *msg) {
+bool MIDISequencer::GetNextEvent(int *trk, MIDITimedMessage *msg) {
     MIDIClockTime t;
 
     // ask the iterator for the current event time
@@ -767,7 +767,7 @@ bool MIDISequencer::GetNextEvent(int *trk, MIDITimedBigMessage *msg) {
             state.Process(msg);
         }
         else    {   // this event comes before the next beat
-            MIDITimedBigMessage *msg_ptr;
+            MIDITimedMessage *msg_ptr;
 
             if(state.iterator.GetCurEvent(trk, &msg_ptr)) {
                 state.last_event_track = *trk;
@@ -801,7 +801,7 @@ bool MIDISequencer::GetNextEvent(int *trk, MIDITimedBigMessage *msg) {
 
 // This is new
 double MIDISequencer::MIDItoMs(MIDIClockTime t) {
-    MIDITimedBigMessage* msg;
+    MIDITimedMessage* msg;
     MIDITrackIterator tr_iter(state.multitrack->GetTrack(0));
     MIDIClockTime base_t = 0, delta_t = 0, now_t = 0;
     double ms_time = 0.0, old_tempo = 120.0, ms_per_clock;
@@ -849,7 +849,7 @@ void MIDISequencer::ScanEventsAtThisTime() {
 
     MIDIClockTime t = 0;
     int trk;
-    MIDITimedBigMessage ev;
+    MIDITimedMessage ev;
 
     while( GetNextEventTime(&t) && t == orig_clock && GetNextEvent(&trk, &ev)) {
         ;  // cycle through all events at this time

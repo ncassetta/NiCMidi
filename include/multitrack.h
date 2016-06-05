@@ -106,17 +106,17 @@ class MIDIMultiTrack {
 
             /// Inserts the event _msg_ in the track _trk_. See MIDITrack::InsertEvent() for details.
             /// \return *true* if the event was effectively inserted
-        bool                    InsertEvent(int trk,  const MIDITimedBigMessage& msg, int _ins_mode = INSMODE_DEFAULT);
+        bool                    InsertEvent(int trk,  const MIDITimedMessage& msg, int _ins_mode = INSMODE_DEFAULT);
 
             /// Inserts a Note On and a Note Off event into the track. See MIDITrack::InsertNote() for details.
-        bool                    InsertNote(int trk, const MIDITimedBigMessage& msg,
+        bool                    InsertNote(int trk, const MIDITimedMessage& msg,
                                            MIDIClockTime len, int _ins_mode = INSMODE_DEFAULT);
 
             /// Deletes the event _msg_ from the track _trk_. See MIDITrack::DeleteEvent() for details.
-        bool                    DeleteEvent(int trk,  const MIDITimedBigMessage& msg);
+        bool                    DeleteEvent(int trk,  const MIDITimedMessage& msg);
 
             /// Deletes the note _msg_ (_msg_ must be a Note On) from the track _trk_. See MIDITrack::DeleteNote() for details.
-        bool                    DeleteNote( int trk, const MIDITimedBigMessage& msg );
+        bool                    DeleteNote( int trk, const MIDITimedMessage& msg );
 
 
         void                    EditCopy(MIDIClockTime start, MIDIClockTime end, int tr_start,
@@ -217,7 +217,7 @@ class MIDIMultiTrackIterator {
             /// @param *msg a pointer to the event in the MidiMultiTrack
             /// @return *true* if there is effectively a next event (we aren't at the end of the
             /// MIDIMultiTrack, *false* otherwise (*track and **msg don't contain valid values).
-        bool                    GetCurEvent(int *track, MIDITimedBigMessage **msg);
+        bool                    GetCurEvent(int *track, MIDITimedMessage **msg);
             /// Discards the current event and set as current the subsequent.
             /// @return *true* if there is effectively a next event (we aren't at the end of the
             /// MIDIMultiTrack, *false* otherwise.

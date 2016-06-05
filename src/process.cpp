@@ -62,7 +62,7 @@
 
 
 
-  bool MIDIMultiProcessor::Process( MIDITimedBigMessage *msg )
+  bool MIDIMultiProcessor::Process( MIDITimedMessage *msg )
   {
     for( int i=0; i<num_processors; ++i )
     {
@@ -105,7 +105,7 @@
     }
   }
 
-  bool MIDIProcessorTransposer::Process( MIDITimedBigMessage *msg )
+  bool MIDIProcessorTransposer::Process( MIDITimedMessage *msg )
   {
     if( msg->IsChannelMsg() )
     {
@@ -158,7 +158,7 @@
     }
   }
 
-  bool MIDIProcessorRechannelizer::Process( MIDITimedBigMessage *msg )
+  bool MIDIProcessorRechannelizer::Process( MIDITimedMessage *msg )
   {
     if( msg->IsChannelMsg() )
     {

@@ -37,6 +37,9 @@
 #include "sysex.h"
 
 
+// TODO: perhaps we can drop this file
+
+
   class MIDIQueue
     {
     public:
@@ -65,16 +68,16 @@
    pointers are freed
 */
 
-      void Put( const MIDITimedBigMessage &msg )
+      void Put( const MIDITimedMessage &msg )
         {
           buf[next_in] = msg;
 
           next_in = (next_in+1)%bufsize;
         }
 
-      MIDITimedBigMessage Get() const
+      MIDITimedMessage Get() const
         {
-          return MIDITimedBigMessage( buf[next_out] );
+          return MIDITimedMessage( buf[next_out] );
         }
 
       void Next()
@@ -82,13 +85,13 @@
           next_out = (next_out+1) % bufsize;
         }
 
-      const MIDITimedBigMessage *Peek()  const
+      const MIDITimedMessage *Peek()  const
         {
           return &buf[next_out];
         }
 
     protected:
-      MIDITimedBigMessage *buf;
+      MIDITimedMessage *buf;
       int bufsize;
       volatile int next_in;
       volatile int next_out;
