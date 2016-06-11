@@ -70,6 +70,8 @@
     cur_track = -1;
   }
 
+
+/* NO MORE USED
   // TODO: modified when I changed MIDI messages names: is it right?
   void 	MIDIFileReadMultiTrack::AddEventToMultiTrack(
     const MIDITimedMessage &msg,
@@ -89,7 +91,7 @@
       }
     }
   }
-
+*/
 
   /* OLD VERSION
   void 	MIDIFileReadMultiTrack::AddEventToMultiTrack(
@@ -138,11 +140,13 @@
       // split format 0 files into separate tracks, one for each channel,
       // keep track 0 for tempo and meta-events
 
-      AddEventToMultiTrack( msg, 0, msg.GetChannel()+1 );
+      multitrack->InsertEvent(msg.GetChannel() + 1, msg, INSMODE_INSERT);
+      //AddEventToMultiTrack( msg, 0, msg.GetChannel()+1 );
     }
     else
     {
-      AddEventToMultiTrack( msg, 0, cur_track );
+        multitrack->InsertEvent(cur_track, msg, INSMODE_INSERT);
+      //AddEventToMultiTrack( msg, 0, cur_track );
     }
   }
 
@@ -156,7 +160,8 @@
     msg.SetSysEx(&ex);
     msg.SetTime(time);
 
-    AddEventToMultiTrack( msg, 0, cur_track );
+    multitrack->InsertEvent(cur_track, msg, INSMODE_INSERT);
+    //AddEventToMultiTrack( msg, 0, cur_track );
   }
 
 
@@ -223,7 +228,7 @@ void    MIDIFileReadMultiTrack::mf_sysex( MIDIClockTime time, const MIDISystemEx
     sysex->PutByte( (unsigned char)clks_per_metro );
     sysex->PutByte( (unsigned char)notated_32nd_per_quarter );
 
-    AddEventToMultiTrack( msg, sysex, cur_track );
+    //AddEventToMultiTrack( msg, sysex, cur_track );
   }
 
 
@@ -249,7 +254,8 @@ void    MIDIFileReadMultiTrack::mf_sysex( MIDIClockTime time, const MIDISystemEx
     msg.SetTempo32( static_cast<unsigned short>(tempo_bpm_times_32) );
     msg.SetTime( time );
 
-    AddEventToMultiTrack( msg, 0, cur_track );
+    multitrack->InsertEvent(cur_track, msg, INSMODE_INSERT);
+    //AddEventToMultiTrack( msg, 0, cur_track );
   }
 
 
@@ -260,7 +266,8 @@ void    MIDIFileReadMultiTrack::mf_sysex( MIDIClockTime time, const MIDISystemEx
     msg.SetKeySig( (unsigned char)c, (unsigned char)v );
     msg.SetTime( time );
 
-    AddEventToMultiTrack( msg, 0, cur_track );
+    multitrack->InsertEvent(cur_track, msg, INSMODE_INSERT);
+    //AddEventToMultiTrack( msg, 0, cur_track );
   }
 
 
@@ -274,18 +281,19 @@ void    MIDIFileReadMultiTrack::mf_sysex( MIDIClockTime time, const MIDISystemEx
   {
     MIDITimedMessage msg;
 
-    msg.SetStatus( META_EVENT );
-    msg.SetMetaType( (uchar)type ); // remember - MF_*_TEXT* id codes match META_*_TEXT codes
-    msg.SetTime( time );
+    msg.SetStatus(META_EVENT);
+    msg.SetMetaType((unsigned char)type); // remember - MF_*_TEXT* id codes match META_*_TEXT codes
+    msg.SetTime(time);
 
-    MIDISystemExclusive *sysex = new MIDISystemExclusive(len);
+    msg.AllocateSysEx(len);
 
     for( int i=0; i<len; ++i )
     {
-      sysex->PutSysByte( s[i] );
+      msg.GetSysEx()->PutSysByte( s[i] );
     }
 
-    AddEventToMultiTrack( msg, sysex, cur_track );
+    multitrack->InsertEvent(cur_track, msg, INSMODE_INSERT);
+    //AddEventToMultiTrack( msg, sysex, cur_track );
   }
 
 

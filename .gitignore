@@ -223,14 +223,14 @@ pip-log.txt
 ## CodeBlocks
 ##################
 
-.cbp
-.layout
-.cscope_file_list
-.depend
+*.cbp
+*.layout
+*.cscope_file_list
+*.depend
 
 ############################
 ## Executables and libraries
 ############################
 
-.exe
-.a
+*.exe
+*.a

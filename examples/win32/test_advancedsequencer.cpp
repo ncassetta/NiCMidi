@@ -150,7 +150,7 @@ void DumpMIDITimedBigMessage( const MIDITimedBigMessage *msg )
 
 void DumpMIDIMultiTrackWithPauses (MIDIMultiTrack *mlt) {
     MIDIMultiTrackIterator i (mlt);
-    MIDITimedBigMessage *msg;
+    MIDITimedMessage *msg;
     int trk_num;
     int num_lines = 0;
 
@@ -162,7 +162,7 @@ void DumpMIDIMultiTrackWithPauses (MIDIMultiTrack *mlt) {
     do {
         if (i.GetCurEvent (&trk_num, &msg)) {
             printf ("Tr %2d - ", trk_num);
-            DumpMIDITimedBigMessage (msg);
+            DumpMIDITimedMessage (msg);
             num_lines++;
         }
         if (num_lines == 80) {

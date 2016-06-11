@@ -77,7 +77,7 @@
       {
         for( int event_num=0; event_num<t->GetNumEvents(); ++event_num )
         {
-          const MIDITimedBigMessage *ev = t->GetEventAddress( event_num );
+          const MIDITimedMessage *ev = t->GetEventAddress( event_num );
           if( ev && !ev->IsNoOp() )
           {
 

@@ -1,7 +1,5 @@
 /*
  *
- *  SLIGHTLY MODIFIED BY NICOLA CASSETTA
- *
  *  libjdkmidi-2004 C++ Class Library for MIDI
  *
  *  Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
@@ -44,7 +42,7 @@
 #include "tempo.h"
 #include "sysex.h"
 
-
+#include <string>
 
 
 
@@ -53,18 +51,19 @@ class 	MIDIMessage {
         ///@name The Constructors and Initializing methods
         //@{
 
-        /// Creates a a MIDIMessage object which holds no value.
+        /// Creates a a MIDIMessage object which holds no value. The message will be ignored in playing.
                                 MIDIMessage();
         /// The copy constructor. If the target message has a MIDISystemExclusive object it is duplicated,
         /// so every MIDIBigMessage has its own object.
-                                MIDIMessage(const MIDIMessage &m);
-        /// Resets the message and frees the MIDISystemExclusive.
+                                MIDIMessage(const MIDIMessage &msg);
+        /// Resets the message and frees the MIDISystemExclusive. The message becomes non valid and will
+        /// be ignored.
         void	                Clear();
         /// Frees the MIDISystemExclusive without changing other bytes.
         void                    ClearSysEx();
         /// The equal operator. It primarily frees the old MIDISystemExclusive object if it was allocated,
         /// then duplicates the (eventual) new MIDISystemExclusive, so every MIDIBigMessage has its own object.
-        const MIDIMessage&      operator= (const MIDIMessage &m);
+        const MIDIMessage&      operator= (const MIDIMessage &msg);
 
         //@}
 
@@ -125,9 +124,10 @@ class 	MIDIMessage {
         /// If the message is a key signature meta-message, returns the standard midi file format of the key
         /// major/minor flag. 0 means a major key, 1 means a minor key.
         unsigned char           GetKeySigMajorMinor() const { return byte3; }
-
         /// If the message is a tempo change meta-message, returns the tempo value in 1/32 bpm
         unsigned short	        GetTempo32() const          { return GetMetaValue(); }
+        /// If the message is a text meta-message, returns the associated text as a std::string
+        std::string             GetText() const;
 
         /// Returns *true* if the message is some sort of channel message. You can then call
         /// GetChannel() for further information.
@@ -171,13 +171,12 @@ class 	MIDIMessage {
         /// Returns *true* if the message is a bender message. You can then call GetChannel()
         /// and GetBenderValue() for further information.
         bool	                IsPitchBend() const         { return ((status & 0xf0) == PITCH_BEND); }
-        /// Returns *true* if the message is a all notes off message (a control change with control >= 0x7A).
+        /// Returns *true* if the message is a all notes off message (a control change with control >= 0x7A).  // TODO: revise this
         bool	                IsAllNotesOff() const       { return ((status & 0xf0) == CONTROL_CHANGE) &&
                                                                       (byte1 >= C_ALL_NOTES_OFF); }
         /// Returns *true* if the message is a system message (the status byte is 0xf0 or higher).
         bool	                IsSystemMessage() const     { return (status & 0xf0) == 0xf0; }
         /// Returns*true* if the message is a system exclusive message.
-        /// \note Sysex messages are not stored in the MIDIMessage object. \see MIDIBigMessage
         bool	                IsSysEx() const             { return (status == SYSEX_START); }
 
         // now unused short	                GetSysExNum() const         { return (short)((byte3<<8) | byte2); }
@@ -192,19 +191,17 @@ class 	MIDIMessage {
         /// Returns *true* if the message is a meta event message. You can then call GetMetaType()
         /// and GetMetaValue() for further information.
         bool	                IsMetaEvent() const         { return (status == META_EVENT); }
-        /// Returns *true* if the message is a text message (a subset of meta events).
-        /// \note the text is not stored in the MIDIMessage object. \see MIDIBigMessage
+        /// Returns *true* if the message is a text message (a subset of meta events). You can then
+        /// call GetText() for further information.
         bool 	                IsTextEvent() const         { return (status == META_EVENT && byte1 >= 0x1 && byte1 <= 0xf); }
-        /// Returns *true* if the message is a lyric text meta-message.
-        /// \note the text is not stored in the MIDIMessage object. \see MIDIBigMessage
-        bool                    IsLyricText() const         { return (IsTextEvent() && GetMetaType() == META_LYRIC_TEXT); }
-        /// Returns *true* if the message is a track name meta-message.
-        /// \note the text is not stored in the MIDIMessage object. \see MIDIBigMessage
+        /// Returns *true* if the message is a track name meta-message. You can then
+        /// call GetText() for further information.
         bool                    IsTrackName() const         { return (IsTextEvent() && GetMetaType() == META_TRACK_NAME); }
-        /// Returns *true* if the message is a marker text meta-message.
-        /// \note the text is not stored in the MIDIMessage object. \see MIDIBigMessage
+        /// Returns *true* if the message is a marker text meta-message. You can then
+        /// call GetText() for further information.
         bool                    IsMarkerText() const        { return (IsTextEvent() && GetMetaType() == META_MARKER_TEXT); }
-        /// Returns *true* if the message is a tempo change meta-message.
+        /// Returns *true* if the message is a tempo change meta-message. You can then call GetTempo32()
+        /// for further information.
         bool	                IsTempo() const             { return (status == META_EVENT) && (byte1 == META_TEMPO); }
         /// Returns *true* if the message is a data end (i.e. end of track) meta-message.
         bool	                IsDataEnd() const           { return (status == META_EVENT) && (byte1 == META_DATA_END); }
@@ -254,9 +251,12 @@ class 	MIDIMessage {
         void	                SetMetaType(unsigned char t)        { byte1 = t; }
         /// Sets the meta value for a meta-event message.
         void	                SetMetaValue(unsigned short v);
+        /// Allocates a MIDISystemExclusive object, with a buffer of given max size. The buffer
+        /// is initially empty and can be accessed with GetSysEx(). An eventual old object is freed.
+        void                    AllocateSysEx(unsigned int len);
         /// Copies the given MIDISystemExclusive object into the message without changing other bytes.
         /// An eventual old object is freed.
-        void                    CopySysExData(const MIDISystemExclusive* se);
+        void                    CopySysEx(const MIDISystemExclusive* se);
         /// Makes the message a note on message with given channel, note and velocity. Frees the sysex pointer.
         void	                SetNoteOn(unsigned char chan, unsigned char note, unsigned char vel);
         /// Makes the message a note off message with given channel, note and velocity. Frees the sysex pointer.
@@ -298,7 +298,8 @@ class 	MIDIMessage {
         void	                SetMetaEvent(unsigned char type, unsigned short v);
         void	                SetAllNotesOff(unsigned char chan, unsigned char type = C_ALL_NOTES_OFF);
         void	                SetLocal(unsigned char chan, unsigned char v);
-        //void	                SetNoOp(); use Reset() instead
+        /// The same of Clear(), makes the message a non valid message which will be ignored
+        void	                SetNoOp()                           { Clear(); }
         void	                SetTempo32( unsigned short tempo_times_32 );
         /// Makes the message a text meta-message with given type; text is a C string containing the ascii characters.
         /// The text is held in the sysex pointer (the eventual old pointer is freed).
@@ -506,8 +507,8 @@ class 	MIDITimedMessage : public MIDIMessage {
       //
 
                                 MIDITimedMessage();
-                                MIDITimedMessage(const MIDITimedMessage &m);
-                                MIDITimedMessage(const MIDIMessage &m);
+                                MIDITimedMessage(const MIDITimedMessage &msg);
+                                MIDITimedMessage(const MIDIMessage &msg);
       //
       // Destructor
       //
@@ -520,8 +521,8 @@ class 	MIDITimedMessage : public MIDIMessage {
       // operator =
       //
 
-        const MIDITimedMessage &operator= (const MIDITimedMessage &m);
-        const MIDITimedMessage &operator= (const MIDIMessage &m);
+        const MIDITimedMessage &operator= (const MIDITimedMessage &msg);
+        const MIDITimedMessage &operator= (const MIDIMessage &msg);
 
       //
       // 'Get' methods
@@ -560,8 +561,8 @@ class 	MIDITimedMessage : public MIDIMessage {
     // if a (or b) is not a note message it's smaller (non note go before notes)
     // if a (or b) is a Note Off it's smaller (Note Off go before Note On)
     static int CompareEventsForInsert (
-        const MIDITimedMessage &a,
-        const MIDITimedMessage &b
+        const MIDITimedMessage &m1,
+        const MIDITimedMessage &m2
     );
 
     // This function is used by the methods that search and insert events in the tracks to find events
@@ -577,8 +578,8 @@ class 	MIDITimedMessage : public MIDIMessage {
     // MIDITrack::InsertEvent and MIDITrack::InsertNote search if at same MIDI time of the event to insert exists
     // such an event and, if they find it, they replace the event, rather than inserting it.
     static bool IsSameKind (
-        const MIDITimedMessage &a,
-        const MIDITimedMessage &b
+        const MIDITimedMessage &m1,
+        const MIDITimedMessage &m2
     );
 
     //friend bool operator == ( const MIDITimedBigMessage &m1, const MIDITimedBigMessage &m2 );

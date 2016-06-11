@@ -108,7 +108,7 @@
 	"windows.h"
 	"mmsystem.h"
 
-1463930892 source:c:\users\nicola\cplusplus\github\myjdkmidi\examples\win32\test_advancedsequencer.cpp
+1465491570 source:c:\users\nicola\cplusplus\github\myjdkmidi\examples\win32\test_advancedsequencer.cpp
 	"../../include/advancedsequencer.h"
 	"../../include/dump_tracks.h"
 	<iostream>
@@ -242,7 +242,7 @@
 	<string>
 	<vector>
 
-1463916709 c:\users\nicola\cplusplus\github\myjdkmidi\include\advancedsequencer.h
+1464949770 c:\users\nicola\cplusplus\github\myjdkmidi\include\advancedsequencer.h
 	<vector>
 	<string>
 	"msg.h"
@@ -263,12 +263,13 @@
 	"driverdump.h"
 	<vector>
 
-1463914957 c:\users\nicola\cplusplus\github\myjdkmidi\include\msg.h
+1465497211 c:\users\nicola\cplusplus\github\myjdkmidi\include\msg.h
 	"midi.h"
 	"tempo.h"
 	"sysex.h"
+	<string>
 
-1463906255 c:\users\nicola\cplusplus\github\myjdkmidi\include\midi.h
+1464946385 c:\users\nicola\cplusplus\github\myjdkmidi\include\midi.h
 	"world.h"
 
 1463083790 c:\users\nicola\cplusplus\github\myjdkmidi\include\world.h
@@ -282,7 +283,7 @@
 1463914632 c:\users\nicola\cplusplus\github\myjdkmidi\include\sysex.h
 	"midi.h"
 
-1461609310 c:\users\nicola\cplusplus\github\myjdkmidi\include\driver.h
+1464949284 c:\users\nicola\cplusplus\github\myjdkmidi\include\driver.h
 	"msg.h"
 	"matrix.h"
 	"process.h"
@@ -297,25 +298,25 @@
 	"midi.h"
 	"msg.h"
 
-1456082732 c:\users\nicola\cplusplus\github\myjdkmidi\include\process.h
+1465050417 c:\users\nicola\cplusplus\github\myjdkmidi\include\process.h
 	"msg.h"
 	"sysex.h"
 
-1456083681 c:\users\nicola\cplusplus\github\myjdkmidi\include\queue.h
+1465050456 c:\users\nicola\cplusplus\github\myjdkmidi\include\queue.h
 	"msg.h"
 	"sysex.h"
 
-1464104519 c:\users\nicola\cplusplus\github\myjdkmidi\include\multitrack.h
+1464949504 c:\users\nicola\cplusplus\github\myjdkmidi\include\multitrack.h
 	"track.h"
 	<vector>
 
-1463862037 c:\users\nicola\cplusplus\github\myjdkmidi\include\track.h
+1464949432 c:\users\nicola\cplusplus\github\myjdkmidi\include\track.h
 	"midi.h"
 	"sysex.h"
 	"msg.h"
 	<vector>
 
-1464104519 c:\users\nicola\cplusplus\github\myjdkmidi\include\sequencer.h
+1464949770 c:\users\nicola\cplusplus\github\myjdkmidi\include\sequencer.h
 	"track.h"
 	"multitrack.h"
 	"tempo.h"
@@ -343,7 +344,7 @@
 	<atomic>
 	<iostream>
 
-1456001735 c:\users\nicola\cplusplus\github\myjdkmidi\include\filereadmultitrack.h
+1465492594 c:\users\nicola\cplusplus\github\myjdkmidi\include\filereadmultitrack.h
 	"midi.h"
 	"msg.h"
 	"sysex.h"
@@ -351,13 +352,13 @@
 	"fileread.h"
 	"multitrack.h"
 
-1455975386 c:\users\nicola\cplusplus\github\myjdkmidi\include\file.h
+1465140129 c:\users\nicola\cplusplus\github\myjdkmidi\include\file.h
 	"midi.h"
 	"msg.h"
 	"sysex.h"
 	"tempo.h"
 
-1456000632 c:\users\nicola\cplusplus\github\myjdkmidi\include\fileread.h
+1465141379 c:\users\nicola\cplusplus\github\myjdkmidi\include\fileread.h
 	<fstream>
 	"midi.h"
 	"msg.h"
@@ -370,11 +371,11 @@
 	"windows.h"
 	"mmsystem.h"
 
-1463935952 source:c:\users\nicola\cplusplus\github\myjdkmidi\examples\win32\test_win32_player.cpp
+1464946385 source:c:\users\nicola\cplusplus\github\myjdkmidi\examples\win32\test_win32_player.cpp
 	"test_win32_player.h"
 	<cwchar>
 
-1461417824 c:\users\nicola\cplusplus\github\myjdkmidi\examples\win32\test_win32_player.h
+1464946385 c:\users\nicola\cplusplus\github\myjdkmidi\examples\win32\test_win32_player.h
 	<windows.h>
 	"../../include/advancedsequencer.h"
 	"../../include/smpte.h"
@@ -389,6 +390,6 @@
 1462725950 c:\users\nicola\cplusplus\github\myjdkmidi\examples\win32\test_stepsequencer.h
 	"../../include/advancedsequencer.h"
 
-1463932146 c:\users\nicola\cplusplus\github\myjdkmidi\include\dump_tracks.h
+1465048722 c:\users\nicola\cplusplus\github\myjdkmidi\include\dump_tracks.h
 	"multitrack.h"
 

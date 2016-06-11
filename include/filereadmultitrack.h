@@ -91,11 +91,14 @@
 
     protected:
 
+/* NO MORE USED
       void AddEventToMultiTrack(
         const MIDITimedMessage &msg,
         MIDISystemExclusive *sysex,
         int dest_track
         );
+*/
+
 
       MIDIMultiTrack *multitrack;
       int cur_track;
