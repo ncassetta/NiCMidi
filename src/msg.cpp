@@ -296,6 +296,22 @@ char MIDIMessage::GetLength() const {
 }
 
 
+float MIDIMessage::GetTempo() const {
+    float tempo_bpm = 60.0 * 1.0e6 / GetInternalTempo();
+    return tempo_bpm;
+}
+
+
+unsigned long MIDIMessage::GetInternalTempo() const {
+    unsigned long microsecs_per_beat = sysex->GetData(0);
+    microsecs_per_beat <<= 8;
+    microsecs_per_beat += sysex->GetData(1);
+    microsecs_per_beat <<= 8;
+    microsecs_per_beat += sysex->GetData(2);
+    return microsecs_per_beat;
+}
+
+
 std::string MIDIMessage::GetText() const {
     std::string s;
     for (int i = 0; i < sysex->GetLength(); i++)
@@ -398,6 +414,15 @@ void MIDIMessage::SetPitchBend(unsigned char chan, short val) {
 }
 
 
+void MIDIMessage::SetAllNotesOff(unsigned char chan, unsigned char type) {
+    status = (unsigned char)(chan | CONTROL_CHANGE);
+    byte1 = type;
+    byte2 = 0x7f;
+    byte3 = 0;
+    ClearSysEx();
+}
+
+
 void MIDIMessage::SetSysEx(const MIDISystemExclusive* se) {
     status=SYSEX_START;
     byte1 = 0;
@@ -452,22 +477,24 @@ void MIDIMessage::SetMetaEvent(unsigned char type, unsigned char v1, unsigned ch
 }
 
 
-void MIDIMessage::SetMetaEvent(unsigned char type, unsigned short v) {
+void MIDIMessage::SetMetaEvent(unsigned char type, unsigned short val) {
     status = META_EVENT;
     byte1 = type;
-    byte2 = (unsigned char)(v & 0xff);
-    byte3 = (unsigned char)((v >> 8) & 0xff);
+    byte2 = (unsigned char)(val & 0xff);
+    byte3 = (unsigned char)((val >> 8) & 0xff);
     ClearSysEx();
 }
 
 
-void MIDIMessage::SetAllNotesOff(unsigned char chan, unsigned char type) {
-    status = (unsigned char)(chan | CONTROL_CHANGE);
-    byte1 = type;
-    byte2 = 0x7f;
-    byte3 = 0;
-    ClearSysEx();
+void MIDIMessage::SetText(const char* text, unsigned char type) {
+    SetMetaEvent(type, 0);
+    AllocateSysEx(strlen(text));
+    for(int i = 0; i < strlen(text); ++i)
+        sysex->PutSysByte(text[i]);
 }
+
+
+
 
 
 void MIDIMessage::SetLocal(unsigned char chan, unsigned char v) {
@@ -479,16 +506,44 @@ void MIDIMessage::SetLocal(unsigned char chan, unsigned char v) {
 }
 
 
-void MIDIMessage::SetTempo32(unsigned short tempo_times_32) {
-    SetMetaEvent(META_TEMPO, tempo_times_32);
+void MIDIMessage::SetTempo(float tempo_bpm) {
+    SetMetaEvent(META_TEMPO, 0);
+    AllocateSysEx(3);
+    unsigned long microsecs_per_beat = (unsigned long)(60.0 * 1.0e6 / tempo_bpm);
+            // microseconds in a minute / bpm
+    sysex->PutSysByte((microsecs_per_beat >> 16) & 0xff);
+    sysex->PutSysByte((microsecs_per_beat >> 8) & 0xff);
+    sysex->PutSysByte(microsecs_per_beat & 0xff);
 }
 
 
-void MIDIMessage::SetText(const char* text, unsigned char type) {
-    SetMetaEvent(type, 0);
-    sysex = new MIDISystemExclusive(strlen(text));
-    for(int i = 0; i < strlen(text); ++i)
-        sysex->PutSysByte(text[i]);
+void MIDIMessage::SetSMPTEOffset(unsigned char hour, unsigned char min, unsigned char sec,
+                                 unsigned char frame,unsigned char subframe) {
+    SetMetaEvent(META_SMPTE, 0);
+    AllocateSysEx(5);
+    sysex->PutSysByte(hour);
+    sysex->PutSysByte(min);
+    sysex->PutSysByte(sec);
+    sysex->PutSysByte(frame);
+    sysex->PutSysByte(subframe);
+}
+
+
+void MIDIMessage::SetTimeSig(unsigned char num, unsigned char den,
+                             unsigned char clocks_per_metronome, unsigned char num_32_per_quarter) {
+    SetMetaEvent(META_TIMESIG, num, den);             // now den is in byte3
+    AllocateSysEx(4);
+    unsigned char power_of_2 = 0;
+    while (den > 1) {
+        power_of_2++;
+        den >>= 1;
+    }
+    if (clocks_per_metronome == 0)      // assume as metronome the numerator value
+        clocks_per_metronome = 24 * 4 / byte3;
+    sysex->PutSysByte(num);
+    sysex->PutSysByte(power_of_2);
+    sysex->PutSysByte(clocks_per_metronome);
+    sysex->PutSysByte(num_32_per_quarter);
 }
 
 

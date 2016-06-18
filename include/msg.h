@@ -39,7 +39,7 @@
 #define _JDKMIDI_MSG_H
 
 #include "midi.h"
-#include "tempo.h"
+//#include "tempo.h"
 #include "sysex.h"
 
 #include <string>
@@ -124,8 +124,11 @@ class 	MIDIMessage {
         /// If the message is a key signature meta-message, returns the standard midi file format of the key
         /// major/minor flag. 0 means a major key, 1 means a minor key.
         unsigned char           GetKeySigMajorMinor() const { return byte3; }
-        /// If the message is a tempo change meta-message, returns the tempo value in 1/32 bpm
-        unsigned short	        GetTempo32() const          { return GetMetaValue(); }
+        /// If the message is a tempo change meta-message, returns the tempo value in bpm
+        float	                GetTempo() const;
+        /// If the message is a tempo change meta-message, returns the internal 3 bytes value stored in the message
+        /// (the number of microseconds per quarter note).
+        unsigned long           GetInternalTempo() const;
         /// If the message is a text meta-message, returns the associated text as a std::string
         std::string             GetText() const;
 
@@ -204,14 +207,15 @@ class 	MIDIMessage {
         /// for further information.
         bool	                IsTempo() const             { return (status == META_EVENT) && (byte1 == META_TEMPO); }
         /// Returns *true* if the message is a data end (i.e. end of track) meta-message.
-        bool	                IsDataEnd() const           { return (status == META_EVENT) && (byte1 == META_DATA_END); }
+        bool	                IsDataEnd() const           { return (status == META_EVENT) && (byte1 == META_END_OF_TRACK); }
         /// Returns *true* if the message is a time Signature meta-message. You can then call
         /// GetTimeSigNumerator() and GetTimeSigDenominator() for further information.
         bool	                IsTimeSig() const           { return (status == META_EVENT) && (byte1 == META_TIMESIG); }
         /// Returns *true* if the message is a key signature meta-message. You can then call
         /// GetKeySigSharpFlats() and GetKeySigMajorMinor() for further information.
         bool	                IsKeySig() const            { return (status == META_EVENT) && (byte1 == META_KEYSIG); }
-        /// Returns *true* if the message is a beat marker meta-message.
+        /// Returns *true* if the message is a beat marker message (this is a dummy meta-message used by the MIDISequencer
+        /// class to mark the metronome clicks).
         bool 	                IsBeatMarker() const        { return (status == META_EVENT) && (byte1 == META_BEAT_MARKER); }
 
         /// Returns *true* if the status is not a valid MIDI status.
@@ -282,6 +286,11 @@ class 	MIDIMessage {
         /// Makes the message a pitch bend message with given channel and value (unsigned 14 bit).
         /// Frees the sysex pointer.
         void	                SetPitchBend( unsigned char chan, short val );
+
+        void	                SetAllNotesOff(unsigned char chan, unsigned char type = C_ALL_NOTES_OFF);
+
+        void	                SetLocal(unsigned char chan, unsigned char v);
+
         /// Makes the message a system exclusive message with given MIDISystemExclusive object. The eventual old
         /// sysex is freed and the MIDISystemExclusive is copied, so the message owns its object.
         void	                SetSysEx(const MIDISystemExclusive* se);
@@ -294,28 +303,39 @@ class 	MIDIMessage {
         void	                SetSongSelect(unsigned char sng);
         /// Makes the message a tune request system message. Frees the sysex pointer.
         void	                SetTuneRequest();
+        /// Makes the message a meta-message with given type and data value. The two bytes of data are
+        /// given separately.
         void	                SetMetaEvent(unsigned char type, unsigned char v1, unsigned char v2);
-        void	                SetMetaEvent(unsigned char type, unsigned short v);
-        void	                SetAllNotesOff(unsigned char chan, unsigned char type = C_ALL_NOTES_OFF);
-        void	                SetLocal(unsigned char chan, unsigned char v);
-        /// The same of Clear(), makes the message a non valid message which will be ignored
-        void	                SetNoOp()                           { Clear(); }
-        void	                SetTempo32( unsigned short tempo_times_32 );
-        /// Makes the message a text meta-message with given type; text is a C string containing the ascii characters.
-        /// The text is held in the sysex pointer (the eventual old pointer is freed).
+        /// Makes the message a meta-message with given type and data value. You can use this for
+        /// Sequence number (16 bit value) and Channel Prefix (8 bit value) messages.
+        void	                SetMetaEvent(unsigned char type, unsigned short val);
+        /// Makes the message a text meta-message with given type; text is a C string containing the ascii
+        /// characters and is stored in the sysex object (the eventual old pointer is freed). You can use
+        /// this for Generic text, Copyright, Track name, Instrument name, Lyric, Marker and Cue point
+        /// messages.
         void	                SetText(const char* text, unsigned char type = META_GENERIC_TEXT);
         /// Makes the message a data end (i.e. end of track) meta-message.
-        void	                SetDataEnd()                        { SetMetaEvent(META_DATA_END, 0); }
+        void	                SetDataEnd()                        { SetMetaEvent(META_END_OF_TRACK, 0); }
+        /// Makes the message a tempo change meta-message with given tempo (in bpm). The tempo is stored in the
+        /// sysex object as a 3 byte value according to the MIDIfile format. The eventual old pointer is freed.
+        void	                SetTempo(float tempo_bpm);
+        /// Makes the message a SMPTE offset meta-message with given data. The bytes are stored in the
+        /// sysex object.(the eventual old pointer is freed).
+        void                    SetSMPTEOffset(unsigned char hour, unsigned char min, unsigned char sec,
+                                               unsigned char frame,unsigned char subframe);
         /// Makes the message a time signature meta-message with given time (numerator and denominator).
-        void	                SetTimeSig(unsigned char num, unsigned char den)
-                                                                    { SetMetaEvent(META_TIMESIG, num, den); }
+        void	                SetTimeSig(unsigned char num, unsigned char den,
+                                           unsigned char clocks_per_metronome = 0, unsigned char num_32_per_quarter = 8);
         /// Makes the message a key signature meta-message with given accidents and mode \see GetKeySigSharpFlats(),
         /// GetKeySigMajorMinor().
         void                    SetKeySig( signed char sharp_flats, unsigned char major_minor )
                                                                     { SetMetaEvent(META_KEYSIG, sharp_flats, major_minor); }
         /// Makes the message a beat marker meta-message.
-        void	                SetBeatMarker()                     { SetMetaEvent(META_BEAT_MARKER, 0, 0); }
+        /// \see IsBeatMarker().
+        void	                SetBeatMarker()                     { SetMetaEvent(META_BEAT_MARKER, 0); }
 
+        /// The same of Clear(), makes the message a non valid message which will be ignored
+        void	                SetNoOp()                           { Clear(); }
         friend bool             operator== (const MIDIMessage &m1, const MIDIMessage &m2);
 
     protected:

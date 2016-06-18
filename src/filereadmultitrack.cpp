@@ -193,66 +193,69 @@ void    MIDIFileReadMultiTrack::mf_sysex( MIDIClockTime time, const MIDISystemEx
     // ignore miscellaneous meta events
   }
 
-
-  void    MIDIFileReadMultiTrack::mf_seqnum( MIDIClockTime time, int )
+// This works for all meta events with no sysex attached
+  void    MIDIFileReadMultiTrack::mf_meta16( MIDIClockTime time, int type, int b1, int b2 )
   {
-    // ignore sequence number events
-  }
-
-
-  void    MIDIFileReadMultiTrack::mf_smpte( MIDIClockTime time, int, int, int, int, int )
-  {
-    // ignore smpte events
-  }
-
-
-  void    MIDIFileReadMultiTrack::mf_timesig(
-    MIDIClockTime time,
-    int num,
-    int denom_power,
-    int clks_per_metro,
-    int notated_32nd_per_quarter
-    )
-  {
+    // ignore sequence number events NO! now it reads them
     MIDITimedMessage msg;
 
-    int denom= 1<<denom_power;
+    msg.SetMetaEvent(type, b1, b2);
+    msg.SetTime(time);
+    multitrack->InsertEvent(cur_track, msg, INSMODE_INSERT);
+  }
 
-    msg.SetTimeSig( (unsigned char)num, (unsigned char)denom );
-    msg.SetTime( time );
 
+  void    MIDIFileReadMultiTrack::mf_smpte( MIDIClockTime time, int h, int m, int s, int f, int sf )
+  {
+    // ignore smpte events NO! now it reads them
+    MIDITimedMessage msg;
+
+    msg.SetSMPTEOffset(h, m, s, f, sf);
+    msg.SetTime(time);
+    multitrack->InsertEvent(cur_track, msg, INSMODE_INSERT);
+  }
+
+
+void MIDIFileReadMultiTrack::mf_timesig(MIDIClockTime time, int num, int denom_power,
+                                        int clks_per_metro, int notated_32nd_per_quarter) {
+    MIDITimedMessage msg;
+
+    int denom= 1 << denom_power;
+
+    msg.SetTimeSig((unsigned char)num, (unsigned char)denom,
+                   (unsigned char)clks_per_metro, (unsigned char)notated_32nd_per_quarter);
+    msg.SetTime(time);
+
+    /* now this is done by SetTimeSig()
     MIDISystemExclusive *sysex = new MIDISystemExclusive( 4 );
 
     sysex->PutByte( (unsigned char)num );
     sysex->PutByte( (unsigned char)denom_power );
     sysex->PutByte( (unsigned char)clks_per_metro );
     sysex->PutByte( (unsigned char)notated_32nd_per_quarter );
-
+    */
+    multitrack->InsertEvent(cur_track, msg, INSMODE_INSERT);
     //AddEventToMultiTrack( msg, sysex, cur_track );
   }
 
 
-  void    MIDIFileReadMultiTrack::mf_tempo( MIDIClockTime time, unsigned long tempo )
-  {
-    unsigned long tempo_bpm_times_32;
+void MIDIFileReadMultiTrack::mf_tempo(MIDIClockTime time, int m1, int m2, int m3) {
 
-    if( tempo==0 )
-      tempo=1;
-
-    // tempo is in microseconds per beat
-
-    // calculate beats per second by
-
+/*
     float beats_per_second = static_cast<float>( 1e6 / (double)tempo );// 1 million microseconds per second
 
     float beats_per_minute = beats_per_second * 60;
 
     tempo_bpm_times_32 = static_cast<unsigned long>(beats_per_minute * 32.0);
-
+*/
     MIDITimedMessage msg;
-
-    msg.SetTempo32( static_cast<unsigned short>(tempo_bpm_times_32) );
-    msg.SetTime( time );
+    msg.SetMetaEvent(META_TEMPO, 0);
+    msg.AllocateSysEx(3);
+    msg.GetSysEx()->PutSysByte(m1);
+    msg.GetSysEx()->PutSysByte(m2);
+    msg.GetSysEx()->PutSysByte(m3);
+    //msg.SetTempo32( static_cast<unsigned short>(tempo_bpm_times_32) );
+    msg.SetTime(time);
 
     multitrack->InsertEvent(cur_track, msg, INSMODE_INSERT);
     //AddEventToMultiTrack( msg, 0, cur_track );

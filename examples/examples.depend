@@ -263,13 +263,12 @@
 	"driverdump.h"
 	<vector>
 
-1465497211 c:\users\nicola\cplusplus\github\myjdkmidi\include\msg.h
+1466186714 c:\users\nicola\cplusplus\github\myjdkmidi\include\msg.h
 	"midi.h"
-	"tempo.h"
 	"sysex.h"
 	<string>
 
-1464946385 c:\users\nicola\cplusplus\github\myjdkmidi\include\midi.h
+1466186689 c:\users\nicola\cplusplus\github\myjdkmidi\include\midi.h
 	"world.h"
 
 1463083790 c:\users\nicola\cplusplus\github\myjdkmidi\include\world.h
@@ -316,10 +315,9 @@
 	"msg.h"
 	<vector>
 
-1464949770 c:\users\nicola\cplusplus\github\myjdkmidi\include\sequencer.h
+1465730803 c:\users\nicola\cplusplus\github\myjdkmidi\include\sequencer.h
 	"track.h"
 	"multitrack.h"
-	"tempo.h"
 	"matrix.h"
 	"process.h"
 	"notifier.h"
@@ -344,7 +342,7 @@
 	<atomic>
 	<iostream>
 
-1465492594 c:\users\nicola\cplusplus\github\myjdkmidi\include\filereadmultitrack.h
+1466178021 c:\users\nicola\cplusplus\github\myjdkmidi\include\filereadmultitrack.h
 	"midi.h"
 	"msg.h"
 	"sysex.h"
@@ -352,13 +350,12 @@
 	"fileread.h"
 	"multitrack.h"
 
-1465140129 c:\users\nicola\cplusplus\github\myjdkmidi\include\file.h
+1466184493 c:\users\nicola\cplusplus\github\myjdkmidi\include\file.h
 	"midi.h"
 	"msg.h"
 	"sysex.h"
-	"tempo.h"
 
-1465141379 c:\users\nicola\cplusplus\github\myjdkmidi\include\fileread.h
+1466178005 c:\users\nicola\cplusplus\github\myjdkmidi\include\fileread.h
 	<fstream>
 	"midi.h"
 	"msg.h"

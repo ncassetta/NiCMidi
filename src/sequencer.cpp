@@ -214,7 +214,7 @@ bool MIDISequencerTrackState::Process( MIDITimedBigMessage *msg ) {
 
 
 MIDISequencerState::MIDISequencerState(MIDIMultiTrack *m, MIDISequencerGUINotifier *n) :
-    notifier(n), multitrack(m), iterator(m), cur_clock(0), cur_time_ms(0),
+    notifier(n), multitrack(m), iterator(m), cur_clock(0), cur_time_ms(0.0),
     cur_beat(0), cur_measure(0), next_beat_time(0),
     tempobpm(120.0), timesig_numerator(4), timesig_denominator(4),
     keysig_sharpflat(0), keysig_mode(0), last_event_track(-1)
@@ -344,7 +344,7 @@ bool MIDISequencerState::Process( MIDITimedMessage *msg ) {
     if(msg->IsMetaEvent()) {            // is it a meta-event?
 
         if(msg->IsTempo()) {            // is it a tempo event?
-            tempobpm = ((float)msg->GetTempo32())*(1.0f/32.0f);
+            tempobpm = msg->GetTempo();
             if(tempobpm < 1 )
             tempobpm=120.0;
             Notify(MIDISequencerGUIEvent::GROUP_CONDUCTOR,
@@ -800,11 +800,11 @@ bool MIDISequencer::GetNextEvent(int *trk, MIDITimedMessage *msg) {
 }
 
 // This is new
-double MIDISequencer::MIDItoMs(MIDIClockTime t) {
+float MIDISequencer::MIDItoMs(MIDIClockTime t) {
     MIDITimedMessage* msg;
     MIDITrackIterator tr_iter(state.multitrack->GetTrack(0));
     MIDIClockTime base_t = 0, delta_t = 0, now_t = 0;
-    double ms_time = 0.0, old_tempo = 120.0, ms_per_clock;
+    float ms_time = 0.0, old_tempo = 120.0, ms_per_clock;
 
     while (now_t < t) {
         if (!tr_iter.GetCurEvent(&msg, t))      // next message is after t or doesn't exists
@@ -820,8 +820,8 @@ double MIDISequencer::MIDItoMs(MIDIClockTime t) {
             //  -clocks_per_sec = true_bpm * clks_per_beat / 60
             //  -clocks_per_ms = clocks_per_sec / 1000
             //  -ms_per_clock = 1 / clocks_per_ms
-            ms_per_clock = (double)6000000.0 / (old_tempo *
-                                (double)tempo_scale * state.multitrack->GetClksPerBeat());
+            ms_per_clock = 6000000.0 / (old_tempo *
+                                (float)tempo_scale * state.multitrack->GetClksPerBeat());
 
             // and add it to ms_time
             ms_time += (delta_t * ms_per_clock);
@@ -829,7 +829,7 @@ double MIDISequencer::MIDItoMs(MIDIClockTime t) {
             // update variables
             base_t = msg->GetTime();
             if (msg->IsTempo())
-                old_tempo = msg->GetTempo32() / 32.0;
+                old_tempo = msg->GetTempo();
             if (now_t == t) break;
         }
     }

@@ -130,7 +130,7 @@ void MIDIFileEvents::ChanMessage(const MIDITimedMessage &msg) {
 void MIDIFileEvents::MetaEvent(MIDIClockTime time, int type, int leng, unsigned char* m) {
     switch  (type) {
         case MF_SEQUENCE_NUMBER:
-            mf_seqnum(time, To16Bit(m[0], m[1]));
+            mf_meta16(time, type, m[0], m[1]);
             break;
         case MF_TEXT_EVENT:
         case MF_COPYRIGHT:
@@ -153,17 +153,16 @@ void MIDIFileEvents::MetaEvent(MIDIClockTime time, int type, int leng, unsigned 
             m[leng] = 0;      // make sure string ends in NULL
             mf_text(time,type, leng, m);
             break;
+        case MF_CHANNEL_PREFIX:
         case MF_OUTPUT_CABLE:
-            // TODO:
-            break;
         case MF_TRACK_LOOP:
-            // TODO:
+            mf_meta16(time, type, m[1], 0);
             break;
         case MF_END_OF_TRACK:       // End of Track
             mf_eot(time);
             break;
         case MF_TEMPO:              // Set Tempo
-            mf_tempo(time, To32Bit(0, m[0], m[1], m[2]));
+            mf_tempo(time, m[0], m[1], m[2]);
             break;
         case MF_SMPTE:
             mf_smpte(time, m[0], m[1], m[2], m[3], m[4]);
@@ -206,7 +205,7 @@ void MIDIFileEvents::mf_header(int a, int b, int c) {
 }
 
 
-void MIDIFileEvents::mf_arbitrary(MIDIClockTime time, int a, unsigned char* s) {
+void MIDIFileEvents::mf_arbitrary(MIDIClockTime time, int a, unsigned char* data) {
 }
 
 
@@ -214,11 +213,11 @@ void MIDIFileEvents::mf_metamisc(MIDIClockTime time, int a, int b, unsigned char
 }
 
 
-void MIDIFileEvents::mf_seqnum(MIDIClockTime time, int a) {
+void MIDIFileEvents::mf_meta16(MIDIClockTime time, int type, int b1, int b2) {
 }
 
 
-void MIDIFileEvents::mf_smpte(MIDIClockTime time, int a, int b, int c, int d, int e) {
+void MIDIFileEvents::mf_smpte(MIDIClockTime time, int h, int m, int s, int f, int sf) {
 }
 
 
@@ -226,19 +225,19 @@ void MIDIFileEvents::mf_timesig(MIDIClockTime time, int a, int b, int c, int d) 
 }
 
 
-void MIDIFileEvents::mf_tempo(MIDIClockTime time, unsigned long a) {
+void MIDIFileEvents::mf_tempo(MIDIClockTime time, int a, int b, int c) {
 }
 
 
-void MIDIFileEvents::mf_keysig(MIDIClockTime time, int a, int b) {
+void MIDIFileEvents::mf_keysig(MIDIClockTime time, int sf, int majmin) {
 }
 
 
-void MIDIFileEvents::mf_sqspecific(MIDIClockTime time, int a, unsigned char* s) {
+void MIDIFileEvents::mf_sqspecific(MIDIClockTime time, int len, unsigned char* data) {
 }
 
 
-void MIDIFileEvents::mf_text(MIDIClockTime time, int a, int b, unsigned char* s) {
+void MIDIFileEvents::mf_text(MIDIClockTime time, int type, int len, unsigned char* data) {
 }
 
 
@@ -473,7 +472,7 @@ void MIDIFileRead::ReadTrack() {
                 MsgInit();
                 MsgAdd(0xf0);
                 while( to_be_read>lookfor )
-                MsgAdd(c = EGetC());
+                    MsgAdd(c = EGetC());
                 if(c == 0xf7 || no_merge == 0) {
           // make a sysex object out of the raw sysex data
           // the buffer is not to be deleted upon destruction of ex

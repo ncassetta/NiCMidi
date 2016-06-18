@@ -40,7 +40,7 @@
 #include "../include/file.h"
 
 
-
+/*
 unsigned long MIDIFile::ConvertTempoToFreq(short division, MIDITempo &tempo) {
     if(division > 0) {
         long clocks_per_beat = (long)division * 1000;
@@ -52,7 +52,7 @@ unsigned long MIDIFile::ConvertTempoToFreq(short division, MIDITempo &tempo) {
         return 120;
     }
 }
-
+*/
 
 unsigned long MIDIFile::ReadVariableLengthNumber(unsigned char **in) {
     unsigned long num = 0;

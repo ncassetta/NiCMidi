@@ -60,18 +60,17 @@
 // The possible events in a MIDI Files
 //
 
-      virtual void    mf_sysex( MIDIClockTime time, const MIDISystemExclusive &ex );
-
-      virtual void    mf_arbitrary( MIDIClockTime time, int len, unsigned char *data );
-      virtual void    mf_metamisc( MIDIClockTime time, int, int, unsigned char * 	);
-      virtual void    mf_seqnum( MIDIClockTime time, int );
-      virtual void    mf_smpte( MIDIClockTime time, int, int, int, int, int );
-      virtual void    mf_timesig( MIDIClockTime time, int, int, int, int );
-      virtual void    mf_tempo( MIDIClockTime time, unsigned long tempo );
-      virtual void    mf_keysig(MIDIClockTime time, int, int );
-      virtual void    mf_sqspecific( MIDIClockTime time, int, unsigned char * );
-      virtual void    mf_text( MIDIClockTime time, int, int, unsigned char * );
-      virtual void    mf_eot( MIDIClockTime time );
+      virtual void                      mf_sysex( MIDIClockTime time, const MIDISystemExclusive &ex );
+      virtual void                      mf_arbitrary( MIDIClockTime time, int len, unsigned char *data );
+      virtual void                      mf_metamisc( MIDIClockTime time, int, int, unsigned char * );
+      virtual void                      mf_meta16( MIDIClockTime time, int type, int b1, int b2 );
+      virtual void                      mf_smpte( MIDIClockTime time, int h, int m, int s, int f, int sf );
+      virtual void                      mf_timesig( MIDIClockTime time, int a, int b, int c, int d );
+      virtual void                      mf_tempo( MIDIClockTime time, int b1, int b2, int b3 );
+      virtual void                      mf_keysig(MIDIClockTime time, int sf, int majmin );
+      virtual void                      mf_sqspecific( MIDIClockTime time, int len, unsigned char *data );
+      virtual void                      mf_text( MIDIClockTime time, int type, int len, unsigned char *data );
+      virtual void                      mf_eot( MIDIClockTime time );
 
 //
 // the following methods are to be overridden for your specific purpose

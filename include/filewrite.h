@@ -125,13 +125,13 @@ class MIDIFileWrite : protected MIDIFile {
         void            WriteMetaEvent( unsigned long time, unsigned char type, const unsigned char *data, long length );
         void            WriteTempo(unsigned long time, long tempo);
         void            WriteKeySignature(unsigned long time, char sharp_flat, char minor);
-        void            WriteTimeSignature(
-                            unsigned long time,
-                            char numerator=4,
-                            char denominator_power=2,
-                            char midi_clocks_per_metronome=24,
-                            char num_32nd_per_midi_quarter_note=8
-                        );
+        //void            WriteTimeSignature(
+        //                    unsigned long time,
+        //                    char numerator=4,
+        //                    char denominator_power=2,
+        //                    char midi_clocks_per_metronome=24,
+        //                    char num_32nd_per_midi_quarter_note=8
+        //                );
 
         void            WriteEndOfTrack(unsigned long time);
 

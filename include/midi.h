@@ -154,40 +154,90 @@
 
 
 
-  //
-  // META Event types (stored in first data byte if status==META_EVENT)
-  // These types are the same as MIDIFile meta-events,
-  // except when a meta-event is in a MIDIMessage, there is a limit
-  // of two data bytes. So the format of the meta-events in a
-  // MIDIMessage class will be different than the standard MIDIFile
-  // meta-events.
-  //
+  ///
+  /// META Event types (stored in first data byte if status==META_EVENT).
+  /// These types are the same as MIDIFile meta-events; when the data length
+  /// is <= 2 bytes, data are stored in bytes 2 and 3 of the MIDIMessage,
+  /// otherwise in the sysex object. So the format of the meta-events in a
+  /// MIDIMessage class will be different than the standard MIDIFile
+  /// meta-events.
+  ///
 
   enum
     {
-      META_SEQUENCE_NUMBER	=0x00,	// value=16 bits. type 2 files
+        /// This meta event defines the pattern number of a Type 2 MIDI file
+        /// or the number of a sequence in a Type 0 or Type 1 MIDI file.
+        /// Should always have a delta time of 0 and come before all MIDI
+        /// Channel Events and non-zero delta time events. The data length
+        /// is 2 bytes.
+      META_SEQUENCE_NUMBER	= 0x00,
+        /// Text events used for embedding ascii text in the file. They have
+        /// variable data length (stored in the sysex object).
+      META_GENERIC_TEXT	    = 0x01,
+      META_COPYRIGHT		= 0x02,
+      META_TRACK_NAME	    = 0x03,
+      META_INSTRUMENT_NAME	= 0x04,
+      META_LYRIC_TEXT		= 0x05,
+      META_MARKER_TEXT	    = 0x06,
+      META_CUE_TEXT		    = 0x07,
+      META_PROGRAM_NAME     = 0x08,
+      META_DEVICE_NAME      = 0x09,
+      META_GENERIC_TEXT_A   = 0x0A,
+      META_GENERIC_TEXT_B   = 0x0B,
+      META_GENERIC_TEXT_C   = 0x0C,
+      META_GENERIC_TEXT_D   = 0x0D,
+      META_GENERIC_TEXT_E   = 0x0E,
+      META_GENERIC_TEXT_F   = 0x0F,
+        /// This meta event associates a MIDI channel with following meta events.
+        /// Its effect is terminated by another MIDI Channel Prefix event or any non-Meta event.
+        /// It is often used before an Instrument Name Event to specify which channel
+        /// an instrument name represents. The data length is 1 byte.
+      META_CHANNEL_PREFIX   = 0x20,
+        /// This meta event may be used in multiport environments to associate
+        /// a track with a specific port. The data length is 1 byte.
+    META_OUTPUT_CABLE       = 0x21,
+    META_TRACK_LOOP         = 0x2E,
+        /// This meta event is the end of track marker. Data length is 0 byte.
+    META_END_OF_TRACK       = 0x2F,
+        /// This meta event denotes a tempo change and has a length of 3 bytes.
+        /// The data is a 3-byte integer, the number of microseconds for a quarter
+        /// note. The MIDIMessage::GetTempo() method converts it into the usual
+        /// bpm value (a float).
+    META_TEMPO              = 0x51,
+        /// This meta event specifies the initial SMPTE offset of the beginning of playback. It
+        /// has 5 data bytes (stored in the sysex object) which denote hours, minutes, second
+        /// frames and subframes of the SMPTE. Currently the SMPTE object doesn't support an
+        /// offset.
+        // TODO: add offset to SMPTE
+    META_SMPTE              = 0x54,
+        /// This meta event specifies a musical time signature change. It has 4 data bytes
+        /// (stored in the sysex object) which denote the time numerator, the denominator power
+        /// of two (1->2, 2->4, 3->8 etc), the metronome note(24 = quarter, 12 = eigth, 36 dotted
+        /// quarter etc) and the number of 32th for a quarter note (usually 8, but you are allowed
+        /// to change this). The MIDIMessage::GetTimeSigNumerator() and MidiMessage::GetTimeSigDenominator()
+        /// methods give you the timesig numerator and denominator.
+        /// Currently the MIDISequencer object ignores third byte and always assumes the metronome note
+        /// as the timesig denominator.
+        // TODO: add this
+    META_TIMESIG            = 0x58,
+        /// This meta event specifies a musical key signature change. It has 2 data bytes:
+        /// the 1st is a signed char denoting the number of accidents (-7 = 7 flats, 0 =
+        /// no accidents, +7 = 7 sharps), the second is the mode (0 = major, 1 = minor).
+    META_KEYSIG             = 0x59,
+        /// This is a dummy, non_MIDI type used internally by the class MIDISequencer to mark
+        /// the metronome clicks (a BEAT_MARKER message will be output at every click).
+        // TODO: should be better not to use a not MIDI type. Perhaps we could change the message status byte?
+    META_BEAT_MARKER        = 0x7e,
+        /// This meta event is used to specify information specific to a hardware or
+        /// software sequencer. The first Data byte (or three bytes if the first byte is 0)
+        /// specifies the manufacturer's ID and the following bytes contain information
+        /// specified by the manufacturer. Currently is ignored by the library.
+    META_SEQUENCER_SPECIFIC = 0x7F
+};
 
-      META_GENERIC_TEXT	    =0x01,	// value=16 bits, text item #
-      META_COPYRIGHT		=0x02,	// value=17 bits, text item #
-      META_INSTRUMENT_NAME	=0x03,
-      META_TRACK_NAME		=0x04,
-      META_LYRIC_TEXT		=0x05,
-      META_MARKER_TEXT	    =0x06,
-      META_CUE_TEXT		    =0x07,
 
-      META_OUTPUT_CABLE	    =0x21,
-      META_TRACK_LOOP		=0x2E,
-      META_DATA_END		    =0x2f,
-      META_END_OF_TRACK	    =0x2F,
-      META_TEMPO		    =0x51,	// value=16 bits, tempo(bpm)*256
-      META_SMPTE		    =0x54,	// what for?
-      META_TIMESIG		    =0x58,  // value=num, denom
-      META_KEYSIG		    =0x59,  // value=# of sharps/flats, major/minor
-      META_BEAT_MARKER      =0x7e,
-      META_SEQUENCER_SPECIFIC	=0x7F,
-      META_NO_OPERATION	    =0x7f
 
-    };
+
 
 extern const signed char	lut_msglen[16];
 extern const signed char	lut_sysmsglen[16];

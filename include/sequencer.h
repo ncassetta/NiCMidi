@@ -27,7 +27,7 @@
 
 #include "track.h"
 #include "multitrack.h"
-#include "tempo.h"
+//#include "tempo.h"
 #include "matrix.h"
 #include "process.h"
 #include "notifier.h"
@@ -282,7 +282,7 @@ class MIDISequencer {
         bool                            GetNextEvent (int *trk, MIDITimedMessage *msg);
 
         /// Converts the time_time_clk_, given in MIDi ticks, into milliseconds, taking account of tempo changes.
-        double                          MIDItoMs(MIDIClockTime time_clk);  // new : added by me
+        float                           MIDItoMs(MIDIClockTime time_clk);  // new : added by me
         /// This function is the equivalent of GoToTime(state.cur_time) and should be used to update the sequencer
         /// state after an edit in the multitrack (adding, deleting or editing events, for changes in the track
         /// structure see InsertTrack(), DeleteTrack() and MoveTRack()). You should use this before moving time,
@@ -443,7 +443,7 @@ public:
     int track;                      ///< the number of the track
     MIDISequencerGUIEventNotifier* notifier;        ///< the notifier: if 0 there is no notifying
 };
-*/
+
 
 
 ///
@@ -479,17 +479,17 @@ public:
     const MIDISequencerState & operator = ( const MIDISequencerState &s );
 
     /// Resets the state to current time = 0.
-    void Reset();                                       /* NC */    // new
+    void Reset();                                       /* NC    // new
 
     /// Processes the message msg: if it is a channel message (or a track name meta) send it to a
     /// MIDISequencerTrackState, otherwise notify the GUI directly
-    bool Process(MIDITimedMessage* msg);                /* NC */    // new
+    bool Process(MIDITimedMessage* msg);                /* NC    // new
 
     /// Notifies events to GUI
-    void Notify( int group, int item = 0 );             /* NC */    // new
+    void Notify( int group, int item = 0 );             /* NC    // new
 
     MIDISequencerGUINotifier *notifier;
-    const MIDISequencer* seq;                           /* NC for notifying */
+    const MIDISequencer* seq;                           /* NC for notifying
     const MIDIMultiTrack *multitrack;
     int num_tracks;                                 ///< nunber of tracks of the sequencer
 
@@ -499,7 +499,7 @@ public:
     float cur_time_ms;                              ///< current time in ms
     int cur_beat;                                   ///< current beat
     int cur_measure;                                ///< current measure
-    MIDIClockTime last_beat_time;   /* NC */        ///< used internally by Process()
+    MIDIClockTime last_beat_time;   /* NC           ///< used internally by Process()
     MIDIClockTime next_beat_time;                   ///< used internally by Process()
     float tempobpm;                                 ///< current tempo in beats per minute
     char timesig_numerator;                         ///< numerator of current time signature
@@ -523,37 +523,33 @@ public:
 /// MIDIManager. See the example files for effective using. AdvancedSequencer is an all-in-one class for
 /// sequencing and playing
 ///
+class MIDISequencer {
+    public:
 
- class MIDISequencer
-{
-public:
+            /// The constructor.
+            /// \param m a pointer to a MIDIMultitrack that will hold MIDI messages
+            /// \param n a pointer to a MIDISequencerGUIEventNotifier. If you leave 0 the sequencer
+            /// will not notify the GUI.
+                                        MIDISequencer (const MIDIMultiTrack *m, MIDISequencerGUINotifier *n = 0);
+            /// The destructor frees allocated memory. The MIDIMultiTrack and the MIDISequencerGUINotifier
+            /// are not owned by the MIDISequencer
+        virtual                         ~MIDISequencer();
 
-    /// The constructor.
-    /// \param m a pointer to a MIDIMultitrack that will hold MIDI messages
-    /// \param n a pointer to a MIDISequencerGUIEventNotifier. If you leave 0 the sequencer will not notify
-    /// the GUI.
-    MIDISequencer (const MIDIMultiTrack *m, MIDISequencerGUINotifier *n = 0);
+            /// Resets the corresponding MIDISequencerTrackState and MIDISequencerTrackProcessor.
+            /// See MIDISequencerTrackState::Reset() and MIDISequencerTrackProcessor::Reset()
+        void                            ResetTrack (int trk);
 
-    /// The destructor frees allocated memory. The MIDIMultitrack and the MIDISequencerGUIEventNotifier are not
-    /// owned by the MIDISequencer
-    virtual ~MIDISequencer();
+        /// Call ResetTrack() for all tracks
+        void                            ResetAllTracks();
 
-    /// Resets the corresponding MIDISequencerTrackState and MIDISequencerTrackProcessor. See
-    /// MIDISequencerTrackState::Reset() and MIDISequencerTrackProcessor::Reset()
-    void ResetTrack ( int trk );
+        /// Returns current MIDIClockTime
+        MIDIClockTime                   GetCurrentMIDIClockTime() const     { return state.cur_clock; }
 
-    /// Call ResetTrack() for all tracks
-    void ResetAllTracks();
+        /// Returns current time in milliseconds
+        float                           GetCurrentTimeInMs() const          { return state.cur_time_ms; }
 
-    /// Returns current MIDIClockTime
-    MIDIClockTime GetCurrentMIDIClockTime() const { return state.cur_clock; }
-
-    /// Returns curremt time im milliseconds
-    double GetCurrentTimeInMs() const { return state.cur_time_ms; }
-
-    /// Returns current beat
-    int GetCurrentBeat() const { return state.cur_beat;
-    }
+        /// Returns current beat
+        int                             GetCurrentBeat() const              { return state.cur_beat; }
 
     /// Returns current measure
     int GetCurrentMeasure() const
@@ -688,7 +684,7 @@ protected:
 
     MIDISequencerState state;
 } ;
-
+*/
 }
 
 #endif

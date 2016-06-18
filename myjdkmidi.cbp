@@ -61,7 +61,6 @@
 		<Unit filename="include/sequencer.h" />
 		<Unit filename="include/smpte.h" />
 		<Unit filename="include/sysex.h" />
-		<Unit filename="include/tempo.h" />
 		<Unit filename="include/timer.h" />
 		<Unit filename="include/track.h" />
 		<Unit filename="include/world.h" />

@@ -47,7 +47,7 @@
 #include "midi.h"
 #include "msg.h"
 #include "sysex.h"
-#include "tempo.h"
+//#include "tempo.h"
 
 
 ///
@@ -96,6 +96,7 @@ class  MIDIFile {
             MF_GENERIC_TEXT_D	= 0xD,
             MF_GENERIC_TEXT_E	= 0xE,
             MF_GENERIC_TEXT_F	= 0xF,
+            MF_CHANNEL_PREFIX   = 0x20,
             MF_OUTPUT_CABLE		= 0x21,
             MF_TRACK_LOOP		= 0x2E,
             MF_END_OF_TRACK		= 0x2F,
@@ -111,7 +112,7 @@ class  MIDIFile {
         // tempo clock
         //
 
-        static unsigned long	    ConvertTempoToFreq(short division, MIDITempo &tempo);
+        //static unsigned long	    ConvertTempoToFreq(short division, MIDITempo &tempo);
 
         //
         // Convert a four byte number to an unsigned long.

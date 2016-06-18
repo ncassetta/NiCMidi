@@ -285,7 +285,7 @@ void MIDIFileWrite::WriteEvent(const MIDITimedMessage &msg) {
     if(msg.IsMetaEvent()) {
       // if this meta-event has a sysex buffer attached, this
       // buffer contains the raw midi file meta data
-
+      // (writes text, tempo and timesig)
         if(msg.GetSysEx()) {
             WriteMetaEvent(
             msg.GetTime(),
@@ -296,12 +296,9 @@ void MIDIFileWrite::WriteEvent(const MIDITimedMessage &msg) {
         else {
         // otherwise, it is a type of meta that doesnt have
         // data...
-            if(msg.IsTempo()) {
-                unsigned long tempo = (60000000 / msg.GetTempo32()) * 32;
-                WriteTempo(msg.GetTime(), tempo);
-            }
-            else if(msg.IsDataEnd())
+            if(msg.IsDataEnd())
                 WriteEndOfTrack(msg.GetTime());
+
             else if(msg.IsKeySig())
                 WriteKeySignature( msg.GetTime(), msg.GetKeySigSharpFlats(), msg.GetKeySigMajorMinor() );
         }
@@ -469,7 +466,7 @@ void MIDIFileWrite::WriteKeySignature(unsigned long time, char sharp_flat, char 
     running_status = 0;
 }
 
-
+/* UNUSED
 void MIDIFileWrite::WriteTimeSignature(
     unsigned long time,
     char numerator,
@@ -489,6 +486,7 @@ void MIDIFileWrite::WriteTimeSignature(
     IncrementCounters(7);
     running_status = 0;
 }
+*/
 
 
 void MIDIFileWrite::WriteEndOfTrack(unsigned long time)  {
