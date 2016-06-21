@@ -195,10 +195,10 @@
       META_CHANNEL_PREFIX   = 0x20,
         /// This meta event may be used in multiport environments to associate
         /// a track with a specific port. The data length is 1 byte.
-    META_OUTPUT_CABLE       = 0x21,
-    META_TRACK_LOOP         = 0x2E,
+      META_OUTPUT_CABLE       = 0x21,
+      //META_TRACK_LOOP         = 0x2E, Ifound no documentation for this
         /// This meta event is the end of track marker. Data length is 0 byte.
-    META_END_OF_TRACK       = 0x2F,
+      META_END_OF_TRACK       = 0x2F,
         /// This meta event denotes a tempo change and has a length of 3 bytes.
         /// The data is a 3-byte integer, the number of microseconds for a quarter
         /// note. The MIDIMessage::GetTempo() method converts it into the usual
@@ -224,7 +224,7 @@
         /// the 1st is a signed char denoting the number of accidents (-7 = 7 flats, 0 =
         /// no accidents, +7 = 7 sharps), the second is the mode (0 = major, 1 = minor).
     META_KEYSIG             = 0x59,
-        /// This is a dummy, non_MIDI type used internally by the class MIDISequencer to mark
+        /// This is a dummy, non-MIDI type used internally by the class MIDISequencer to mark
         /// the metronome clicks (a BEAT_MARKER message will be output at every click).
         // TODO: should be better not to use a not MIDI type. Perhaps we could change the message status byte?
     META_BEAT_MARKER        = 0x7e,

@@ -121,10 +121,10 @@ class MIDIFileWrite : protected MIDIFile {
         void            WriteEvent(const MIDITimedMessage &msg);
         void            WriteChannelEvent(const MIDITimedMessage &msg);
         void            WriteSysExEvent(const MIDITimedMessage &msg);
-        void            WriteTextEvent(unsigned long time, unsigned short text_type, const char *text);
+        //void            WriteTextEvent(unsigned long time, unsigned short text_type, const char *text);
         void            WriteMetaEvent( unsigned long time, unsigned char type, const unsigned char *data, long length );
-        void            WriteTempo(unsigned long time, long tempo);
-        void            WriteKeySignature(unsigned long time, char sharp_flat, char minor);
+        //void            WriteTempo(unsigned long time, long tempo);
+        //void            WriteKeySignature(unsigned long time, char sharp_flat, char minor);
         //void            WriteTimeSignature(
         //                    unsigned long time,
         //                    char numerator=4,

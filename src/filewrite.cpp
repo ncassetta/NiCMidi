@@ -299,8 +299,29 @@ void MIDIFileWrite::WriteEvent(const MIDITimedMessage &msg) {
             if(msg.IsDataEnd())
                 WriteEndOfTrack(msg.GetTime());
 
-            else if(msg.IsKeySig())
-                WriteKeySignature( msg.GetTime(), msg.GetKeySigSharpFlats(), msg.GetKeySigMajorMinor() );
+            else {
+                unsigned char buf[2];
+                buf[0] = msg.GetByte2();
+                buf[1] = msg.GetByte3();
+                int len;
+                switch (msg.GetMetaType()) {
+                    case META_SEQUENCE_NUMBER:
+                    case META_KEYSIG:
+                        len = 2;
+                        break;
+                    case META_CHANNEL_PREFIX:
+                    case META_OUTPUT_CABLE:
+                    //case META_TRACK_LOOP: dropped
+                        len = 1;
+                        break;
+                    default:        // this should not happen
+                        len = 0;
+                }
+                WriteMetaEvent(
+                    msg.GetTime(), msg.GetMetaType(), buf, len);
+                //if(msg.IsKeySig())
+                //WriteKeySignature( msg.GetTime(), msg.GetKeySigSharpFlats(), msg.GetKeySigMajorMinor() );
+            }
         }
     }
 }
@@ -399,7 +420,7 @@ void MIDIFileWrite::WriteSysExEvent(const MIDITimedMessage &msg) {
     running_status = 0;
 }
 
-
+/*   NOT USED
 void MIDIFileWrite::WriteTextEvent(unsigned long time, unsigned short text_type, const char *text) {
     ENTER( "void	MIDIFileWrite::WriteEvent()" );
 
@@ -419,7 +440,7 @@ void MIDIFileWrite::WriteTextEvent(unsigned long time, unsigned short text_type,
     IncrementCounters(len);
     running_status = 0;
 }
-
+*/
 
 void MIDIFileWrite::WriteMetaEvent(unsigned long time, unsigned char type, const unsigned char *data, long length) {
     ENTER( "void	MIDIFileWrite::WriteMetaEvent()" );
@@ -438,7 +459,7 @@ void MIDIFileWrite::WriteMetaEvent(unsigned long time, unsigned char type, const
     running_status = 0;
 }
 
-
+/*   NOT USED
 void MIDIFileWrite::WriteTempo(unsigned long time, long tempo) {
     ENTER( "void	MIDIFileWrite::WriteTempo()" );
 
@@ -466,7 +487,7 @@ void MIDIFileWrite::WriteKeySignature(unsigned long time, char sharp_flat, char 
     running_status = 0;
 }
 
-/* UNUSED
+
 void MIDIFileWrite::WriteTimeSignature(
     unsigned long time,
     char numerator,

@@ -635,7 +635,7 @@
 	"sysex.h"
 	<string>
 
-1466186689 c:\users\nicola\cplusplus\github\myjdkmidi\include\midi.h
+1466422356 c:\users\nicola\cplusplus\github\myjdkmidi\include\midi.h
 	"world.h"
 
 1291412857 c:\users\nicola\cplusplus\github\myjdkmidi\include\tempo.h
@@ -744,7 +744,7 @@
 	"../include/world.h"
 	"../include/file.h"
 
-1465651497 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\fileread.cpp
+1466186044 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\fileread.cpp
 	"../include/world.h"
 	"../include/fileread.h"
 
@@ -752,11 +752,11 @@
 	"../include/world.h"
 	"../include/filereadmultitrack.h"
 
-1465741753 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\filewrite.cpp
+1466369396 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\filewrite.cpp
 	"../include/world.h"
 	"../include/filewrite.h"
 
-1465741753 c:\users\nicola\cplusplus\github\myjdkmidi\include\filewrite.h
+1466369337 c:\users\nicola\cplusplus\github\myjdkmidi\include\filewrite.h
 	<fstream>
 	"midi.h"
 	"msg.h"
