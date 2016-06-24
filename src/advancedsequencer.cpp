@@ -1,8 +1,8 @@
 #include "../include/world.h"
 #include "../include/advancedsequencer.h"
-#include "../include/fileread.h"
+//#include "../include/fileread.h"
 #include "../include/filereadmultitrack.h"
-#include "../include/driverwin32.h"
+//#include "../include/driverwin32.h"
 
 #include <iostream>
 
@@ -169,10 +169,7 @@ bool AdvancedSequencer::Load ( const char *fname )
     mgr->AllNotesOff();
     tracks->Clear();
 
-    MIDIFileReadStreamFile mfreader_stream ( realname );
-    MIDIFileReadMultiTrack track_loader ( tracks );
-    MIDIFileRead reader ( &mfreader_stream, &track_loader );
-    if (reader.Parse()) {
+    if (LoadMIDIFile(realname, tracks)) {
         file_loaded = true;
         Reset();                // synchronizes the sequencer with the multitrack and goes to 0
         ExtractWarpPositions();

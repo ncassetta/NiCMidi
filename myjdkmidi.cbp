@@ -69,7 +69,6 @@
 		<Unit filename="src/advancedsequencer.cpp" />
 		<Unit filename="src/driver.cpp" />
 		<Unit filename="src/dump_tracks.cpp" />
-		<Unit filename="src/file.cpp" />
 		<Unit filename="src/fileread.cpp" />
 		<Unit filename="src/filereadmultitrack.cpp" />
 		<Unit filename="src/filewrite.cpp" />

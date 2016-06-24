@@ -48,7 +48,7 @@ using namespace std;
 //
 
 string command_buf, command, par1, par2, par3;      // used by GetCommand() for parsing the user input
-MIDISequencerGUIEventNotifierText notifier;         // a text notifier: send messages to std::cout (default)
+MIDISequencerGUINotifierText notifier;              // a text notifier: send messages to std::cout (default)
 AdvancedSequencer sequencer(&notifier);             // an AdvancedSequencer
 MIDIMultiTrack* multitrack = sequencer.GetMultiTrack();
                                                     // our multitrack which will be edited
@@ -132,7 +132,7 @@ unsigned char NameToValue( string s ) {
 void DumpMIDIMultiTrack(MIDIMultiTrack *mlt, int trk = -1) {
 // shows the MIDIMultiTrack content
     MIDIMultiTrackIterator iter(mlt);
-    MIDITimedBigMessage *msg;
+    MIDITimedMessage *msg;
     char s[200];
     fprintf (stdout , "Clocks per beat: %d\n\n", mlt->GetClksPerBeat());
     if (trk != -1)
@@ -167,7 +167,7 @@ void PrintResolution() {
 
 
 int main(int argc, char **argv) {
-    MIDITimedBigMessage msg;
+    MIDITimedMessage msg;
     MIDITrack* trk = multitrack->GetTrack(cur_pos.gettrack());
     MIDIClockTime last_note_length = 120;
     int last_note_vel = 100;
@@ -378,11 +378,11 @@ int main(int argc, char **argv) {
 
             msg.SetTime (cur_pos.gettime());
             if (par1 != "*") {
-                msg.SetTempo32(atoi(par1.c_str()) * 32);
+                msg.SetTempo(atoi(par1.c_str()));
                 multitrack->GetTrack(0)->InsertEvent(msg);
             }
             else {
-                msg.SetTempo32(120 * 32);
+                msg.SetTempo(120);
                 if (!multitrack->GetTrack(0)->FindEventNumber (msg, &event_num, COMPMODE_SAMEKIND))
                     cout << "Event not found" << endl;
                 else {

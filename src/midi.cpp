@@ -38,22 +38,22 @@
 
 
 const char* chan_msg_name[16] = {
-    "ERROR 0x00  ",		// 0x00
-    "ERROR 0x10  ",		// 0x10
-    "ERROR 0x20  ",		// 0x20
-    "ERROR 0x30  ",     // 0x30
-    "ERROR 0x40  ",     // 0x40
-    "ERROR 0x50  ",     // 0x50
-    "ERROR 0x60  ",   	// 0x60
-    "ERROR 0x70  ",    	// 0x70
-    "NOTE OFF    ",		// 0x80
-    "NOTE ON     ",		// 0x90
-    "POLY PRES.  ",		// 0xa0
-    "CTRL CHANGE ",		// 0xb0
-    "PG CHANGE   ",		// 0xc0
-    "CHAN PRES.  ",		// 0xd0
-    "BENDER      ",		// 0xe0
-    "SYSTEM      " 		// 0xf0
+    "ERROR 0x00    ",		// 0x00
+    "ERROR 0x10    ",		// 0x10
+    "ERROR 0x20    ",		// 0x20
+    "ERROR 0x30    ",       // 0x30
+    "ERROR 0x40    ",       // 0x40
+    "ERROR 0x50    ",       // 0x50
+    "ERROR 0x60    ",   	// 0x60
+    "ERROR 0x70    ",    	// 0x70
+    "NOTE OFF      ",		// 0x80
+    "NOTE ON       ",		// 0x90
+    "POLY PRESSURE ",		// 0xa0
+    "CTRL CHANGE   ",		// 0xb0
+    "PROG CHANGE   ",		// 0xc0
+    "CHAN PRESSURE ",		// 0xd0
+    "PITCH BEND    ",		// 0xe0
+    "SYSTEM        " 		// 0xf0
 };
 
 
@@ -79,9 +79,9 @@ const char* sys_msg_name[16] = {
 
 const char* get_meta_name(unsigned char b) {
     static const char* meta_msg_names[18] {
-        "SEQUENCE NUMBER ",	    // 0x00,	// value=16 bits. type 2 files
-        "GENERIC TEXT    ",     // 0x01,	// value=16 bits, text item #
-        "COPYRIGHT       ",		// 0x02,	// value=17 bits, text item #
+        "SEQUENCE NUMBER ",	    // 0x00,
+        "GENERIC TEXT    ",     // 0x01,
+        "COPYRIGHT       ",		// 0x02,
         "INSTRUMENT NAME ",	    // 0x03,
         "TRACK NAME      ",		// 0x04,
         "LYRIC TEXT      ",		// 0x05,
@@ -90,10 +90,10 @@ const char* get_meta_name(unsigned char b) {
         "OUTPUT CABLE    ",     // 0x21,
         "TRACK LOOP      ",     // 0x2E,
         "END OF TRACK    ",     // 0x2F,
-        "TEMPO           ",     // 0x51,	// value=16 bits, tempo(bpm)*256
-        "SMPTE           ",     // 0x54,	// what for?
-        "TIMESIG         ",     // 0x58,  // value=num, denom
-        "KEYSIG	         ",     // 0x59,  // value=# of sharps/flats, major/minor
+        "TEMPO           ",     // 0x51,
+        "SMPTE           ",     // 0x54,
+        "TIMESIG         ",     // 0x58,
+        "KEYSIG          ",     // 0x59,
         "BEAT MARKER     ",     // 0x7e,
         "NO OPERATION    ",     // 0x7f
         "META ERROR      "      // others

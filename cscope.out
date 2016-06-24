@@ -1,4 +1,4 @@
-cscope 15 $HOME\Cplusplus\Github\myjdkmidi"               0000264871
+cscope 15 $HOME\Cplusplus\Github\myjdkmidi"               0000264533
 	@C:\Users\Nicola\Cplusplus\Github\myjdkmidi\include\advancedsequencer.h
 
 5 #i‚de‡
@@ -945,31 +945,31 @@ _JDKMIDI_FILE_H
 	~"sy£x.h
 "
 
-58 c⁄° 
+53 c⁄° 
 	g_MThd
 =
 OSTYPE
 ('M','T','h','d');
 
-59 c⁄° 
+54 c⁄° 
 	g_MTrk
 =
 OSTYPE
 ('M','T','r','k');
 
-61 ˛as†
+60 ˛as†
 	cMIDIFûe
  {
 
-62 
+61 
 	mpublic
 :
 
-64 
+63 
 	$MIDIFûe
 () {}
 
-65 
+64 
 vútuÆ
  ~
 	$MIDIFûe
@@ -977,97 +977,101 @@ vútuÆ
 	}
 }
 
-67 
+66 
 	sMIDIFûeChunk
  {
 
-68 
+67 
 id
 ;
 
-69 
+68 
 	gÀngth
 ;
 
-72 
+71 
 	sMIDIFûeHódî
  {
 
-73 
+72 
 	gf‹m©
 ;
 
-74 
+73 
 	g¡rks
 ;
 
-75 
+74 
 	gdivisi⁄
 ;
 
-83 
+82 
 	gMF_SEQUENCE_NUMBER
  = 0,
 
-84 
+83 
 	gMF_TEXT_EVENT
  = 1,
 
-85 
+84 
 	gMF_COPYRIGHT
  = 2,
 
-86 
+85 
 	gMF_TRACK_NAME
  = 3,
 
-87 
+86 
 	gMF_INSTRUMENT_NAME
  = 4,
 
-88 
+87 
 	gMF_LYRIC
  = 5,
 
-89 
+88 
 	gMF_MARKER
  = 6,
 
-90 
+89 
 	gMF_CUE_POINT
  = 7,
 
-91 
+90 
 	gMF_GENERIC_TEXT_8
  = 8,
 
-92 
+91 
 	gMF_GENERIC_TEXT_9
  = 9,
 
-93 
+92 
 	gMF_GENERIC_TEXT_A
  = 0xA,
 
-94 
+93 
 	gMF_GENERIC_TEXT_B
  = 0xB,
 
-95 
+94 
 	gMF_GENERIC_TEXT_C
  = 0xC,
 
-96 
+95 
 	gMF_GENERIC_TEXT_D
  = 0xD,
 
-97 
+96 
 	gMF_GENERIC_TEXT_E
  = 0xE,
 
-98 
+97 
 	gMF_GENERIC_TEXT_F
  = 0xF,
+
+98 
+	gMF_CHANNEL_PREFIX
+ = 0x20,
 
 99 
 	gMF_OUTPUT_CABLE
@@ -1101,7 +1105,7 @@ id
 	gMF_SEQUENCER_SPECIFIC
  = 0x7F
 
-120 
+110 
 	$To32Bô
 (
 a
@@ -1113,27 +1117,25 @@ c
 d
 ) {
 
-121  (()
+111  (()
 a
  << 24)
 
-122 + (()
+112 + (()
 b
  << 16)
 
-123 + (()
+113 + (()
 c
  << 8 )
 
-124 + (()
+114 + (()
 d
- << 0 );
-
-125 
+ << 0 ); 
 	}
 }
 
-132 
+117 
 	$To16Bô
 (
 a
@@ -1141,25 +1143,23 @@ a
 b
 ) {
 
-133  ()((()
+118  ()((()
 a
  << 8)
 
-134 + (()
+119 + (()
 b
- << 0));
-
-135 
+ << 0)); 
 	}
 }
 
-137 
+121 
 RódV¨übÀLígthNumbî
 (**
 ö
 );
 
-138 * 
+122 * 
 WrôeV¨übÀLígthNumbî
 (
 num
@@ -1419,7 +1419,7 @@ MIDITimedMesßge
 msg
 );
 
-124 
+125 
 vútuÆ
  
 mf_sy£x
@@ -1460,12 +1460,18 @@ time
 128 
 vútuÆ
  
-mf_£qnum
-–
+mf_mëa16
+ (
 MIDIClockTime
  
 time
-, );
+, 
+ty≥
+, 
+b1
+, 
+b2
+ );
 
 129 
 vútuÆ
@@ -1475,7 +1481,17 @@ mf_sm±e
 MIDIClockTime
  
 time
-, , , , , );
+, 
+h
+, 
+m
+, 
+s
+, 
+f
+, 
+sf
+ );
 
 130 
 vútuÆ
@@ -1504,11 +1520,11 @@ MIDIClockTime
  
 time
 , 
-m1
+b1
 , 
-m2
+b2
 , 
-m3
+b3
 );
 
 132 
@@ -1519,7 +1535,11 @@ mf_keysig
 MIDIClockTime
  
 time
-, , );
+, 
+sf
+, 
+majmö
+ );
 
 133 
 vútuÆ
@@ -1529,7 +1549,11 @@ mf_sq•ecific
 MIDIClockTime
  
 time
-, , * );
+, 
+Àn
+, *
+d©a
+ );
 
 134 
 vútuÆ
@@ -1539,7 +1563,13 @@ mf_ãxt
 MIDIClockTime
  
 time
-, , , * );
+, 
+ty≥
+, 
+Àn
+, *
+d©a
+ );
 
 135 
 vútuÆ
@@ -1912,12 +1942,18 @@ time
 66 
 vútuÆ
  
-mf_£qnum
+mf_mëa16
 –
 MIDIClockTime
  
 time
-, );
+, 
+ty≥
+, 
+b1
+, 
+b2
+ );
 
 67 
 vútuÆ
@@ -1927,22 +1963,22 @@ mf_sm±e
 MIDIClockTime
  
 time
-, , , , , );
+, 
+h
+, 
+m
+, 
+s
+, 
+f
+, 
+sf
+ );
 
 68 
 vútuÆ
  
 mf_timesig
-–
-MIDIClockTime
- 
-time
-, , , , );
-
-69 
-vútuÆ
- 
-mf_ãmpo
 –
 MIDIClockTime
  
@@ -1953,6 +1989,24 @@ a
 b
 , 
 c
+, 
+d
+ );
+
+69 
+vútuÆ
+ 
+mf_ãmpo
+–
+MIDIClockTime
+ 
+time
+, 
+b1
+, 
+b2
+, 
+b3
  );
 
 70 
@@ -1963,7 +2017,11 @@ mf_keysig
 MIDIClockTime
  
 time
-, , );
+, 
+sf
+, 
+majmö
+ );
 
 71 
 vútuÆ
@@ -1973,7 +2031,11 @@ mf_sq•ecific
 MIDIClockTime
  
 time
-, , * );
+, 
+Àn
+, *
+d©a
+ );
 
 72 
 vútuÆ
@@ -1983,7 +2045,13 @@ mf_ãxt
 MIDIClockTime
  
 time
-, , , * );
+, 
+ty≥
+, 
+Àn
+, *
+d©a
+ );
 
 73 
 vútuÆ
@@ -2319,16 +2387,6 @@ MIDITimedMesßge
 msg
 );
 
-124 
-WrôeTextEvít
-(
-time
-, 
-ãxt_ty≥
-, c⁄° *
-ãxt
-);
-
 125 
 WrôeMëaEvít
 –
@@ -2340,24 +2398,6 @@ d©a
 , 
 Àngth
  );
-
-126 
-WrôeTempo
-(
-time
-, 
-ãmpo
-);
-
-127 
-WrôeKeySig«tuª
-(
-time
-, 
-sh¨p_Ê©
-, 
-mö‹
-);
 
 136 
 WrôeEndOfTøck
@@ -3469,111 +3509,135 @@ _JDKMIDI_MIDI_H
 	mRPN_COARSE_TUNE
  =0x02
 
-168 
-	mMETA_SEQUENCE_NUMBER
- =0x00,
-
-170 
-	mMETA_GENERIC_TEXT
- =0x01,
-
-171 
-	mMETA_COPYRIGHT
- =0x02,
-
-172 
-	mMETA_INSTRUMENT_NAME
- =0x03,
-
 173 
-	mMETA_TRACK_NAME
- =0x04,
-
-174 
-	mMETA_LYRIC_TEXT
- =0x05,
-
-175 
-	mMETA_MARKER_TEXT
- =0x06,
+	mMETA_SEQUENCE_NUMBER
+ = 0x00,
 
 176 
-	mMETA_CUE_TEXT
- =0x07,
+	mMETA_GENERIC_TEXT
+ = 0x01,
+
+177 
+	mMETA_COPYRIGHT
+ = 0x02,
 
 178 
-	mMETA_OUTPUT_CABLE
- =0x21,
+	mMETA_TRACK_NAME
+ = 0x03,
 
 179 
-	mMETA_TRACK_LOOP
- =0x2E,
+	mMETA_INSTRUMENT_NAME
+ = 0x04,
 
 180 
-	mMETA_DATA_END
- =0x2f,
+	mMETA_LYRIC_TEXT
+ = 0x05,
 
 181 
-	mMETA_END_OF_TRACK
- =0x2F,
+	mMETA_MARKER_TEXT
+ = 0x06,
 
 182 
-	mMETA_TEMPO
- =0x51,
+	mMETA_CUE_TEXT
+ = 0x07,
 
 183 
-	mMETA_SMPTE
- =0x54,
+	mMETA_PROGRAM_NAME
+ = 0x08,
 
 184 
-	mMETA_TIMESIG
- =0x58,
+	mMETA_DEVICE_NAME
+ = 0x09,
 
 185 
-	mMETA_KEYSIG
- =0x59,
+	mMETA_GENERIC_TEXT_A
+ = 0x0A,
 
 186 
-	mMETA_BEAT_MARKER
- =0x7e,
+	mMETA_GENERIC_TEXT_B
+ = 0x0B,
 
 187 
-	mMETA_SEQUENCER_SPECIFIC
- =0x7F,
+	mMETA_GENERIC_TEXT_C
+ = 0x0C,
 
 188 
-	mMETA_NO_OPERATION
- =0x7f
+	mMETA_GENERIC_TEXT_D
+ = 0x0D,
 
-192 c⁄° sig√d 
+189 
+	mMETA_GENERIC_TEXT_E
+ = 0x0E,
+
+190 
+	mMETA_GENERIC_TEXT_F
+ = 0x0F,
+
+195 
+	mMETA_CHANNEL_PREFIX
+ = 0x20,
+
+198 
+	mMETA_OUTPUT_CABLE
+ = 0x21,
+
+201 
+	mMETA_END_OF_TRACK
+ = 0x2F,
+
+206 
+	mMETA_TEMPO
+ = 0x51,
+
+212 
+	mMETA_SMPTE
+ = 0x54,
+
+222 
+	mMETA_TIMESIG
+ = 0x58,
+
+226 
+	mMETA_KEYSIG
+ = 0x59,
+
+230 
+	mMETA_BEAT_MARKER
+ = 0x7e,
+
+235 
+	mMETA_SEQUENCER_SPECIFIC
+ = 0x7F
+
+242 c⁄° sig√d 
 lut_msgÀn
 [16];
 
-193 c⁄° sig√d 
+243 c⁄° sig√d 
 lut_sysmsgÀn
 [16];
 
-194 c⁄° 
+244 c⁄° 
 boﬁ
  
 lut_is_whôe
 [12];
 
-197 c⁄° * 
+247 c⁄° * 
 ch™_msg_«me
 [16];
 
-198 c⁄° * 
+248 c⁄° * 
 sys_msg_«me
 [16];
 
-199 c⁄° * 
+249 c⁄° * 
 gë_mëa_«me
 (
 b
 );
 
-205 
+255 
 ölöe
  sig√d 
 	$GëMesßgeLígth
@@ -3581,17 +3645,17 @@ b
 °©
  )
 
-207  
+257  
 lut_msgÀn
 [
 °©
 >>4];
 
-208 
+258 
 	}
 }
 
-210 
+260 
 ölöe
  sig√d 
 	$GëSy°emMesßgeLígth
@@ -3599,17 +3663,17 @@ lut_msgÀn
 °©
  )
 
-212  
+262  
 lut_sysmsgÀn
 [
 °©
 -0xf0];
 
-213 
+263 
 	}
 }
 
-220 
+270 
 ölöe
  
 boﬁ
@@ -3619,17 +3683,17 @@ boﬁ
 nŸe
  )
 
-222  
+272  
 lut_is_whôe
 [ 
 nŸe
 %12 ];
 
-223 
+273 
 	}
 }
 
-225 
+275 
 ölöe
  
 boﬁ
@@ -3639,17 +3703,17 @@ boﬁ
 nŸe
  )
 
-227  !
+277  !
 lut_is_whôe
 [ 
 nŸe
 %12 ];
 
-228 
+278 
 	}
 }
 
-235 
+285 
 ölöe
  
 	$GëNŸeO˘ave
@@ -3657,7 +3721,7 @@ nŸe
 nŸe
  )
 
-236 {  (
+286 {  (
 nŸe
 /12)-1; 
 	}
@@ -4278,7 +4342,7 @@ META_EVENT
 Ë&& (
 byã1
  =
-META_DATA_END
+META_END_OF_TRACK
 ); 
 	}
 }
@@ -4315,7 +4379,7 @@ META_KEYSIG
 	}
 }
 
-218 
+219 
 boﬁ
  
 	$IsBótM¨kî
@@ -4331,7 +4395,7 @@ META_BEAT_MARKER
 	}
 }
 
-221 
+222 
 boﬁ
  
 	$IsNoOp
@@ -4341,7 +4405,7 @@ boﬁ
 	}
 }
 
-230 
+231 
 	$SëSètus
 (
 s
@@ -4351,7 +4415,7 @@ s
 	}
 }
 
-232 
+233 
 	$SëCh™√l
 (
 s
@@ -4361,7 +4425,7 @@ s
 	}
 }
 
-234 
+235 
 	$SëTy≥
 (
 s
@@ -4371,7 +4435,7 @@ s
 	}
 }
 
-236 
+237 
 	$SëByã1
 (
 b
@@ -4381,7 +4445,7 @@ byã1
 	}
 }
 
-238 
+239 
 	$SëByã2
 (
 b
@@ -4391,7 +4455,7 @@ byã2
 	}
 }
 
-240 
+241 
 	$SëByã3
 (
 b
@@ -4401,7 +4465,7 @@ byã3
 	}
 }
 
-242 
+243 
 	$SëNŸe
 (
 n
@@ -4411,7 +4475,7 @@ byã1
 	}
 }
 
-244 
+245 
 	$SëVñocôy
 (
 v
@@ -4421,7 +4485,7 @@ byã2
 	}
 }
 
-246 
+247 
 	$SëC⁄åﬁÀr
 (
 c
@@ -4431,7 +4495,7 @@ byã1
 	}
 }
 
-248 
+249 
 	$SëC⁄åﬁÀrVÆue
 (
 v
@@ -4441,7 +4505,7 @@ byã2
 	}
 }
 
-250 
+251 
 	$SëProgømVÆue
 (
 v
@@ -4451,13 +4515,13 @@ byã1
 	}
 }
 
-252 
+253 
 SëBídîVÆue
 (
 v
 );
 
-254 
+255 
 	$SëMëaTy≥
 (
 t
@@ -4467,19 +4531,19 @@ byã1
 	}
 }
 
-256 
+257 
 SëMëaVÆue
 (
 v
 );
 
-259 
+260 
 AŒoˇãSysEx
 (
 Àn
 );
 
-262 
+263 
 C›ySysEx
 (c⁄° 
 MIDISy°emEx˛usive
@@ -4487,7 +4551,7 @@ MIDISy°emEx˛usive
 £
 );
 
-264 
+265 
 SëNŸeOn
 (
 ch™
@@ -4497,7 +4561,7 @@ nŸe
 vñ
 );
 
-266 
+267 
 SëNŸeOff
 (
 ch™
@@ -4507,7 +4571,7 @@ nŸe
 vñ
 );
 
-269 
+270 
 SëPﬁyPªssuª
 (
 ch™
@@ -4517,7 +4581,7 @@ nŸe
 ¥es
 );
 
-272 
+273 
 SëC⁄åﬁCh™ge
 (
 ch™
@@ -4527,7 +4591,7 @@ ch™
 vÆ
 );
 
-275 
+276 
 	$SëVﬁumeCh™ge
  (
 ch™
@@ -4535,7 +4599,7 @@ ch™
 vÆ
 )
 
-276 { 
+277 { 
 	`SëC⁄åﬁCh™ge
 –
 ch™
@@ -4547,7 +4611,7 @@ vÆ
 	}
 }
 
-279 
+280 
 	$SëP™Ch™ge
  (
 ch™
@@ -4555,7 +4619,7 @@ ch™
 vÆ
 )
 
-280 { 
+281 { 
 	`SëC⁄åﬁCh™ge
 –
 ch™
@@ -4567,7 +4631,7 @@ vÆ
 	}
 }
 
-282 
+283 
 SëProgømCh™ge
 (
 ch™
@@ -4575,7 +4639,7 @@ ch™
 ¥og
 );
 
-284 
+285 
 SëCh™√lPªssuª
 (
 ch™
@@ -4583,7 +4647,7 @@ ch™
 ¥es
 );
 
-287 
+288 
 SëPôchBíd
 –
 ch™
@@ -4591,7 +4655,7 @@ ch™
 vÆ
  );
 
-289 
+290 
 SëAŒNŸesOff
 (
 ch™
@@ -4601,7 +4665,7 @@ ty≥
 C_ALL_NOTES_OFF
 );
 
-291 
+292 
 SëLoˇl
 (
 ch™
@@ -4609,7 +4673,7 @@ ch™
 v
 );
 
-295 
+296 
 SëSysEx
 (c⁄° 
 MIDISy°emEx˛usive
@@ -4617,7 +4681,7 @@ MIDISy°emEx˛usive
 £
 );
 
-298 
+299 
 SëMTC
 (
 fõld
@@ -4625,23 +4689,23 @@ fõld
 vÆ
 );
 
-300 
+301 
 SëS⁄gPosôi⁄
 –
 pos
  );
 
-302 
+303 
 SëS⁄gSñe˘
 (
 ¢g
 );
 
-304 
+305 
 SëTu√Reque°
 ();
 
-307 
+308 
 SëMëaEvít
 (
 ty≥
@@ -4651,7 +4715,7 @@ v1
 v2
 );
 
-310 
+311 
 SëMëaEvít
 (
 ty≥
@@ -4659,7 +4723,7 @@ ty≥
 vÆ
 );
 
-315 
+316 
 SëText
 (c⁄° * 
 ãxt
@@ -4669,23 +4733,23 @@ ty≥
 META_GENERIC_TEXT
 );
 
-317 
+318 
 	$SëD©aEnd
 (Ë{ 
 	`SëMëaEvít
 (
-META_DATA_END
+META_END_OF_TRACK
 , 0); 
 	}
 }
 
-320 
+321 
 SëTempo
 (
 ãmpo_bpm
 );
 
-323 
+324 
 SëSMPTEOff£t
 (
 hour
@@ -4695,13 +4759,13 @@ mö
 £c
 ,
 
-324 
+325 
 ‰ame
 ,
 sub‰ame
 );
 
-326 
+327 
 SëTimeSig
 (
 num
@@ -4709,13 +4773,13 @@ num
 dí
 ,
 
-327 
+328 
 ˛ocks_≥r_mër⁄ome
  = 0, 
 num_32_≥r_qu¨ãr
  = 8);
 
-330 
+331 
 	$SëKeySig
 –sig√d 
 sh¨p_Ê©s
@@ -4723,7 +4787,7 @@ sh¨p_Ê©s
 maj‹_mö‹
  )
 
-331 { 
+332 { 
 	`SëMëaEvít
 (
 META_KEYSIG
@@ -4735,7 +4799,7 @@ maj‹_mö‹
 	}
 }
 
-333 
+335 
 	$SëBótM¨kî
 (Ë{ 
 	`SëMëaEvít
@@ -4745,7 +4809,7 @@ META_BEAT_MARKER
 	}
 }
 
-336 
+338 
 	$SëNoOp
 (Ë{ 
 	`CÀ¨
@@ -4753,7 +4817,7 @@ META_BEAT_MARKER
 	}
 }
 
-337 
+339 
 ‰õnd
  
 boﬁ
@@ -4769,33 +4833,33 @@ m1
 	gm2
 );
 
-339 
+341 
 	g¥Ÿe˘ed
 :
 
-341 
+343 
 °©us
 ;
 
-342 
+344 
 	gbyã1
 ;
 
-343 
+345 
 	gbyã2
 ;
 
-344 
+346 
 	gbyã3
 ;
 
-345 
+347 
 MIDISy°emEx˛usive
 * 
 	gsy£x
 ;
 
-520 ˛as†
+522 ˛as†
 	cMIDITimedMesßge
  : 
 public
@@ -4803,21 +4867,21 @@ public
 MIDIMesßge
  {
 
-521 
+523 
 public
 :
 
-527 
+529 
 MIDITimedMesßge
 ();
 
-528 
+530 
 MIDITimedMesßge
 (c⁄° MIDITimedMesßgê&
 msg
 );
 
-529 
+531 
 MIDITimedMesßge
 (c⁄° 
 MIDIMesßge
@@ -4825,15 +4889,15 @@ MIDIMesßge
 msg
 );
 
-534 ~
+536 ~
 MIDITimedMesßge
 ();
 
-536 
+538 
 CÀ¨
 ();
 
-542 c⁄° 
+544 c⁄° 
 	mMIDITimedMesßge
  &
 	m›î©‹
@@ -4843,7 +4907,7 @@ MIDITimedMesßge
 msg
 );
 
-543 c⁄° 
+545 c⁄° 
 	mMIDITimedMesßge
  &
 	m›î©‹
@@ -4853,7 +4917,7 @@ MIDIMesßge
 msg
 );
 
-549 
+551 
 MIDIClockTime
  
 	$GëTime
@@ -4861,7 +4925,7 @@ MIDIClockTime
 time
 ; }
 
-555 
+557 
 	$SëTime
 (
 MIDIClockTime
@@ -4873,7 +4937,7 @@ time
 	}
 }
 
-556 
+558 
 AddTime
 (
 MIDIClockTime
@@ -4881,7 +4945,7 @@ MIDIClockTime
 t
 );
 
-557 
+559 
 SubTime
 (
 MIDIClockTime
@@ -4889,41 +4953,41 @@ MIDIClockTime
 t
 );
 
-581 
+583 
 Com∑ªEvítsF‹In£π
  (
 
-582 c⁄° 
+584 c⁄° 
 MIDITimedMesßge
  &
 m1
 ,
 
-583 c⁄° 
+585 c⁄° 
 MIDITimedMesßge
  &
 m2
 
 
-598 
+600 
 boﬁ
  
 IsSameKöd
  (
 
-599 c⁄° 
+601 c⁄° 
 MIDITimedMesßge
  &
 m1
 ,
 
-600 c⁄° 
+602 c⁄° 
 MIDITimedMesßge
  &
 m2
 
 
-609 
+611 
 vútuÆ
  * 
 	$MsgToText
@@ -4931,17 +4995,17 @@ vútuÆ
 txt
 ) const;
 
-611 
+613 
 ¥Ÿe˘ed
 :
 
-613 
+615 
 MIDIClockTime
  
 time
 ;
 
-614 
+616 
 	}
 };
 
@@ -28307,7 +28371,7 @@ i
 	~"../ö˛ude/fûe.h
 "
 
-57 
+44 
 	gMIDIFûe
 ::
 	$RódV¨übÀLígthNumbî
@@ -28315,45 +28379,45 @@ i
 ö
 ) {
 
-58 
+45 
 num
  = 0;
 
-59 *
+46 *
 t
  = *
 ö
 ;
 
-62 
+49 
 num
  <<= 7;
 
-63 
+50 
 num
  |(*
 t
 );
 
-64 } (*
+51 } (*
 t
 ++) & 0x80);
 
-66 *
+53 *
 ö
  = 
 t
 ;
 
-67  
+54  
 num
 ;
 
-68 
+55 
 	}
 }
 
-70 * 
+58 * 
 	gMIDIFûe
 ::
 	$WrôeV¨übÀLígthNumbî
@@ -28363,57 +28427,57 @@ num
 out
 ) {
 
-71 
+59 
 buf„r
 ;
 
-73 
+61 
 buf„r
  = 
 num
  & 0x7f;
 
-74 (
+62 (
 num
  >>= 7 ) > 0) {
 
-75 
+63 
 buf„r
  <<= 8;
 
-76 
+64 
 buf„r
  |= 0x80;
 
-77 
+65 
 buf„r
  +(
 num
  & 0x7f);
 
-80 *
+68 *
 out
 ++ = ()
 buf„r
 ;
 
-81 if(
+69 if(
 buf„r
  & 0x80)
 
-82 
+70 
 buf„r
  >>=8;
 
-85 } 
+73 } 
 åue
 );
 
-87  
+75  
 out
 ;
 
-88 
+76 
 	}
 }
 
@@ -28748,14 +28812,14 @@ MF_SEQUENCE_NUMBER
 :
 
 133 
-	`mf_£qnum
+	`mf_mëa16
 (
 time
 , 
-	`To16Bô
-(
+ty≥
+, 
 m
-[0], m[1]));
+[0], m[1]);
 
 135 
 MF_TEXT_EVENT
@@ -28836,28 +28900,42 @@ m
 );
 
 156 
+MF_CHANNEL_PREFIX
+:
+
+157 
 MF_OUTPUT_CABLE
 :
 
-159 
+158 
 MF_TRACK_LOOP
 :
 
-162 
+159 
+	`mf_mëa16
+(
+time
+, 
+ty≥
+, 
+m
+[1], 0);
+
+161 
 MF_END_OF_TRACK
 :
 
-163 
+162 
 	`mf_eŸ
 (
 time
 );
 
-165 
+164 
 MF_TEMPO
 :
 
-166 
+165 
 	`mf_ãmpo
 (
 time
@@ -28865,11 +28943,11 @@ time
 m
 [0], m[1], m[2]);
 
-168 
+167 
 MF_SMPTE
 :
 
-169 
+168 
 	`mf_sm±e
 (
 time
@@ -28877,11 +28955,11 @@ time
 m
 [0], m[1], m[2], m[3], m[4]);
 
-171 
+170 
 MF_TIMESIG
 :
 
-172 
+171 
 	`mf_timesig
 (
 time
@@ -28889,17 +28967,17 @@ time
 m
 [0], m[1], m[2], m[3]);
 
-174 
+173 
 MF_KEYSIG
 : {
 
-175 
+174 
 c
  = 
 m
 [0];
 
-176 
+175 
 	`mf_keysig
 (
 time
@@ -28909,11 +28987,11 @@ c
 m
 [1]);
 
-179 
+178 
 MF_SEQUENCER_SPECIFIC
 :
 
-180 
+179 
 	`mf_sq•ecific
 (
 time
@@ -28923,7 +29001,7 @@ time
 m
 );
 
-183 
+182 
 	`mf_mëamisc
 (
 time
@@ -28935,11 +29013,11 @@ ty≥
 m
 );
 
-186 
+185 
 	}
 }
 
-189 
+188 
 	gMIDIFûeEvíts
 ::
 	$mf_°¨âøck
@@ -28947,11 +29025,11 @@ m
 åk
 ) {
 
-190 
+189 
 	}
 }
 
-193 
+192 
 MIDIFûeEvíts
 ::
 	$mf_ídåack
@@ -28959,11 +29037,11 @@ MIDIFûeEvíts
 åk
 ) {
 
-194 
+193 
 	}
 }
 
-197 
+196 
 MIDIFûeEvíts
 ::
 	$mf_eŸ
@@ -28973,11 +29051,11 @@ MIDIClockTime
 time
 ) {
 
-198 
+197 
 	}
 }
 
-201 
+200 
 MIDIFûeEvíts
 ::
 	$mf_îr‹
@@ -28985,11 +29063,11 @@ MIDIFûeEvíts
 s
 ) {
 
-202 
+201 
 	}
 }
 
-205 
+204 
 MIDIFûeEvíts
 ::
 	$mf_hódî
@@ -29001,11 +29079,11 @@ b
 c
 ) {
 
-206 
+205 
 	}
 }
 
-209 
+208 
 	gMIDIFûeEvíts
 ::
 	$mf_¨bôøry
@@ -29016,14 +29094,14 @@ time
 , 
 a
 , * 
-s
+d©a
 ) {
 
-210 
+209 
 	}
 }
 
-213 
+212 
 	gMIDIFûeEvíts
 ::
 	$mf_mëamisc
@@ -29039,27 +29117,31 @@ b
 s
 ) {
 
-214 
+213 
 	}
 }
 
-217 
+216 
 	gMIDIFûeEvíts
 ::
-	$mf_£qnum
+	$mf_mëa16
 (
 MIDIClockTime
  
 time
 , 
-a
+ty≥
+, 
+b1
+, 
+b2
 ) {
 
-218 
+217 
 	}
 }
 
-221 
+220 
 	gMIDIFûeEvíts
 ::
 	$mf_sm±e
@@ -29068,22 +29150,22 @@ MIDIClockTime
  
 time
 , 
-a
+h
 , 
-b
+m
 , 
-c
+s
 , 
-d
+f
 , 
-e
+sf
 ) {
 
-222 
+221 
 	}
 }
 
-225 
+224 
 	gMIDIFûeEvíts
 ::
 	$mf_timesig
@@ -29101,11 +29183,11 @@ c
 d
 ) {
 
-226 
+225 
 	}
 }
 
-229 
+228 
 	gMIDIFûeEvíts
 ::
 	$mf_ãmpo
@@ -29121,11 +29203,11 @@ b
 c
 ) {
 
-230 
+229 
 	}
 }
 
-233 
+232 
 	gMIDIFûeEvíts
 ::
 	$mf_keysig
@@ -29134,16 +29216,16 @@ MIDIClockTime
  
 time
 , 
-a
+sf
 , 
-b
+majmö
 ) {
 
-234 
+233 
 	}
 }
 
-237 
+236 
 	gMIDIFûeEvíts
 ::
 	$mf_sq•ecific
@@ -29152,16 +29234,16 @@ MIDIClockTime
  
 time
 , 
-a
+Àn
 , * 
-s
+d©a
 ) {
 
-238 
+237 
 	}
 }
 
-241 
+240 
 	gMIDIFûeEvíts
 ::
 	$mf_ãxt
@@ -29170,18 +29252,18 @@ MIDIClockTime
  
 time
 , 
-a
+ty≥
 , 
-b
+Àn
 , * 
-s
+d©a
 ) {
 
-242 
+241 
 	}
 }
 
-245 
+244 
 	gMIDIFûeEvíts
 ::
 	$mf_sy°em_mode
@@ -29191,11 +29273,11 @@ MIDITimedMesßge
 msg
 ) {
 
-246 
+245 
 	}
 }
 
-249 
+248 
 MIDIFûeEvíts
 ::
 	$mf_nŸe_⁄
@@ -29205,11 +29287,11 @@ MIDITimedMesßge
 msg
 ) {
 
-250 
+249 
 	}
 }
 
-253 
+252 
 MIDIFûeEvíts
 ::
 	$mf_nŸe_off
@@ -29219,11 +29301,11 @@ MIDITimedMesßge
 msg
 ) {
 
-254 
+253 
 	}
 }
 
-257 
+256 
 MIDIFûeEvíts
 ::
 	$mf_pﬁy_a·î
@@ -29233,11 +29315,11 @@ MIDITimedMesßge
 msg
 ) {
 
-258 
+257 
 	}
 }
 
-261 
+260 
 MIDIFûeEvíts
 ::
 	$mf_bídî
@@ -29247,11 +29329,11 @@ MIDITimedMesßge
 msg
 ) {
 
-262 
+261 
 	}
 }
 
-265 
+264 
 MIDIFûeEvíts
 ::
 	$mf_¥ogøm
@@ -29261,11 +29343,11 @@ MIDITimedMesßge
 msg
 ) {
 
-266 
+265 
 	}
 }
 
-269 
+268 
 MIDIFûeEvíts
 ::
 	$mf_ch™_a·î
@@ -29275,11 +29357,11 @@ MIDITimedMesßge
 msg
 ) {
 
-270 
+269 
 	}
 }
 
-273 
+272 
 MIDIFûeEvíts
 ::
 	$mf_c⁄åﬁ
@@ -29289,11 +29371,11 @@ MIDITimedMesßge
 msg
 ) {
 
-274 
+273 
 	}
 }
 
-277 
+276 
 MIDIFûeEvíts
 ::
 	$mf_sy£x
@@ -29307,11 +29389,11 @@ MIDISy°emEx˛usive
 ex
 ) {
 
-278 
+277 
 	}
 }
 
-284 
+283 
 	gMIDIFûeRód
 ::
 	$MIDIFûeRód
@@ -29325,11 +29407,11 @@ MIDIFûeEvíts
 evít_h™dÀr_
 ,
 
-285 
+284 
 max_msg_Àn_
 ) :
 
-286 
+285 
 	`öput_°ªam
 (
 öput_°ªam_
@@ -29343,35 +29425,35 @@ evít_h™dÀr_
 max_msg_Àn_
 ) {
 
-287 
+286 
 no_mîge
  = 0;
 
-288 
+287 
 cur_time
  = 0;
 
-289 
+288 
 skù_öô
  = 1;
 
-290 
+289 
 to_be_ªad
  = 0;
 
-291 
+290 
 msg_ödex
  = 0;
 
-292 
+291 
 cur_åack
  = 0;
 
-293 
+292 
 ab‹t_∑r£
  = 0;
 
-294 
+293 
 the_msg
  = 
 √w
@@ -29379,27 +29461,27 @@ the_msg
 max_msg_Àn
 ];
 
-295 
+294 
 	}
 }
 
-298 
+297 
 	gMIDIFûeRód
 ::~
 	$MIDIFûeRód
 () {
 
-299 
+298 
 dñëe
 [] 
 the_msg
 ;
 
-300 
+299 
 	}
 }
 
-303 
+302 
 	gMIDIFûeRód
 ::
 	$mf_îr‹
@@ -29407,7 +29489,7 @@ the_msg
 e
 ) {
 
-304 
+303 
 evít_h™dÀr
 ->
 	`mf_îr‹
@@ -29415,17 +29497,17 @@ evít_h™dÀr
 e
 );
 
-305 
+304 
 ab‹t_∑r£
  = 
 åue
 ;
 
-306 
+305 
 	}
 }
 
-309 
+308 
 boﬁ
  
 	gMIDIFûeRód
@@ -29433,55 +29515,55 @@ boﬁ
 	$P¨£
 () {
 
-310 
+309 
 n
 ;
 
-312 
+311 
 n
  = 
 	`RódHódî
 ();
 
-313 if(
+312 if(
 n
  <= 0) {
 
-314 
+313 
 	`mf_îr‹
 ( "No Tracks" );
 
-315  
+314  
 Ál£
 ;
 
-317 
+316 
 cur_åack
  = 0; cur_åack < 
 n
 ; cur_track++) {
 
-318 
+317 
 	`RódTøck
 ();
 
-319 if–
+318 if–
 ab‹t_∑r£
  )
 
-320  
+319  
 Ál£
 ;
 
-322  
+321  
 åue
 ;
 
-323 
+322 
 	}
 }
 
-326 
+325 
 	gMIDIFûeRód
 ::
 	$RódMT
@@ -29491,15 +29573,15 @@ ty≥
 skù
 ) {
 
-327 
+326 
 ªad
  = 0;
 
-328 
+327 
 c
 ;
 
-330 
+329 
 ªad
  = 
 	`OSTYPE
@@ -29507,89 +29589,89 @@ c
 	`EGëC
 (), EGetC(), EGetC(), EGetC());
 
-331 if(
+330 if(
 ty≥
  !
 ªad
 ) {
 
-332 if(
+331 if(
 skù
 ) {
 
-334 
+333 
 ªad
  <<= 8;
 
-335 
+334 
 c
  = 
 	`EGëC
 ();
 
-336 
+335 
 ªad
  |
 c
 ;
 
-337 if(
+336 if(
 ªad
  =
 ty≥
 )
 
-338  
+337  
 åue
 ;
 
-339 if(
+338 if(
 ab‹t_∑r£
 )
 
-340  
+339  
 Ál£
 ;
 
-341 } 
+340 } 
 c
 !=-1);
 
-343 
+342 
 	`mf_îr‹
 ( "ErrorÜooking for chunkÅype" );
 
-344  
+343  
 Ál£
 ;
 
-347  
+346  
 åue
 ;
 
-348 
+347 
 	}
 }
 
-351 
+350 
 	gMIDIFûeRód
 ::
 	$RódHódî
 () {
 
-352 
+351 
 the_f‹m©
 ;
 
-353 
+352 
 ¡rks
 ;
 
-354 
+353 
 divisi⁄
 ;
 
-356 if(
+355 if(
 	`RódMT
 (
 _MThd
@@ -29597,57 +29679,57 @@ _MThd
 skù_öô
 ) == 0xffff)
 
-359 if(
+358 if(
 ab‹t_∑r£
 )
 
-362 
+361 
 to_be_ªad
  = 
 	`Ród32Bô
 ();
 
-363 
+362 
 the_f‹m©
+ = 
+	`Ród16Bô
+();
+
+363 
+¡rks
  = 
 	`Ród16Bô
 ();
 
 364 
-¡rks
- = 
-	`Ród16Bô
-();
-
-365 
 divisi⁄
  = 
 	`Ród16Bô
 ();
 
-367 if(
+366 if(
 ab‹t_∑r£
 )
 
-370 
+369 
 hódî_f‹m©
  = 
 the_f‹m©
 ;
 
-371 
+370 
 hódî_¡rks
  = 
 ¡rks
 ;
 
-372 
+371 
 hódî_divisi⁄
  = 
 divisi⁄
 ;
 
-374 
+373 
 evít_h™dÀr
 ->
 	`mf_hódî
@@ -29659,39 +29741,39 @@ the_f‹m©
 divisi⁄
 );
 
-378 
+377 
 to_be_ªad
  > 0)
 
-379 
+378 
 	`EGëC
 ();
 
-381  
+380  
 ¡rks
 ;
 
-382 
+381 
 	}
 }
 
-388 
+387 
 	gMIDIFûeRód
 ::
 	$RódTøck
 () {
 
-395 
+394 
 ch™ty≥
 [] =
 
-401 
+400 
 lookf‹
 , 
  g
 ;
 
-402 
+401 
 c
 , 
 c1
@@ -29699,39 +29781,39 @@ c1
 ty≥
 ;
 
-403 
+402 
 sy£xc⁄töue
  = 0;
 
-404 
+403 
 ru¬ög
  = 0;
 
-405 
+404 
 °©us
  = 0;
 
-406 
+405 
 √eded
 ;
 
-408 if(
+407 if(
 	`RódMT
 (
 _MTrk
 , 0) == 0xffff)
 
-411 
+410 
 to_be_ªad
  = 
 	`Ród32Bô
 ();
 
-412 
+411 
 cur_time
  = 0;
 
-414 
+413 
 evít_h™dÀr
 ->
 	`mf_°¨âøck
@@ -29739,19 +29821,19 @@ evít_h™dÀr
 cur_åack
 );
 
-416 
+415 
 to_be_ªad
  > 0 && !
 ab‹t_∑r£
 ) {
 
-417 
+416 
 dñèt
  = 
 	`RódV¨übÀNum
 ();
 
-419 
+418 
 evít_h™dÀr
 ->
 	`Upd©eTime
@@ -29759,49 +29841,49 @@ evít_h™dÀr
 dñèt
 );
 
-420 
+419 
 cur_time
  +
 dñèt
 ;
 
-421 
+420 
 c
  = 
 	`EGëC
 ();
 
-423 if(
+422 if(
 c
  == -1)
 
-425 if(
+424 if(
 sy£xc⁄töue
  && 
 c
  != 0xf7)
 
-426 
+425 
 	`mf_îr‹
 ( "ErroráfterÉxpected continuation of SysEx" );
 
-427 if((
+426 if((
 c
  & 0x80) == 0) {
 
-428 if(
+427 if(
 °©us
  == 0)
 
-429 
+428 
 	`mf_îr‹
 ( "Unexpected Running Status" );
 
-430 
+429 
 ru¬ög
 =1;
 
-431 
+430 
 √eded
  = 
 ch™ty≥
@@ -29809,39 +29891,39 @@ ch™ty≥
 °©us
  >> 4) & 0xf];
 
-436 #i‡
+435 #i‡
 MIDIFRD_ALLOW_STATUS_ACROSS_META_EVENT
 
 
-437 if(
+436 if(
 c
  != 0xff) {
 
-438 
+437 
 °©us
  = 
 c
 ;
 
-439 
+438 
 ru¬ög
  = 0;
 
-440 
+439 
 √eded
  = 0;
 
-444 
+443 
 °©us
  = 
 c
 ;
 
-445 
+444 
 ru¬ög
  = 0;
 
-446 
+445 
 √eded
  = 
 ch™ty≥
@@ -29849,27 +29931,27 @@ ch™ty≥
 °©us
  >> 4) & 0xf];
 
-450 if(
+449 if(
 √eded
 ) {
 
-451 if(
+450 if(
 ru¬ög
 )
 
-452 
+451 
 c1
  = 
 c
 ;
 
-454 
+453 
 c1
  = 
 	`EGëC
 ();
 
-455 
+454 
 	`F‹mCh™Mesßge
 (()
 °©us
@@ -29881,23 +29963,23 @@ c1
 	`EGëC
 () : 0 ));
 
-459 
+458 
 c
 ) {
 
-461 
+460 
 ty≥
  = 
 	`EGëC
 ();
 
-462 
+461 
  g
  = 
 	`RódV¨übÀNum
 ();
 
-463 
+462 
 lookf‹
  = 
 to_be_ªad
@@ -29905,23 +29987,23 @@ to_be_ªad
  g
 ;
 
-464 
+463 
 	`MsgInô
 ();
 
-465 
+464 
 to_be_ªad
  > 
 lookf‹
 )
 
-466 
+465 
 	`MsgAdd
 –
 	`EGëC
 () );
 
-467 
+466 
 evít_h™dÀr
 ->
 	`MëaEvít
@@ -29935,13 +30017,13 @@ msg_ödex
 the_msg
 );
 
-471 
+470 
  g
  = 
 	`RódV¨übÀNum
 ();
 
-472 
+471 
 lookf‹
  = 
 to_be_ªad
@@ -29949,21 +30031,21 @@ to_be_ªad
  g
 ;
 
-473 
+472 
 	`MsgInô
 ();
 
-474 
+473 
 	`MsgAdd
 (0xf0);
 
-475  
+474  
 to_be_ªad
 >
 lookf‹
  )
 
-476 
+475 
 	`MsgAdd
 (
 c
@@ -29971,13 +30053,13 @@ c
 	`EGëC
 ());
 
-477 if(
+476 if(
 c
  =0xf7 || 
 no_mîge
  == 0) {
 
-480 
+479 
 MIDISy°emEx˛usive
  
 	`ex
@@ -29989,7 +30071,7 @@ msg_ödex
 Ál£
 );
 
-483 
+482 
 evít_h™dÀr
 ->
 	`mf_sy£x
@@ -29999,17 +30081,17 @@ cur_time
 ex
  );
 
-486 
+485 
 sy£xc⁄töue
  = 1;
 
-490 
+489 
  g
  = 
 	`RódV¨übÀNum
 ();
 
-491 
+490 
 lookf‹
  = 
 to_be_ªad
@@ -30017,21 +30099,21 @@ to_be_ªad
  g
 ;
 
-492 if(!
+491 if(!
 sy£xc⁄töue
 )
 
-493 
+492 
 	`MsgInô
 ();
 
-494 
+493 
 to_be_ªad
  > 
 lookf‹
 )
 
-495 
+494 
 	`MsgAdd
 (
 c
@@ -30039,11 +30121,11 @@ c
 	`EGëC
 ());
 
-496 if(!
+495 if(!
 sy£xc⁄töue
 )
 
-497 
+496 
 evít_h™dÀr
 ->
 	`mf_¨bôøry
@@ -30055,11 +30137,11 @@ msg_ödex
 the_msg
 );
 
-498 if(
+497 if(
 c
  == 0xf7) {
 
-501 
+500 
 MIDISy°emEx˛usive
  
 	`ex
@@ -30071,7 +30153,7 @@ msg_ödex
 Ál£
  );
 
-502 
+501 
 evít_h™dÀr
 ->
 	`mf_sy£x
@@ -30081,17 +30163,17 @@ cur_time
 ex
 );
 
-503 
+502 
 sy£xc⁄töue
  = 0;
 
-507 
+506 
 	`BadByã
 (
 c
 );
 
-511 
+510 
 evít_h™dÀr
 ->
 	`mf_ídåack
@@ -30099,79 +30181,79 @@ evít_h™dÀr
 cur_åack
 );
 
-513 
+512 
 	}
 }
 
-516 
+515 
 	gMIDIFûeRód
 ::
 	$RódV¨übÀNum
 () {
 
-517 
+516 
 vÆue
 ;
 
-518 
+517 
 c
 ;
 
-520 
+519 
 c
  = 
 	`EGëC
 ();
 
-521 if(
+520 if(
 c
  == -1) {
 
-524 
+523 
 vÆue
  = 
 c
 ;
 
-525 if(
+524 if(
 c
  & 0x80) {
 
-526 
+525 
 vÆue
  &= 0x7f;
 
-528 
+527 
 c
  = 
 	`EGëC
 ();
 
-529 
+528 
 vÆue
  = (vÆuê<< 7Ë+ (
 c
  & 0x7f);
 
-530 } 
+529 } 
 c
  & 0x80);
 
-532  
+531  
 vÆue
 ;
 
-533 
+532 
 	}
 }
 
-536 
+535 
 	gMIDIFûeRód
 ::
 	$Ród32Bô
 () {
 
-537 
+536 
 c1
 , 
 c2
@@ -30181,31 +30263,31 @@ c3
 c4
 ;
 
-539 
+538 
 c1
  = 
 	`EGëC
 ();
 
-540 
+539 
 c2
  = 
 	`EGëC
 ();
 
-541 
+540 
 c3
  = 
 	`EGëC
 ();
 
-542 
+541 
 c4
  = 
 	`EGëC
 ();
 
-544  
+543  
 	`To32Bô
 (()
 c1
@@ -30217,35 +30299,35 @@ c3
 c4
 );
 
-545 
+544 
 	}
 }
 
-548 
+547 
 	gMIDIFûeRód
 ::
 	$Ród16Bô
 () {
 
-549 
+548 
 c1
 , 
 c2
 ;
 
-551 
+550 
 c1
  = 
 	`EGëC
 ();
 
-552 
+551 
 c2
  = 
 	`EGëC
 ();
 
-554  
+553  
 	`To16Bô
 (()
 c1
@@ -30253,21 +30335,21 @@ c1
 c2
 );
 
-555 
+554 
 	}
 }
 
-558 
+557 
 	gMIDIFûeRód
 ::
 	$EGëC
 () {
 
-559 
+558 
 c
 ;
 
-561 
+560 
 c
  = 
 öput_°ªam
@@ -30275,33 +30357,33 @@ c
 	`RódCh¨
 ();
 
-563 if(
+562 if(
 c
  < 0) {
 
-564 
+563 
 	`mf_îr‹
 ( "Unexpected Stream Error" );
 
-565 
+564 
 ab‹t_∑r£
  = 
 åue
 ;
 
-568 --
+567 --
 to_be_ªad
 ;
 
-570  ()
+569  ()
 c
 ;
 
-571 
+570 
 	}
 }
 
-574 
+573 
 	gMIDIFûeRód
 ::
 	$MsgAdd
@@ -30309,13 +30391,13 @@ c
 a
 ) {
 
-575 if(
+574 if(
 msg_ödex
 <
 max_msg_Àn
 )
 
-576 
+575 
 the_msg
 [
 msg_ödex
@@ -30323,25 +30405,25 @@ msg_ödex
 a
 ;
 
-577 
+576 
 	}
 }
 
-580 
+579 
 	gMIDIFûeRód
 ::
 	$MsgInô
 () {
 
-581 
+580 
 msg_ödex
  = 0;
 
-582 
+581 
 	}
 }
 
-585 
+584 
 	gMIDIFûeRód
 ::
 	$BadByã
@@ -30349,21 +30431,21 @@ msg_ödex
 c
 ) {
 
-586 
+585 
 	`mf_îr‹
 ( "Unexpected Byte" );
 
-587 
+586 
 ab‹t_∑r£
  = 
 åue
 ;
 
-588 
+587 
 	}
 }
 
-591 
+590 
 	gMIDIFûeRód
 ::
 	$F‹mCh™Mesßge
@@ -30375,13 +30457,13 @@ b1
 b2
 ) {
 
-592 
+591 
 MIDITimedMesßge
  
 m
 ;
 
-594 
+593 
 m
 .
 	`SëSètus
@@ -30389,7 +30471,7 @@ m
 °
 );
 
-595 
+594 
 m
 .
 	`SëByã1
@@ -30397,7 +30479,7 @@ m
 b1
 );
 
-596 
+595 
 m
 .
 	`SëByã2
@@ -30405,7 +30487,7 @@ m
 b2
 );
 
-597 
+596 
 m
 .
 	`SëTime
@@ -30413,11 +30495,11 @@ m
 cur_time
 );
 
-598 if(
+597 if(
 °
  >= 0x80 && st < 0xf0 )
 
-599 
+598 
 evít_h™dÀr
 ->
 	`Ch™Mesßge
@@ -30425,7 +30507,7 @@ evít_h™dÀr
 m
 );
 
-600 
+599 
 	}
 }
 
@@ -30712,13 +30794,17 @@ time
 197 
 	gMIDIFûeRódMu…iTøck
 ::
-	$mf_£qnum
+	$mf_mëa16
 –
 MIDIClockTime
  
 time
 , 
-vÆ
+ty≥
+, 
+b1
+, 
+b2
  )
 
 200 
@@ -30732,9 +30818,11 @@ msg
 .
 	`SëMëaEvít
 (
-META_SEQUENCE_NUMBER
+ty≥
 , 
-vÆ
+b1
+, 
+b2
 );
 
 203 
@@ -30855,7 +30943,7 @@ msg
 
 223 
 díom
-1<<
+1 << 
 díom_powî
 ;
 
@@ -30863,17 +30951,19 @@ díom_powî
 msg
 .
 	`SëTimeSig
-–()
+(()
 num
 , ()
 díom
-, 
+,
+
+226 ()
 ˛ks_≥r_mëro
-, 
+, ()
 nŸ©ed_32nd_≥r_qu¨ãr
 );
 
-226 
+227 
 msg
 .
 	`SëTime
@@ -30881,7 +30971,7 @@ msg
 time
 );
 
-236 
+237 
 mu…ôøck
 ->
 	`In£πEvít
@@ -30893,11 +30983,11 @@ msg
 INSMODE_INSERT
 );
 
-238 
+239 
 	}
 }
 
-241 
+242 
 	gMIDIFûeRódMu…iTøck
 ::
 	$mf_ãmpo
@@ -30913,13 +31003,13 @@ m2
 m3
 ) {
 
-250 
+251 
 MIDITimedMesßge
  
 msg
 ;
 
-251 
+252 
 msg
 .
 	`SëMëaEvít
@@ -30927,13 +31017,13 @@ msg
 META_TEMPO
 , 0);
 
-252 
+253 
 msg
 .
 	`AŒoˇãSysEx
 (3);
 
-253 
+254 
 msg
 .
 	`GëSysEx
@@ -30943,7 +31033,7 @@ msg
 m1
 );
 
-254 
+255 
 msg
 .
 	`GëSysEx
@@ -30953,7 +31043,7 @@ msg
 m2
 );
 
-255 
+256 
 msg
 .
 	`GëSysEx
@@ -30963,7 +31053,7 @@ msg
 m3
 );
 
-257 
+258 
 msg
 .
 	`SëTime
@@ -30971,7 +31061,7 @@ msg
 time
 );
 
-259 
+260 
 mu…ôøck
 ->
 	`In£πEvít
@@ -30983,11 +31073,11 @@ msg
 INSMODE_INSERT
 );
 
-261 
+262 
 	}
 }
 
-264 
+265 
 	gMIDIFûeRódMu…iTøck
 ::
 	$mf_keysig
@@ -31001,13 +31091,13 @@ c
 v
  )
 
-266 
+267 
 MIDITimedMesßge
  
 msg
 ;
 
-268 
+269 
 msg
 .
 	`SëKeySig
@@ -31017,7 +31107,7 @@ c
 v
  );
 
-269 
+270 
 msg
 .
 	`SëTime
@@ -31025,7 +31115,7 @@ msg
 time
  );
 
-271 
+272 
 mu…ôøck
 ->
 	`In£πEvít
@@ -31037,11 +31127,11 @@ msg
 INSMODE_INSERT
 );
 
-273 
+274 
 	}
 }
 
-276 
+277 
 	gMIDIFûeRódMu…iTøck
 ::
 	$mf_sq•ecific
@@ -31051,11 +31141,11 @@ MIDIClockTime
 time
 , , * )
 
-279 
+280 
 	}
 }
 
-282 
+283 
 	gMIDIFûeRódMu…iTøck
 ::
 	$mf_ãxt
@@ -31071,13 +31161,13 @@ ty≥
 s
  )
 
-284 
+285 
 MIDITimedMesßge
  
 msg
 ;
 
-286 
+287 
 msg
 .
 	`SëSètus
@@ -31085,7 +31175,7 @@ msg
 META_EVENT
 );
 
-287 
+288 
 msg
 .
 	`SëMëaTy≥
@@ -31093,7 +31183,7 @@ msg
 ty≥
 );
 
-288 
+289 
 msg
 .
 	`SëTime
@@ -31101,7 +31191,7 @@ msg
 time
 );
 
-290 
+291 
 msg
 .
 	`AŒoˇãSysEx
@@ -31109,13 +31199,13 @@ msg
 Àn
 );
 
-292  
+293  
 i
 =0; i<
 Àn
 ; ++i )
 
-294 
+295 
 msg
 .
 	`GëSysEx
@@ -31127,7 +31217,7 @@ s
 i
 ] );
 
-297 
+298 
 mu…ôøck
 ->
 	`In£πEvít
@@ -31139,11 +31229,11 @@ msg
 INSMODE_INSERT
 );
 
-299 
+300 
 	}
 }
 
-302 
+303 
 	gMIDIFûeRódMu…iTøck
 ::
 	$mf_eŸ
@@ -31153,7 +31243,7 @@ MIDIClockTime
 time
  )
 
-304 if–
+305 if–
 cur_åack
 !=-1 && cur_åack<
 mu…ôøck
@@ -31161,7 +31251,7 @@ mu…ôøck
 	`GëNumTøcks
 () )
 
-306 
+307 
 MIDITøck
  *
 t
@@ -31173,11 +31263,11 @@ mu…ôøck
 cur_åack
  );
 
-308 if–
+309 if–
 t
  )
 
-310 
+311 
 t
 ->
 	`SëEndTime
@@ -31185,7 +31275,7 @@ t
 time
 );
 
-313 
+314 
 	}
 }
 
@@ -31967,29 +32057,85 @@ msg
 	`GëTime
 ());
 
-302 if(
+303 
+buf
+[2];
+
+304 
+buf
+[0] = 
 msg
 .
-	`IsKeySig
-())
+	`GëByã2
+();
 
-303 
-	`WrôeKeySig«tuª
-–
+305 
+buf
+[1] = 
+msg
+.
+	`GëByã3
+();
+
+306 
+Àn
+;
+
+307 
+msg
+.
+	`GëMëaTy≥
+()) {
+
+308 
+META_SEQUENCE_NUMBER
+:
+
+309 
+META_KEYSIG
+:
+
+310 
+Àn
+ = 2;
+
+312 
+META_CHANNEL_PREFIX
+:
+
+313 
+META_OUTPUT_CABLE
+:
+
+315 
+Àn
+ = 1;
+
+318 
+Àn
+ = 0;
+
+320 
+	`WrôeMëaEvít
+(
+
+321 
 msg
 .
 	`GëTime
 (), msg.
-	`GëKeySigSh¨pFœts
-(), msg.
-	`GëKeySigMaj‹Mö‹
-() );
+	`GëMëaTy≥
+(), 
+buf
+, 
+Àn
+);
 
-306 
+327 
 	}
 }
 
-365 
+386 
 	gMIDIFûeWrôe
 ::
 	$WrôeCh™√lEvít
@@ -31999,7 +32145,7 @@ MIDITimedMesßge
 msg
 ) {
 
-366 
+387 
 Àn
  = 
 msg
@@ -32007,93 +32153,9 @@ msg
 	`GëLígth
 ();
 
-368 if(
+389 if(
 Àn
  > 0) {
-
-369 
-	`WrôeDñèTime
-(
-msg
-.
-	`GëTime
-());
-
-370 if(
-msg
-.
-	`GëSètus
-(Ë!
-ru¬ög_°©us
-) {
-
-371 
-ru¬ög_°©us
- = 
-msg
-.
-	`GëSètus
-();
-
-372 
-	`WrôeCh¨a˘î
-(()
-ru¬ög_°©us
-);
-
-373 
-	`In¸emítCou¡îs
-(1);
-
-375 if(
-Àn
- > 1) {
-
-376 
-	`WrôeCh¨a˘î
-((Ë
-msg
-.
-	`GëByã1
-());
-
-377 
-	`In¸emítCou¡îs
-(1);
-
-379 if(
-Àn
- > 2) {
-
-380 
-	`WrôeCh¨a˘î
-((Ë
-msg
-.
-	`GëByã2
-());
-
-381 
-	`In¸emítCou¡îs
-(1);
-
-384 
-	}
-}
-
-387 
-	gMIDIFûeWrôe
-::
-	$WrôeSysExEvít
-(c⁄° 
-MIDITimedMesßge
- &
-msg
-) {
-
-388 
-	`ENTER
-( "void MIDIFileWrite::WriteSysExEvent()" );
 
 390 
 	`WrôeDñèTime
@@ -32103,7 +32165,91 @@ msg
 	`GëTime
 ());
 
-392 
+391 if(
+msg
+.
+	`GëSètus
+(Ë!
+ru¬ög_°©us
+) {
+
+392 
+ru¬ög_°©us
+ = 
+msg
+.
+	`GëSètus
+();
+
+393 
+	`WrôeCh¨a˘î
+(()
+ru¬ög_°©us
+);
+
+394 
+	`In¸emítCou¡îs
+(1);
+
+396 if(
+Àn
+ > 1) {
+
+397 
+	`WrôeCh¨a˘î
+((Ë
+msg
+.
+	`GëByã1
+());
+
+398 
+	`In¸emítCou¡îs
+(1);
+
+400 if(
+Àn
+ > 2) {
+
+401 
+	`WrôeCh¨a˘î
+((Ë
+msg
+.
+	`GëByã2
+());
+
+402 
+	`In¸emítCou¡îs
+(1);
+
+405 
+	}
+}
+
+408 
+	gMIDIFûeWrôe
+::
+	$WrôeSysExEvít
+(c⁄° 
+MIDITimedMesßge
+ &
+msg
+) {
+
+409 
+	`ENTER
+( "void MIDIFileWrite::WriteSysExEvent()" );
+
+411 
+	`WrôeDñèTime
+(
+msg
+.
+	`GëTime
+());
+
+413 
 Àn
  = 
 msg
@@ -32113,13 +32259,13 @@ msg
 	`GëLígth
 ();
 
-393 
+414 
 	`WrôeCh¨a˘î
 (()
 SYSEX_START
 );
 
-394 
+415 
 	`In¸emítCou¡îs
 (
 	`WrôeV¨übÀNum
@@ -32127,13 +32273,13 @@ SYSEX_START
 Àn
  - 1));
 
-396 
+417 
 i
  = 1; i < 
 Àn
 ; i++)
 
-397 
+418 
 	`WrôeCh¨a˘î
 (()(
 msg
@@ -32144,82 +32290,6 @@ msg
 (
 i
 )));
-
-398 
-	`In¸emítCou¡îs
-(
-Àn
-);
-
-399 
-ru¬ög_°©us
- = 0;
-
-400 
-	}
-}
-
-403 
-	gMIDIFûeWrôe
-::
-	$WrôeTextEvít
-(
-time
-, 
-ãxt_ty≥
-, c⁄° *
-ãxt
-) {
-
-404 
-	`ENTER
-( "void MIDIFileWrite::WriteEvent()" );
-
-406 
-	`WrôeDñèTime
-(
-time
-);
-
-408 
-	`WrôeCh¨a˘î
-(() 0xff);
-
-409 
-	`WrôeCh¨a˘î
-((Ë
-ãxt_ty≥
-);
-
-411 
-	`In¸emítCou¡îs
-(2);
-
-413 
-Àn
- = 
-	`°æí
-(
-ãxt
-);
-
-415 
-	`In¸emítCou¡îs
-(
-	`WrôeV¨übÀNum
-(
-Àn
-));
-
-417 *
-ãxt
-)
-
-418 
-	`WrôeCh¨a˘î
-((Ë*
-ãxt
-++);
 
 419 
 	`In¸emítCou¡îs
@@ -32235,7 +32305,7 @@ ru¬ög_°©us
 	}
 }
 
-424 
+445 
 	gMIDIFûeWrôe
 ::
 	$WrôeMëaEvít
@@ -32249,31 +32319,31 @@ d©a
 Àngth
 ) {
 
-425 
+446 
 	`ENTER
 ( "void MIDIFileWrite::WriteMetaEvent()" );
 
-427 
+448 
 	`WrôeDñèTime
 (
 time
 );
 
-428 
+449 
 	`WrôeCh¨a˘î
 (() 0xff);
 
-429 
+450 
 	`WrôeCh¨a˘î
 ((Ë
 ty≥
 );
 
-431 
+452 
 	`In¸emítCou¡îs
 (2);
 
-433 
+454 
 	`In¸emítCou¡îs
 (
 	`WrôeV¨übÀNum
@@ -32281,13 +32351,13 @@ ty≥
 Àngth
 ));
 
-435 
+456 
 i
  = 0; i < 
 Àngth
 ; i++)
 
-436 
+457 
 	`WrôeCh¨a˘î
 ((Ë
 d©a
@@ -32295,129 +32365,21 @@ d©a
 i
 ]);
 
-437 
+458 
 	`In¸emítCou¡îs
 (
 Àngth
 );
 
-438 
-ru¬ög_°©us
- = 0;
-
-439 
-	}
-}
-
-442 
-	gMIDIFûeWrôe
-::
-	$WrôeTempo
-(
-time
-, 
-ãmpo
-) {
-
-443 
-	`ENTER
-( "void MIDIFileWrite::WriteTempo()" );
-
-445 
-	`WrôeDñèTime
-(
-time
-);
-
-446 
-	`WrôeCh¨a˘î
-(() 0xff);
-
-447 
-	`WrôeCh¨a˘î
-(() 0x51);
-
-448 
-	`WrôeCh¨a˘î
-(() 0x03);
-
-450 
-	`Wrôe3Ch¨
-(
-ãmpo
-);
-
-451 
-	`In¸emítCou¡îs
-(6);
-
-452 
-ru¬ög_°©us
- = 0;
-
-453 
-	}
-}
-
-456 
-	gMIDIFûeWrôe
-::
-	$WrôeKeySig«tuª
-(
-time
-, 
-sh¨p_Ê©
-, 
-mö‹
-) {
-
-457 
-	`ENTER
-( "void MIDIFileWrite::WriteKeySignature()" );
-
 459 
-	`WrôeDñèTime
-(
-time
-);
+ru¬ög_°©us
+ = 0;
 
 460 
-	`WrôeCh¨a˘î
-(() 0xff);
-
-461 
-	`WrôeCh¨a˘î
-(() 0x59);
-
-462 
-	`WrôeCh¨a˘î
-(() 0x02);
-
-463 
-	`WrôeCh¨a˘î
-((Ë
-sh¨p_Ê©
-);
-
-464 
-	`WrôeCh¨a˘î
-((Ë
-mö‹
-);
-
-465 
-	`In¸emítCou¡îs
-(5);
-
-466 
-ru¬ög_°©us
- = 0;
-
-467 
 	}
 }
 
-492 
+513 
 	gMIDIFûeWrôe
 ::
 	$WrôeEndOfTøck
@@ -32425,85 +32387,85 @@ ru¬ög_°©us
 time
 ) {
 
-493 
+514 
 	`ENTER
 ( "void MIDIFileWrite::WriteEndOfTrack()" );
 
-495 if(
+516 if(
 wôhö_åack
  =
 åue
 ) {
 
-496 if(
+517 if(
 time
  == 0)
 
-497 
+518 
 time
  = 
 åack_time
 ;
 
-498 
+519 
 	`WrôeDñèTime
 (
 time
 );
 
-499 
+520 
 	`WrôeCh¨a˘î
 (() 0xff);
 
-500 
+521 
 	`WrôeCh¨a˘î
 (() 0x2f);
 
-501 
+522 
 	`WrôeCh¨a˘î
 (() 0x00);
 
-502 
+523 
 	`In¸emítCou¡îs
 (3);
 
-503 
+524 
 wôhö_åack
  = 
 Ál£
 ;
 
-504 
+525 
 ru¬ög_°©us
  = 0;
 
-506 
+527 
 	}
 }
 
-509 
+530 
 	gMIDIFûeWrôe
 ::
 	$RewrôeTøckLígth
 () {
 
-510 
+531 
 	`ENTER
 ( "void MIDIFileWrite::RewriteTrackLength()" );
 
-516 
+537 
 	`Sìk
 (
 åack_posôi⁄
  + 4);
 
-517 
+538 
 	`WrôeL⁄g
 (
 åack_Àngth
 );
 
-518 
+539 
 	`Sìk
 (
 åack_posôi⁄
@@ -32511,7 +32473,7 @@ ru¬ög_°©us
 åack_Àngth
 );
 
-519 
+540 
 	}
 }
 
@@ -35426,6 +35388,50 @@ byã3
 ();
 
 468 
+	}
+}
+
+471 
+	gMIDIMesßge
+::
+	$SëMëaEvít
+(
+ty≥
+, 
+v1
+, 
+v2
+) {
+
+472 
+°©us
+ = 
+META_EVENT
+;
+
+473 
+byã1
+ = 
+ty≥
+;
+
+474 
+byã2
+ = 
+v1
+;
+
+475 
+byã3
+ = 
+v2
+;
+
+476 
+	`CÀ¨SysEx
+();
+
+477 
 	}
 }
 

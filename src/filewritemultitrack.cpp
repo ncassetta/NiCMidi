@@ -33,88 +33,84 @@
 
 
 
-  MIDIFileWriteMultiTrack::MIDIFileWriteMultiTrack(
-    const MIDIMultiTrack *mlt_,
-    MIDIFileWriteStream *strm_
-    )
-    :
-    multitrack( mlt_ ),
-    writer( strm_ )
-  {
-  }
+MIDIFileWriteMultiTrack::MIDIFileWriteMultiTrack(const MIDIMultiTrack *mlt_, MIDIFileWriteStream *strm_) :
+    multitrack( mlt_ ), writer( strm_ ) {}
 
-  MIDIFileWriteMultiTrack::~MIDIFileWriteMultiTrack()
-  {
-  }
 
-  bool MIDIFileWriteMultiTrack::Write( int num_tracks, int division )
-  {
-    bool f=true;
-    if( !PreWrite() )
-    {
-      return false;
-    }
+MIDIFileWriteMultiTrack::~MIDIFileWriteMultiTrack() {}
+
+
+bool MIDIFileWriteMultiTrack::Write(int num_tracks, int division) {
+    bool f = true;
+
+    if(!PreWrite())
+        return false;
 
     // first, write the header.
-
-    writer.WriteFileHeader( num_tracks > 1 ? 1 : 0, num_tracks, division );
+    writer.WriteFileHeader(num_tracks > 1 ? 1 : 0, num_tracks, division);
 
     // now write each track
-
-    for( int i=0; i<num_tracks; ++i )
-    {
-      if( writer.ErrorOccurred() )
-      {
-        f=false;
-        break;
-      }
-
-      const MIDITrack *t = multitrack->GetTrack(i);
-
-      writer.WriteTrackHeader(0); // will be rewritten later
-
-      if( t )
-      {
-        for( int event_num=0; event_num<t->GetNumEvents(); ++event_num )
-        {
-          const MIDITimedMessage *ev = t->GetEventAddress( event_num );
-          if( ev && !ev->IsNoOp() )
-          {
-
-            if( !ev->IsDataEnd() )
-            {
-              writer.WriteEvent( *ev );
-
-              if( writer.ErrorOccurred() )
-              {
-                f=false;
-                break;
-              }
-            }
-          }
+    for(int i = 0; i < num_tracks; ++i) {
+        if (writer.ErrorOccurred()) {
+            f = false;
+            break;
         }
-      }
-      writer.WriteEndOfTrack(0);
-      writer.RewriteTrackLength();
+        const MIDITrack *t = multitrack->GetTrack(i);
+        writer.WriteTrackHeader(0);     // will be rewritten later
+        if (t) {
+            for(unsigned int event_num = 0; event_num < t->GetNumEvents(); ++event_num) {
+                const MIDITimedMessage *ev = t->GetEventAddress(event_num);
+                if(ev && !ev->IsNoOp()) {
+                    if (!ev->IsDataEnd()) {
+                        writer.WriteEvent(*ev);
+                        if(writer.ErrorOccurred()) {
+                            f = false;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        writer.WriteEndOfTrack(0);
+        writer.RewriteTrackLength();
     }
 
-    if( !PostWrite() )
-    {
-      return false;
-    }
+    if(!PostWrite())
+        return false;
 
     return f;
-  }
+}
 
 
-  bool MIDIFileWriteMultiTrack::PreWrite()
-  {
+bool MIDIFileWriteMultiTrack::PreWrite() {
     return true;
-  }
+}
 
-  bool MIDIFileWriteMultiTrack::PostWrite()
-  {
+
+bool MIDIFileWriteMultiTrack::PostWrite() {
     return true;
-  }
+}
 
 
+
+bool WriteMIDIFile(const char* filename, int format, const MIDIMultiTrack* tracks) {
+    MIDIMultiTrack tmp_tracks(1, tracks->GetClksPerBeat());
+    if (format == 0) {
+        MIDIClockTime max_end_time = 0;
+        const MIDITrack* cur_track;
+        for (unsigned int i = 0; i < tracks->GetNumTracks(); i++) {
+            cur_track = tracks->GetTrack(i);
+            if (cur_track->GetEndTime() > max_end_time)
+                max_end_time = cur_track->GetEndTime();
+            for (unsigned int j = 0; j < cur_track->GetNumEvents(); j++)
+                tmp_tracks.InsertEvent (0, cur_track->GetEvent(j), INSMODE_INSERT);
+        }
+        tmp_tracks.GetTrack(0)->SetEndTime(max_end_time);
+    }
+    MIDIFileWriteStream write_stream (filename);
+    if (!write_stream.IsValid())
+        return false;
+    const MIDIMultiTrack* tmp_ptracks = (format == 0 ? (const MIDIMultiTrack *)&tmp_tracks : tracks);
+    MIDIFileWriteMultiTrack writer (tmp_ptracks, &write_stream);
+    return writer.Write(tmp_ptracks->GetNumTracks(), tmp_ptracks->GetClksPerBeat());
+}

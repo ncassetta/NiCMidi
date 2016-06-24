@@ -268,7 +268,7 @@
 	"sysex.h"
 	<string>
 
-1466186689 c:\users\nicola\cplusplus\github\myjdkmidi\include\midi.h
+1466670264 c:\users\nicola\cplusplus\github\myjdkmidi\include\midi.h
 	"world.h"
 
 1463083790 c:\users\nicola\cplusplus\github\myjdkmidi\include\world.h
@@ -342,20 +342,19 @@
 	<atomic>
 	<iostream>
 
-1466178021 c:\users\nicola\cplusplus\github\myjdkmidi\include\filereadmultitrack.h
+1466682459 c:\users\nicola\cplusplus\github\myjdkmidi\include\filereadmultitrack.h
 	"midi.h"
 	"msg.h"
 	"sysex.h"
-	"file.h"
 	"fileread.h"
 	"multitrack.h"
+	<string>
 
-1466184493 c:\users\nicola\cplusplus\github\myjdkmidi\include\file.h
+1466675587 c:\users\nicola\cplusplus\github\myjdkmidi\include\file.h
 	"midi.h"
 	"msg.h"
-	"sysex.h"
 
-1466178005 c:\users\nicola\cplusplus\github\myjdkmidi\include\fileread.h
+1466675142 c:\users\nicola\cplusplus\github\myjdkmidi\include\fileread.h
 	<fstream>
 	"midi.h"
 	"msg.h"
@@ -368,7 +367,7 @@
 	"windows.h"
 	"mmsystem.h"
 
-1464946385 source:c:\users\nicola\cplusplus\github\myjdkmidi\examples\win32\test_win32_player.cpp
+1466187130 source:c:\users\nicola\cplusplus\github\myjdkmidi\examples\win32\test_win32_player.cpp
 	"test_win32_player.h"
 	<cwchar>
 
@@ -379,7 +378,7 @@
 
 1461434704 c:\users\nicola\cplusplus\github\myjdkmidi\include\smpte.h
 
-1462725726 source:c:\users\nicola\cplusplus\github\myjdkmidi\examples\win32\test_stepsequencer.cpp
+1466593662 source:c:\users\nicola\cplusplus\github\myjdkmidi\examples\win32\test_stepsequencer.cpp
 	"test_stepsequencer.h"
 	<iostream>
 	<string>

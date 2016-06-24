@@ -596,12 +596,10 @@
 1461246752 source:c:\users\nicola\cplusplus\github\myjdkmidi\jdk\timer.cpp
 	"jdkmidi/timer.h"
 
-1465050634 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\advancedsequencer.cpp
+1466681753 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\advancedsequencer.cpp
 	"../include/world.h"
 	"../include/advancedsequencer.h"
-	"../include/fileread.h"
 	"../include/filereadmultitrack.h"
-	"../include/driverwin32.h"
 	<iostream>
 
 1463083790 c:\users\nicola\cplusplus\github\myjdkmidi\include\world.h
@@ -635,7 +633,7 @@
 	"sysex.h"
 	<string>
 
-1466422356 c:\users\nicola\cplusplus\github\myjdkmidi\include\midi.h
+1466670264 c:\users\nicola\cplusplus\github\myjdkmidi\include\midi.h
 	"world.h"
 
 1291412857 c:\users\nicola\cplusplus\github\myjdkmidi\include\tempo.h
@@ -704,20 +702,19 @@
 	<atomic>
 	<iostream>
 
-1466178021 c:\users\nicola\cplusplus\github\myjdkmidi\include\filereadmultitrack.h
+1466682459 c:\users\nicola\cplusplus\github\myjdkmidi\include\filereadmultitrack.h
 	"midi.h"
 	"msg.h"
 	"sysex.h"
-	"file.h"
 	"fileread.h"
 	"multitrack.h"
+	<string>
 
-1466184493 c:\users\nicola\cplusplus\github\myjdkmidi\include\file.h
+1466675587 c:\users\nicola\cplusplus\github\myjdkmidi\include\file.h
 	"midi.h"
 	"msg.h"
-	"sysex.h"
 
-1466178005 c:\users\nicola\cplusplus\github\myjdkmidi\include\fileread.h
+1466675142 c:\users\nicola\cplusplus\github\myjdkmidi\include\fileread.h
 	<fstream>
 	"midi.h"
 	"msg.h"
@@ -735,39 +732,40 @@
 	"../include/driver.h"
 	"../include/timer.h"
 
-1464950269 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\dump_tracks.cpp
+1466774069 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\dump_tracks.cpp
 	"../include/midi.h"
 	"../include/track.h"
 	"../include/multitrack.h"
 
-1465729621 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\file.cpp
+1466531053 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\file.cpp
 	"../include/world.h"
 	"../include/file.h"
 
-1466186044 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\fileread.cpp
+1466684071 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\fileread.cpp
 	"../include/world.h"
 	"../include/fileread.h"
+	<iostream>
 
-1466155338 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\filereadmultitrack.cpp
+1466682459 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\filereadmultitrack.cpp
 	"../include/world.h"
 	"../include/filereadmultitrack.h"
 
-1466369396 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\filewrite.cpp
+1466674107 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\filewrite.cpp
 	"../include/world.h"
 	"../include/filewrite.h"
 
-1466369337 c:\users\nicola\cplusplus\github\myjdkmidi\include\filewrite.h
+1466673906 c:\users\nicola\cplusplus\github\myjdkmidi\include\filewrite.h
 	<fstream>
 	"midi.h"
 	"msg.h"
 	"sysex.h"
 	"file.h"
 
-1465475700 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\filewritemultitrack.cpp
+1466715633 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\filewritemultitrack.cpp
 	"../include/world.h"
 	"../include/filewritemultitrack.h"
 
-1456001705 c:\users\nicola\cplusplus\github\myjdkmidi\include\filewritemultitrack.h
+1466678818 c:\users\nicola\cplusplus\github\myjdkmidi\include\filewritemultitrack.h
 	"filewrite.h"
 	"multitrack.h"
 
@@ -780,11 +778,11 @@
 	"../include/world.h"
 	"../include/matrix.h"
 
-1463930892 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\midi.cpp
+1466782223 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\midi.cpp
 	"../include/world.h"
 	"../include/midi.h"
 
-1466146358 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\msg.cpp
+1466779298 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\msg.cpp
 	"../include/world.h"
 	"../include/sysex.h"
 	"../include/msg.h"

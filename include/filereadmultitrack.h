@@ -43,70 +43,68 @@
 #include "midi.h"
 #include "msg.h"
 #include "sysex.h"
-#include "file.h"
+//#include "file.h"
 #include "fileread.h"
 #include "multitrack.h"
 
+#include <string>
 
-  class MIDIFileReadMultiTrack : public MIDIFileEvents
-    {
+
+class MIDIFileReadMultiTrack : public MIDIFileEventHandler {
     public:
-      MIDIFileReadMultiTrack( MIDIMultiTrack *mlttrk );
-
-      virtual ~MIDIFileReadMultiTrack();
+                                        MIDIFileReadMultiTrack (MIDIMultiTrack *tracks);
+        virtual                         ~MIDIFileReadMultiTrack();
 
 
 //
 // The possible events in a MIDI Files
 //
 
-      virtual void                      mf_sysex( MIDIClockTime time, const MIDISystemExclusive &ex );
-      virtual void                      mf_arbitrary( MIDIClockTime time, int len, unsigned char *data );
-      virtual void                      mf_metamisc( MIDIClockTime time, int, int, unsigned char * );
-      virtual void                      mf_meta16( MIDIClockTime time, int type, int b1, int b2 );
-      virtual void                      mf_smpte( MIDIClockTime time, int h, int m, int s, int f, int sf );
-      virtual void                      mf_timesig( MIDIClockTime time, int a, int b, int c, int d );
-      virtual void                      mf_tempo( MIDIClockTime time, int b1, int b2, int b3 );
-      virtual void                      mf_keysig(MIDIClockTime time, int sf, int majmin );
-      virtual void                      mf_sqspecific( MIDIClockTime time, int len, unsigned char *data );
-      virtual void                      mf_text( MIDIClockTime time, int type, int len, unsigned char *data );
-      virtual void                      mf_eot( MIDIClockTime time );
+        virtual void                    mf_sysex( MIDIClockTime time, const MIDISystemExclusive &ex );
+        virtual void                    mf_arbitrary( MIDIClockTime time, int len, unsigned char *data );
+        virtual void                    mf_metamisc( MIDIClockTime time, int, int, unsigned char * );
+        virtual void                    mf_meta16( MIDIClockTime time, int type, int b1, int b2 );
+        virtual void                    mf_smpte( MIDIClockTime time, int h, int m, int s, int f, int sf );
+        virtual void                    mf_timesig( MIDIClockTime time, int a, int b, int c, int d );
+        virtual void                    mf_tempo( MIDIClockTime time, int b1, int b2, int b3 );
+        virtual void                    mf_keysig(MIDIClockTime time, int sf, int majmin );
+        virtual void                    mf_sqspecific( MIDIClockTime time, int len, unsigned char *data );
+        virtual void                    mf_text( MIDIClockTime time, int type, int len, unsigned char *data );
+        virtual void                    mf_eot( MIDIClockTime time );
 
 //
 // the following methods are to be overridden for your specific purpose
 //
 
-      virtual void    mf_error( char * );
-
-      virtual void    mf_starttrack( int trk );
-      virtual void    mf_endtrack( int trk );
-      virtual void    mf_header( int, int, int );
+        virtual void                    mf_error( char* err );
+        virtual void                    mf_starttrack( int trk );
+        virtual void                    mf_endtrack( int trk );
+        virtual void                    mf_header( int format_, int ntrks_, int division_ );
 
 //
 // Higher level dispatch functions
 //
 
-      virtual	void    ChanMessage( const MIDITimedMessage &msg );
+        virtual	void                    ChanMessage( const MIDITimedMessage &msg );
 
     protected:
 
-/* NO MORE USED
-      void AddEventToMultiTrack(
-        const MIDITimedMessage &msg,
-        MIDISystemExclusive *sysex,
-        int dest_track
-        );
-*/
+        MIDIMultiTrack*                 multitrack;
+        int                             cur_track;
+        MIDIFileHeader                  header;
+};
 
 
-      MIDIMultiTrack *multitrack;
-      int cur_track;
+/// Returns the header of the MIDI file specified by *filename*. You can then inspect the format, (0, 1 or 2),
+/// the number of tracks and the division (MIDI ticks per quarter note) of the file. If the header cannot be
+/// read these are all 0.
+MIDIFileHeader                          GetMIDIFileHeader(const char* filename);
 
-      int the_format;
-      int num_tracks;
-      int division;
+/// Loads the MIDI file specified by *filename* into the given MIDIMultiTrack object. This is the fastest
+/// way to get this, without worrying with intermediate reader objects. Returns *false* if the loading is
+/// failed.
+bool                                    LoadMIDIFile(const char* filename, MIDIMultiTrack* tracks);
 
-    };
-
-
+bool                                    LoadMIDIFile(const std::string& filename, MIDIMultiTrack* tracks);
+//                                            { return LoadMIDIFile (filename.c_str(), tracks); }
 #endif

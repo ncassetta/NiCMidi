@@ -53,37 +53,19 @@
 
 
 ///
-/// This class is used internally for writing MIDI files. It is pure virtual and implements a stream of *char*
-/// to be be written to a MIDI file
+/// This class is used internally for writing MIDI files. It writes a stream of *char* to a C++ ostream object,
 ///
 
 class MIDIFileWriteStream {
 public:
-    MIDIFileWriteStream() {}
-    virtual ~MIDIFileWriteStream() {}
-
-    /// Positions the write pointer
-    virtual long Seek( long pos, int whence=SEEK_SET ) = 0;
-    /// Writrd a *char*
-    virtual int WriteChar( int c ) = 0;
-};
-
-
-///
-/// This class is used internally for writing MIDI files. It inherits from MIDIFileWriteStream and writes
-/// a stream of *char* to a C++ ostream object,
-///
-
-class MIDIFileWriteStreamFile : public MIDIFileWriteStream {
-public:
     /// In this constructor you must specify the filename.\ The constructor tries to open the file, you
     /// should call IsValid() for checking if it was successful
-    MIDIFileWriteStreamFile( const char *fname );
+    MIDIFileWriteStream( const char *fname );
     /// In this constructor you must specify and already open ostream object, so you can write to whatever
     /// output stream
-    MIDIFileWriteStreamFile(std::ostream* ofs);
+    MIDIFileWriteStream(std::ostream* ofs);
     /// The destructor deletes the ostream if it was opened by the ctor
-    virtual ~MIDIFileWriteStreamFile();
+    virtual ~MIDIFileWriteStream();
 
     /// Implements pure virtual parent function
     long Seek( long pos, int whence=SEEK_SET );
@@ -104,10 +86,10 @@ private:
 /// This class is used internally for writing MIDI files.
 ///
 
-class MIDIFileWrite : protected MIDIFile {
+class MIDIFileWriter {
     public:
-                        MIDIFileWrite(MIDIFileWriteStream *out_stream_);
-        virtual   	    ~MIDIFileWrite();
+                        MIDIFileWriter(MIDIFileWriteStream *out_stream_);
+        virtual   	    ~MIDIFileWriter();
 
 
         bool            ErrorOccurred()         { return error; }
@@ -156,7 +138,7 @@ class MIDIFileWrite : protected MIDIFile {
         unsigned long   track_length;
         unsigned long   track_time;
         unsigned long   track_position;
-        uchar   running_status;
+        uchar           running_status;
 
         MIDIFileWriteStream *out_stream;
 };

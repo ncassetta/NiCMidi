@@ -34,7 +34,7 @@
 void DumpMIDITimedMessage (MIDITimedMessage *msg) {
     char msgbuf[1024];
     if (msg)
-        printf(msg->MsgToText(msgbuf));
+        printf("%s\n", msg->MsgToText(msgbuf));
 }
 
 

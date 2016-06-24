@@ -35,26 +35,26 @@
 #include "multitrack.h"
 
 
-  class MIDIFileWriteMultiTrack
-    {
+class MIDIFileWriteMultiTrack {
     public:
 
-      MIDIFileWriteMultiTrack(
-        const MIDIMultiTrack *mlt_,
-        MIDIFileWriteStream *strm_
-        );
+                                MIDIFileWriteMultiTrack(const MIDIMultiTrack *mlt_, MIDIFileWriteStream *strm_);
+        virtual                 ~MIDIFileWriteMultiTrack();
 
-      virtual ~MIDIFileWriteMultiTrack();
+        bool                    Write(int num_tracks, int division);
 
-      bool Write( int num_tracks, int division );
     private:
 
-      virtual bool PreWrite();
-      virtual bool PostWrite();
+        virtual bool            PreWrite();
+        virtual bool            PostWrite();
 
-      const MIDIMultiTrack *multitrack;
-      MIDIFileWrite writer;
-    };
+        const MIDIMultiTrack    *multitrack;
+        MIDIFileWriter          writer;
+};
 
+/// Writes the given MIDIMultiTrack object into the MIDI file denoted by *filename*; *format*
+/// is the MIDI file format (only 0 and 1 are supported).
+/// Returns *true* if the writing was successful.
+bool WriteMIDIFile(const char* filename, int format, const MIDIMultiTrack* tracks);
 
 #endif

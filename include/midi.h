@@ -196,14 +196,14 @@
         /// This meta event may be used in multiport environments to associate
         /// a track with a specific port. The data length is 1 byte.
       META_OUTPUT_CABLE       = 0x21,
-      //META_TRACK_LOOP         = 0x2E, Ifound no documentation for this
+      //META_TRACK_LOOP         = 0x2E, I found no documentation for this
         /// This meta event is the end of track marker. Data length is 0 byte.
       META_END_OF_TRACK       = 0x2F,
         /// This meta event denotes a tempo change and has a length of 3 bytes.
         /// The data is a 3-byte integer, the number of microseconds for a quarter
         /// note. The MIDIMessage::GetTempo() method converts it into the usual
         /// bpm value (a float).
-    META_TEMPO              = 0x51,
+    META_TEMPO                = 0x51,
         /// This meta event specifies the initial SMPTE offset of the beginning of playback. It
         /// has 5 data bytes (stored in the sysex object) which denote hours, minutes, second
         /// frames and subframes of the SMPTE. Currently the SMPTE object doesn't support an

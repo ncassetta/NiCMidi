@@ -52,126 +52,89 @@
 
 
 
-/* OLD VERSION OF MY PREVIOUS FILE
-char *	MIDIMessage::MsgToText( char *txt ) const {
-    char buf[64];
-    int len=GetLength();
-
-    *txt=0;
-
-    if( IsAllNotesOff() ) {
-        sprintf( buf, "Ch %2d  All Notes Off  (ctrl=%3d)", (int)GetChannel()+1, (int)byte1 );
-        strcat( txt, buf );
-    }
-    else {
-        int type=(status&0xf0)>>4;
-
-      //
-      // if it is a note on with vel=0, call it a NOTE OFF
-      //
-        if( type==9 && byte2==0 )
-            type=8;
-        if( type!=0xf ) {
-            sprintf( buf, "Ch %2d  ", (int)GetChannel()+1 );
-            strcat( txt, buf  );
-      }
-      strcat( txt, chan_msg_name[type] );
-
-      if( status>=0xf0 ) {
-            strcat( txt, sys_msg_name[status-0xf0] );
-            if( len>1 ) {
-                sprintf( buf,"%02x", (int)byte1 );
-                strcat( txt, buf );
-            }
-
-            if( len>2 ) {
-                sprintf( buf,",%02x", (int)byte2 );
-                strcat( txt, buf );
-            }
-
-            if( len>3 ) {
-                sprintf( buf,",%02x", (int)byte3 );
-                strcat( txt, buf );
-            }
-        }
-
-      else {
-            char *endtxt = txt+strlen(txt);
-            switch( status&0xf0 ) {
-                case NOTE_ON:
-                    if( byte2==0 )
-                        sprintf( endtxt, "Note %3d", (int)byte1 );
-                else
-                    sprintf( endtxt, "Note %3d  Vel  %3d  ", (int)byte1, (int)byte2 );
-                break;
-                case NOTE_OFF:
-                    sprintf( endtxt, "Note %3d  Vel  %3d  ", (int)byte1, (int)byte2 );
-                break;
-                case POLY_PRESSURE:
-                    sprintf( endtxt, "Note %3d  Pres %3d  ", (int)byte1, (int)byte2 );
-                    break;
-                case CONTROL_CHANGE:
-                    sprintf( endtxt, "Ctrl %3d  Val  %3d  ", (int)byte1, (int)byte2 );
-                    break;
-                case PROGRAM_CHANGE:
-                    sprintf( endtxt, "PG   %3d  ", (int)byte1 );
-                    break;
-                case CHANNEL_PRESSURE:
-                    sprintf( endtxt, "Pres %3d  ", (int)byte1 );
-                    break;
-                case PITCH_BEND:
-                    sprintf( endtxt, "Val %5d", (int)GetBenderValue() );
-                    break;
-            }
-        }
-    }
-
-    //
-    // pad the rest with spaces
-    //
-
-    {
-        int len=strlen(txt);
-        char *p=txt+len;
-
-        while( len<45 ) {
-            *p++=' ';
-            ++len;
-        }
-        *p++='\0';
-    }
-
-    return txt;
-}
-*/
-
-
-char* MIDIMessage::MsgToText (char *txt) const
-{
+char* MIDIMessage::MsgToText (char *txt) const {
     char buf[256];
-    int len = GetLength();
     *txt = 0;
 
-    if (IsMetaEvent()) {        // all Meta Events
+    // Meta Events
 
+    if (IsMetaEvent()) {
         sprintf (buf, "%s ", sys_msg_name[status - 0xF0]);
         strcat (txt, buf);
         strcat (txt, get_meta_name(byte1) );    // type of meta
 
-        if (len > 0) {                          // meta data
-            sprintf (buf, "Data %02X  ", (int) byte2);
-            strcat (txt, buf);
+        switch (byte1) {
+
+            case META_SEQUENCE_NUMBER:          // 2 byte meta events
+                sprintf (buf, "Data %02X  ", ((int)byte2 >> 8) + byte3);
+                break;
+            case META_GENERIC_TEXT:             // text meta events
+            case META_COPYRIGHT:
+            case META_TRACK_NAME:
+            case META_INSTRUMENT_NAME:
+            case META_LYRIC_TEXT:
+            case META_MARKER_TEXT:
+            case META_CUE_TEXT:
+            case META_PROGRAM_NAME:
+            case META_DEVICE_NAME:
+            case META_GENERIC_TEXT_A:
+            case META_GENERIC_TEXT_B:
+            case META_GENERIC_TEXT_C:
+            case META_GENERIC_TEXT_D:
+            case META_GENERIC_TEXT_E:
+            case META_GENERIC_TEXT_F:
+                sprintf(buf, "\"%s\"", GetText().c_str());
+                if (strlen(buf) > 40)
+                    buf[40] = 0;
+                break;
+            case META_CHANNEL_PREFIX:       // 1 byte meta events
+            case META_OUTPUT_CABLE:
+                sprintf(buf, "Data %2d", byte2);
+                break;
+            //META_TRACK_LOOP         = 0x2E, I found no documentation for this
+
+            case META_END_OF_TRACK:         // 0 byte meta event
+                *buf = 0;
+                break;
+            case META_TEMPO:
+                sprintf(buf, "BpM  %3.2f", GetTempo());
+                break;
+            case META_SMPTE:
+                sprintf(buf, "Data %02d %02d %02d %02d %02d",
+                        sysex->GetData(0), sysex->GetData(1), sysex->GetData(2),
+                        sysex->GetData(3), sysex->GetData(4));
+                break;
+            case META_TIMESIG:
+                sprintf(buf, "Time %d/%d (Other data %02d %02d)",
+                        GetTimeSigNumerator(), GetTimeSigDenominator(),
+                        sysex->GetData(2), sysex->GetData(3));
+                break;
+           case META_KEYSIG:
+                // TODO: add a function to translate into a readable string
+                sprintf(buf, "Data %02d %02d", byte2, byte3);
+                break;
+            default:
+                *buf = 0;
+                break;
         }
-        if (len > 1) {
-            sprintf (buf, "%02X  ", (int) byte3);
-            strcat (txt, buf);
-        }
+        strcat(txt, buf);
         return txt;
     }
 
-    if (IsSysEx()) {            // all System Exclusive Events
+    // System Exclusive Events
+
+    if (IsSysEx()) {
         sprintf (buf, "%s ", sys_msg_name[status - 0xF0]);
         strcat (txt, buf);
+        if (GetSysEx()->IsGMReset())
+            sprintf(buf, "GM Reset");
+        else if (GetSysEx()->IsGSReset())
+            sprintf(buf, "GS Reset");
+        else if (GetSysEx()->IsXGReset())
+            sprintf(buf, "XG Reset");
+        else
+            sprintf (buf, "(length: %d)", GetSysEx()->GetLength());
+        strcat(txt, buf);
         return txt;
     }
 
@@ -216,7 +179,7 @@ char* MIDIMessage::MsgToText (char *txt) const
         break;
 
     case PROGRAM_CHANGE:
-        sprintf (endtxt, "PG   %3d  ", (int) byte1);
+        sprintf (endtxt, "Prog %3d  ", (int) byte1);
         break;
 
     case CHANNEL_PRESSURE:
@@ -689,21 +652,8 @@ bool operator== (const MIDITimedMessage &m1, const MIDITimedMessage &m2) {
 
 char* MIDITimedMessage::MsgToText(char* txt) const {
     char msgbuf[1024];
-    int c;
 
-    c = sprintf (txt, "%8ld : %s", GetTime(), MIDIMessage::MsgToText (msgbuf));
-    if (IsSysEx()) {
-        if (GetSysEx()->IsGMReset())
-            sprintf(txt + c, "GM Reset\n");
-        else if (GetSysEx()->IsGSReset())
-            sprintf(txt + c, "GS Reset\n");
-        else if (GetSysEx()->IsXGReset())
-            sprintf(txt + c, "XG Reset\n");
-        else
-            sprintf (txt + c, "(length: %d)\n", GetSysEx()->GetLength());
-    }
-    else
-        sprintf(txt + c, "\n");
+    sprintf (txt, "%8ld : %s", GetTime(), MIDIMessage::MsgToText (msgbuf));
     return txt;
 }
 

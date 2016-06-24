@@ -386,7 +386,8 @@ VOID SetControls() {
     }
 
     // for every track, update the name, channel, program, volume boxes
-    for (int i = 0; i < sequencer->GetNumTracks() - 1; i++) {
+    int i = 0;
+    for (; i < sequencer->GetNumTracks() - 1; i++) {
 
         if ( sequencer->GetTrackName(i+1).length() ) {
             SetWindowText (hTrackNames[i], sequencer->GetTrackName (i+1).c_str());
@@ -417,6 +418,13 @@ VOID SetControls() {
         }
         sprintf (s, "vol: %d", sequencer->GetTrackVolume(i+1) );
         SetWindowText(hTrackVols[i], s);
+    }
+
+    for ( ; i < 17; i++) {      // blanks unused widgets
+        SetWindowText (hTrackNames[i], "");
+        SetWindowText (hTrackChans[i], "");
+        SetWindowText (hTrackPrgrs[i], "");
+        SetWindowText (hTrackVols[i], "");
     }
 
 }

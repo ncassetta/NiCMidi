@@ -41,7 +41,7 @@
 
 
 
-MIDIFileWriteStreamFile::MIDIFileWriteStreamFile(const char *fname) : begin(0), del(true) {
+MIDIFileWriteStream::MIDIFileWriteStream(const char *fname) : begin(0), del(true) {
     outfs = new std::ofstream(fname, std::ios::out | std::ios::binary);
     if (!outfs->fail()) {
         delete outfs;
@@ -50,17 +50,17 @@ MIDIFileWriteStreamFile::MIDIFileWriteStreamFile(const char *fname) : begin(0), 
 }
 
 
-MIDIFileWriteStreamFile::MIDIFileWriteStreamFile(std::ostream* ofs) :
+MIDIFileWriteStream::MIDIFileWriteStream(std::ostream* ofs) :
     outfs(ofs), begin(ofs->tellp()), del(false) {}
 
 
-MIDIFileWriteStreamFile::~MIDIFileWriteStreamFile() {
+MIDIFileWriteStream::~MIDIFileWriteStream() {
     if (outfs && del)
         delete outfs;
 }
 
 
-long MIDIFileWriteStreamFile::Seek(long pos, int whence) {
+long MIDIFileWriteStream::Seek(long pos, int whence) {
     std::streamoff offs = pos;
 
     switch (whence) {
@@ -78,7 +78,7 @@ long MIDIFileWriteStreamFile::Seek(long pos, int whence) {
 }
 
 
-int MIDIFileWriteStreamFile::WriteChar(int c) {
+int MIDIFileWriteStream::WriteChar(int c) {
     if (outfs) {
         outfs->put(c);
         return outfs->good() ? 0 : -1;
@@ -87,7 +87,7 @@ int MIDIFileWriteStreamFile::WriteChar(int c) {
 }
 
 
-bool MIDIFileWriteStreamFile::IsValid() {
+bool MIDIFileWriteStream::IsValid() {
     return outfs != 0;
 }
 
@@ -101,8 +101,8 @@ bool MIDIFileWriteStreamFile::IsValid() {
 
 
 
-MIDIFileWrite::MIDIFileWrite(MIDIFileWriteStream *out_stream_) : out_stream(out_stream_) {
-    ENTER( "MIDIFileWrite::MIDIFileWrite()" );
+MIDIFileWriter::MIDIFileWriter(MIDIFileWriteStream *out_stream_) : out_stream(out_stream_) {
+    ENTER( "MIDIFileWriter::MIDIFileWriter()" );
 
     file_length = 0;
     error = 0;
@@ -113,13 +113,13 @@ MIDIFileWrite::MIDIFileWrite(MIDIFileWriteStream *out_stream_) : out_stream(out_
 }
 
 
-MIDIFileWrite::~MIDIFileWrite() {
-    ENTER( "MIDIFileWrite::~MIDIFileWrite()" );
+MIDIFileWriter::~MIDIFileWriter() {
+    ENTER( "MIDIFileWriter::~MIDIFileWriter()" );
 }
 
 
-void MIDIFileWrite::Error(char *s) {
-    ENTER( "void	MIDIFileWrite::Error()" );
+void MIDIFileWriter::Error(char *s) {
+    ENTER( "void	MIDIFileWriter::Error()" );
 
     // NULL method; can override.
 
@@ -127,16 +127,16 @@ void MIDIFileWrite::Error(char *s) {
 }
 
 
-void MIDIFileWrite::WriteShort(unsigned short c) {
-    ENTER( "void    MIDIFileWrite::WriteShort()" );
+void MIDIFileWriter::WriteShort(unsigned short c) {
+    ENTER( "void    MIDIFileWriter::WriteShort()" );
 
     WriteCharacter((unsigned char)((c >> 8) & 0xff));
     WriteCharacter((unsigned char)((c & 0xff)));
 }
 
 
-void MIDIFileWrite::Write3Char(long c) {
-    ENTER( "void	MIDIFileWrite::Write3Char()" );
+void MIDIFileWriter::Write3Char(long c) {
+    ENTER( "void	MIDIFileWriter::Write3Char()" );
 
     WriteCharacter((unsigned char)((c >> 16) & 0xff));
     WriteCharacter((unsigned char)((c >> 8) & 0xff));
@@ -144,8 +144,8 @@ void MIDIFileWrite::Write3Char(long c) {
 }
 
 
-void MIDIFileWrite::WriteLong(unsigned long c) {
-    ENTER( "void	MIDIFileWrite::WriteLong()" );
+void MIDIFileWriter::WriteLong(unsigned long c) {
+    ENTER( "void	MIDIFileWriter::WriteLong()" );
 
     WriteCharacter((unsigned char)((c >> 24) & 0xff));
     WriteCharacter((unsigned char)((c >> 16) & 0xff));
@@ -154,8 +154,8 @@ void MIDIFileWrite::WriteLong(unsigned long c) {
 }
 
 
-void MIDIFileWrite::WriteFileHeader(int format, int ntrks, int division) {
-    ENTER( "void	MIDIFileWrite::WriteFileHeader()" );
+void MIDIFileWriter::WriteFileHeader(int format, int ntrks, int division) {
+    ENTER( "void	MIDIFileWriter::WriteFileHeader()" );
 
     WriteCharacter((unsigned char) 'M');
     WriteCharacter((unsigned char) 'T');
@@ -169,8 +169,8 @@ void MIDIFileWrite::WriteFileHeader(int format, int ntrks, int division) {
 }
 
 
-void MIDIFileWrite::WriteTrackHeader(unsigned long length) {
-    ENTER( "void	MIDIFileWrite::WriteTrackHeader()" );
+void MIDIFileWriter::WriteTrackHeader(unsigned long length) {
+    ENTER( "void	MIDIFileWriter::WriteTrackHeader()" );
 
     track_position = file_length;
     track_length = 0;
@@ -188,8 +188,8 @@ void MIDIFileWrite::WriteTrackHeader(unsigned long length) {
 }
 
 
-int	MIDIFileWrite::WriteVariableNum(unsigned long n) {
-    ENTER( "short	MIDIFileWrite::WriteVariableNum()" );
+int	MIDIFileWriter::WriteVariableNum(unsigned long n) {
+    ENTER( "short	MIDIFileWriter::WriteVariableNum()" );
 
     register unsigned long buffer;
     short cnt = 0;
@@ -213,8 +213,8 @@ int	MIDIFileWrite::WriteVariableNum(unsigned long n) {
 }
 
 
-void MIDIFileWrite::WriteDeltaTime(unsigned long abs_time) {
-    ENTER( "void	MIDIFileWrite::WriteDeltaTime()" );
+void MIDIFileWriter::WriteDeltaTime(unsigned long abs_time) {
+    ENTER( "void	MIDIFileWriter::WriteDeltaTime()" );
 
     long dtime = abs_time - track_time;
     if(dtime < 0) {
@@ -227,8 +227,8 @@ void MIDIFileWrite::WriteDeltaTime(unsigned long abs_time) {
 }
 
 /* DELETE THIS FUNCTION
-void MIDIFileWrite::WriteEvent(const MIDITimedMessage &m) {
-    ENTER( "void    MIDIFileWrite::WriteEvent()" );
+void MIDIFileWriter::WriteEvent(const MIDITimedMessage &m) {
+    ENTER( "void    MIDIFileWriter::WriteEvent()" );
 
     if(m.IsNoOp())
         return;
@@ -274,7 +274,7 @@ void MIDIFileWrite::WriteEvent(const MIDITimedMessage &m) {
 
 
 
-void MIDIFileWrite::WriteEvent(const MIDITimedMessage &msg) {
+void MIDIFileWriter::WriteEvent(const MIDITimedMessage &msg) {
     if(msg.IsNoOp())
         return;
 
@@ -327,7 +327,7 @@ void MIDIFileWrite::WriteEvent(const MIDITimedMessage &msg) {
 }
 
 /* OLD FUNCTION
-void MIDIFileWrite::WriteEvent(const MIDITimedMessage &m) {
+void MIDIFileWriter::WriteEvent(const MIDITimedMessage &m) {
     if(m.IsNoOp())
         return;
 
@@ -383,7 +383,7 @@ void MIDIFileWrite::WriteEvent(const MIDITimedMessage &m) {
 }
 */
 
-void MIDIFileWrite::WriteChannelEvent(const MIDITimedMessage &msg) {
+void MIDIFileWriter::WriteChannelEvent(const MIDITimedMessage &msg) {
     short len = msg.GetLength();
 
     if(len > 0) {
@@ -405,8 +405,8 @@ void MIDIFileWrite::WriteChannelEvent(const MIDITimedMessage &msg) {
 }
 
 
-void MIDIFileWrite::WriteSysExEvent(const MIDITimedMessage &msg) {
-    ENTER( "void	MIDIFileWrite::WriteSysExEvent()" );
+void MIDIFileWriter::WriteSysExEvent(const MIDITimedMessage &msg) {
+    ENTER( "void	MIDIFileWriter::WriteSysExEvent()" );
 
     WriteDeltaTime(msg.GetTime());
 
@@ -421,8 +421,8 @@ void MIDIFileWrite::WriteSysExEvent(const MIDITimedMessage &msg) {
 }
 
 /*   NOT USED
-void MIDIFileWrite::WriteTextEvent(unsigned long time, unsigned short text_type, const char *text) {
-    ENTER( "void	MIDIFileWrite::WriteEvent()" );
+void MIDIFileWriter::WriteTextEvent(unsigned long time, unsigned short text_type, const char *text) {
+    ENTER( "void	MIDIFileWriter::WriteEvent()" );
 
     WriteDeltaTime(time);
 
@@ -442,8 +442,8 @@ void MIDIFileWrite::WriteTextEvent(unsigned long time, unsigned short text_type,
 }
 */
 
-void MIDIFileWrite::WriteMetaEvent(unsigned long time, unsigned char type, const unsigned char *data, long length) {
-    ENTER( "void	MIDIFileWrite::WriteMetaEvent()" );
+void MIDIFileWriter::WriteMetaEvent(unsigned long time, unsigned char type, const unsigned char *data, long length) {
+    ENTER( "void	MIDIFileWriter::WriteMetaEvent()" );
 
     WriteDeltaTime(time);
     WriteCharacter((unsigned char) 0xff);   // META-Event
@@ -460,8 +460,8 @@ void MIDIFileWrite::WriteMetaEvent(unsigned long time, unsigned char type, const
 }
 
 /*   NOT USED
-void MIDIFileWrite::WriteTempo(unsigned long time, long tempo) {
-    ENTER( "void	MIDIFileWrite::WriteTempo()" );
+void MIDIFileWriter::WriteTempo(unsigned long time, long tempo) {
+    ENTER( "void	MIDIFileWriter::WriteTempo()" );
 
     WriteDeltaTime(time);
     WriteCharacter((unsigned char) 0xff);   // Meta-Event
@@ -474,8 +474,8 @@ void MIDIFileWrite::WriteTempo(unsigned long time, long tempo) {
 }
 
 
-void MIDIFileWrite::WriteKeySignature(unsigned long time, char sharp_flat, char minor) {
-    ENTER( "void	MIDIFileWrite::WriteKeySignature()" );
+void MIDIFileWriter::WriteKeySignature(unsigned long time, char sharp_flat, char minor) {
+    ENTER( "void	MIDIFileWriter::WriteKeySignature()" );
 
     WriteDeltaTime(time);
     WriteCharacter((unsigned char) 0xff);		// Meta-Event
@@ -488,13 +488,13 @@ void MIDIFileWrite::WriteKeySignature(unsigned long time, char sharp_flat, char 
 }
 
 
-void MIDIFileWrite::WriteTimeSignature(
+void MIDIFileWriter::WriteTimeSignature(
     unsigned long time,
     char numerator,
     char denominator_power,
     char midi_clocks_per_metronome,
     char num_32nd_per_midi_quarter_note) {
-    ENTER( "void	MIDIFileWrite::WriteTimeSignature()" );
+    ENTER( "void	MIDIFileWriter::WriteTimeSignature()" );
 
     WriteDeltaTime(time);
     WriteCharacter((unsigned char) 0xff);		// Meta-Event
@@ -510,8 +510,8 @@ void MIDIFileWrite::WriteTimeSignature(
 */
 
 
-void MIDIFileWrite::WriteEndOfTrack(unsigned long time)  {
-    ENTER( "void	MIDIFileWrite::WriteEndOfTrack()" );
+void MIDIFileWriter::WriteEndOfTrack(unsigned long time)  {
+    ENTER( "void	MIDIFileWriter::WriteEndOfTrack()" );
 
     if(within_track == true) {
         if(time ==  0)
@@ -527,8 +527,8 @@ void MIDIFileWrite::WriteEndOfTrack(unsigned long time)  {
 }
 
 
-void MIDIFileWrite::RewriteTrackLength() {
-    ENTER( "void	MIDIFileWrite::RewriteTrackLength()" );
+void MIDIFileWriter::RewriteTrackLength() {
+    ENTER( "void	MIDIFileWriter::RewriteTrackLength()" );
 
     // go back and patch in the tracks length into the track chunk
     // header, now that we know the proper value.
