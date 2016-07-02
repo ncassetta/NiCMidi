@@ -22,65 +22,56 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-/* NOTE BY NC: enhanced functions MIDIMessage::MsgToText() and MIDITimedBigMessage::MsgToText to
-   allow better output to console */
-// TODO: use cout instead of printf()
 
 #include "../include/midi.h"
 #include "../include/track.h"
 #include "../include/multitrack.h"
 
+#include <iostream>
 
-void DumpMIDITimedMessage (MIDITimedMessage *msg) {
-    char msgbuf[1024];
+
+void DumpMIDITimedMessage (MIDITimedMessage* const msg) {
     if (msg)
-        printf("%s\n", msg->MsgToText(msgbuf));
+        std::cout << msg->MsgToText() << std::endl;
 }
 
 
-void DumpMIDITrack (MIDITrack *t) {
+void DumpMIDITrack (MIDITrack* const t) {
     MIDITimedMessage *msg;
 
-    printf ( "Track dump\n");
+    std::cout << "Track dump" << std::endl;
     for (unsigned int i = 0; i < t->GetNumEvents(); ++i)
         DumpMIDITimedMessage (t->GetEventAddress (i));
 }
 
 
-void DumpAllTracks ( MIDIMultiTrack *mlt )
-{
+void DumpAllTracks (MIDIMultiTrack* const mlt) {
+    std::cout << "DUMP OF MIDI MULTITRACK\n";
+    std::cout << "Clocks per beat: " << mlt->GetClksPerBeat() << "\n" << std::endl;
 
-  printf ( "DUMP OF MIDI MULTITRACK\n");
-  printf ( "Clocks per beat: %d\n\n", mlt->GetClksPerBeat() );
-
-  for ( int i=0; i<mlt->GetNumTracks(); ++i )
-  {
-    if ( mlt->GetTrack ( i )->GetNumEvents() > 0 )
-    {
-      printf ( "DUMP OF TRACK #%2d:\n", i );
-      for (int j=0; j<mlt->GetTrack( i )->GetNumEvents(); j++)
-        DumpMIDITimedMessage( mlt->GetTrack ( i )->GetEventAddress(j) );
-      printf ( "\n" );
+    for (int i = 0; i < mlt->GetNumTracks(); ++i) {
+        std::cout << "Dump of track" << i << std::endl;
+        for (int j = 0; j < mlt->GetTrack(i)->GetNumEvents(); j++)
+            DumpMIDITimedMessage(mlt->GetTrack (i)->GetEventAddress(j));
+        std::cout << std::endl;
     }
-
-  }
-
 }
 
 
-void DumpMIDIMultiTrack (MIDIMultiTrack *mlt) {
+void DumpMIDIMultiTrack (MIDIMultiTrack* const mlt) {
     MIDIMultiTrackIterator i (mlt);
     MIDITimedMessage *msg;
+    char s[10];
     int trk_num;
 
-    fprintf ( stdout, "DUMP OF MIDI MULTITRACK\n");
-    fprintf ( stdout , "Clocks per beat: %d\n\n", mlt->GetClksPerBeat() );
+    std::cout << "DUMP OF MIDI MULTITRACK\n";
+    std::cout << "Clocks per beat: " << mlt->GetClksPerBeat() << "\n" << std::endl;
 
     i.GoToTime (0);
-
     do {
         if (i.GetCurEvent (&trk_num, &msg)) {
-            fprintf (stdout, "#%2d - ", trk_num);
+            sprintf (s, "#%2d - ", trk_num);
+            std::cout << s;
             DumpMIDITimedMessage (msg);
         }
     } while (i.GoToNextEvent());

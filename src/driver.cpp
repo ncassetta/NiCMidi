@@ -25,12 +25,18 @@
 
 #include "../include/world.h"
 #include "../include/driver.h"
-
 #include "../include/timer.h"
 
 
-MIDIOutDriver::MIDIOutDriver(int id) : port_id(id), busy(0) {
-    port = new RtMidiOut;
+
+MIDIOutDriver::MIDIOutDriver(int id) : processor(0), port_id(id), busy(0) {
+    try {
+        port = new RtMidiOut();
+    }
+    catch (RtMidiError& error) {
+        error.printMessage();
+        port = new RtMidiOut(RtMidi::RTMIDI_DUMMY);// A non functional MIDI out, which won't throw further exceptions
+    }
 }
 
 
@@ -40,71 +46,18 @@ MIDIOutDriver::~MIDIOutDriver() {
 }
 
 
-void MIDIOutDriver::Reset() {
-    port->closePort();
-    out_matrix.Clear();
-}
-
-
-void MIDIOutDriver::AllNotesOff( int chan ) {   // TODO: can we avoid to send a NOTE OFF for every note?
-    MIDITimedMessage msg;                       // we could eliminate the MIDIMatrix
-
-    // send a note off for every note on in the out_matrix
-
-    //out_mutex.lock();
-    busy++;
-    if(out_matrix.GetChannelCount(chan) > 0) {
-        for(int note = 0; note < 128; ++note) {
-            while(out_matrix.GetNoteCount(chan,note) > 0) {
-                    // make a note off with note on msg, velocity 0
-                msg.SetNoteOn( (unsigned char)chan, (unsigned char)note, 0 );
-                HardwareMsgOut(msg);
-            }
-        }
-    }
-
-    msg.SetControlChange(chan,C_DAMPER,0 );
-    HardwareMsgOut(msg);
-
-    msg.SetAllNotesOff( (unsigned char)chan );
-    HardwareMsgOut(msg);
-    //out_mutex.unlock();
-    busy--;
-}
-
-
-void MIDIOutDriver::AllNotesOff() {
-    //out_mutex.lock();
-    busy++;
-    for(int i = 0; i < 16; ++i)
-        AllNotesOff(i);
-    //out_mutex.unlock();
-    busy--;
-}
-
-
-
-// TODO: this could be unneeded. We only could use HardwareMsgOut with mutex
-
-void MIDIOutDriver::OutputMessage(const MIDITimedMessage& msg) {    // TODO: MIDIMessage ???
-    int i = 0;
-    for( ; i < 100; i++) {
-        if (!busy) {
-            HardwareMsgOut(msg);
-            break;
-        }
-        std::cout << "driver busy ... " << std::endl;
-        MIDITimer::Wait(1);
-    }
-    if (i == 100)
-        std::cout << "MIDIOutDriver::OutputMessage() failed!" << std::endl;
-}
-
-
 void MIDIOutDriver::OpenPort() {
     if (!port->isPortOpen()) {
-        port->openPort(port_id);
-        std::cout << "Port " << port->getPortName() << " opened" << std::endl;
+        try {
+            port->openPort(port_id);
+#if DRIVER_USES_MIDIMATRIX
+            out_matrix.Clear();
+#endif
+            std::cout << "Port " << port->getPortName() << " open" << std::endl;
+        }
+        catch (RtMidiError& error) {
+            error.printMessage();
+        }
     }
 }
 
@@ -112,157 +65,156 @@ void MIDIOutDriver::OpenPort() {
 void MIDIOutDriver::ClosePort() {
     if (port->isPortOpen()) {
         port->closePort();
-        std::cout << "Port " << port->getPortName() << "closed" << std::endl;
+        std::cout << "Port " << port->getPortName() << " closed" << std::endl;
     }
 }
 
 
-/* ALL IS MOVED TO MIDIManager: driver no more inherits from MIDITick
-  void MIDIDriver::TimeTick( unsigned long sys_time )
-  {
-    // run the additional tick procedure if we need to
-    if( tick_proc )
-    {
-      tick_proc->TimeTick( sys_time );
+void MIDIOutDriver::AllNotesOff( int chan ) {
+    MIDIMessage msg;
+
+    busy++;
+    //out_mutex.lock();
+
+#if DRIVER_USES_MIDIMATRIX                      // send a note off for every note on in the out_matrix
+    if(out_matrix.GetChannelCount(chan) > 0) {
+        for(int note = 0; note < 128; ++note) {
+            while(out_matrix.GetNoteCount(chan,note) > 0) {
+                msg.SetNoteOff((unsigned char)chan, (unsigned char)note, 0);
+                HardwareMsgOut(msg);
+            }
+        }
     }
+    msg.SetControlChange(chan,C_DAMPER,0 );     // send a pedal off for every channel
+    HardwareMsgOut(msg);
+#endif // DRIVER_USES_MIDIMATRIX
 
-    // feed as many midi messages from out_queue to the hardware out port
-    // as we can
+    msg.SetAllNotesOff( (unsigned char)chan );
+    HardwareMsgOut(msg);
 
-    while( out_queue.CanGet() )
-    {
-      // use the Peek() function to avoid allocating memory for
-      // a duplicate sysex
+    //out_mutex.unlock();
+    busy--;
+}
 
-      if( HardwareMsgOut( *(out_queue.Peek() ) )==true )
-      {
-        // ok, got and sent a message - update our out_queue now
-        // added by me: we always must delete eventual sysex pointers before reassigning to ev
-        out_queue.Next();
-      }
-      else
-      {
-        // cant send any more, stop now.
-        break;
-      }
 
+void MIDIOutDriver::AllNotesOff() {
+    busy++;
+    //out_mutex.lock();
+
+    for(int i = 0; i < 16; ++i)
+        AllNotesOff(i);
+
+    //out_mutex.unlock();
+    busy--;
+}
+
+
+void MIDIOutDriver::OutputMessage(const MIDITimedMessage& msg) {    // MIDITimedMessage is good also for MIDIMessage
+    MIDITimedMessage msg_copy(msg);
+
+    if (processor)
+        processor->Process(&msg_copy);
+
+    int i = 0;
+    for( ; i < DRIVER_MAX_RETRIES; i++) {
+        if (!busy) {
+            HardwareMsgOut(msg_copy);
+            break;
+        }
+        std::cerr << "busy driver ... " << std::endl;
+        MIDITimer::Wait(1);
     }
+    if (i == 100)
+        std::cerr << "MIDIOutDriver::OutputMessage() failed!" << std::endl;
+}
 
-  }
-  */
 
-
-void MIDIOutDriver::HardwareMsgOut(const MIDITimedMessage &msg) {   // TODO: MIDIMessage ???
+void MIDIOutDriver::HardwareMsgOut(const MIDIMessage &msg) {
     if (!port->isPortOpen())
         return;
     //out_mutex.lock();
     busy++;
     msg_bytes.clear();
-    if (msg.IsChannelMsg()) {
+#if DRIVER_USES_MIDIMATRIX
+    if (msg.IsChannelMsg())
         out_matrix.Process (msg);
-        msg_bytes.push_back(msg.GetStatus());
-        msg_bytes.push_back(msg.GetByte1());
-        msg_bytes.push_back(msg.GetByte2());
-        //std::cout << "Driver sent channel message ... ";
-    }
+#endif
 
-    else if (msg.IsSysEx()) {
+    if (msg.IsSysEx()) {
         for (int i = 0; i < msg.GetSysEx()->GetLength(); i++)
             msg_bytes.push_back(msg.GetSysEx()->GetData(i));
         //std::cout << "Driver sent sysex of " << msg.GetSysEx()->GetLength() << " bytes ... ";
-        MIDITimer::Wait( 50 );
     }
-    else {
-        char s[100];
-        msg.MsgToText(s);
-        //std::cout << "Driver skipped message ... " << s;
+
+    //else if (msg.IsReset())         // a reset message, with the same status of meta events
+    //    msg_bytes.push_back(msg.GetStatus()) TODO: for now don't send reset messages
+
+    else if (msg.IsMetaEvent())
+        return;                     // don't send meta events
+
+    else {                          // other messages
+        msg_bytes.push_back(msg.GetStatus());
+        if (msg.GetLength() > 1)
+            msg_bytes.push_back(msg.GetByte1());
+        if (msg.GetLength() > 2)
+            msg_bytes.push_back(msg.GetByte2());
     }
-    if (msg_bytes.size() > 0)
-        port->sendMessage(&msg_bytes);
+
+    if (msg_bytes.size() > 0) {
+        try {
+            port->sendMessage(&msg_bytes);
+        }
+        catch (RtMidiError& error) {
+            error.printMessage();
+        }
+    }
+    if (msg.IsSysEx()) // || msg.IsReset())
+        MIDITimer::Wait(DRIVER_WAIT_AFTER_SYSEX);
     //out_mutex.unlock();
-    //std::cout << "done!" << std::endl;
     busy--;
 }
 
 
 
-/* jdksmidi window only version
-bool MIDIDriverWin32::HardwareMsgOut ( const MIDITimedBigMessage &msg )
-{
-    if ( out_open )
-    {
-        // msg is a channel message
-        if ( msg.IsChannelMsg() )
-        {
-            DWORD winmsg;
-            winmsg =
-                ( ( ( DWORD ) msg.GetStatus() & 0xFF )       )
-                | ( ( ( DWORD ) msg.GetByte1()  & 0xFF ) <<  8 )
-                | ( ( ( DWORD ) msg.GetByte2()  & 0xFF ) << 16 );
-
-            if ( midiOutShortMsg ( out_handle, winmsg ) != MMSYSERR_NOERROR )
-            {
-                char s[100];
-                std::cout << "Driver FAILED to send short message " << msg.MsgToText(s) << std::endl;
-                return false;
-            }
-        }
-
-        else if ( msg.IsSysEx() )
-        {
-            MIDIHDR hdr;
-// TODO: the buffer of the MIDISystemExclusive class holds only sysex bytes, without the 0xF0 status, so we
-// need sysex_buffer and put 0xF0 as 1st charachter. If the status byte would be held
-// in the MIDISystemExclusive this function would be simpler. This is possible, but perhaps there are
-// compatibility problems with older software using GetBuf(). WHAT TO DO?
 
 
-            if ( msg.GetSysEx()->GetLength() + 1 > sysex_buffer_size )
-            {   // reallocate sysex_buffer
-                delete[] sysex_buffer;
-                sysex_buffer_size = msg.GetSysEx()->GetLength() + 1;
-                sysex_buffer = new CHAR[ sysex_buffer_size ];
-            }
-
-            sysex_buffer[0] = msg.GetStatus();
-            memcpy(sysex_buffer + 1, msg.GetSysEx()->GetBuf(), msg.GetSysEx()->GetLength());
-            hdr.lpData = sysex_buffer;
-            hdr.dwBufferLength = msg.GetSysEx()->GetLength() + 1;
-            hdr.dwFlags = 0;
-
-            if ( midiOutPrepareHeader( out_handle, &hdr, sizeof ( MIDIHDR ) ) != MMSYSERR_NOERROR ) {
-                char s[100];
-                std::cout << "Driver FAILED to send SysEx on PrepareHeader " << msg.MsgToText(s) << std::endl;
-                return false;
-            }
-
-            if ( midiOutLongMsg( out_handle, &hdr, sizeof ( MIDIHDR ) ) != MMSYSERR_NOERROR )
-            {
-                char s[100];
-                std::cout << "Driver FAILED to send SysEx on OurLongMsg " << msg.MsgToText(s) << std::endl;
-                return false;
-            }
-            while ( midiOutUnprepareHeader( out_handle, &hdr, sizeof( MIDIHDR ) ) == MIDIERR_STILLPLAYING )
-            {
-                // Should put a delay in here rather than a busy-wait
-            }
-            char s[100];
-            std::cout << "Driver sent Sysex msg " << msg.MsgToText(s) << std::endl;
-        }
-
-        else
-        {
-            char s[100];
-            std::cout << "Driver skipped message " << msg.MsgToText(s) << std::endl;
-        }
-
-        return true;
+MIDIInDriver::MIDIInDriver(int id) : processor(0), port_id(id), busy(0) {
+    try {
+        port = new RtMidiIn();
     }
-
-    // std::cout << "Driver not open!" << std::endl;
-    return false;
+    catch (RtMidiError& error) {
+        error.printMessage();
+        port = new RtMidiIn(RtMidi::RTMIDI_DUMMY);// A non functional MIDI out, which won't throw further exceptions
+    }
 }
-*/
+
+
+MIDIInDriver::~MIDIInDriver() {
+    port->closePort();
+    delete port;
+}
+
+
+void MIDIInDriver::OpenPort() {
+    if (!port->isPortOpen()) {
+        try {
+            port->openPort(port_id);
+            std::cout << "Port " << port->getPortName() << " open" << std::endl;
+        }
+        catch (RtMidiError& error) {
+            error.printMessage();
+        }
+    }
+}
+
+
+void MIDIInDriver::ClosePort() {
+    if (port->isPortOpen()) {
+        port->closePort();
+        std::cout << "Port " << port->getPortName() << " closed" << std::endl;
+    }
+}
+
 
 /*
 bool MIDIInDriver::HardwareMsgIn( MIDITimedBigMessage &msg )
@@ -320,3 +272,48 @@ bool MIDIInDriver::HardwareMsgIn( MIDITimedBigMessage &msg )
     return true;
   }
 */
+
+
+bool MIDIInDriver::InputMessage(MIDITimedMessage &msg) {
+    MIDIMessage m;
+    if (!HardwareMsgIn(m))
+        return false;
+    msg = m;
+    if (processor)
+        return processor->Process(&msg);
+    return true;
+}
+
+
+bool MIDIInDriver::HardwareMsgIn(MIDIMessage &msg) {
+    if (!port->isPortOpen())
+        return false;
+    //out_mutex.lock();
+    busy++;
+    msg_bytes.clear();
+    try {
+        port->getMessage(&msg_bytes);    // try to get a message from the RtMidi in queue
+    }                                    // (we don't use RtMidi timestamp)
+    catch (RtMidiError& error) {
+        error.printMessage();
+        return false;
+    }
+    if (msg_bytes.size() == 0)          // no message in the queue
+        return false;
+    msg.Clear();
+    msg.SetStatus(msg_bytes[0]);        // in msg_bytes[0] there is the status byte
+    if (msg.IsSysEx()) {
+        msg.AllocateSysEx(msg_bytes.size());
+        for (unsigned int i = 0; i < msg_bytes.size(); i++)
+            msg.GetSysEx()->PutSysByte(msg_bytes[i]);   // puts the 0xf0 also in the buffer
+        return true;
+    }
+    else if (msg.GetStatus() == 0xff)   // this is a reset message, NOT a meta
+        return true;
+    else {
+        if (msg.GetLength() > 1)
+            msg.SetByte1(msg_bytes[1]);
+        if (msg.GetLength() > 2)
+            msg.SetByte2(msg_bytes[2]); // byte3 surely 0 in non-meta messages
+    }
+}

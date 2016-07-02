@@ -1,6 +1,6 @@
 #include "../include/timer.h"
 
-MIDITimer::timepoint MIDITimer::sys_clock_base = steady_clock::now();
+MIDITimer::timepoint MIDITimer::sys_clock_base = std::chrono::steady_clock::now();
 
 
 MIDITimer::MIDITimer(int res) : resolution(res), tick(0), tick_param(0),
@@ -49,7 +49,7 @@ void MIDITimer::ThreadProc(MIDITimer* timer) {
     duration tick(timer->resolution);
 
     while(timer->timer_on) {
-        current = steady_clock::now();
+        current = std::chrono::steady_clock::now();
                 // execute the supplied function
         timer->tick(timer->GetSysTimeMs(), timer->tick_param);
                 // find the next timepoint and sleep until it

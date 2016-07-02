@@ -36,28 +36,42 @@
 #include "../include/midi.h"
 
 
+const char* get_chan_msg_name(unsigned char status) {
+    static const char* chan_msg_names[16] = {
+        "ERROR 0x00    ",		// 0x00
+        "ERROR 0x10    ",		// 0x10
+        "ERROR 0x20    ",		// 0x20
+        "ERROR 0x30    ",       // 0x30
+        "ERROR 0x40    ",       // 0x40
+        "ERROR 0x50    ",       // 0x50
+        "ERROR 0x60    ",   	// 0x60
+        "ERROR 0x70    ",    	// 0x70
+        "NOTE OFF      ",		// 0x80
+        "NOTE ON       ",		// 0x90
+        "POLY PRESSURE ",		// 0xa0
+        "CTRL CHANGE   ",		// 0xb0
+        "PROG CHANGE   ",		// 0xc0
+        "CHAN PRESSURE ",		// 0xd0
+        "PITCH BEND    ",		// 0xe0
+        "SYSTEM        "}; 		// 0xf0
+    return chan_msg_names[status >> 4];
+}
 
-const char* chan_msg_name[16] = {
-    "ERROR 0x00    ",		// 0x00
-    "ERROR 0x10    ",		// 0x10
-    "ERROR 0x20    ",		// 0x20
-    "ERROR 0x30    ",       // 0x30
-    "ERROR 0x40    ",       // 0x40
-    "ERROR 0x50    ",       // 0x50
-    "ERROR 0x60    ",   	// 0x60
-    "ERROR 0x70    ",    	// 0x70
-    "NOTE OFF      ",		// 0x80
-    "NOTE ON       ",		// 0x90
-    "POLY PRESSURE ",		// 0xa0
-    "CTRL CHANGE   ",		// 0xb0
-    "PROG CHANGE   ",		// 0xc0
-    "CHAN PRESSURE ",		// 0xd0
-    "PITCH BEND    ",		// 0xe0
-    "SYSTEM        " 		// 0xf0
-};
+const char* get_chan_mode_name(unsigned char status) {
+    static const char* chan_mode_names[8] = {
+        "ALL SOUND OFF ",       // 0x78
+        "RESET ALL CONTROLLERS",// 0x79
+        "LOCAL ON/OFF  ",       // 0x7a
+        "ALL NOTES OFF ",       // 0x7b
+        "OMNI OFF      ",       // 0x7c
+        "OMNI ON       ",       // 0x7d
+        "MONO ON       ",       // 0x7e
+        "POLY ON       "};      // 0x7f
+    return chan_mode_names[status - C_ALL_SOUND_OFF];
+}
 
 
-const char* sys_msg_name[16] = {
+const char* sys_msg_names[16] = {
     "SYSEX    ",		// 0xf0
     "MTC      ",		// 0xf1
     "SONG POS ",		// 0xf2
@@ -157,7 +171,7 @@ const char* get_meta_name(unsigned char b) {
     1,	// 0xfc=stop. 1 byte
     0,	// 0xfd=undefined
     1,	// 0xfe=active sensing. 1 byte
-    3	// 0xff= not reset, but a META-EVENT, which is always 3 bytes
+    -1	// 0xff= not reset, but a META-EVENT, which may vary
   };
 
 

@@ -32,6 +32,39 @@
 
 
 std::vector<std::string> MIDIManager::MIDI_out_names;
+std::vector<std::string> MIDIManager::MIDI_in_names;
+
+
+
+MessageQueue::MessageQueue(unsigned int size) : next_in(0), next_out(0), buffer(size) {}
+
+
+void MessageQueue::Reset() {
+    next_in = 0;
+    next_out = 0;
+}
+
+
+void MessageQueue::PutMessage(const MIDITimedMessage& msg) {
+    buffer[next_in] == msg;
+    next_in = (next_in + 1) % buffer.size();
+    if (next_in == next_out)
+        next_out++;             // we lose actual out message
+}
+
+
+MIDITimedMessage MessageQueue::GetMessage() {
+    if (next_in == next_out)
+        return MIDITimedMessage();
+    unsigned int old_out = next_out;
+        next_out = (next_out + 1) % buffer.size();
+    return buffer[old_out];
+}
+
+
+
+
+
 
 MIDIManager::MIDIManager(
     MIDISequencerGUINotifier *n,
@@ -41,21 +74,36 @@ MIDIManager::MIDIManager(
     sys_time_offset(0),
     seq_time_offset(0),
     play_mode(false),
-    stop_mode(true),
+    //stop_mode(true),
     thru_enable(false),
+    thru_input(0),
+    thru_input_channel(0),      // TODO: -1 ?
+    thru_output(0),
+    thru_output_channel(0),     // TODO: same
     repeat_play_mode(false),
     repeat_start_measure(0),
     repeat_end_measure(0),
     open_policy(AUTO_OPEN)
 
 {
-#ifdef WIN32    //TODO: this is temporary, needed by WINDOWS10
+#ifdef WIN32    //TODO: this is temporary, needed by WIstd::atomic<unsigned char> busy;        // TODO: use the mutex???NDOWS10
      CoInitializeEx(NULL, COINIT_MULTITHREADED);
 #endif // WIN32
-    RtMidiOut temp_MIDI_out;
-    for (unsigned int i = 0; i < temp_MIDI_out.getPortCount(); i++) {
-        MIDI_outs.push_back(new MIDIOutDriver(i));
-        MIDI_out_names.push_back(temp_MIDI_out.getPortName(i));
+    try {
+        RtMidiOut temp_MIDI_out;
+        for (unsigned int i = 0; i < temp_MIDI_out.getPortCount(); i++) {
+            MIDI_outs.push_back(new MIDIOutDriver(i));
+            MIDI_out_names.push_back(temp_MIDI_out.getPortName(i));
+        }
+        RtMidiIn temp_MIDI_in;
+        for (unsigned int i = 0; i < temp_MIDI_in.getPortCount(); i++) {
+            MIDI_ins.push_back(new MIDIInDriver(i));
+            MIDI_in_names.push_back(temp_MIDI_in.getPortName(i));
+        }
+    }
+    catch (RtMidiError &error) {
+        error.printMessage();
+        exit(EXIT_FAILURE);
     }
     timer = new MIDITimer();
     timer->SetMIDITick(TickProc, this);
@@ -63,6 +111,11 @@ MIDIManager::MIDIManager(
 
 
 MIDIManager::~MIDIManager() {
+    for (unsigned int i = 0; i < MIDI_outs.size(); i++)
+        delete MIDI_outs[i];
+    for (unsigned int i = 0; i < MIDI_ins.size(); i++)
+        delete MIDI_ins[i];
+
 #ifdef WIN32
     CoUninitialize();
 #endif // WIN32
@@ -74,11 +127,18 @@ void MIDIManager::Reset() {
     sys_time_offset = 0;
     seq_time_offset = 0;
     play_mode = false;
-    stop_mode = true;
+    //stop_mode = true;
+    thru_enable = false;
+    thru_input = 0;
+    thru_input_channel = 0;         // TODO: -1 ?
+    thru_output = 0;
+    thru_output_channel = 0;        // TODO: same
     if( notifier )
         notifier->Notify(MIDISequencerGUIEvent( MIDISequencerGUIEvent::GROUP_ALL));
     for(unsigned int i = 0; i < MIDI_outs.size(); i++)
-        MIDI_outs[i]->Reset();
+        MIDI_outs[i]->ClosePort();
+    for(unsigned int i = 0; i < MIDI_ins.size(); i++)
+        MIDI_ins[i]->ClosePort();
 }
 
 
@@ -114,7 +174,7 @@ void MIDIManager::SeqPlay() {
 
         seq_time_offset = (unsigned long) sequencer->GetCurrentTimeInMs();
         sys_time_offset = timer->GetSysTimeMs();
-        stop_mode = false;
+        //stop_mode = false;
         play_mode = true;
         timer->Start();
 
@@ -133,7 +193,7 @@ void MIDIManager::SeqStop() {
     if (sequencer && play_mode == true) {
         timer->Stop();
         play_mode = false;
-        stop_mode = true;
+        //stop_mode = true;
 
         if (notifier) {
             notifier->Notify ( MIDISequencerGUIEvent (
@@ -151,13 +211,13 @@ void MIDIManager::SeqStop() {
 
 
 // to manage the repeat playback of the sequencer
-void MIDIManager::SetRepeatPlay ( bool flag, unsigned long start_measure, unsigned long end_measure ) {
+void MIDIManager::SetRepeatPlay ( bool on_off, unsigned int start_measure, unsigned int end_measure ) {
         // shut off repeat play while we muck with values
     repeat_play_mode = false;
     repeat_start_measure = start_measure;
     repeat_end_measure = end_measure;
         // set repeat mode flag to how we want it.
-    repeat_play_mode = flag;
+    repeat_play_mode = on_off;
 }
 
 
@@ -167,13 +227,16 @@ void MIDIManager::AllNotesOff() {
 }
 
 
-void MIDIManager::TickProc( unsigned long sys_time_, void* p ) {
+void MIDIManager::TickProc( tMsecs sys_time_, void* p ) {
+/*
+    MIDIManager* manager = static_cast<MIDIManager *>(p);
+    for (unsigned int i = 0; i < manager->tick_procedures.size(); i++)
+        manager->tick_procedures[i](MIDITimer::GetSysTimeMs(), p);
+*/
 
     MIDIManager* manager = static_cast<MIDIManager *>(p);
     if( manager->play_mode )
-        manager->TimeTickPlayMode(sys_time_);
-    else if( manager->stop_mode )
-        manager->TimeTickStopMode(sys_time_);
+        manager->SequencerPlayProc(sys_time_);
 
     //std::cout << "MIDIManager TickProc" << std::endl;
 }
@@ -291,7 +354,7 @@ void MIDIManager::TimeTickPlayMode( unsigned long sys_time_ )
 
 
 // NEW FUNCTION WITH DIRECT SEND WITH HardwareMsgOut
-void MIDIManager::TimeTickPlayMode( unsigned long sys_time_ )
+void MIDIManager::SequencerPlayProc( tMsecs sys_time_ )
 {
     double sys_time = (double)sys_time_ - (double)sys_time_offset;
     double next_event_time = 0.0;
@@ -324,7 +387,6 @@ void MIDIManager::TimeTickPlayMode( unsigned long sys_time_ )
     while(
         sequencer->GetNextEventTimeMs( &next_event_time )
         && (next_event_time - seq_time_offset) <= sys_time
-        //&& MIDI_outs[0]->CanOutputMessage()
         && (--output_count)>0 ) {
 
         // found an event! get it!
@@ -333,7 +395,6 @@ void MIDIManager::TimeTickPlayMode( unsigned long sys_time_ )
 
             // ok, tell the driver the send this message now
             MIDI_outs[0]->OutputMessage(ev);
-            ev.Clear();     // we always must delete eventual sysex pointers before reassigning to ev TODO: is it true????
         }
     }
 
@@ -341,7 +402,7 @@ void MIDIManager::TimeTickPlayMode( unsigned long sys_time_ )
     if( !(repeat_play_mode && sequencer->GetCurrentMeasure()>=repeat_end_measure) &&
             !sequencer->GetNextEventTimeMs( &next_event_time ) ) {
         // no events left
-        stop_mode = true;
+        //stop_mode = true;
         play_mode = false;
 
         if(notifier) {
@@ -360,8 +421,3 @@ void MIDIManager::TimeTickPlayMode( unsigned long sys_time_ )
         }
     }
 }
-
-
-void MIDIManager::TimeTickStopMode( unsigned long sys_time_ ) {
-}
-

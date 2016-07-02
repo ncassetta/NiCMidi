@@ -118,9 +118,6 @@ void MIDIMultiTrack::AssignEventsToTracks ( const MIDITrack *src )
 {
     MIDITrack tmp( *src ); // make copy of src track
 
-    std::cout << "Multitrack before AssignEventsToTracks\n";
-    DumpMIDIMultiTrack(this);
-
     // renew multitrack object with 17 tracks:
     // tracks 1-16 for channel events, and track 0 for other types of events
     ClearAndResize( 17 );
@@ -137,9 +134,6 @@ void MIDIMultiTrack::AssignEventsToTracks ( const MIDITrack *src )
 
         tracks[track_num]->PushEvent(*msg);
     }
-
-    std::cout << "Multitrack after AssignEventsToTracks\n";
-    DumpMIDIMultiTrack(this);
 }
 
 

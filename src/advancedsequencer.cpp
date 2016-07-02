@@ -323,7 +323,7 @@ void AdvancedSequencer::Stop()
         return;
     }
 
-    if ( !mgr->IsSeqStop() )
+    if ( mgr->IsSeqPlay() )
     {
         mgr->SeqStop();
         mgr->AllNotesOff();
@@ -337,14 +337,14 @@ void AdvancedSequencer::Stop()
 /* NEW BY NC */
 void AdvancedSequencer::OutputMessage(MIDITimedMessage& msg) {
     bool was_open = true;
-    MIDIOutDriver* driver = mgr->GetDriver(0);
+    MIDIOutDriver* driver = mgr->GetOutDriver(0);
     if (!driver->IsPortOpen()) {
         was_open = false;
         driver->OpenPort();
     }
     driver->OutputMessage(msg);
     if (!was_open)
-        mgr->GetDriver(0)->ClosePort();
+        mgr->GetOutDriver(0)->ClosePort();
 }
 
 
@@ -397,7 +397,7 @@ void AdvancedSequencer::SoloTrack (int trk) {
     seq->SetSoloMode (true, trk);
     for (unsigned int i = 0; i < seq->GetNumTracks(); ++i) {
         if (i == (unsigned)trk) continue;
-        mgr->GetDriver(0)->AllNotesOff(FindFirstChannelOnTrack(i));
+        mgr->GetOutDriver(0)->AllNotesOff(FindFirstChannelOnTrack(i));
         seq->GetTrackState (i)->note_matrix.Clear();
     }
 }
@@ -419,7 +419,7 @@ void AdvancedSequencer::SetTrackMute (int trk, bool f) {
     seq->GetTrackProcessor (trk)->mute = f;
     if (IsPlay()) {
         if (f)
-            mgr->GetDriver(0)->AllNotesOff( FindFirstChannelOnTrack(trk) );  // TODO: tieni conto del rechannelize
+            mgr->GetOutDriver(0)->AllNotesOff( FindFirstChannelOnTrack(trk) );  // TODO: tieni conto del rechannelize
         else
             // track was muted: this set appropriate CC, PC, etc not previously sent
             CatchEventsBefore(trk);
@@ -455,7 +455,7 @@ MIDIClockTime AdvancedSequencer::GetCurrentMIDIClockTime() const {   // new by N
 }
 
 
-unsigned long AdvancedSequencer::GetCurrentTimeInMs() const {
+tMsecs AdvancedSequencer::GetCurrentTimeInMs() const {
 // NEW: this is now effective also during playback
     if (mgr->IsSeqPlay())
         return mgr->GetCurrentTimeInMs();
@@ -517,7 +517,7 @@ int AdvancedSequencer::GetKeySigMode() const {
 
 
 int AdvancedSequencer::GetTrackNoteCount (int trk) const {
-    if (!file_loaded || mgr->IsSeqStop())
+    if (!file_loaded || !mgr->IsSeqPlay())
         return 0;
     else
         return seq->GetTrackState ( trk )->note_matrix.GetTotalCount();
@@ -779,8 +779,8 @@ void AdvancedSequencer::CatchEventsBefore()
     std::cout << "Catch events before started ..." << std::endl;
 
     iter.GoToTime( 0 );
-    if (!mgr->GetDriver(0)->IsPortOpen())
-        mgr->GetDriver(0)->OpenPort();
+    if (!mgr->GetOutDriver(0)->IsPortOpen())
+        mgr->GetOutDriver(0)->OpenPort();
     while ( iter.GetCurEvent( &trk, &msgp ) && msgp->GetTime() < seq->GetCurrentMIDIClockTime() )
     {
         msg = *msgp;

@@ -69,12 +69,12 @@
 
   enum
     {
-      TIMING_CLOCK	    =0xf8,
-      MEASURE_END	    =0xf9,	// proposed measure end byte
-      START		        =0xfa,
-      CONTINUE	        =0xfb,
-      STOP		        =0xfc,
-      ACTIVE_SENSE	    =0xfe
+      RT_TIMING_CLOCK	=0xf8,
+      RT_MEASURE_END	=0xf9,	// proposed measure end byte UNUSED
+      RT_START		    =0xfa,
+      RT_CONTINUE	    =0xfb,
+      RT_STOP		    =0xfc,
+      RT_ACTIVE_SENSE	=0xfe
     };
 
 
@@ -129,11 +129,10 @@
       C_RPN_MSB	        =0x65,	// registered parameter MSB
 
 
-
+      C_ALL_SOUND_OFF   =0x78,  // all sound off
       C_RESET		    =0x79,	// reset all controllers
-
-      C_LOCAL		    =0x79,	// local control on/off
-      C_ALL_NOTES_OFF	=0x7a,	// all notes off
+      C_LOCAL		    =0x7a,	// local control on/off
+      C_ALL_NOTES_OFF	=0x7b,	// all notes off
       C_OMNI_OFF	    =0x7c,	// omni off, all notes off
       C_OMNI_ON	        =0x7d,	// omni on, all notes off
       C_MONO		    =0x7e,	// mono on, all notes off
@@ -244,9 +243,13 @@ extern const signed char	lut_sysmsglen[16];
 extern const bool	        lut_is_white[12];
 
 
-extern const char*          chan_msg_name[16];
-extern const char*          sys_msg_name[16];
-const char*                 get_meta_name(unsigned char b);
+extern const char*          chan_msg_names[16];
+extern const char*          sys_msg_names[16];
+extern const char*          chan_mode_names[8];
+
+const char*                 get_chan_msg_name(unsigned char status);
+const char*                 get_meta_name(unsigned char status);
+const char*                 get_chan_mode_name(unsigned char status);
 
   //
   // Message Length functions. Not valid for Meta-events (0xff)

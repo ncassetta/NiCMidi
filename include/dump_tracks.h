@@ -1,15 +1,13 @@
 #ifndef DUMP_TRACKS_H_INCLUDED
 #define DUMP_TRACKS_H_INCLUDED
 
-/* NOTE BY NC: enhanced functions MIDIMessage::MsgToText() and MIDITimedBigMessage::MsgToText to
-   allow better output to console */
 
 #include "multitrack.h"
 
-void DumpMIDITimedMessage (MIDITimedMessage *msg);
-void DumpMIDITrack (MIDITrack *t);
-void DumpAllTracks (MIDIMultiTrack *mlt);
-void DumpMIDIMultiTrack (MIDIMultiTrack *mlt);
+void DumpMIDITimedMessage (MIDITimedMessage* const msg);
+void DumpMIDITrack (MIDITrack* const t);
+void DumpAllTracks (MIDIMultiTrack* const mlt);
+void DumpMIDIMultiTrack (MIDIMultiTrack*const mlt);
 
 
 

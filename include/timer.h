@@ -7,9 +7,8 @@
 
 #include <iostream>     // for debug
 
-using namespace std::chrono;
 
-typedef unsigned long tMsecs;
+typedef unsigned long long tMsecs;
 typedef  void (*MIDITick)(tMsecs, void*);
 
 
@@ -33,10 +32,11 @@ class MIDITimer {
         void                        Stop();
 
         static tMsecs               GetSysTimeMs()
-                                        { return duration_cast<milliseconds>(steady_clock::now() - sys_clock_base).count(); }
+                                        { return std::chrono::duration_cast<std::chrono::milliseconds>
+                                                 (std::chrono::steady_clock::now() - sys_clock_base).count(); }
 
         static void                 Wait(unsigned int msecs)
-                                        { std::this_thread::sleep_for(milliseconds(msecs)); }
+                                        { std::this_thread::sleep_for(std::chrono::milliseconds(msecs)); }
 
 
     protected:
