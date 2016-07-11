@@ -37,25 +37,6 @@
 
 
 
-class MessageQueue {
-    public:
-                                        MessageQueue(unsigned int size = DEFAULT_QUEUE_SIZE);
-        virtual                         ~MessageQueue()             {}
-        void                            Reset();
-        void                            PutMessage(const MIDITimedMessage& msg);
-        MIDITimedMessage                GetMessage();
-        bool                            IsEmpty() const             { return next_in == next_out; }
-        bool                            IsFull() const              { return ((next_in + 1) % buffer.size()) == next_out; }
-
-        static const unsigned int       DEFAULT_QUEUE_SIZE = 256;
-
-    protected:
-
-        unsigned int                    next_in;
-        unsigned int                    next_out;
-        std::vector<MIDITimedMessage>   buffer;
-};
-
 
 
 ///
@@ -76,11 +57,6 @@ public:
 
     void                        Reset();
 
-        // to set and get the current sequencer
-    void                        SetSeq( MIDISequencer *seq );
-    MIDISequencer*              GetSeq()                        { return sequencer; }
-    const MIDISequencer*        GetSeq() const                  { return sequencer; }
-
         // to set and get the open and close ports policy
     void                        SetOpenPolicy(int p)            { open_policy = p; }
     int                         GetOpenpolicy() const           { return open_policy; }
@@ -93,6 +69,7 @@ public:
 
     MIDIOutDriver*              GetOutDriver(int n)             { return MIDI_outs[n]; }
     MIDIInDriver*               GetInDriver(int n)              { return MIDI_ins[n]; }
+
     void                        OpenOutPorts();
     void                        CloseOutPorts();
 
@@ -101,25 +78,37 @@ public:
                                                 { return play_mode ?
                                                          timer->GetSysTimeMs() + seq_time_offset - sys_time_offset : 0; }
 
+    /*
     void                        AddTickProc(MIDITick proc, unsigned int n);
     void                        RemoveTickProc(unsigned int n);
     void                        RemoveTickProc(MIDITick proc);
+    */
 
+        // to set and get the current sequencer
+    void                        SetSequencer(MIDISequencer *seq);
+    MIDISequencer*              GetSequencer()                  { return sequencer; }
+    const MIDISequencer*        GetSequencer() const            { return sequencer; }
         // to manage the playback of the sequencer
     void                        SeqPlay();
     void                        SeqStop();
     void                        SetRepeatPlay( bool on_off, unsigned int start_measure, unsigned int end_measure );
+        // status request functions
+    bool                        IsSeqPlay() const       { return play_mode; }
+    bool                        IsSeqRepeat() const     { return repeat_play_mode && play_mode; }
 
        // To set and get the MIDI thru
-    void                        SetThruEnable(bool f)                   {}
+    bool                        SetThruEnable(bool f);
     bool                        GetThruEnable() const                   { return thru_enable; }
+    bool                        SetThruPorts(unsigned int in_port, unsigned int out_port);
+    void                        SetThruChannels(char in_chan, char out_chan);
+    int                         GetThruInPort() const                   { return thru_input; }
+    int                         GetThruInChannel() const                { return MIDI_ins[thru_input]->GetThruChannel(); }
+    int                         GetThruOutPort() const                  { return thru_output; }
+    int                         GetThruOutChannel() const               { return MIDI_outs[thru_output]->GetThruChannel(); }
 
     void                        AllNotesOff();
 
-        // status request functions
-    bool                        IsSeqPlay() const       { return play_mode; }
-    //bool                        IsSeqStop() const       { return stop_mode; }
-    bool                        IsSeqRepeat() const     { return repeat_play_mode && play_mode; }
+
 
     /// This is the main tick procedure
     static void                 TickProc(tMsecs sys_time_, void* p);
@@ -131,9 +120,9 @@ protected:
     void                        MIDIThruProc(tMsecs sys_time_);
     void                        SequencerPlayProc(tMsecs sys_time_);
 
-    std::vector<MIDIOutDriver*> MIDI_outs;
+    std::vector<MIDIOutDriver*>     MIDI_outs;
     static std::vector<std::string> MIDI_out_names;
-    std::vector<MIDIInDriver*>  MIDI_ins;
+    std::vector<MIDIInDriver*>      MIDI_ins;
     static std::vector<std::string> MIDI_in_names;
 
     MIDISequencer*              sequencer;
@@ -145,13 +134,10 @@ protected:
     tMsecs                      seq_time_offset;
 
     volatile bool               play_mode;
-    //volatile bool               stop_mode;
 
     bool                        thru_enable;
-    unsigned int                thru_input;
-    int                         thru_input_channel;
-    unsigned int                thru_output;
-    int                         thru_output_channel;
+    int                         thru_input;
+    int                         thru_output;
 
     volatile bool               repeat_play_mode;
     long                        repeat_start_measure;

@@ -57,7 +57,7 @@ const char* get_chan_msg_name(unsigned char status) {
     return chan_msg_names[status >> 4];
 }
 
-const char* get_chan_mode_name(unsigned char status) {
+const char* get_chan_mode_name(unsigned char type) {
     static const char* chan_mode_names[8] = {
         "ALL SOUND OFF ",       // 0x78
         "RESET ALL CONTROLLERS",// 0x79
@@ -67,7 +67,7 @@ const char* get_chan_mode_name(unsigned char status) {
         "OMNI ON       ",       // 0x7d
         "MONO ON       ",       // 0x7e
         "POLY ON       "};      // 0x7f
-    return chan_mode_names[status - C_ALL_SOUND_OFF];
+    return chan_mode_names[type - C_ALL_SOUND_OFF];
 }
 
 

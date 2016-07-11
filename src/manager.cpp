@@ -36,53 +36,24 @@ std::vector<std::string> MIDIManager::MIDI_in_names;
 
 
 
-MessageQueue::MessageQueue(unsigned int size) : next_in(0), next_out(0), buffer(size) {}
-
-
-void MessageQueue::Reset() {
-    next_in = 0;
-    next_out = 0;
-}
-
-
-void MessageQueue::PutMessage(const MIDITimedMessage& msg) {
-    buffer[next_in] == msg;
-    next_in = (next_in + 1) % buffer.size();
-    if (next_in == next_out)
-        next_out++;             // we lose actual out message
-}
-
-
-MIDITimedMessage MessageQueue::GetMessage() {
-    if (next_in == next_out)
-        return MIDITimedMessage();
-    unsigned int old_out = next_out;
-        next_out = (next_out + 1) % buffer.size();
-    return buffer[old_out];
-}
 
 
 
-
-
-
-MIDIManager::MIDIManager(
-    MIDISequencerGUINotifier *n,
-    MIDISequencer *seq_ ) :
+MIDIManager::MIDIManager(MIDISequencerGUINotifier *n, MIDISequencer *seq_) :
     sequencer(seq_),
-    notifier( n ),
+    notifier(n),
     sys_time_offset(0),
     seq_time_offset(0),
     play_mode(false),
-    //stop_mode(true),
+
     thru_enable(false),
-    thru_input(0),
-    thru_input_channel(0),      // TODO: -1 ?
-    thru_output(0),
-    thru_output_channel(0),     // TODO: same
+    thru_input(-1),
+    thru_output(-1),
+
     repeat_play_mode(false),
     repeat_start_measure(0),
     repeat_end_measure(0),
+
     open_policy(AUTO_OPEN)
 
 {
@@ -107,6 +78,8 @@ MIDIManager::MIDIManager(
     }
     timer = new MIDITimer();
     timer->SetMIDITick(TickProc, this);
+    if (MIDI_ins.size() > 0 && MIDI_outs.size() > 0)    // set MIDI thru on ports 0 (if they exists)
+        SetThruPorts(0, 0);
 }
 
 
@@ -122,28 +95,29 @@ MIDIManager::~MIDIManager() {
 }
 
 
-void MIDIManager::Reset() {
+void MIDIManager::Reset() { // doesn't reset open_policy
     SeqStop();
     sys_time_offset = 0;
     seq_time_offset = 0;
-    play_mode = false;
-    //stop_mode = true;
+
     thru_enable = false;
-    thru_input = 0;
-    thru_input_channel = 0;         // TODO: -1 ?
-    thru_output = 0;
-    thru_output_channel = 0;        // TODO: same
+
+    repeat_play_mode = false;
+    repeat_start_measure = 0;
+    repeat_end_measure = 0;
     if( notifier )
         notifier->Notify(MIDISequencerGUIEvent( MIDISequencerGUIEvent::GROUP_ALL));
     for(unsigned int i = 0; i < MIDI_outs.size(); i++)
-        MIDI_outs[i]->ClosePort();
+        MIDI_outs[i]->Reset();
     for(unsigned int i = 0; i < MIDI_ins.size(); i++)
-        MIDI_ins[i]->ClosePort();
+        MIDI_ins[i]->Reset();
+
+    if (MIDI_ins.size() > 0 && MIDI_outs.size() > 0)
+        SetThruPorts(0, 0);
 }
 
 
-// to set and get the current sequencer
-void MIDIManager::SetSeq ( MIDISequencer *seq ) {
+void MIDIManager::SetSequencer (MIDISequencer *seq) {
     if (notifier)
         notifier->Notify (MIDISequencerGUIEvent (MIDISequencerGUIEvent::GROUP_ALL));
     sequencer = seq;
@@ -218,6 +192,91 @@ void MIDIManager::SetRepeatPlay ( bool on_off, unsigned int start_measure, unsig
     repeat_end_measure = end_measure;
         // set repeat mode flag to how we want it.
     repeat_play_mode = on_off;
+}
+
+
+// to set the MIDI thru
+bool MIDIManager::SetThruEnable(bool f) {
+    if (thru_input == -1 || thru_output == -1)      // we have not set the thru ports yet
+        return false;
+    if (thru_enable == f)                           // trying to set the same
+        return true;
+    bool ret = MIDI_ins[thru_input]->SetThruEnable(f);
+    thru_enable = MIDI_ins[thru_input]->GetThruEnable();
+    if (thru_enable) {
+        MIDI_ins[thru_input]->OpenPort();
+        MIDI_outs[thru_output]->OpenPort();
+    }
+    else if (ret) {
+        MIDI_ins[thru_input]->ClosePort();
+        MIDI_outs[thru_output]->AllNotesOff();
+        MIDI_outs[thru_output]->ClosePort();
+    }
+    return ret;
+}
+
+// TODO: rearrange this to avoid closing and reopening same ports
+// (for now leave. it gave errors)
+bool MIDIManager::SetThruPorts(unsigned int in_port, unsigned int out_port) {
+    if (in_port >= MIDI_ins.size() || out_port >= MIDI_outs.size())
+        return false;                               // invalid port number: the function fails
+
+    if (in_port == thru_input && out_port == thru_output)
+        return true;                                // trying to assign same ports: nothing to do
+
+    if (in_port == thru_input) {                    // same input port: avoids closing and reopening
+        MIDI_ins[thru_input]->SetThruEnable(false); // locks the driver and mutes the actual out port
+        MIDI_ins[thru_input]->SetThruEnable(thru_enable, MIDI_outs[out_port]);
+                                                    // sets the new port
+        thru_output = out_port;                     // updates the manager status
+    }
+    else {                                          // we must act both on in and out port
+        bool was_enabled = thru_enable;
+        SetThruEnable(false);                       // closes both actual ports
+        MIDI_ins[in_port]->SetThruEnable(false, MIDI_outs[out_port]);
+                                                    // sets the new output on the new input
+        thru_input = in_port;                       // updates the manager status
+        thru_output = out_port;
+        SetThruEnable(was_enabled);
+    }
+    return true;
+}
+
+/* OLD WORKING FUNCTION
+bool MIDIManager::SetThruPorts(unsigned int in_port, unsigned int out_port) {
+    if (in_port >= MIDI_ins.size() || out_port >= MIDI_outs.size())
+        return false;
+
+    std::cout << "Step 1" << std::endl;
+    if (thru_input != -1) {                         // an old MIDI thru input was set
+        MIDI_ins[thru_input]->SetThruEnable(false); // turn off the MIDI thru
+        MIDI_ins[thru_input]->ClosePort();          // and close the port
+    }
+
+    std::cout << "Step 2" << std::endl;
+
+    if (thru_output != -1) {                        // an old MIDI thru output was set
+        MIDI_outs[thru_output]->AllNotesOff();      // cut off sounding notes
+// TODO: insert a wait?
+        MIDI_outs[thru_output]->ClosePort();        // and close it
+    }
+
+    MIDI_ins[in_port]->SetThruEnable(false, MIDI_outs[out_port]);
+                                                    // set the new MIDI thru
+    MIDI_ins[in_port]->OpenPort();
+    MIDI_outs[out_port]->OpenPort();
+    MIDI_ins[in_port]->SetThruEnable(thru_enable);
+    thru_input = in_port;
+    thru_output = out_port;
+    return true;
+}
+*/
+
+void MIDIManager::SetThruChannels(char in_chan, char out_chan) {
+    if (in_chan != MIDI_ins[thru_input]->GetThruChannel())
+        MIDI_ins[thru_input]->SetThruChannel(in_chan);
+    if (out_chan != MIDI_outs[thru_output]->GetThruChannel())
+        MIDI_outs[thru_output]->SetThruChannel(out_chan);
 }
 
 

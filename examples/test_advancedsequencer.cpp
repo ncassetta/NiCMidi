@@ -27,8 +27,8 @@
 // ncassetta@tiscali.it
 //
 
-#include "../../include/advancedsequencer.h"
-#include "../../include/dump_tracks.h"
+#include "../include/advancedsequencer.h"
+#include "../include/dump_tracks.h"
 
 #include <iostream>
 #include <string>

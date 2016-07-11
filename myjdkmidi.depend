@@ -596,7 +596,7 @@
 1461246752 source:c:\users\nicola\cplusplus\github\myjdkmidi\jdk\timer.cpp
 	"jdkmidi/timer.h"
 
-1467287892 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\advancedsequencer.cpp
+1467699842 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\advancedsequencer.cpp
 	"../include/world.h"
 	"../include/advancedsequencer.h"
 	"../include/filereadmultitrack.h"
@@ -642,10 +642,11 @@
 1463914632 c:\users\nicola\cplusplus\github\myjdkmidi\include\sysex.h
 	"midi.h"
 
-1467130193 c:\users\nicola\cplusplus\github\myjdkmidi\include\driver.h
+1468062678 c:\users\nicola\cplusplus\github\myjdkmidi\include\driver.h
 	"msg.h"
 	"matrix.h"
 	"process.h"
+	"timer.h"
 	"../rtmidi-2.1.1/RtMidi.h"
 	<vector>
 	<string>
@@ -656,9 +657,11 @@
 	"midi.h"
 	"msg.h"
 
-1465050417 c:\users\nicola\cplusplus\github\myjdkmidi\include\process.h
+1468006668 c:\users\nicola\cplusplus\github\myjdkmidi\include\process.h
 	"msg.h"
 	"sysex.h"
+	<iostream>
+	<vector>
 
 1465050456 c:\users\nicola\cplusplus\github\myjdkmidi\include\queue.h
 	"msg.h"
@@ -688,7 +691,7 @@
 	"windows.h"
 	"mmsystem.h"
 
-1467452985 c:\users\nicola\cplusplus\github\myjdkmidi\include\manager.h
+1467702374 c:\users\nicola\cplusplus\github\myjdkmidi\include\manager.h
 	"msg.h"
 	"driver.h"
 	"sequencer.h"
@@ -726,7 +729,7 @@
 	"windows.h"
 	"mmsystem.h"
 
-1467130445 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\driver.cpp
+1467919329 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\driver.cpp
 	"../include/world.h"
 	"../include/driver.h"
 	"../include/timer.h"
@@ -769,7 +772,7 @@
 	"filewrite.h"
 	"multitrack.h"
 
-1467293802 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\manager.cpp
+1468054343 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\manager.cpp
 	<iostream>
 	"../include/world.h"
 	"../include/manager.h"
@@ -778,11 +781,11 @@
 	"../include/world.h"
 	"../include/matrix.h"
 
-1467125925 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\midi.cpp
+1467572758 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\midi.cpp
 	"../include/world.h"
 	"../include/midi.h"
 
-1467023593 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\msg.cpp
+1467572758 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\msg.cpp
 	"../include/world.h"
 	"../include/sysex.h"
 	"../include/msg.h"
@@ -799,9 +802,11 @@
 	"../include/notifier.h"
 	"../include/sequencer.h"
 
-1465048934 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\process.cpp
+1467700252 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\process.cpp
 	"../include/world.h"
 	"../include/process.h"
+	"../include/dump_tracks.h"
+	<string>
 
 1465048959 source:c:\users\nicola\cplusplus\github\myjdkmidi\src\queue.cpp
 	"../include/world.h"

@@ -28,8 +28,47 @@
 #include "../include/timer.h"
 
 
+void MIDIRawMessageQueue::Reset() {
+    next_in = next_out = 0;
+    for (unsigned int i = 0; i < buffer.size(); i++)
+        buffer[i] = MIDIRawMessage();
+}
 
-MIDIOutDriver::MIDIOutDriver(int id) : processor(0), port_id(id), busy(0) {
+
+void MIDIRawMessageQueue::PutMessage(const MIDIRawMessage& msg) {
+    buffer[next_in] = msg;
+    next_in = (next_in + 1) % buffer.size();
+    if (next_in == next_out)
+        next_out = (next_out + 1) % buffer.size();          // we lose actual out message
+}
+
+
+MIDIRawMessage& MIDIRawMessageQueue::GetMessage() {
+    static MIDIRawMessage msg;      // needed if we want to return a reference
+    if (next_in == next_out)
+        return msg;
+    else {
+        unsigned int old_out = next_out;
+        next_out = (next_out + 1) % buffer.size();
+        return buffer[old_out];
+    }
+}
+
+
+MIDIRawMessage& MIDIRawMessageQueue::PeekMessage(unsigned int n) {
+    static MIDIRawMessage msg;      // needed if we want to return a reference
+    if (n >= GetLength())
+        return msg;
+    else
+        return buffer[(next_out + n) % buffer.size()];
+}
+
+
+
+
+
+MIDIOutDriver::MIDIOutDriver(int id) :
+    processor(0), port_id(id), num_open(0), thru_channel(-1), busy(0) {
     try {
         port = new RtMidiOut();
     }
@@ -46,32 +85,78 @@ MIDIOutDriver::~MIDIOutDriver() {
 }
 
 
+void MIDIOutDriver::Reset() {
+    port->closePort();
+    processor = 0;
+    num_open = 0;
+    thru_channel = -1;
+    rechannelizer.Reset();
+}
+
+
 void MIDIOutDriver::OpenPort() {
-    if (!port->isPortOpen()) {
+    if (num_open == 0) {
         try {
             port->openPort(port_id);
 #if DRIVER_USES_MIDIMATRIX
             out_matrix.Clear();
 #endif
-            std::cout << "Port " << port->getPortName() << " open" << std::endl;
         }
         catch (RtMidiError& error) {
             error.printMessage();
+            return;
         }
     }
+    num_open++;
+
+    std::cout << "Port " << port->getPortName() << " open";
+    if (num_open > 1)
+        std::cout << " (" << num_open << " times)";
+    std::cout<< std::endl;
 }
 
 
 void MIDIOutDriver::ClosePort() {
-    if (port->isPortOpen()) {
+    if (num_open == 1)
         port->closePort();
-        std::cout << "Port " << port->getPortName() << " closed" << std::endl;
+    if (num_open > 0) {
+        num_open--;
+        std::cout << "Port " << port->getPortName() << " closed";
+        if (num_open > 0)
+            std::cout << " (" << num_open << " times)";
+        std::cout << std::endl;
+    }
+    else
+        std::cout << "Attempt to close an already closed port!" << std::endl;
+}
+
+
+void MIDIOutDriver::ForcedClosePort() {
+    port->closePort();
+    num_open = 0;
+}
+
+
+void MIDIOutDriver::SetThruChannel(char chan) {
+    if (chan >= -1 && chan <= 15) {
+        if (thru_channel != -1)
+            AllNotesOff(thru_channel);
+        else
+            AllNotesOff();
+        if (chan == -1)
+            rechannelizer.Reset();
+        else
+            rechannelizer.SetAllRechan(chan);
+        thru_channel = chan;
     }
 }
 
 
 void MIDIOutDriver::AllNotesOff( int chan ) {
     MIDIMessage msg;
+
+    if (!port->isPortOpen())
+        return;
 
     busy++;
     //out_mutex.lock();
@@ -129,6 +214,13 @@ void MIDIOutDriver::OutputMessage(const MIDITimedMessage& msg) {    // MIDITimed
 }
 
 
+void MIDIOutDriver::MIDIThru(MIDITimedMessage msg) {
+    rechannelizer.Process(&msg);
+    std::cout << "Called MIDIThru" << std::endl;
+    OutputMessage(msg);
+}
+
+
 void MIDIOutDriver::HardwareMsgOut(const MIDIMessage &msg) {
     if (!port->isPortOpen())
         return;
@@ -178,9 +270,13 @@ void MIDIOutDriver::HardwareMsgOut(const MIDIMessage &msg) {
 
 
 
-MIDIInDriver::MIDIInDriver(int id) : processor(0), port_id(id), busy(0) {
+MIDIInDriver::MIDIInDriver(int id, unsigned int queue_size) :
+    processor(0), thru_enable(false), thru_channel(-1), thru_driver(0),
+    port_id(id), num_open(0), in_queue(queue_size) {
     try {
         port = new RtMidiIn();
+        port->setCallback(HardwareMsgIn, this);
+        port->ignoreTypes(false, true, true);
     }
     catch (RtMidiError& error) {
         error.printMessage();
@@ -195,96 +291,120 @@ MIDIInDriver::~MIDIInDriver() {
 }
 
 
+void MIDIInDriver::Reset() {
+    SetThruEnable(false);
+    port->closePort();
+    num_open = 0;
+    in_queue.Reset();
+
+    processor = 0;
+    thru_channel = -1;
+    thru_driver = 0;
+}
+
+
 void MIDIInDriver::OpenPort() {
-    if (!port->isPortOpen()) {
+    if (num_open == 0) {
         try {
             port->openPort(port_id);
-            std::cout << "Port " << port->getPortName() << " open" << std::endl;
         }
         catch (RtMidiError& error) {
             error.printMessage();
+            return;
         }
     }
+    num_open++;
+
+    std::cout << "Port " << port->getPortName() << " open";
+    if (num_open > 1)
+        std::cout << " (" << num_open << " times)";
+    std::cout<< std::endl;
 }
 
 
 void MIDIInDriver::ClosePort() {
-    if (port->isPortOpen()) {
-        port->closePort();
-        std::cout << "Port " << port->getPortName() << " closed" << std::endl;
-    }
-}
+    if (num_open == 1)
+            port->closePort();
+    if (num_open > 0) {
+        num_open--;
 
-
-/*
-bool MIDIInDriver::HardwareMsgIn( MIDITimedBigMessage &msg )
-  {
-    // put input midi messages thru the in processor
-
-    if( in_proc )
-    {
-      if( in_proc->Process( &msg )==false )
-      {
-        // message was deleted, so ignore it.
-        return true;
-      }
-    }
-
-    // stick input into in queue
-
-    if( in_queue.CanPut() )
-    {
-      in_queue.Put( msg );
+        std::cout << "Port " << port->getPortName() << " closed";
+        if (num_open > 0)
+            std::cout << " (" << num_open << " times)";
+        std::cout << std::endl;
     }
     else
-    {
-      return false;
-    }
-
-
-    // now stick it through the THRU processor
-
-    if( thru_proc )
-    {
-      if( thru_proc->Process( &msg )==false )
-      {
-        // message was deleted, so ignore it.
-        return true;
-      }
-    }
-
-
-    if( thru_enable )
-    {
-      // stick this message into the out queue so the tick procedure
-      // will play it out asap. Put frees eventual old sysex pointers
-
-      if( out_queue.CanPut() )
-      {
-        out_queue.Put( msg );
-      }
-      else
-      {
-        return false;
-      }
-    }
-
-    return true;
-  }
-*/
-
-
-bool MIDIInDriver::InputMessage(MIDITimedMessage &msg) {
-    MIDIMessage m;
-    if (!HardwareMsgIn(m))
-        return false;
-    msg = m;
-    if (processor)
-        return processor->Process(&msg);
-    return true;
+        std::cout << "Attempt to close an already closed port!" << std::endl;
 }
 
 
+void MIDIInDriver::ForcedClosePort() {
+    port->closePort();
+    num_open = 0;
+}
+
+
+void MIDIInDriver::SetProcessor(MIDIProcessor* proc) {
+    in_mutex.lock();
+    processor = proc;
+    in_mutex.unlock();
+}
+
+
+bool MIDIInDriver::SetThruEnable(bool f, MIDIOutDriver* driver) {
+    bool ret = true;
+    in_mutex.lock();
+    if (driver != 0) {                      // we want to set or change the out driver
+        if (thru_driver != 0)               // if it was already set, mute it
+            thru_driver->AllNotesOff();
+        thru_driver = driver;               // and change
+    }
+
+    if (f == false) {                       // thru off
+        if (thru_driver != 0 && driver == 0)
+            thru_driver->AllNotesOff();     // mute the out driver if not already done
+        thru_enable = false;
+    }
+    else {                                  // thru on
+        if (thru_driver != 0)               // the out driver is set
+            thru_enable = true;             // turn thru on
+        else {
+            thru_enable = false;            // the out driver isn't set yet
+            ret = false;                    // the function failed
+        }
+    }
+    in_mutex.unlock();
+    return ret;
+}
+
+
+void MIDIInDriver::SetThruChannel(char chan) {
+    if (chan >= -1 && chan <= 15) {
+        in_mutex.lock();
+        thru_channel = chan;
+        in_mutex.unlock();
+    }
+}
+
+
+bool MIDIInDriver::InputMessage(MIDIRawMessage &msg) {
+    if (!in_queue.IsEmpty()) {
+        msg = in_queue.GetMessage();
+        return true;
+    }
+    return false;
+}
+
+
+bool MIDIInDriver::PeekMessage(MIDIRawMessage& msg, unsigned int n) {
+    if (in_queue.GetLength() > 0) {
+        msg = in_queue.PeekMessage(n);
+        return true;
+    }
+    return false;
+}
+
+/* OLD
 bool MIDIInDriver::HardwareMsgIn(MIDIMessage &msg) {
     if (!port->isPortOpen())
         return false;
@@ -316,4 +436,50 @@ bool MIDIInDriver::HardwareMsgIn(MIDIMessage &msg) {
         if (msg.GetLength() > 2)
             msg.SetByte2(msg_bytes[2]); // byte3 surely 0 in non-meta messages
     }
+    return false;                       // doesn't happen, only for avoiding a warning
+}
+*/
+
+
+void MIDIInDriver::HardwareMsgIn(double time,
+                                 std::vector<unsigned char>* msg_bytes,
+                                 void* p) {
+
+    MIDIInDriver* drv = static_cast<MIDIInDriver*>(p);
+
+    if (!drv->port->isPortOpen() || msg_bytes->size() == 0)
+        return;
+
+    drv->in_mutex.lock();
+    MIDITimedMessage msg;
+    msg.SetStatus(msg_bytes->operator[](0));        // in msg_bytes[0] there is the status byte
+    if (msg.IsSysEx()) {
+        msg.AllocateSysEx(msg_bytes->size());
+        for (unsigned int i = 0; i < msg_bytes->size(); i++)
+            msg.GetSysEx()->PutSysByte(msg_bytes->operator[](i));   // puts the 0xf0 also in the sysex buffer
+    }
+    else if (msg.GetStatus() == 0xff) { // this is a reset message, NOT a meta
+    }
+    else {
+        if (msg.GetLength() > 1)
+            msg.SetByte1(msg_bytes->operator[](1));
+        if (msg.GetLength() > 2)
+            msg.SetByte2(msg_bytes->operator[](2)); // byte3 surely 0 in non-meta messages
+    }
+
+    if (!msg.IsNoOp()) {                            // now we have a valid message
+
+        if (drv->processor)
+            drv->processor->Process(&msg);          // process it with the in processor
+        if (drv->thru_enable &&                     // if the thru is enabled ...
+            (!msg.IsChannelMsg() || drv->thru_channel == -1 ||
+             (msg.IsChannelMsg() && msg.GetChannel() == drv->thru_channel)))
+            drv->thru_driver->MIDIThru(msg);        // sends the messages to the thru out driver
+                                                    // adds the message to the queue
+        drv->in_queue.PutMessage(MIDIRawMessage(msg,
+                                                MIDITimer::GetSysTimeMs(),
+                                                drv->port_id));
+        std::cout << "Callback executed! Queue size: " << drv->in_queue.GetLength() << std::endl;
+    }
+    drv->in_mutex.unlock();
 }

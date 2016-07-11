@@ -40,9 +40,7 @@
 #define TEST_STEPSEQUENCER_H_INCLUDED
 
 
-#include "../../include/advancedsequencer.h"
-//using namespace jdksmidi;
-
+#include "../include/advancedsequencer.h"
 
 
 static const char helpstring[] =

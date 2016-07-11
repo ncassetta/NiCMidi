@@ -148,7 +148,7 @@ std::string MIDIMessage::MsgToText () const {
         txt += buf;
 
         if (IsChannelMode()) {
-            sprintf (buf, "%s ", get_chan_mode_name(GetType()));
+            sprintf (buf, "%s ", get_chan_mode_name(GetController()));
             txt += buf;
             if (GetType() == C_LOCAL)
                 txt += (byte1 ? " On" : " Off");

@@ -13,7 +13,7 @@ AdvancedSequencer::AdvancedSequencer(MIDISequencerGUINotifier *n) :
     seq ( new MIDISequencer ( tracks, notifier ) ),
     mgr ( new MIDIManager ( notifier, seq ) ),
 
-    thru_processor ( 2 ),
+    thru_processor (),
     thru_transposer(),
     thru_rechannelizer(),
 
@@ -47,7 +47,7 @@ AdvancedSequencer::AdvancedSequencer(MIDIMultiTrack* mlt, MIDISequencerGUINotifi
     seq ( new MIDISequencer ( tracks, notifier ) ),
     mgr ( new MIDIManager ( notifier, seq ) ),
 
-    thru_processor ( 2 ),
+    thru_processor (),
     thru_transposer(),
     thru_rechannelizer(),
 
@@ -72,12 +72,12 @@ AdvancedSequencer::AdvancedSequencer(MIDIMultiTrack* mlt, MIDISequencerGUINotifi
 
 
 AdvancedSequencer::AdvancedSequencer(MIDIManager *mg) :
-    notifier( mg->GetSeq()->GetState()->notifier ),
-    tracks ( ( MIDIMultiTrack * ) ( mg->GetSeq()->GetState()->multitrack ) ),
-    seq ( mgr->GetSeq() ),
+    notifier( mg->GetSequencer()->GetState()->notifier ),
+    tracks ( ( MIDIMultiTrack * ) ( mg->GetSequencer()->GetState()->multitrack ) ),
+    seq ( mgr->GetSequencer() ),
     mgr ( mg ),
 
-    thru_processor ( 2 ),
+    thru_processor (),
     thru_transposer(),
     thru_rechannelizer(),
 

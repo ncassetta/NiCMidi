@@ -1,29 +1,28 @@
 #include <iostream>
 
-#include "../../include/manager.h"
+//#include "../../include/manager.h"
+#include "../../rtmidi-2.1.1/RtMidi.h"
 
 using namespace std;
 
+
+
+void mycallback(double d, vector<unsigned char>* v, void* p) {
+    static unsigned int rec_msg = 0;
+
+    cout << "Received messages: " << ++rec_msg << endl;
+}
+
+
 int main()
 {
-    MIDIManager manager;
-    char a;
-
-    for (int i = 0; i < manager.GetNumMIDIOuts(); i++)
-        std::cout << "Device " << i << ": " << manager.GetMIDIOutName(i) << std::endl;
-
-    std::cout << "Seq play" << std::endl;
-    manager.SeqPlay();
-
-    std::cout << "Waiting 10 secs ..." << std::endl;
-    for(int i = 1; i <= 10; i++) {
-       std::cout << i << std::endl;
-       Wait(1000);
-    }
-
-
-    std::cout << "Seq stop" << std::endl;
-    manager.SeqStop();
+    RtMidiIn inport;
+    inport.setCallback(mycallback, 0);
+    inport.openPort(0);
+    cout << "Press RETURN to close the port\n";
+    cin.get();
+    inport.closePort();
+    cout << "Correctly terminated!\n";
 
     return 0;
 }

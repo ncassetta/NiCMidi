@@ -24,7 +24,9 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
+			<Add option="-D__WINDOWS_MM__" />
 		</Compiler>
+		<Unit filename="../../rtmidi-2.1.1/RtMidi.cpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
