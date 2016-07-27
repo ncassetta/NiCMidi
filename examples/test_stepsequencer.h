@@ -39,8 +39,10 @@
 #ifndef TEST_STEPSEQUENCER_H_INCLUDED
 #define TEST_STEPSEQUENCER_H_INCLUDED
 
+#include <string>
 
 #include "../include/advancedsequencer.h"
+#include "../include/dump_tracks.h"
 
 
 static const char helpstring[] =
@@ -82,7 +84,8 @@ static const char helpstring[] =
 
 
 void GetCommand();
-void DumpMIDIMultiTrack( MIDIMultiTrack *mlt );
+unsigned char NameToValue( std::string s );
+void DumpMIDIMultiTrackWithPauses( MIDIMultiTrack *mlt );
 
 
 class position {

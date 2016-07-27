@@ -18,9 +18,6 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// TODO: da rivedere! Adattarlo a jdksmidi porterebbe a modifiche nell'interfaccia (AddTrack, GetNumTracks e
-// forse altre
-
 
 #ifndef _JDKMIDI_SEQUENCER_H
 #define _JDKMIDI_SEQUENCER_H
@@ -82,19 +79,19 @@ class MIDISequencerTrackState {
                         MIDISequencerTrackState();
         /// The destructor.
         virtual         ~MIDISequencerTrackState() {}
+
         /// Resets default values.
         virtual void    Reset();
         char            program;		    ///< current program change, or -1
-        char            volume;				///< current volume controller value
-        char            pan;				///< current pan controller value
-        char            rev;                ///< current reverb controller value
-        char            chr;                ///< current chorus controller value
         int             bender_value;		///< last seen bender value
         std::string     track_name;	        ///< track name
         bool            notes_are_on;       ///< true if there are notes currently on
         MIDIMatrix      note_matrix;        ///< to keep track of all notes on
+        unsigned char   control_values[C_ALL_NOTES_OFF];
+                                            ///< array of current control change values
 
         bool            got_good_track_name;///< internal use
+
 };
 
 
@@ -111,7 +108,7 @@ class MIDISequencerTrackState {
 /// class is mainly internal.
 /// However, you could subclass it if you want to keep track of other parameters.
 ///
-class MIDISequencerState {
+class MIDISequencerState : public MIDIProcessor {   // TODO: inherits also from MIDISequencerGUINotifier ?
     public:
         /// The constructor. Appropriate values are set by the sequencer when it creates the object.
                                 MIDISequencerState(MIDIMultiTrack *multitrack_,
@@ -139,17 +136,17 @@ class MIDISequencerState {
         void                    Notify(int group, int item = 0) const;
         void                    NotifyTrack(int item) const;
 
-        MIDISequencerGUINotifier *notifier; // TODO: these should be protected but they are used
+        MIDISequencerGUINotifier* notifier; // TODO: these should be protected but they are used
         MIDIMultiTrack*         multitrack; // by AdvancedSequencer constructors
         MIDIMultiTrackIterator  iterator;
 
         MIDIClockTime           cur_clock;          ///< The current MIDI clock in MIDI ticks
-        float                   cur_time_ms;        ///< The current clock in milliseconds
+        double                  cur_time_ms;        ///< The current clock in milliseconds
         int                     cur_beat;           ///< The current beat in the measure (1st beat is 0)
         int                     cur_measure;        ///< The current measure (1st measure is 0)
         MIDIClockTime           next_beat_time;     ///< The MIDI time of the next beat (for internal use)
 
-        float                   tempobpm;           ///< The current tempo in beats per minute
+        double                  tempobpm;           ///< The current tempo in beats per minute
         char                    timesig_numerator;  ///< The numerator of current time signature
         char                    timesig_denominator;///< The denominator of current time signature
         char                    keysig_sharpflat;   ///< The current key signature accidents (
@@ -169,7 +166,9 @@ class MIDISequencerState {
 /// - a MIDIMultiTrackIterator, allowing to set a 'now' time, moving it along
 /// - a MIDISequencerGUINotifier, that notifies the GUI about MIDI events
 /// - a MIDISequencerState (which embeds the multitrack, the iterator and the notifier) to keep track
-/// of actual parameters (tempo, keysig, track parameters, etc.)
+/// of actual parameters (tempo, keysig, track parameters, etc.).
+/// Moreover it allows the user to assign a separate MIDI port for each track and to shift the time of
+/// track events by a given amount (positive or negative) of MIDI ticks.
 /// \note This class has no playing capacity. For playing MIDI content you must use it together with a
 /// MIDIManager. See the example files for effective using. AdvancedSequencer is an all-in-one class for
 /// sequencing and playing
@@ -183,10 +182,8 @@ class MIDISequencer {
                                         MIDISequencer(MIDIMultiTrack* m, MIDISequencerGUINotifier* n = 0);
         /// The destructor. The MIDIMultitrack and the MIDISequencerGUINotifier are not owned by the MIDISequencer.
         virtual                         ~MIDISequencer();
-
-        //void                            ResetTrack(int trk);
-        /// Resets the state of the sequencer (see MIDISequencerState:Reset()). Moreover syncs the number of
-        /// MIDISequencerTrackProcessor with the number of tracks of the multitrack, and resets all the processors.
+        /// Resets the state of the sequencer (see MIDISequencerState:Reset()) and all the processors,
+        /// sets all the tracks to MIDI out 0 and no time offset.
         void                            Reset();
         /// Returns current MIDIClockTime in MIDI ticks.
         MIDIClockTime                   GetCurrentMIDIClockTime() const
@@ -199,12 +196,12 @@ class MIDISequencer {
         /// Returns current measure (1st measure is 0).
         int                             GetCurrentMeasure() const
                                                                 { return state.cur_measure; }
-        /// Returns curremt tempo scale (1.00 = no scaling, 2.00 = twice faster, etc.).
-        double                          GetCurrentTempoScale() const
+        /// Returns current tempo scale (1.00 = no scaling, 2.00 = twice faster, etc.).
+        double                          GetTempoScale() const
                                                                 { return ((double)tempo_scale) * 0.01; }
 
         /// Returns current tempo (BPM) without scaling ( actual tempo is GetCurrentTempo() * GetCurrentTempoScale() ).
-        double                          GetCurrentTempo() const { return state.tempobpm; }
+        double                          GetTempo() const        { return state.tempobpm; }
 
         /// Returns current MIDISequencerState (i.e. the global sequencer state at current time). You can easily
         /// jump from a time to another saving and retrieving sequencer states.
@@ -223,23 +220,47 @@ class MIDISequencer {
         unsigned int                    GetNumTracks() const	{ return state.GetNumTracks(); }
         /// Returns *true* if any track is soloed.
         bool                            GetSoloMode() const     { return solo_mode; }
+        /// Returns the time offset (in MIDI ticks) assigned to track _trk_. See SetTimeOffset(),
+        /// SetTimeOffsetMode().
+        int                             GetTrackTimeOffset(int trk) const
+                                                                { return time_offsets[trk]; }
+        /// Return the number of the port assigned to track _trk_.
+        unsigned int                    GetTrackPort(int trk) const
+                                                                { return track_ports[trk]; }
+
         /// Copies the MIDISequencerState _s_ into the internal sequencer state. You can easily
         /// jump from a time to another saving and retrieving sequencer states.
         void                            SetState(MIDISequencerState* s)
                                                                 { state = *s; }
-        void                            SetCurrentTempoScale(double scale)
-                                                                { tempo_scale = (int)(scale*100); }
+        /// Set the global tempo scale (1.00 = no scaling, 2.00 = twice faster, etc.).
+        void                            SetTempoScale(double scale);
         /// Soloes/unsoloes a track
         /// \param m on/off
         /// \param trk the nunber of the track if m is true, otherwhise you can leave default value
         void                            SetSoloMode(bool m, int trk = -1);
-        /// Inserts a new empty track at position _trk_ (_trk_ must be in the range 0 ... GetNumTracks() - 1). If
-        /// _trk_ == -1 append the track at the end.
+        /// Sets the time offset (in MIDI ticks) for track _trk_. The offset can be positive or negative;
+        /// event shifted include all channel messages and sysex messages (others remain at their time).
+        /// If you select a negative offset, be sure not to have shifted events at lesser time than the
+        /// offset (they won't be shifted). See also SetTimeOffsetMode().
+        void                            SetTrackTimeOffset(int trk, int offset)
+                                                                { time_offsets[trk] = offset; }
+                                                                        // TODO: reset the iterator ?
+        /// Sets the MIDI port for track _trk_.
+        /// \note This only checks if _port_ is a valid port number (eventually normalizing it) and sets
+        /// an internal parameter, because the MidISequencer doesn't know the address of the MIDI ports.
+        /// So changing ports while the sequencer is playing could leave stuck notes. You can call
+        /// MIDIOutDriver::AllNotesOff() on the old MIDI out port before this or, better, use the
+        /// corresponding AdvancedSequencer method which does all for you.
+        void                            SetTrackPort(int trk, unsigned int port);
+        /// Inserts a new empty track with default track parameters (transpose, time offset, etc. ) at
+        /// position _trk_ (_trk_ must be in the range 0 ... GetNumTracks() - 1). If _trk_ == -1 (default)
+        /// appends the track at the end.
         /// \return *true* if the track was effectively inserted
         /// \note You shouldn't use the corresponding method of MIDIMultiTrack class, as it doesn't sync the
-        /// iterator and the track processors array. If you change the number of tracks directly in the multitrack
-        /// (for example when loading a MIDI file) you must then call MIDISequencer::Reset() for updating the sequencer,
-        /// but this resets all processors states to the default (no transposing, muting, etc...)
+        /// iterator and the sequencer internal arrays. If you change the number of tracks directly in the
+        /// multitrack (for example when loading a MIDI file) you must then call MIDISequencer::Reset() for
+        /// updating the sequencer, but this will reset all track parameters to the default (no transposing,
+        /// muting, time offset, etc...)
         bool                            InsertTrack(int trk = -1);
         /// Deletes the track _trk_ and its events. _trk_ must be in the range 0 ... GetNumTracks() - 1.
         /// \return *true* if the track was effectively deleted
@@ -282,12 +303,17 @@ class MIDISequencer {
         bool                            GetNextEvent (int *trk, MIDITimedMessage *msg);
 
         /// Converts the time_time_clk_, given in MIDi ticks, into milliseconds, taking account of tempo changes.
-        float                           MIDItoMs(MIDIClockTime time_clk);  // new : added by me
+        double                          MIDItoMs(MIDIClockTime time_clk);  // new : added by me
         /// This function is the equivalent of GoToTime(state.cur_time) and should be used to update the sequencer
         /// state after an edit in the multitrack (adding, deleting or editing events, for changes in the track
-        /// structure see InsertTrack(), DeleteTrack() and MoveTRack()). You should use this before moving time,
-        /// getting events or playing.
+        /// structure see InsertTrack(), DeleteTrack() and MoveTRack()). If you have edited the multitrack, call
+        /// this before moving time, getting events or playing.
         void                            UpdateStatus()  { GoToTime(state.cur_clock); }
+        /// Sets the time shifting of events on and off (default is off). Time shift should only be on when
+        /// playing. If you use the MIDISequencer together with a MIDIManager for playing, the manager turns
+        /// automatically on and off this, so you have no need to use this function
+        void                            SetTimeOffsetMode(bool f)
+                                                        { state.iterator.GetState().SetTimeOffsetMode(f); }
 
     protected:
 
@@ -299,6 +325,8 @@ class MIDISequencer {
         int                             tempo_scale;
         std::vector<MIDISequencerTrackProcessor*>
                                         track_processors;
+        std::vector<int>                time_offsets;
+        std::vector<unsigned int>       track_ports;
         MIDISequencerState              state;
 };
 
@@ -353,46 +381,6 @@ class MIDISequencer {
 
 namespace jdksmidi
 {
-
-
-/* NOTE BY NC: I eliminated this class because its name was somewhat confusing: it is a notifier,
-   but inherits by a MIDIProcessor and CONTAINS a notifier.
-   The class was only inherited by the MIDISequencerTrackState class and had no utility for the end user,
-   so its features are incorporated in the latter
-
-class MIDISequencerTrackNotifier : public MIDIProcessor
-{
-public:
-    MIDISequencerTrackNotifier (
-        const MIDISequencer *seq_,
-        int trk,
-        MIDISequencerGUIEventNotifier *n
-    );
-
-    virtual ~MIDISequencerTrackNotifier();
-
-    void SetNotifier (
-        const MIDISequencer *seq_,
-        int trk,
-        MIDISequencerGUIEventNotifier *n
-    )
-    {
-        seq = seq_;
-        track_num = trk;
-        notifier = n;
-    }
-
-
-    void Notify ( int item );
-    void NotifyConductor ( int item );      // NOTE by NC: this is now unneeded: could be eliminated
-
-private:
-    const MIDISequencer *seq;
-    int track_num;
-    MIDISequencerGUIEventNotifier *notifier;
-};
-*/
-
 
 
 
@@ -665,9 +653,6 @@ class MIDISequencer {
     bool GetNextEvent ( int *tracknum, MIDITimedMessage *msg );
 
 
-
-    /// Returns the total duration of the song (i.e.\ the time of last not end of track midi event)
-    double GetMisicDurationInSeconds();
 
 protected:
 

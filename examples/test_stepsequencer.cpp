@@ -39,7 +39,7 @@
 #include "test_stepsequencer.h"
 
 #include <iostream>
-#include <string>
+
 using namespace std;
 
 
@@ -129,32 +129,31 @@ unsigned char NameToValue( string s ) {
 }
 
 
-void DumpMIDIMultiTrack(MIDIMultiTrack *mlt, int trk = -1) {
-// shows the MIDIMultiTrack content
-    MIDIMultiTrackIterator iter(mlt);
+void DumpMIDIMultiTrackWithPauses (MIDIMultiTrack *mlt) {
+    MIDIMultiTrackIterator i (mlt);
     MIDITimedMessage *msg;
-    char s[200];
-    fprintf (stdout , "Clocks per beat: %d\n\n", mlt->GetClksPerBeat());
-    if (trk != -1)
-        fprintf(stdout, "Dump of track %d\n", trk);
-    iter.GoToTime (0);
-
+    int trk_num;
     int num_lines = 0;
+
+    printf ("DUMP OF MIDI MULTITRACK\n");
+    printf ("Clocks per beat: %d\n\n", mlt->GetClksPerBeat() );
+
+    i.GoToTime (0);
+
     do {
-        int trk_num;
-        if (iter.GetCurEvent (&trk_num, &msg) && (trk_num == trk || trk == -1)) {
-            fprintf (stdout, "#%2d - %6ld - ", trk_num, msg->GetTime());
-            msg->MsgToText(s);
-            fprintf (stdout, s);
-            fprintf (stdout, "\n");
+        if (i.GetCurEvent (&trk_num, &msg)) {
+            printf ("Tr %2d - ", trk_num);
+            DumpMIDITimedMessage (msg);
+            num_lines++;
         }
-        num_lines++;
-        if (num_lines == 100) {
-            system ("PAUSE");
+        if (num_lines == 80) {
+            printf ("Press <ENTER> to continue or q + <ENTER> to exit ...\n");
+            char ch = std::cin.get();
+            if (tolower(ch) == 'q')
+                return;
             num_lines = 0;
         }
-    }
-    while ( iter.GoToNextEvent());
+    } while (i.GoToNextEvent());
 }
 
 
@@ -229,8 +228,8 @@ int main(int argc, char **argv) {
             sequencer.Stop();
 
         else if (command == "dump") {               // prints a dump of the sequencer contents
-            int dump_trk =  (par1.length() == 0 ? -1 : atoi(par1.c_str()));
-            DumpMIDIMultiTrack(sequencer.GetMultiTrack(), dump_trk);
+            int dump_trk =  (par1.length() == 0 ? -1 : atoi(par1.c_str())); // TODO: reimplement dump of a single track
+            DumpMIDIMultiTrackWithPauses(sequencer.GetMultiTrack());
         }
 
         else if (command == "notify") {             // sets notifier on/off

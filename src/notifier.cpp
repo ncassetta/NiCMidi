@@ -54,25 +54,25 @@ void MIDISequencerGUINotifierText::Notify(MIDISequencerGUIEvent e) {
             sprintf (s, "TRACK %3d ", track_num);
             switch (e.GetEventItem()) {
                 case MIDISequencerGUIEvent::GROUP_TRACK_NAME:
-                    ost << s << "NAME: " << sequencer->GetState()->track_states[track_num].track_name;
+                    ost << s << "NAME: " << sequencer->GetTrackState(track_num)->track_name;
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRACK_PROGRAM:
-                    ost << s << "PROGRAM: " << sequencer->GetState()->track_states[track_num].program;
+                    ost << s << "PROGRAM: " << sequencer->GetTrackState(track_num)->program;
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRACK_NOTE:
                     ost << s << "NOTE: ";  // TODO: manage this
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRACK_VOLUME:
-                    ost << s << "VOLUME: " << sequencer->GetState()->track_states[track_num].volume;
+                    ost << s << "VOLUME: " << sequencer->GetTrackState(track_num)->control_values[C_MAIN_VOLUME];
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRACK_PAN:
-                    ost << s << "PAN: " << sequencer->GetState()->track_states[track_num].pan;
+                    ost << s << "PAN: " << sequencer->GetTrackState(track_num)->control_values[C_PAN];
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRACK_CHR:
-                    ost << s << "CHORUS: " << sequencer->GetState()->track_states[track_num].chr;
+                    ost << s << "CHORUS: " << sequencer->GetTrackState(track_num)->control_values[C_CHORUS_DEPTH];
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRACK_REV:
-                    ost << s << "REVERB: " << sequencer->GetState()->track_states[track_num].rev;
+                    ost << s << "REVERB: " << sequencer->GetTrackState(track_num)->control_values[C_EFFECT_DEPTH];
                 break;
             }
         }

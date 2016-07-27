@@ -119,62 +119,62 @@ class MIDIRawMessageQueue {
 ///
 class MIDIOutDriver {
     public:
-        /// Creates a MIDIOutDriver object sending messages to the given out port. The number of
-        /// available MIDI out ports and their names can be retrieved by the
-        /// MIDIManager::GetNumMIDIOutPorts() and MIDIManager::GetMIDIOutName() methods.
+            /// Creates a MIDIOutDriver object sending messages to the given out port. The number of
+            /// available MIDI out ports and their names can be retrieved by the
+            /// MIDIManager::GetNumMIDIOutPorts() and MIDIManager::GetMIDIOutName() methods.
             // TODO: what to do if id is not valid?
                                 MIDIOutDriver (int id);
-        /// Closes the port and deletes the object.
+            /// Closes the port and deletes the object.
         virtual                 ~MIDIOutDriver();
 
-        /// Resets the driver to default conditions:
-        /// - Hardware MIDI port closed (resets the open count)
-        /// - No extrs processor (warning: this only sets the processor pointer to 0! The driver
-        ///   doesn't own its processor).
-        /// - Thru output channel: all
+            /// Resets the driver to default conditions:
+            /// - Hardware MIDI port closed (resets the open count)
+            /// - No extrs processor (warning: this only sets the processor pointer to 0! The driver
+            ///   doesn't own its processor).
+            /// - Thru output channel: all
         virtual void            Reset();
 
-        /// Opens the MIDI out port denoted by the id number given in the ctor. This usually requires
-        /// a noticeable amount of time, so it's better not to immediately start to send messages.
-        /// The function does nothing if the port is already open.
+            /// Opens the MIDI out port denoted by the id number given in the ctor. This usually requires
+            /// a noticeable amount of time, so it's better not to immediately start to send messages.
+            /// The function does nothing if the port is already open.
         virtual void            OpenPort();
-        /// Closes the MIDI out port. The function does nothing if the port isn't open.
+            /// Closes the MIDI out port. The function does nothing if the port isn't open.
         virtual void            ClosePort();
         virtual void            ForcedClosePort();
 
-        /// Returns the id number of the MIDI out port
+            /// Returns the id number of the MIDI out port
         int                     GetPortId() const               { return port_id; }
-        /// Returns the name of the port.
+            /// Returns the name of the port.
         std::string             GetPortName()                   { return port->getPortName(port_id); }
-        /// Returns *true* is the port is open.
+            /// Returns *true* is the port is open.
         bool                    IsPortOpen() const              { return port->isPortOpen(); }
-        /// Gets the out processor.
+            /// Gets the out processor.
         MIDIProcessor*          GetOutProcessor()               { return processor; }
         const MIDIProcessor*    GetOutProcessor() const         { return processor; }
-        /// Sets the out processor. If you want to eliminate a processor already set, call it
-        /// with 0 as parameter.
+            /// Sets the out processor. If you want to eliminate a processor already set, call it
+            /// with 0 as parameter.
         virtual void            SetOutProcessor(MIDIProcessor* proc)
                                                                 { processor = proc; }
         virtual void            SetThruChannel(char chan);
         int                     GetThruChannel() const          { return (int)thru_channel; }
 
-        /// Turns off all the sounding notes on the given MIDI channel. This is normally done by
-        /// sending an All Notes Off message, but you can change this behaviour
-        /// (\see DRIVER_USES_MIDIMATRIX).
+            /// Turns off all the sounding notes on the given MIDI channel. This is normally done by
+            /// sending an All Notes Off message, but you can change this behaviour
+            /// (\see DRIVER_USES_MIDIMATRIX).
         virtual void            AllNotesOff(int chan);
-        /// Turns off all sounding notes on the port. \see  AllNotesOff(chan).
+            /// Turns off all sounding notes on the port. \see  AllNotesOff(chan).
         virtual void            AllNotesOff();
-        /// Makes a copy of the message, processes it with the out processor and then sends it to
-        /// the hardware port. If the port is busy waits 1 msec and retries until DRIVER_MAX_RETRIES
-        /// is reached.
+            /// Makes a copy of the message, processes it with the out processor and then sends it to
+            /// the hardware port. If the port is busy waits 1 msec and retries until DRIVER_MAX_RETRIES
+            /// is reached.
             // TODO: actually it writes to cerr, Should raise an exception?
         virtual void            OutputMessage(const MIDITimedMessage& msg);
-        /// This function is called internally during the MIDI thru process. The user shouldn't
-        /// call it directly.
+            /// This function is called internally during the MIDI thru process. The user shouldn't
+            /// call it directly.
         virtual void            MIDIThru(MIDITimedMessage msg);
 
     protected:
-        /// Sends the message to the hardware MIDI port
+            /// Sends the message to the hardware MIDI port
         virtual void            HardwareMsgOut(const MIDIMessage &msg);
 
         MIDIProcessor*          processor;  ///< The out processor
@@ -194,7 +194,7 @@ class MIDIOutDriver {
         MIDIMatrix              out_matrix; ///< To keep track of notes on going to MIDI out
 #endif // DRIVER_USES_MIDIMATRIX
     private:
-        /// this vector is used by HardwareMsgOut to feed the port
+            /// this vector is used by HardwareMsgOut to feed the port
         std::vector<unsigned char>      msg_bytes;
 };
 
@@ -204,81 +204,81 @@ class MIDIOutDriver {
 
 class MIDIInDriver {
     public:
-        /// Creates a MIDIInDriver object getting messages from the given in port. The number of
-        /// available MIDI in ports and their names can be retrieved by the
-        /// MIDIManager::GetNumMIDIInPorts() and MIDIManager::GetMIDIInName() methods.
-        /// The incoming MIDI messages are queued into a MIDIRawMessageQueue (i.e. the messages are
-        /// stamped with the system time in milliseconds and the port number), and you can get them
-        /// with the methods GetMessage() and PeekMessage(). The default queue size is 256.
+            /// Creates a MIDIInDriver object getting messages from the given in port. The number of
+            /// available MIDI in ports and their names can be retrieved by the
+            /// MIDIManager::GetNumMIDIInPorts() and MIDIManager::GetMIDIInName() methods.
+            /// The incoming MIDI messages are queued into a MIDIRawMessageQueue (i.e. the messages are
+            /// stamped with the system time in milliseconds and the port number), and you can get them
+            /// with the methods GetMessage() and PeekMessage(). The default queue size is 256.
                                 MIDIInDriver(int id, unsigned int queue_size = DEFAULT_QUEUE_SIZE);
-        /// Closes the port and deletes the object.
+            /// Closes the port and deletes the object.
         virtual                 ~MIDIInDriver();
-        /// Closes the port and empties the in queue.
+            /// Closes the port and empties the in queue.
         virtual void            Reset();
-        /// Opens the MIDI in port denoted by the id number given in the ctor. This usually requires
-        /// a noticeable amount of time, so it's better not to immediately start to get messages.
-        /// The function does nothing if the port is already open.
+            /// Opens the MIDI in port denoted by the id number given in the ctor. This usually requires
+            /// a noticeable amount of time, so it's better not to immediately start to get messages.
+            /// The function does nothing if the port is already open.
         virtual void            OpenPort();
-        /// Closes the open MIDI in port. The function does nothing if the port is already closed.
+            /// Closes the open MIDI in port. The function does nothing if the port is already closed.
         virtual void            ClosePort();
         virtual void            ForcedClosePort();
-        /// Returns the id number of the MIDI in port.
+            /// Returns the id number of the MIDI in port.
         int                     GetPortId() const               { return port_id; }
-        /// Returns the name of the port.
+            /// Returns the name of the port.
         std::string             GetPortName()                   { return port->getPortName(port_id); }
-        /// Returns *true* is the port is open.
+            /// Returns *true* is the port is open.
         bool                    IsPortOpen() const              { return port->isPortOpen(); }
-        /// Returns *true* if the in queue is non-empty.
+            /// Returns *true* if the in queue is non-empty.
         bool                    CanGet() const                  { return in_queue.GetLength() > 0; }
-        /// Returns the queue size.
+            /// Returns the queue size.
         unsigned int            GetQueueSize() const            { return in_queue.GetLength(); }
-        /// Locks the queue so it cannot be written by other threads (such as the Rtidi callback). You
-        /// can then safely deal with its data.
+            /// Locks the queue so it cannot be written by other threads (such as the Rtidi callback). You
+            /// can then safely deal with its data.
         void                    LockQueue()                     { in_mutex.lock(); }
-        /// Unlocks the queue.
+            /// Unlocks the queue.
         void                    UnlockQueue()                   { in_mutex.unlock(); }
-        /// Gets the in processor.
+            /// Gets the in processor.
         MIDIProcessor*          GetProcessor()                  { return processor; }
         const MIDIProcessor*    GetProcessor() const            { return processor; }
-        /// Sets the in processor. If you want to eliminate a processor already set, call it
-        /// with 0 as parameter.
+            /// Sets the in processor. If you want to eliminate a processor already set, call it
+            /// with 0 as parameter.
         virtual void            SetProcessor(MIDIProcessor* proc);
-        /// Sets the thru enable on/off and the MIDIOutDriver to which incoming messages are sent.
-        /// \param f true or false
-        /// \param driver the first time you set the thru on the out driver is undefined, so you
-        /// *must* specify a driver (otherwise the thru isn't enabled and the function return *false*).
-        /// In the subsequent calls, if you leave the default parameter, the already set driver is kept,
-        /// otherwise a new driver is set.
-        /// \return *false* only if you failed to set the MIDI thru on, *true* otherwise.
-        /// \note The MIDI thru can be managed more easily by the class MIDIManager, which has methods
-        /// involving both the in and out driver.
+            /// Sets the thru enable on/off and the MIDIOutDriver to which incoming messages are sent.
+            /// \param f true or false
+            /// \param driver the first time you set the thru on the out driver is undefined, so you
+            /// *must* specify a driver (otherwise the thru isn't enabled and the function return *false*).
+            /// In the subsequent calls, if you leave the default parameter, the already set driver is kept,
+            /// otherwise a new driver is set.
+            /// \return *false* only if you failed to set the MIDI thru on, *true* otherwise.
+            /// \note The MIDI thru can be managed more easily by the class MIDIManager, which has methods
+            /// involving both the in and out driver.
         virtual bool            SetThruEnable(bool f, MIDIOutDriver* driver = 0);
-        /// Gets the thru status.
+            /// Gets the thru status.
         bool                    GetThruEnable() const           { return thru_enable; }
-        /// Sets the MIDI thru channel. You can specify -1 for omni mode (all incoming messages are sent
-        /// to the thru out driver), otherwise you can specify a number between 0 ... 15. Other values are
-        /// ignored.
-        /// \note If you set a specific channel, all channel messages of other channels will not be sent.
-        /// If you want to rechannelize these messages to a specific out channel you must use the
-        /// MIDIOutDriver::SetThruChannel() method.
+            /// Sets the MIDI thru channel. You can specify -1 for omni mode (all incoming messages are sent
+            /// to the thru out driver), otherwise you can specify a number between 0 ... 15. Other values are
+            /// ignored.
+            /// \note If you set a specific channel, all channel messages of other channels will not be sent.
+            /// If you want to rechannelize these messages to a specific out channel you must use the
+            /// MIDIOutDriver::SetThruChannel() method.
         virtual void            SetThruChannel(char chan);
-        /// Returns the MIDI thru channel. If it is -1 the driver sends to the out all incoming messages,
-        /// otherwise it discards all channel messages with a different channel.
+            /// Returns the MIDI thru channel. If it is -1 the driver sends to the out all incoming messages,
+            /// otherwise it discards all channel messages with a different channel.
         int                     GetThruChannel() const          { return (int)thru_channel; }
-        /// Gets the next message in the queue, copying it into _msg_ (the message is deleted from
-        /// the queue). Returns *true* if the queue was not empty (and _msg_ is valid), otherwiae *false*.
+            /// Gets the next message in the queue, copying it into _msg_ (the message is deleted from
+            /// the queue). Returns *true* if the queue was not empty (and _msg_ is valid), otherwiae *false*.
         virtual bool            InputMessage(MIDIRawMessage& msg);
-        /// Gets the n-th message in the queue without deleting it (so the message remains
-        /// available for other purposes). Returns *true* if such a message really exists in the queue
-        /// (and _msg_ is valid), otherwiae *false*.
+            /// Gets the n-th message in the queue without deleting it (so the message remains
+            /// available for other purposes). Returns *true* if such a message really exists in the queue
+            /// (and _msg_ is valid), otherwiae *false*.
         virtual bool            PeekMessage(MIDIRawMessage& msg, unsigned int n);
 
-        /// This is the default queue size.
+            /// This is the default queue size.
         static const unsigned int       DEFAULT_QUEUE_SIZE = 256;
 
 protected:
 
-        /// This is the RtMidi callback function (you must not call it directly)
+            /// This is the RtMidi callback function (you must not call it directly)
         static void             HardwareMsgIn(double time,
                                               std::vector<unsigned char>* msg_bytes,
                                               void* p);

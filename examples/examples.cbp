@@ -50,7 +50,6 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-std=c++11" />
-			<Add directory="../jdk" />
 		</Compiler>
 		<Linker>
 			<Add library="../lib/libmyjdkmidi_d.a" />

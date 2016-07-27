@@ -80,7 +80,7 @@ class MIDIMultiProcessor : public MIDIProcessor {
 
         virtual bool                    Process(MIDITimedMessage *msg);
 
-        enum { IGNORE, CONTINUE, STOP };
+        enum { MODE_IGNORE, MODE_CONTINUE, MODE_STOP };
 
     private:
         std::vector<MIDIProcessor*>     processors;

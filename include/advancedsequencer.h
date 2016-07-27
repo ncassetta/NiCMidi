@@ -30,124 +30,112 @@ class AdvancedSequencer {
                             AdvancedSequencer(MIDIManager* mg);
         virtual             ~AdvancedSequencer();
 
-        void                SetOutputPort( int p);
-        int                 GetOutputPort() const           { return out_port; }
-        void                SetInputPort( int p);
-        int                 GetInputPort() const            { return in_port; }
 
+        void                SetMIDIThruPort(int port);
+        int                 GetMIDIThruPort() const         { return mgr->GetThruInPort(); }
         void                SetMIDIThruEnable (bool f)      { mgr->SetThruEnable (f); };
         bool                GetMIDIThruEnable() const       { return mgr->GetThruEnable(); };
         void                SetMIDIThruChannel (int chan);
         int                 GetMIDIThruChannel() const      { return thru_rechannelizer.GetRechanMap(0); };
-        void                SetMIDIThruTranspose (int val);
+        void                SetMIDIThruTranspose (int amt);
         int                 GetMIDIThruTranspose() const    { return thru_transposer.GetTransposeChannel(0); };
 
         bool                Load(const char *fname);
-        void                UnLoad(void);
-        void                Reset(void);
-        bool                IsLoaded(void) const            { return file_loaded; };
+        void                UnLoad();
+        void                Reset();
+        bool                IsLoaded() const                { return file_loaded; };
 
-        MIDIMultiTrack*     GetMultiTrack()                 { return tracks; }
-        const MIDIMultiTrack* GetMUltiTrack() const         { return tracks; }
+        MIDIMultiTrack*     GetMultiTrack()                 { return multitrack; }
+        const MIDIMultiTrack* GetMultiTrack() const         { return multitrack; }
 
-        void                GoToZero();
+        void                GoToZero()                      { GoToTime(0); }
         void                GoToMeasure(int measure, int beat = 0);
         void                GoToTime(MIDIClockTime t);
 
         void                Play();
         void                Stop();
-        void                OutputMessage(MIDITimedMessage& msg);       // TODO: MIDIMessage ???
-        void                SetRepeatPlay(bool enable, int start_measure, int end_measure);
-        bool                GetRepeatPlay() const           { return repeat_play_mode; }
-        int                 GetRepeatPlayStart() const      { return repeat_start_measure; }
-        int                 GetRepeatPlayEnd() const        { return repeat_end_measure; }
-        bool                IsPlay() const                  { return mgr->IsSeqPlay(); };
+        void                OutputMessage(MIDITimedMessage& msg, unsigned int port);
+
+        void                SetRepeatPlay(bool f, int start_measure, int end_measure);
+        bool                GetRepeatPlay() const           { return mgr->GetRepeatPlay(); }
+        int                 GetRepeatPlayStart() const      { return mgr->GetRepeatPlayStart(); }
+        int                 GetRepeatPlayEnd() const        { return mgr->GetRepeatPlayEnd(); }
+        bool                IsPlaying() const               { return mgr->IsSeqPlay(); };
 
         void                SoloTrack(int trk);
-        void                UnSoloTrack(void);
-        bool                GetTrackSolo(int trk)           { return seq->GetTrackProcessor (trk)->solo; }
+        void                UnSoloTrack();
+        bool                GetTrackSolo(int trk) const     { return seq->GetTrackProcessor (trk)->solo; }
         void                SetTrackMute(int trk, bool f);
-        bool                GetTrackMute (int trk)          { return seq->GetTrackProcessor (trk)->mute; }
+        bool                GetTrackMute (int trk) const    { return seq->GetTrackProcessor (trk)->mute; }
         void                UnmuteAllTracks(void);
-        void                SetTempoScale(double scale)
-                                    { if (file_loaded) seq->SetCurrentTempoScale( (float)scale); }
-        double              GetTempoWithoutScale(void) const
-                                    { return seq->GetCurrentTempo(); }
-        double              GetTempoWithScale(void) const
-                                    { return seq->GetCurrentTempo() * seq->GetCurrentTempoScale(); }
+        void                SetTempoScale(double scale);
+        double              GetTempoWithoutScale(void) const    { return seq->GetTempo(); }
+        double              GetTempoWithScale(void) const   { return seq->GetTempo() * seq->GetTempoScale(); }
 
         /// Returns 'now' MIDI clock time.
         /// It is effective even during playback
-        MIDIClockTime       GetCurrentMIDIClockTime() const; /* NEW BY NC */
+        MIDIClockTime       GetCurrentMIDIClockTime() const;
 
         /// Returns 'now' time in milliseconds.
         /// When playing or jumping from one time to another, you can use this to feed a SMPTE
-        tMsecs              GetCurrentTimeInMs() const; /* NEW BY NC */
+        tMsecs              GetCurrentTimeInMs() const;
 
         /// Set MIDI ticks per beat (quarter note).
         /// \return **true** if clocks per beat are effectively changed
         /// \note  Currently the user is allowed to change this only when the sequencer is empty; default value is
         /// 120 clocks per quarter beat. However, LoadFile() can change this according to the file clock, and Unload()
         /// resets it to 120
-        bool                SetClksPerBeat ( unsigned int cpb );
+        //bool                SetClksPerBeat ( unsigned int cpb );
 
-        /// Returns the base MIDI ticks per beat of the internal MIDIMultiTrack
-        int                 GetClksPerBeat() const  /* NEW BY NC */
-                                    { return tracks->GetClksPerBeat(); }
+        /// Returns the base MIDI ticks per beat of the internal MIDIMultiTrack. Default value is 120 clocks per
+        /// quarter beat. However, LoadFile() can change this according to the file clock, and Unload()
+        /// resets it to 120.
+        int                 GetClksPerBeat() const              { return multitrack->GetClksPerBeat(); }
 
         /// Returns the number of tracks of the sequencer
-        int GetNumTracks() const
-        /* NOTE BY NC: actually this always returns 17, the number of tracks of the MIDIMultiTrack
-        * TODO: modify the MIDIMultiTrack class to keep track of tracks actually used and implement
-        * a function GetUsedTracks()
-        */
-                                    { return seq->GetNumTracks(); }
-
+        int                 GetNumTracks() const                { return seq->GetNumTracks(); }
 
         int                 GetNumMeasures() const              { return num_measures; }
-        int                 GetMeasure() const;
-        int                 GetBeat() const;
+        int                 GetCurrentMeasure() const;
+        int                 GetCurrentBeat() const;
         int                 GetTimeSigNumerator() const;
         int                 GetTimeSigDenominator() const;
         int                 GetKeySigSharpFlat() const;
         int                 GetKeySigMode() const;
+
+        void                SetTrackOutPort(int trk, unsigned int port);
+        int                 GetTrackOutPort(int trk) const    { return seq->GetTrackPort(trk); }
+
         int                 GetTrackNoteCount(int trk) const;
         std::string         GetTrackName(int trk) const;
         int                 GetTrackVolume(int trk) const;
+
         int                 GetTrackProgram ( int trk ) const;
         void                SetTrackVelocityScale(int trk, double scale);
         double              GetTrackVelocityScale(int trk) const;
         void                SetTrackRechannelize(int trk, int chan);
         int                 GetTrackRechannelize(int trk) const;
+        int                 GetTrackChannel(int trk) const;
         void                SetTrackTranspose(int trk, int trans);
         int                 GetTrackTranspose(int trk) const;
+        void                SetTrackTimeOffset(int trk, int time);
+        int                 GetTrackTimeOffset(int trk) const;
         std::string         GetCurrentMarker() const;
 
-        int                 FindFirstChannelOnTrack(int trk);
         void                SetChanged();
         // new : added by me
-        float               MIDItoMs(MIDIClockTime t) { return seq->MIDItoMs(t); }
+        double               MIDItoMs(MIDIClockTime t) { return seq->MIDItoMs(t); }
 
     protected:
 
         static const int                    MEASURES_PER_WARP = 4;
-        //static const int                    DEFAULT_CLK_PER_BEAT = 120;
 
-
-
-        /*
-        bool                                OpenMIDI ( int in_port, int out_port,
-                                                       int timer_resolution = MIDIManager::DEFAULT_TIMER_RESOLUTION );
-        void                                CloseMIDI();
-        */
-
-
-        void                                ExtractWarpPositions(void);
-        void                                CatchEventsBefore(void);
+        void                                ExtractWarpPositions();
+        void                                CatchEventsBefore();
         void                                CatchEventsBefore(int trk);
 
         MIDISequencerGUINotifier*           notifier;
-        MIDIMultiTrack*                     tracks;
+        MIDIMultiTrack*                     multitrack;
         MIDISequencer*                      seq;
         MIDIManager*                        mgr;
 
@@ -156,22 +144,14 @@ class AdvancedSequencer {
         MIDIProcessorRechannelizer          thru_rechannelizer;
 
         int                                 num_measures;
-        int                                 repeat_start_measure;
-        int                                 repeat_end_measure;
-        bool                                repeat_play_mode;
         bool                                file_loaded;
 
         std::vector<MIDISequencerState>     warp_positions;
-    /* NOTE by NC: I realized that in an editing contest an array of pointers wasted much time
-     * allocating and deallocating memory: so it's now a vector of objects
-     */
-
-        int                                 in_port;
-        int                                 out_port;
 
 private:
-    enum { CTOR_1, CTOR_2, CTOR_3 };
-    int ctor_type;
+
+        enum { CTOR_1, CTOR_2, CTOR_3 };
+        int ctor_type;
 };
 
 #endif // JDKSMIDI_ADVANCEDSEQUENCER_H

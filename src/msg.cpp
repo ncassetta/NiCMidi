@@ -257,8 +257,8 @@ char MIDIMessage::GetLength() const {
 }
 
 
-float MIDIMessage::GetTempo() const {
-    float tempo_bpm = 60.0 * 1.0e6 / GetInternalTempo();
+double MIDIMessage::GetTempo() const {
+    double tempo_bpm = 60.0 * 1.0e6 / GetInternalTempo();
     return tempo_bpm;
 }
 
@@ -433,7 +433,7 @@ void MIDIMessage::SetText(const char* text, unsigned char type) {
 }
 
 
-void MIDIMessage::SetTempo(float tempo_bpm) {
+void MIDIMessage::SetTempo(double tempo_bpm) {
     SetMetaEvent(META_TEMPO, 0);
     AllocateSysEx(3);
     unsigned long microsecs_per_beat = (unsigned long)(60.0 * 1.0e6 / tempo_bpm);

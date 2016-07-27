@@ -63,9 +63,9 @@ bool MIDIMultiProcessor::Process(MIDITimedMessage *msg) {
     bool ret = true;
     for(unsigned int i = 0; i < processors.size(); ++i)
         if(processors[i]->Process(msg) == false) {
-            if (process_mode != IGNORE)
+            if (process_mode != MODE_IGNORE)
                 ret = false;
-            if (process_mode == STOP)
+            if (process_mode == MODE_STOP)
                 break;
         }
     return ret;

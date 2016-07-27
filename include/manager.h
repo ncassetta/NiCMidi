@@ -29,12 +29,12 @@
 
 #include "msg.h"
 #include "driver.h"
+#include "notifier.h"
 #include "sequencer.h"
 #include "timer.h"
 
 
 #include <vector>
-
 
 
 
@@ -58,8 +58,8 @@ public:
     void                        Reset();
 
         // to set and get the open and close ports policy
-    void                        SetOpenPolicy(int p)            { open_policy = p; }
-    int                         GetOpenpolicy() const           { return open_policy; }
+    //void                        SetOpenPolicy(int p)            { open_policy = p; }
+    //int                         GetOpenpolicy() const           { return open_policy; }
 
         // to get the MIDI in and out ports
     static int                  GetNumMIDIOuts()                { return MIDI_out_names.size(); }
@@ -88,13 +88,13 @@ public:
     void                        SetSequencer(MIDISequencer *seq);
     MIDISequencer*              GetSequencer()                  { return sequencer; }
     const MIDISequencer*        GetSequencer() const            { return sequencer; }
+    void                        SetAutoSeqOpen(bool f)          { auto_seq_open = f;}
+    bool                        GetAutoSeqOpen() const          { return auto_seq_open; }
+
         // to manage the playback of the sequencer
     void                        SeqPlay();
     void                        SeqStop();
-    void                        SetRepeatPlay( bool on_off, unsigned int start_measure, unsigned int end_measure );
-        // status request functions
     bool                        IsSeqPlay() const       { return play_mode; }
-    bool                        IsSeqRepeat() const     { return repeat_play_mode && play_mode; }
 
        // To set and get the MIDI thru
     bool                        SetThruEnable(bool f);
@@ -106,14 +106,17 @@ public:
     int                         GetThruOutPort() const                  { return thru_output; }
     int                         GetThruOutChannel() const               { return MIDI_outs[thru_output]->GetThruChannel(); }
 
+    void                        SetRepeatPlay( bool on_off, unsigned int start_measure, unsigned int end_measure );
+    bool                        GetRepeatPlay() const           { return repeat_play_mode; }
+    int                         GetRepeatPlayStart() const      { return repeat_start_measure; }
+    int                         GetRepeatPlayEnd() const        { return repeat_end_measure; }
+
     void                        AllNotesOff();
 
 
 
     /// This is the main tick procedure
     static void                 TickProc(tMsecs sys_time_, void* p);
-
-    enum { AUTO_OPEN, EXT_OPEN };
 
 protected:
 
@@ -143,7 +146,7 @@ protected:
     long                        repeat_start_measure;
     long                        repeat_end_measure;
 
-    int                         open_policy;
+    bool                        auto_seq_open;
 };
 
 

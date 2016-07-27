@@ -129,7 +129,7 @@ class 	MIDIMessage {
         /// major/minor flag. 0 means a major key, 1 means a minor key.
         unsigned char           GetKeySigMajorMinor() const { return byte3; }
         /// If the message is a tempo change meta-message, returns the tempo value in bpm
-        float	                GetTempo() const;
+        double	                GetTempo() const;
         /// If the message is a tempo change meta-message, returns the internal 3 bytes value stored in the message
         /// (the number of microseconds per quarter note).
         unsigned long           GetInternalTempo() const;
@@ -323,7 +323,7 @@ class 	MIDIMessage {
         void	                SetDataEnd()                        { SetMetaEvent(META_END_OF_TRACK, 0); }
         /// Makes the message a tempo change meta-message with given tempo (in bpm). The tempo is stored in the
         /// sysex object as a 3 byte value according to the MIDIfile format. The eventual old pointer is freed.
-        void	                SetTempo(float tempo_bpm);
+        void	                SetTempo(double tempo_bpm);
         /// Makes the message a SMPTE offset meta-message with given data. The bytes are stored in the
         /// sysex object.(the eventual old pointer is freed).
         void                    SetSMPTEOffset(unsigned char hour, unsigned char min, unsigned char sec,

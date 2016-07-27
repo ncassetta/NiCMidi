@@ -201,7 +201,7 @@
         /// This meta event denotes a tempo change and has a length of 3 bytes.
         /// The data is a 3-byte integer, the number of microseconds for a quarter
         /// note. The MIDIMessage::GetTempo() method converts it into the usual
-        /// bpm value (a float).
+        /// bpm value (a double).
     META_TEMPO                = 0x51,
         /// This meta event specifies the initial SMPTE offset of the beginning of playback. It
         /// has 5 data bytes (stored in the sysex object) which denote hours, minutes, second

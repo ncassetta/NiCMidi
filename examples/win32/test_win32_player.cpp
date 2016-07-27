@@ -299,11 +299,11 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             }
 
             if (LOWORD(wParam) == 5) {      // Step backward
-                sequencer->GoToMeasure(sequencer->GetMeasure() - 1);
+                sequencer->GoToMeasure(sequencer->GetCurrentMeasure() - 1);
             }
 
             if (LOWORD(wParam) == 6) {      // Step forward
-                sequencer->GoToMeasure(sequencer->GetMeasure() + 1);
+                sequencer->GoToMeasure(sequencer->GetCurrentMeasure() + 1);
             }
             break;
 
@@ -375,7 +375,7 @@ VOID SetControls() {
     SetWindowText( hTime, s );
     sprintf (s, "%3.2f", sequencer->GetTempoWithoutScale());
     SetWindowText ( hTempo, s );
-    sprintf (s, "%d:%d", sequencer->GetMeasure()+1, sequencer->GetBeat()+1);
+    sprintf (s, "%d:%d", sequencer->GetCurrentMeasure()+1, sequencer->GetCurrentBeat()+1);
     SetWindowText ( hMeas, s );
     SetWindowText ( hSmpte, GetSmpteString());
     if ( sequencer->GetCurrentMarker().length() == 0) {
@@ -389,19 +389,19 @@ VOID SetControls() {
     int i = 0;
     for (; i < sequencer->GetNumTracks() - 1; i++) {
 
-        if ( sequencer->GetTrackName(i+1).length() ) {
+        if ( sequencer->GetTrackName(i + 1).length() ) {
             SetWindowText (hTrackNames[i], sequencer->GetTrackName (i+1).c_str());
         }
         else {
-            sprintf(s, "(track %d)", i+1);
+            sprintf(s, "(track %d)", i + 1);
             SetWindowText (hTrackNames[i], s);
         }
 
-        if (sequencer->FindFirstChannelOnTrack(i+1) == -1) {    // there aren't channel events or the track is empty
+        if (sequencer->GetTrackChannel(i + 1) == -1) {    // there aren't channel events or the track is empty
             SetWindowText (hTrackChans[i], "---" );
         }
         else {
-            sprintf(s, "ch: %d", sequencer->FindFirstChannelOnTrack(i+1) + 1);
+            sprintf(s, "ch: %d", sequencer->GetTrackChannel(i + 1) + 1);
             SetWindowText(hTrackChans[i], s);
         }
 
@@ -409,15 +409,20 @@ VOID SetControls() {
             SetWindowText(hTrackPrgrs[i], "---");
         }
         else {
-            if (sequencer->FindFirstChannelOnTrack(i+1) == 9) { // channel 10
+            if (sequencer->GetTrackChannel(i + 1) == 9) { // channel 10
                 SetWindowText(hTrackPrgrs[i], GMDrumKits[sequencer->GetTrackProgram(i+1)]);
             }
             else {
                 SetWindowText(hTrackPrgrs[i], GMpatches[sequencer->GetTrackProgram(i+1)]);
             }
         }
-        sprintf (s, "vol: %d", sequencer->GetTrackVolume(i+1) );
-        SetWindowText(hTrackVols[i], s);
+        if (sequencer->GetTrackVolume(i + 1) == -1) {
+            SetWindowText(hTrackVols[i], "vol: ---");
+        }
+        else {
+            sprintf (s, "vol: %d", sequencer->GetTrackVolume(i + 1));
+            SetWindowText(hTrackVols[i], s);
+        }
     }
 
     for ( ; i < 17; i++) {      // blanks unused widgets
@@ -466,7 +471,7 @@ const char* GetSmpteString() {
     switch (ev.GetEventGroup()) {
 
         case MIDISequencerGUIEvent::GROUP_ALL:
-        // This is a general GUI reset event: update all rextboxes
+        // This is a general GUI reset event: update all textboxes
 
             SetControls();
             break;
@@ -502,7 +507,7 @@ const char* GetSmpteString() {
         // beat events to update the meas - beat box
 
             if (ev.GetEventItem() == MIDISequencerGUIEvent::GROUP_TRANSPORT_BEAT) {
-                sprintf (s, "%d:%d", sequencer->GetMeasure()+1, sequencer->GetBeat()+1);
+                sprintf (s, "%d:%d", sequencer->GetCurrentMeasure() + 1, sequencer->GetCurrentBeat() + 1);
                 SetWindowText ( hMeas, s );
             }
             break;
@@ -513,7 +518,7 @@ const char* GetSmpteString() {
             int track = ev.GetEventSubGroup();
             if (ev.GetEventItem() == MIDISequencerGUIEvent::GROUP_TRACK_PROGRAM) {
                 if (track > 0) {
-                    if (sequencer->FindFirstChannelOnTrack(track) == 9) {   // channel 10
+                    if (sequencer->GetTrackChannel(track) == 9) {   // channel 10
                         SetWindowText( hTrackPrgrs[track-1], GMDrumKits[sequencer->GetTrackProgram( track )] );
                     }
                     else {

@@ -109,7 +109,7 @@ void MIDIOutDriver::OpenPort() {
     }
     num_open++;
 
-    std::cout << "Port " << port->getPortName() << " open";
+    std::cout << "Port " << port->getPortName(port_id) << " open";
     if (num_open > 1)
         std::cout << " (" << num_open << " times)";
     std::cout<< std::endl;
@@ -121,9 +121,9 @@ void MIDIOutDriver::ClosePort() {
         port->closePort();
     if (num_open > 0) {
         num_open--;
-        std::cout << "Port " << port->getPortName() << " closed";
+        std::cout << "Port " << port->getPortName(port_id) << " closed";
         if (num_open > 0)
-            std::cout << " (" << num_open << " times)";
+            std::cout << " (open " << num_open << " times)";
         std::cout << std::endl;
     }
     else
@@ -206,7 +206,7 @@ void MIDIOutDriver::OutputMessage(const MIDITimedMessage& msg) {    // MIDITimed
             HardwareMsgOut(msg_copy);
             break;
         }
-        std::cerr << "busy driver ... " << std::endl;
+        std::cerr << "busy driver (" << (i + 1) << ") ... " << std::endl;
         MIDITimer::Wait(1);
     }
     if (i == 100)

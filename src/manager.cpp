@@ -52,9 +52,9 @@ MIDIManager::MIDIManager(MIDISequencerGUINotifier *n, MIDISequencer *seq_) :
 
     repeat_play_mode(false),
     repeat_start_measure(0),
-    repeat_end_measure(0),
+    repeat_end_measure(0)
 
-    open_policy(AUTO_OPEN)
+    //open_policy(AUTO_OPEN)
 
 {
 #ifdef WIN32    //TODO: this is temporary, needed by WIstd::atomic<unsigned char> busy;        // TODO: use the mutex???NDOWS10
@@ -99,9 +99,7 @@ void MIDIManager::Reset() { // doesn't reset open_policy
     SeqStop();
     sys_time_offset = 0;
     seq_time_offset = 0;
-
     thru_enable = false;
-
     repeat_play_mode = false;
     repeat_start_measure = 0;
     repeat_end_measure = 0;
@@ -126,29 +124,30 @@ void MIDIManager::SetSequencer (MIDISequencer *seq) {
 
 void MIDIManager::OpenOutPorts() {
     for (unsigned int i = 0; i < MIDI_outs.size(); i++)
-        if (!MIDI_outs[i]->IsPortOpen())
-            MIDI_outs[i]->OpenPort();
+        MIDI_outs[i]->OpenPort();
 }
 
 
 void MIDIManager::CloseOutPorts() {
     for (unsigned int i = 0; i < MIDI_outs.size(); i++)
-        if (MIDI_outs[i]->IsPortOpen())
-            MIDI_outs[i]->ClosePort();
+        MIDI_outs[i]->ClosePort();
 }
 
 
 // to manage the playback of the sequencer
+// You can call this even if sequencer is already playing: it will adjust
+// seq_time_offset and sys_time_offset (it is done by AdvancedSequencer::SetTempoScale())
 void MIDIManager::SeqPlay() {
     if (sequencer) {
 
         std::cout << "The MIDIManager is starting the sequencer ..." << std::endl;
 
-        OpenOutPorts();
+        if (auto_seq_open)
+            OpenOutPorts();
 
         seq_time_offset = (unsigned long) sequencer->GetCurrentTimeInMs();
         sys_time_offset = timer->GetSysTimeMs();
-        //stop_mode = false;
+        sequencer->SetTimeOffsetMode(true);
         play_mode = true;
         timer->Start();
 
@@ -167,7 +166,10 @@ void MIDIManager::SeqStop() {
     if (sequencer && play_mode == true) {
         timer->Stop();
         play_mode = false;
-        //stop_mode = true;
+        sequencer->SetTimeOffsetMode(false);
+        AllNotesOff();
+        if (auto_seq_open)
+            CloseOutPorts();
 
         if (notifier) {
             notifier->Notify ( MIDISequencerGUIEvent (
@@ -176,22 +178,9 @@ void MIDIManager::SeqStop() {
                                    MIDISequencerGUIEvent::GROUP_TRANSPORT_MODE
                                ) );
         }
-        if (open_policy == AUTO_OPEN)
-            CloseOutPorts();
 
         std::cout << "The MidiManager has stopped the sequencer" << std::endl;
     }
-}
-
-
-// to manage the repeat playback of the sequencer
-void MIDIManager::SetRepeatPlay ( bool on_off, unsigned int start_measure, unsigned int end_measure ) {
-        // shut off repeat play while we muck with values
-    repeat_play_mode = false;
-    repeat_start_measure = start_measure;
-    repeat_end_measure = end_measure;
-        // set repeat mode flag to how we want it.
-    repeat_play_mode = on_off;
 }
 
 
@@ -215,8 +204,7 @@ bool MIDIManager::SetThruEnable(bool f) {
     return ret;
 }
 
-// TODO: rearrange this to avoid closing and reopening same ports
-// (for now leave. it gave errors)
+
 bool MIDIManager::SetThruPorts(unsigned int in_port, unsigned int out_port) {
     if (in_port >= MIDI_ins.size() || out_port >= MIDI_outs.size())
         return false;                               // invalid port number: the function fails
@@ -277,6 +265,17 @@ void MIDIManager::SetThruChannels(char in_chan, char out_chan) {
         MIDI_ins[thru_input]->SetThruChannel(in_chan);
     if (out_chan != MIDI_outs[thru_output]->GetThruChannel())
         MIDI_outs[thru_output]->SetThruChannel(out_chan);
+}
+
+
+// to manage the repeat playback of the sequencer
+void MIDIManager::SetRepeatPlay ( bool on_off, unsigned int start_measure, unsigned int end_measure ) {
+        // shut off repeat play while we muck with values
+    repeat_play_mode = false;
+    repeat_start_measure = start_measure;
+    repeat_end_measure = end_measure;
+        // set repeat mode flag to how we want it.
+    repeat_play_mode = on_off;
 }
 
 
@@ -453,7 +452,7 @@ void MIDIManager::SequencerPlayProc( tMsecs sys_time_ )
            !ev.IsMetaEvent()) {
 
             // ok, tell the driver the send this message now
-            MIDI_outs[0]->OutputMessage(ev);
+            MIDI_outs[sequencer->GetTrackPort(ev_track)]->OutputMessage(ev);
         }
     }
 
