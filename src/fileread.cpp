@@ -40,7 +40,6 @@
 ** see header for changes against jdksmidi
 */
 
-#include "../include/world.h"
 #include "../include/fileread.h"
 
 #include <iostream>     // only for debug! TODO: delete this after debug
@@ -230,7 +229,8 @@ int MIDIFileReader::ReadMT(unsigned long type, int skip) {
     unsigned long read = 0;
     int c;
 
-    read = OSTYPE(EGetC(), EGetC(), EGetC(), EGetC());
+    read = EGetC()*0x1000000 + EGetC()*0x10000 + EGetC()*0x100 + EGetC();
+
     if(type != read) {
         if(skip) {
             do {

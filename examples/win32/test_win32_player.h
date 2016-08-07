@@ -310,5 +310,7 @@ VOID ProcessNotifierMessage(MIDISequencerGUIEvent msg);
 VOID LoadFile();
 VOID SetControls();
 const char* GetSmpteString();
+VOID SetMIDIActivity();
+VOID ResetDelays();
 
 #endif // TEST_WIN32_H_INCLUDED

@@ -23,18 +23,19 @@
 #ifndef MIDI_MULTITRACK_H
 #define MIDI_MULTITRACK_H
 
-//#include "world.h"
 #include "track.h"
 
 #include <vector>
 
+
+static const int DEFAULT_CLKS_PER_BEAT = 120;
 
 class MIDIEditMultiTrack;
 
 
 ///
 /// This class holds an array of pointers to MIDITrack objects to be played simultaneously. Every track contains
-/// MIDITimedBigMessage objects representing MIDI events, and all tracks share the same timing (i.e. the events are
+/// MIDITimedMessage objects representing MIDI events, and all tracks share the same timing (i.e. the events are
 /// temporized according to the same MIDI clock per beat). Tipically track 0 is the master track and contains only
 /// non-channel MIDI events (time, tempo, markers ...) while  other tracks contain the channel events. The
 /// MIDIMultiTrack object owns its tracks, so deleting it frees them also. You need to embed this into a MIDISequencer
@@ -46,79 +47,81 @@ class MIDIMultiTrack {
     public:
         /// The constructor creates an object with given number of tracks (default no track) and base MIDI clocks
         /// per beat. Created tracks are initially empty (contain only the EOT message at time 0).
-                                    MIDIMultiTrack(unsigned int number_of_tracks = 0,
+                                    MIDIMultiTrack(unsigned int num_tracks = 0,
                                                    unsigned int cl_p_b = DEFAULT_CLKS_PER_BEAT);
 
+        /// The copy constructor
+                                    MIDIMultiTrack(const MIDIMultiTrack& mlt);
         /// The destructor frees the track pointers.
         virtual	                    ~MIDIMultiTrack();
 
+        /// The equal operator
+        MIDIMultiTrack&             operator=(const MIDIMultiTrack& mlt);
+
         /// Changes the value of the clock per beat parameter for the tracks, updating the times of all MIDI
-        /// events. This may lead to loss in precision or rounding error if the new _clocks_p_b
+        /// events. This may lead to loss in precision or rounding error if the new clocks per beat
         /// is not a multiple of the old, so it's better to call this function before inserting any event in
         /// the multitrack.
         void                        SetClksPerBeat(unsigned int cl_p_b);
         /// Returns the MIDI clocks per beat of all tracks (i.e.\ the number of MIDI ticks in a quarter note).
         unsigned int                GetClksPerBeat() const          { return clks_per_beat; }
-            /// Returns a pointer to the track _track_num_
+        /// Returns a pointer to the track _track_num_.
         MIDITrack*                  GetTrack(int trk)               { return tracks[trk]; }
         const MIDITrack*            GetTrack(int trk) const         { return tracks[trk]; }
-            /// Returns the number of allocated tracks.
+        /// Returns the number of allocated tracks.
         unsigned int	            GetNumTracks() const			{ return tracks.size(); }
-            /// Returns the number of tracks with events (other than End of Track).
+        /// Returns the number of tracks with events (other than EOT).
         unsigned int                GetNumTracksWithEvents() const;
-            /// Gets the total number of MIDI events in the multitrack (for every track there is at least the End of
-            /// Track). If you want to know if the MIDIMultiTrack is empty, use GetNumTracksWithEvents() instead.
+        /// Gets the total number of MIDI events in the multitrack (for every track there is at least the EOT).
+        /// If you want to know if the MIDIMultiTrack is empty, use GetNumTracksWithEvents() instead.
         unsigned int                GetNumEvents() const;
-            /// Returns *true* if _n_ is in thee range 0 ... GetNumTracks() - 1.
+        /// Returns *true* if _n_ is in thee range 0 ... GetNumTracks() - 1.
         bool                        IsValidTrackNumber(int trk) const
                                                                     { return (0 <= trk && (unsigned)trk < tracks.size()); }
-            /// Returns the end time of the longest track.
+        /// Returns the end time of the longest track.
         MIDIClockTime               GetEndTime() const;
-            /// Deletes all tracks leaving the multitrack empty.
+        /// Deletes all tracks leaving the multitrack empty.
         void                        Clear();
-            /// Clears all content in the Multitrack and resize it to the given number of tracks
+        /// Clears all content in the Multitrack and resize it to the given number of tracks
         void                        ClearAndResize(unsigned int num_tracks);
-            /// Clears tracks events but mantains the tracks (leaves only the EOT). If _mantain_end_ is *true*
-            /// doesn't change the time of EOT events, otherwise sets them to 0.
+        /// Clears tracks events but mantains the tracks (leaves only the EOT). If _mantain_end_ is *true*
+        /// doesn't change the time of EOT events, otherwise sets them to 0.
         void                        ClearTracks(bool mantain_end = false);
 
-            /// This function is useful in dealing with MIDI format 0 files (with all events in an unique track).
-            /// It remakes the MIDIMultiTrack object with 17 tracks (_src_ track can be a member of multitrack obiect
-            /// himself), moves _src_ track channel events to tracks 1-16 according their channel, and all other types
-            /// of events to track 0.
-        void                        AssignEventsToTracks ( const MIDITrack *src );
-
-            /// The same as previous, but argument is track number of multitrack object himself
+        /// This function is useful in dealing with MIDI format 0 files (with all events in an unique track).
+        /// It remakes the MIDIMultiTrack object with 17 tracks (_src_ track can be a member of multitrack obiect
+        /// himself), moves _src_ track channel events to tracks 1-16 according their channel, and all other types
+        /// of events to track 0. This is automatically done when loading a MIDI format 0 file.
+        void                        AssignEventsToTracks (const MIDITrack *src);
+        /// The same as previous, but argument is track number of multitrack object himself
         void                        AssignEventsToTracks (int trk = 0)
                                             { return AssignEventsToTracks(GetTrack(trk)); }
+        /// Finds the channel of the first MIDIchannel event in the track. This is probably the channel of all
+        /// other channel events.
+        /// \return -1 if the track is empty or doesn't contain channel events (the main track, for example).
+        /// Otherwise the channel range is 0 ... 15.
         int                         FindFirstChannelOnTrack(int trk) const;
-            /// Inserts a new empty track at position _trk_ (_trk_ must be in the range 0 ... GetNumTracks() - 1). If
-            /// _trk_ == -1 append the track at the end.
-            /// \return *true* if the track was effectively inserted
+        /// Inserts a new empty track at position _trk_ (_trk_ must be in the range 0 ... GetNumTracks() - 1). If
+        /// _trk_ == -1 appends the track at the end.
+        /// \return *true* if the track was effectively inserted
         bool                        InsertTrack(int trk = -1);
-
-            /// Deletes the track _trk_ and its events. _trk_ must be in the range 0 ... GetNumTracks() - 1.
-            /// \return *true* if the track was effectively deleted
+        /// Deletes the track _trk_ and its events. _trk_ must be in the range 0 ... GetNumTracks() - 1.
+        /// \return *true* if the track was effectively deleted
         bool                        DeleteTrack(int trk);
-
-            /// Moves a track from the position _from_ to the position _to_. ( _from_ e _to_ must be in the range
-            /// 0 ... GetNumTracks() - 1).
-            /// \return *true* if the track was effectively moved
+        /// Moves a track from the position _from_ to the position _to_. ( _from_ e _to_ must be in the range
+        /// 0 ... GetNumTracks() - 1).
+        /// \return *true* if the track was effectively moved
         bool                        MoveTrack(int from, int to);
 
-
-            /// Inserts the event _msg_ in the track _trk_. See MIDITrack::InsertEvent() for details.
-            /// \return *true* if the event was effectively inserted
+        /// Inserts the event _msg_ in the track _trk_. See MIDITrack::InsertEvent() for details.
+        /// \return *true* if the event was effectively inserted
         bool                        InsertEvent(int trk,  const MIDITimedMessage& msg, int _ins_mode = INSMODE_DEFAULT);
-
-            /// Inserts a Note On and a Note Off event into the track. See MIDITrack::InsertNote() for details.
+        /// Inserts a Note On and a Note Off event into the track. See MIDITrack::InsertNote() for details.
         bool                        InsertNote(int trk, const MIDITimedMessage& msg,
                                             MIDIClockTime len, int _ins_mode = INSMODE_DEFAULT);
-
-            /// Deletes the event _msg_ from the track _trk_. See MIDITrack::DeleteEvent() for details.
+        /// Deletes the event _msg_ from the track _trk_. See MIDITrack::DeleteEvent() for details.
         bool                        DeleteEvent(int trk,  const MIDITimedMessage& msg);
-
-            /// Deletes the note _msg_ (_msg_ must be a Note On) from the track _trk_. See MIDITrack::DeleteNote() for details.
+        /// Deletes the note _msg_ (_msg_ must be a Note On) from the track _trk_. See MIDITrack::DeleteNote() for details.
         bool                        DeleteNote(int trk, const MIDITimedMessage& msg);
 
 
@@ -252,9 +255,8 @@ class MIDIMultiTrackIterator {
 
 class MIDIEditMultiTrack : public MIDIMultiTrack {
     public:
-                                    MIDIEditMultiTrack(int cl_p_b = DEFAULT_CLKS_PER_BEAT,
-                                                int max_tracks = DEFAULT_MAX_NUM_TRACKS) :
-                                    MIDIMultiTrack(cl_p_b, max_tracks), start_track(0), end_track(0) {}
+                                    MIDIEditMultiTrack(int cl_p_b = DEFAULT_CLKS_PER_BEAT) :
+                                    MIDIMultiTrack(cl_p_b), start_track(0), end_track(0) {}
         virtual	                    ~MIDIEditMultiTrack() {}
 
         void                        SetStartTrack(int trk)      { start_track = trk; }

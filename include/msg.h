@@ -39,7 +39,6 @@
 #define _JDKMIDI_MSG_H
 
 #include "midi.h"
-//#include "tempo.h"
 #include "sysex.h"
 
 #include <string>
@@ -63,8 +62,7 @@ class 	MIDIMessage {
                                 MIDIMessage(const MIDIMessage &msg);
         /// The destructor
         virtual                 ~MIDIMessage();
-        /// Resets the message and frees the MIDISystemExclusive. The message becomes non valid and will
-        /// be ignored.
+        /// Resets the message and frees the MIDISystemExclusive. The message becomes non valid.
         void	                Clear();
         /// Frees the MIDISystemExclusive without changing other bytes.
         void                    ClearSysEx();
@@ -365,6 +363,10 @@ class 	MIDIMessage {
 /*                   C L A S S   M I D I T i m e d M e s s a g e                              */
 /* ********************************************************************************************/
 
+typedef unsigned long MIDIClockTime;
+const MIDIClockTime TIME_INFINITE = 0xffffffff;
+
+
 ///
 /// The MIDITimedMessage class inherits from the MIDIMessage and represents a message associated with a
 /// specific MIDIClockTime (i.e. the number of MIDI ticks from the start. The MIDITrack class stores a
@@ -383,9 +385,10 @@ class 	MIDITimedMessage : public MIDIMessage {
                                 MIDITimedMessage(const MIDIMessage &msg);
         /// Destructor
                                 ~MIDITimedMessage();
-        /// Resets the message and frees the MIDISystemExclusive. The message becomes non valid and will
-        /// be ignored.
+        /// Resets the message and frees the MIDISystemExclusive. The message becomes non valid.
         void	                Clear();
+
+        void                    SetNoOp()                       { Clear(); }
 
         /// The equal operators \see MIDIMessage::operator=()
         const MIDITimedMessage &operator= (const MIDITimedMessage &msg);

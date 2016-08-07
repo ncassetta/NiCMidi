@@ -28,7 +28,6 @@
 ** avoided a warning
 */
 
-#include "../include/world.h"
 #include "../include/filewritemultitrack.h"
 
 
@@ -93,24 +92,44 @@ bool MIDIFileWriteMultiTrack::PostWrite() {
 
 
 
-bool WriteMIDIFile(const char* filename, int format, const MIDIMultiTrack* tracks) {
+bool WriteMIDIFile(const char* filename, int format, const MIDIMultiTrack* tracks, bool strip) {
     MIDIMultiTrack tmp_tracks(1, tracks->GetClksPerBeat());
-    if (format == 0) {
-        MIDIClockTime max_end_time = 0;
-        const MIDITrack* cur_track;
-        for (unsigned int i = 0; i < tracks->GetNumTracks(); i++) {
-            cur_track = tracks->GetTrack(i);
-            if (cur_track->GetEndTime() > max_end_time)
-                max_end_time = cur_track->GetEndTime();
-            for (unsigned int j = 0; j < cur_track->GetNumEvents(); j++)
-                tmp_tracks.InsertEvent (0, cur_track->GetEvent(j), INSMODE_INSERT);
+    switch (format) {
+        case 0: {
+            MIDIClockTime max_end_time = 0;
+            const MIDITrack* cur_track;
+            for (unsigned int i = 0; i < tracks->GetNumTracks(); i++) {
+                cur_track = tracks->GetTrack(i);
+                if (cur_track->GetEndTime() > max_end_time)
+                    max_end_time = cur_track->GetEndTime();
+                for (unsigned int j = 0; j < cur_track->GetNumEvents(); j++)
+                    tmp_tracks.InsertEvent (0, cur_track->GetEvent(j), INSMODE_INSERT);
+            }
+            tmp_tracks.GetTrack(0)->SetEndTime(max_end_time);
+            break;
         }
-        tmp_tracks.GetTrack(0)->SetEndTime(max_end_time);
+        case 1:
+            tmp_tracks = *tracks;
+            if (strip) {
+                for (unsigned int i = 1; i < tmp_tracks.GetNumTracks(); i++) {
+                    if (tmp_tracks.GetTrack(i)->IsTrackEmpty()) {
+                        tmp_tracks.DeleteTrack(i);
+                        i--;
+                    }
+                }
+            }
+            break;
+        default:
+            return false;       // TODO: allow format 2 3
     }
     MIDIFileWriteStream write_stream (filename);
     if (!write_stream.IsValid())
         return false;
-    const MIDIMultiTrack* tmp_ptracks = (format == 0 ? (const MIDIMultiTrack *)&tmp_tracks : tracks);
-    MIDIFileWriteMultiTrack writer (tmp_ptracks, &write_stream);
-    return writer.Write(tmp_ptracks->GetNumTracks(), tmp_ptracks->GetClksPerBeat());
+    MIDIFileWriteMultiTrack writer (&tmp_tracks, &write_stream);
+    return writer.Write(tmp_tracks.GetNumTracks(), tmp_tracks.GetClksPerBeat());
+}
+
+
+bool WriteMIDIFile(const std::string& filename, int format, const MIDIMultiTrack* tracks, bool strip) {
+    return WriteMIDIFile(filename.c_str(), format, tracks, strip);
 }

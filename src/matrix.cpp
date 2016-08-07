@@ -39,7 +39,6 @@
 //TODO: revise, useless functions and parameters???
 
 
-#include "../include/world.h"
 #include "../include/matrix.h"
 
   MIDIMatrix::MIDIMatrix()

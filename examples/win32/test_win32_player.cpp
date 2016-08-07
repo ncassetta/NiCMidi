@@ -29,14 +29,14 @@
 
 
 /* A GUI based midifile player for Windows. It uses an AdvancedSequencer class, a SMPTE and a
- * MIDISequencerGUIEventNotifierWin32 updating the GUI.
+ * MIDISequencerGUINotifierWin32 updating the GUI.
  */
 
 #include "test_win32_player.h"
 #include <cwchar>
 
 
-// Declare jdks objects
+// Declare MIDI objects
 static UINT NotifierMessage = 0;                    // the Windows message id to communicate between notifier and GUI
 AdvancedSequencer *sequencer;                       // the sequencer
 SMPTE smpte;                                        // milliseconds to smpte converter
@@ -55,8 +55,11 @@ HWND hMarker;                       // marker box
 HWND hTrackNames[16];               // array of boxes for track names
 HWND hTrackChans[16];               // array of boxes for track channels
 HWND hTrackPrgrs[16];               // array of boxes for track programs
-HWND hTrackVols[16];                // array of boxes for track volumes
+HWND hTrackVols[16];                // array of boxes for track volumAes
+HWND hTrackActs[16];                // array of boxes for track activity
 
+int MIDIActDelays[16];              // array of integers for temporizing MIDI activity
+const int ACT_DELAY = 4;
 
 //
 // WinMain
@@ -266,6 +269,12 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                     WS_VISIBLE | WS_CHILD | SS_LEFT,
                     490, 80+30*i, 70, 25,
                     hwnd, NULL, NULL, NULL);
+
+                // Track activity text box
+                hTrackActs[i] = CreateWindowW(L"static", NULL,
+                    WS_VISIBLE | WS_CHILD | SS_LEFT,
+                    565, 83+30*i, 19, 19,
+                    hwnd, NULL, NULL, NULL);
             }
             break;
 
@@ -279,10 +288,12 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             }
 
             if (LOWORD(wParam) == 2) {      // Rew
+                ResetDelays();
                 sequencer->GoToZero();
             }
 
             if (LOWORD(wParam) == 3) {      // Play
+                ResetDelays();
                 // start playing the file
                 sequencer->Play();
                 // start a Windows timer for updating the smpte box: the timer
@@ -296,13 +307,17 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             if (LOWORD(wParam) == 4) {      // Stop
                 sequencer->Stop();          // stop playback
                 KillTimer(hMainWin, 1);     // stop the timer (1 is the timer id)
+                ResetDelays();
+                SetMIDIActivity();          // reset the MIDI activity boxes
             }
 
             if (LOWORD(wParam) == 5) {      // Step backward
+                ResetDelays();
                 sequencer->GoToMeasure(sequencer->GetCurrentMeasure() - 1);
             }
 
             if (LOWORD(wParam) == 6) {      // Step forward
+                ResetDelays();
                 sequencer->GoToMeasure(sequencer->GetCurrentMeasure() + 1);
             }
             break;
@@ -313,6 +328,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             if (LOWORD(wParam) == 1) {      // timer id
                 // update the Smpte box with the current SMPTE string
                 SetWindowText( hSmpte, GetSmpteString());
+                SetMIDIActivity();
             }
             break;
 
@@ -349,12 +365,21 @@ VOID LoadFile() {
         if (!sequencer->Load(szFileName)) { // Error: the sequencer could not load the file
             MessageBox(
                 NULL,
-                (LPCSTR)L"File loading failed",
+                (LPCSTR)"File loading failed!",
                 NULL,
                 MB_ICONEXCLAMATION
             );
         }
+
         else {                              // File loading OK
+            if (sequencer->GetNumTracks() > 17) {
+                MessageBox(                 // Too many tracks! We have room only for 16 (1 - 17)
+                    NULL,
+                    (LPCSTR)"This file has more than 17 tracks!\nSome tracks won't be displayed",
+                    (LPCSTR)"Warning!",
+                    MB_ICONWARNING
+                );
+            }
 
             // update the filename textbox
             SetWindowText( hFileName, szFileName );
@@ -372,64 +397,57 @@ VOID SetControls() {
 
     // Update the timesig, tempo, meas-beat, smpte, marker boxes
     sprintf (s, "%d/%d", sequencer->GetTimeSigNumerator(), sequencer->GetTimeSigDenominator());
-    SetWindowText( hTime, s );
+    SetWindowText(hTime, s);
     sprintf (s, "%3.2f", sequencer->GetTempoWithoutScale());
-    SetWindowText ( hTempo, s );
-    sprintf (s, "%d:%d", sequencer->GetCurrentMeasure()+1, sequencer->GetCurrentBeat()+1);
-    SetWindowText ( hMeas, s );
-    SetWindowText ( hSmpte, GetSmpteString());
-    if ( sequencer->GetCurrentMarker().length() == 0) {
+    SetWindowText (hTempo, s);
+    sprintf (s, "%d:%d", sequencer->GetCurrentMeasure() + 1, sequencer->GetCurrentBeat() + 1);
+    SetWindowText (hMeas, s);
+    SetWindowText (hSmpte, GetSmpteString());
+    if (sequencer->GetCurrentMarker().length() == 0)
         SetWindowText (hMarker, "---");
-    }
-    else {
+    else
         SetWindowText (hMarker, sequencer->GetCurrentMarker().c_str());
-    }
 
     // for every track, update the name, channel, program, volume boxes
-    int i = 0;
-    for (; i < sequencer->GetNumTracks() - 1; i++) {
+    int i = 1;
+    for (; i < std::min (sequencer->GetNumTracks(), 17); i++) {
 
-        if ( sequencer->GetTrackName(i + 1).length() ) {
-            SetWindowText (hTrackNames[i], sequencer->GetTrackName (i+1).c_str());
-        }
+        if (sequencer->GetTrackName(i).length())
+            SetWindowText (hTrackNames[i - 1], sequencer->GetTrackName (i).c_str());
         else {
-            sprintf(s, "(track %d)", i + 1);
-            SetWindowText (hTrackNames[i], s);
-        }
-
-        if (sequencer->GetTrackChannel(i + 1) == -1) {    // there aren't channel events or the track is empty
-            SetWindowText (hTrackChans[i], "---" );
-        }
-        else {
-            sprintf(s, "ch: %d", sequencer->GetTrackChannel(i + 1) + 1);
-            SetWindowText(hTrackChans[i], s);
+            sprintf(s, "(track %d)", i);
+            SetWindowText (hTrackNames[i - 1], s);
         }
 
-        if (sequencer->GetTrackProgram(i+1) == -1) {
-            SetWindowText(hTrackPrgrs[i], "---");
-        }
+        if (sequencer->GetTrackChannel(i) == -1)        // there aren't channel events or the track is empty
+            SetWindowText (hTrackChans[i - 1], "---" );
         else {
-            if (sequencer->GetTrackChannel(i + 1) == 9) { // channel 10
-                SetWindowText(hTrackPrgrs[i], GMDrumKits[sequencer->GetTrackProgram(i+1)]);
-            }
-            else {
-                SetWindowText(hTrackPrgrs[i], GMpatches[sequencer->GetTrackProgram(i+1)]);
-            }
+            sprintf(s, "ch: %d", sequencer->GetTrackChannel(i) + 1);
+            SetWindowText(hTrackChans[i - 1], s);
         }
-        if (sequencer->GetTrackVolume(i + 1) == -1) {
-            SetWindowText(hTrackVols[i], "vol: ---");
-        }
+
+        if (sequencer->GetTrackProgram(i) == -1)
+            SetWindowText(hTrackPrgrs[i - 1], "---");
         else {
-            sprintf (s, "vol: %d", sequencer->GetTrackVolume(i + 1));
-            SetWindowText(hTrackVols[i], s);
+            if (sequencer->GetTrackChannel(i) == 9)     // channel 10
+                SetWindowText(hTrackPrgrs[i - 1], GMDrumKits[sequencer->GetTrackProgram(i)]);
+            else
+                SetWindowText(hTrackPrgrs[i - 1], GMpatches[sequencer->GetTrackProgram(i)]);
+
+        }
+        if (sequencer->GetTrackVolume(i) == -1)
+            SetWindowText(hTrackVols[i - 1], "vol: ---");
+        else {
+            sprintf (s, "vol: %d", sequencer->GetTrackVolume(i));
+            SetWindowText(hTrackVols[i -1], s);
         }
     }
 
     for ( ; i < 17; i++) {      // blanks unused widgets
-        SetWindowText (hTrackNames[i], "");
-        SetWindowText (hTrackChans[i], "");
-        SetWindowText (hTrackPrgrs[i], "");
-        SetWindowText (hTrackVols[i], "");
+        SetWindowText (hTrackNames[i - 1], "");
+        SetWindowText (hTrackChans[i - 1], "");
+        SetWindowText (hTrackPrgrs[i - 1], "");
+        SetWindowText (hTrackVols[i - 1], "");
     }
 
 }
@@ -442,14 +460,6 @@ const char* GetSmpteString() {
     // Get from the sequencer the current time in msecs
     unsigned long msecs = sequencer->GetCurrentTimeInMs();
 
-/* ADDED NEW METHOD SetMilliSeconds() to SMPTE class
-    // Convert the msecs in samples (the default frequency of the SMPTE is 48000 but you can change it
-    ulong samples = (ulong) (msecs * GetSampleRateFrequency(smpte.GetSampleRate()) / 1000);
-
-    // Feed the smpte with our number of samples
-    smpte.SetSampleNumber(samples);
-*/
-
     // Feed the smpte with msecs
     smpte.SetMilliSeconds(msecs);
 
@@ -460,10 +470,10 @@ const char* GetSmpteString() {
 }
 
 
-// This function is called by WindowProcedure whe it receives a notifier message: it does essentially
+// This function is called by WindowProcedure when it receives a notifier message: it does essentially
 // the same things that SetControls does, but updates only the appropriate control based on the param
 // ev (the notifier event)
- VOID ProcessNotifierMessage( MIDISequencerGUIEvent ev) {
+ VOID ProcessNotifierMessage(MIDISequencerGUIEvent ev) {
 // the param ev is a GUIEvent object (see the file sequencer.h)
     char s[300];
 
@@ -517,25 +527,47 @@ const char* GetSmpteString() {
 
             int track = ev.GetEventSubGroup();
             if (ev.GetEventItem() == MIDISequencerGUIEvent::GROUP_TRACK_PROGRAM) {
-                if (track > 0) {
-                    if (sequencer->GetTrackChannel(track) == 9) {   // channel 10
-                        SetWindowText( hTrackPrgrs[track-1], GMDrumKits[sequencer->GetTrackProgram( track )] );
-                    }
-                    else {
-                        SetWindowText ( hTrackPrgrs[track-1], GMpatches[sequencer->GetTrackProgram( track)] );
-                    }
+                if (track > 0 && track < 17) {
+                    if (sequencer->GetTrackChannel(track) == 9)     // channel 10
+                        SetWindowText(hTrackPrgrs[track - 1], GMDrumKits[sequencer->GetTrackProgram(track)] );
+                    else
+                        SetWindowText ( hTrackPrgrs[track - 1], GMpatches[sequencer->GetTrackProgram(track)] );
                 }
             }
 
             else if (ev.GetEventItem() == MIDISequencerGUIEvent::GROUP_TRACK_VOLUME) {
-                sprintf (s, "vol: %d", sequencer->GetTrackVolume( track ) );
-                if (track > 0) {
-                    SetWindowText ( hTrackVols[track-1], s );
-                }
+                sprintf (s, "vol: %d", sequencer->GetTrackVolume(track) );
+                if (track > 0 && track < 17)
+                    SetWindowText (hTrackVols[track - 1], s);
             }
+            MIDIActDelays[track - 1] = ACT_DELAY;
             break;
         }
 
     }
 
+}
+
+
+VOID SetMIDIActivity() {
+    char s[10];
+    for (int i = 1; i < sequencer->GetNumTracks(); i++) {
+        if (sequencer->GetTrackNoteCount(i))
+            MIDIActDelays[i - 1] = ACT_DELAY;
+        else if (MIDIActDelays[i - 1] > 0)
+            MIDIActDelays[i - 1]--;
+        if (MIDIActDelays[i - 1] > 0)
+            sprintf (s, "X");
+        else
+            sprintf (s, "");
+        SetWindowText ( hTrackActs[i - 1], s );
+
+    }
+
+}
+
+
+VOID ResetDelays() {
+    for (int i = 0; i < 16; i++)
+        MIDIActDelays[i] = 0;
 }

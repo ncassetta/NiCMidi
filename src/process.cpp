@@ -28,12 +28,7 @@
 */
 
 
-#include "../include/world.h"
 #include "../include/process.h"
-#include "../include/dump_tracks.h"
-
-#include <string>
-
 
 
  void MIDIMultiProcessor::SetProcessor(MIDIProcessor* proc, int pos) {

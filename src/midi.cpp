@@ -32,7 +32,6 @@
 */
 
 
-#include "../include/world.h"
 #include "../include/midi.h"
 
 

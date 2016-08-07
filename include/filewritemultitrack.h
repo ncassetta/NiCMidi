@@ -55,6 +55,7 @@ class MIDIFileWriteMultiTrack {
 /// Writes the given MIDIMultiTrack object into the MIDI file denoted by *filename*; *format*
 /// is the MIDI file format (only 0 and 1 are supported).
 /// Returns *true* if the writing was successful.
-bool WriteMIDIFile(const char* filename, int format, const MIDIMultiTrack* tracks);
+bool WriteMIDIFile(const char* filename, int format, const MIDIMultiTrack* tracks, bool strip = false);
+bool WriteMIDIFile(const std::string& filename, int format, const MIDIMultiTrack* tracks, bool strip = false);
 
 #endif

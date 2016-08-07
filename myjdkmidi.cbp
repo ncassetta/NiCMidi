@@ -45,7 +45,6 @@
 		<Unit filename="include/advancedsequencer.h" />
 		<Unit filename="include/driver.h" />
 		<Unit filename="include/dump_tracks.h" />
-		<Unit filename="include/file.h" />
 		<Unit filename="include/fileread.h" />
 		<Unit filename="include/filereadmultitrack.h" />
 		<Unit filename="include/filewrite.h" />
@@ -57,13 +56,11 @@
 		<Unit filename="include/multitrack.h" />
 		<Unit filename="include/notifier.h" />
 		<Unit filename="include/process.h" />
-		<Unit filename="include/queue.h" />
 		<Unit filename="include/sequencer.h" />
 		<Unit filename="include/smpte.h" />
 		<Unit filename="include/sysex.h" />
 		<Unit filename="include/timer.h" />
 		<Unit filename="include/track.h" />
-		<Unit filename="include/world.h" />
 		<Unit filename="rtmidi-2.1.1/RtMidi.cpp" />
 		<Unit filename="rtmidi-2.1.1/RtMidi.h" />
 		<Unit filename="src/advancedsequencer.cpp" />
@@ -80,7 +77,6 @@
 		<Unit filename="src/multitrack.cpp" />
 		<Unit filename="src/notifier.cpp" />
 		<Unit filename="src/process.cpp" />
-		<Unit filename="src/queue.cpp" />
 		<Unit filename="src/sequencer.cpp" />
 		<Unit filename="src/smpte.cpp" />
 		<Unit filename="src/sysex.cpp" />

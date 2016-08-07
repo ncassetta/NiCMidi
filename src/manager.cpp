@@ -26,7 +26,6 @@
 
 #include <iostream>         // DEBUG! togliere
 
-#include "../include/world.h"
 #include "../include/manager.h"
 
 
@@ -36,25 +35,12 @@ std::vector<std::string> MIDIManager::MIDI_in_names;
 
 
 
-
-
-
 MIDIManager::MIDIManager(MIDISequencerGUINotifier *n, MIDISequencer *seq_) :
-    sequencer(seq_),
-    notifier(n),
-    sys_time_offset(0),
-    seq_time_offset(0),
-    play_mode(false),
-
-    thru_enable(false),
-    thru_input(-1),
-    thru_output(-1),
-
-    repeat_play_mode(false),
-    repeat_start_measure(0),
-    repeat_end_measure(0)
-
-    //open_policy(AUTO_OPEN)
+    sequencer(seq_), notifier(n), sys_time_offset(0), seq_time_offset(0), play_mode(false),
+    thru_enable(false), thru_input(-1), thru_output(-1),
+    repeat_play_mode(false), repeat_start_measure(0), repeat_end_measure(0),
+    auto_seq_open(true),
+    auto_stop_proc(AutoStopProc), auto_stop_param(this)
 
 {
 #ifdef WIN32    //TODO: this is temporary, needed by WIstd::atomic<unsigned char> busy;        // TODO: use the mutex???NDOWS10
@@ -461,7 +447,7 @@ void MIDIManager::SequencerPlayProc( tMsecs sys_time_ )
             !sequencer->GetNextEventTimeMs( &next_event_time ) ) {
         // no events left
         //stop_mode = true;
-        play_mode = false;
+        std::thread(auto_stop_proc, auto_stop_param).detach();
 
         if(notifier) {
             notifier->Notify( MIDISequencerGUIEvent(
@@ -478,4 +464,10 @@ void MIDIManager::SequencerPlayProc( tMsecs sys_time_ )
 
         }
     }
+}
+
+
+void MIDIManager::AutoStopProc(void* p) {
+    MIDIManager* manager = static_cast<MIDIManager *>(p);
+    manager->SeqStop();
 }

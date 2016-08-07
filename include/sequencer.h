@@ -22,9 +22,7 @@
 #ifndef _JDKMIDI_SEQUENCER_H
 #define _JDKMIDI_SEQUENCER_H
 
-#include "track.h"
 #include "multitrack.h"
-//#include "tempo.h"
 #include "matrix.h"
 #include "process.h"
 #include "notifier.h"
@@ -87,8 +85,9 @@ class MIDISequencerTrackState {
         std::string     track_name;	        ///< track name
         bool            notes_are_on;       ///< true if there are notes currently on
         MIDIMatrix      note_matrix;        ///< to keep track of all notes on
-        unsigned char   control_values[C_ALL_NOTES_OFF];
+        char            control_values[C_ALL_NOTES_OFF];
                                             ///< array of current control change values
+                                            // NOT unsigned to allow -1 if not changed
 
         bool            got_good_track_name;///< internal use
 

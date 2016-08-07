@@ -46,6 +46,14 @@
 					<Add option="-g" />
 				</Compiler>
 			</Target>
+			<Target title="test_writefile">
+				<Option output="test_advancedsequencer" prefix_auto="1" extension_auto="1" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
@@ -67,6 +75,9 @@
 		</Unit>
 		<Unit filename="test_stepsequencer.h">
 			<Option target="test_stepsequencer" />
+		</Unit>
+		<Unit filename="test_writefile.cpp">
+			<Option target="test_writefile" />
 		</Unit>
 		<Unit filename="win32/test_win32_player.cpp">
 			<Option target="test_win32_player" />

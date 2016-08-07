@@ -40,8 +40,6 @@
 //
 
 
-#include "../include/world.h"
-#include "../include/sysex.h"
 #include "../include/msg.h"
 
 

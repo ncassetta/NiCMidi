@@ -152,8 +152,8 @@ public:
     /// You must first load the SMPTE with the number of samples to convert using SetSampleNumber();
     /// then you can call other functions to get the corresponding hours, minutes, etc.
     //@{
-    void            SetSampleNumber (ulong n);
-    ulong           GetSampleNumber();          // not const! can perform an internal conversion
+    void            SetSampleNumber (unsigned long n);
+    unsigned long   GetSampleNumber();          // not const! can perform an internal conversion
     //@}
 
     /// \name To perform a smpte-to-samples conversion.
@@ -161,31 +161,32 @@ public:
     /// to convert using SetTime() (or other functions setting individual items); then you can call
     /// GetSampleNumber() to get the corresponding number of samples.
     //@{
-    void            SetTime (uchar h, uchar m, uchar s, uchar f = 0, uchar sf = 0);
-    void            SetHours (uchar h)              { hours = h; sample_number_dirty = true; }
-    void            SetMinutes (uchar m)            { minutes = m; sample_number_dirty = true; }
-    void            SetSeconds (uchar s)            { seconds = s; sample_number_dirty = true; }
-    void            SetFrames (uchar f)             { frames = f; sample_number_dirty = true; }
-    void            SetSubFrames ( uchar sf )       { sub_frames = sf; sample_number_dirty = true; }
+    void            SetTime (unsigned char h, unsigned char m, unsigned char s,
+                             unsigned char f = 0, unsigned char sf = 0);
+    void            SetHours (unsigned char h)      { hours = h; sample_number_dirty = true; }
+    void            SetMinutes (unsigned char m)    { minutes = m; sample_number_dirty = true; }
+    void            SetSeconds (unsigned char s)    { seconds = s; sample_number_dirty = true; }
+    void            SetFrames (unsigned char f)     { frames = f; sample_number_dirty = true; }
+    void            SetSubFrames (unsigned char sf) { sub_frames = sf; sample_number_dirty = true; }
 
-    uchar           GetHours() const                { return hours; }
-    uchar           GetMinutes() const              { return minutes; }
-    uchar           GetSeconds() const              { return seconds; }
-    uchar           GetFrames() const               { return frames; }
-    uchar           GetSubFrames() const            { return sub_frames; }
+    unsigned char   GetHours() const                { return hours; }
+    unsigned char   GetMinutes() const              { return minutes; }
+    unsigned char   GetSeconds() const              { return seconds; }
+    unsigned char   GetFrames() const               { return frames; }
+    unsigned char   GetSubFrames() const            { return sub_frames; }
     //@}
 
 
     /// To perform a millisecond-to-smpte or millisecond-to-sample conversion.
     /// You must first load the SMPTE with the number of milliseconds to convert using SetMilliSeconds();
     /// then you can call GetSampleNumber or GetHours(), GetMinutes() etc.
-    void            SetMilliSeconds (ulong msecs);
+    void            SetMilliSeconds (unsigned long msecs);
 
     /// To perform a smpte-to-millisecond or sample-to-millisecond conversion.
     /// You must first load the SMPTE with the number of sample or with smpte items to convert using
     /// SetSampleNumber() or SetHoure(), SetMinutes() etc. ; then you can call GetMilliSeconds() to get the
     /// corresponding millieseconds
-    ulong           GetMilliSeconds ();             // not const! can perform an internal conversion
+    unsigned long   GetMilliSeconds ();             // not const! can perform an internal conversion
 
     /// \name To add, increment and decrement samples.
     /// These functions add, increment or decrement the current sample number./ You can use them
@@ -249,14 +250,14 @@ protected:
 private:
     SMPTE_RATE      smpte_rate;
     SAMPLE_RATE     sample_rate;
-    ulong           sample_number;
+    unsigned long   sample_number;
 
-    uchar           hours;
-    uchar           minutes;
-    uchar           seconds;
-    uchar           frames;
-    uchar           sub_frames;
-    uchar           sample_number_dirty;
+    unsigned char   hours;
+    unsigned char   minutes;
+    unsigned char   seconds;
+    unsigned char   frames;
+    unsigned char   sub_frames;
+    unsigned char   sample_number_dirty;
 
 
     friend SMPTE operator + ( SMPTE a, SMPTE b );

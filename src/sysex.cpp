@@ -35,7 +35,6 @@
 // www.vmgames.com vrm@vmgames.com
 //
 
-#include "../include/world.h"
 #include "../include/sysex.h"
 
 #ifndef DEBUG_MDSYSEX
@@ -47,7 +46,6 @@
 # define DBG(a) a
 #endif
 
-//#include <mss121/mss.h>
 #include <iostream>
 
 
@@ -57,7 +55,7 @@ const unsigned char MIDISystemExclusive::XGReset_data[] = { 0xF0, 0x43, 0x10, 0x
 
 
 MIDISystemExclusive::MIDISystemExclusive( int size_ ) {
-    buf=new uchar[size_];
+    buf=new unsigned char[size_];
     if( buf )
         max_len=size_;
     else

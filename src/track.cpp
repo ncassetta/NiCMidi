@@ -624,7 +624,7 @@ void MIDITrackIterator::Reset() {   // use this if you edit the content of the t
 
 
 
-bool MIDITrackIterator::FindNoteOff(uchar note, MIDITimedMessage** msg) {
+bool MIDITrackIterator::FindNoteOff(unsigned char note, MIDITimedMessage** msg) {
     for (unsigned int i = cur_ev_num; i < track->GetNumEvents(); i ++) {
         *msg = track->GetEventAddress(i);
         if ((*msg)->IsNoteOff() && (*msg)->GetNote() == note)

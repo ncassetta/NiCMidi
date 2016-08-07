@@ -35,6 +35,7 @@
 
 
 #include <vector>
+#include <thread>
 
 
 
@@ -83,6 +84,8 @@ public:
     void                        RemoveTickProc(unsigned int n);
     void                        RemoveTickProc(MIDITick proc);
     */
+    void                        SetAutoStopProc(void(proc)(void*), void* param)
+                                                                { auto_stop_proc = proc; auto_stop_param = param; }
 
         // to set and get the current sequencer
     void                        SetSequencer(MIDISequencer *seq);
@@ -114,14 +117,14 @@ public:
     void                        AllNotesOff();
 
 
+protected:
 
     /// This is the main tick procedure
     static void                 TickProc(tMsecs sys_time_, void* p);
 
-protected:
-
     void                        MIDIThruProc(tMsecs sys_time_);
     void                        SequencerPlayProc(tMsecs sys_time_);
+    static void                 AutoStopProc(void* p);
 
     std::vector<MIDIOutDriver*>     MIDI_outs;
     static std::vector<std::string> MIDI_out_names;
@@ -147,6 +150,9 @@ protected:
     long                        repeat_end_measure;
 
     bool                        auto_seq_open;
+
+    void                        (*auto_stop_proc)(void *);
+    void*                       auto_stop_param;
 };
 
 

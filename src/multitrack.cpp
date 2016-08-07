@@ -54,9 +54,26 @@ MIDIMultiTrack::MIDIMultiTrack(unsigned int num_tracks, unsigned int cl_p_b) :
 }
 
 
+MIDIMultiTrack::MIDIMultiTrack(const MIDIMultiTrack& mlt) :
+          clks_per_beat(mlt.clks_per_beat) {
+    tracks.resize(mlt.GetNumTracks());
+    for (unsigned int i = 0; i < mlt.GetNumTracks(); i++)
+        tracks[i] = new MIDITrack(*mlt.GetTrack(i));
+}
+
 MIDIMultiTrack::~MIDIMultiTrack() {
     for(unsigned int i = 0; i < tracks.size(); ++i)
         delete tracks[i];
+}
+
+
+MIDIMultiTrack& MIDIMultiTrack::operator=(const MIDIMultiTrack& mlt) {
+    Clear();
+    clks_per_beat = mlt.clks_per_beat;
+    tracks.resize(mlt.GetNumTracks());
+    for (unsigned int i = 0; i < mlt.GetNumTracks(); i++)
+        tracks[i] = new MIDITrack(*mlt.GetTrack(i));
+    return *this;
 }
 
 
@@ -444,7 +461,7 @@ bool MIDIMultiTrackIteratorState::SetTimeOffsetMode(bool f, std::vector<int>* v)
     }
     return true;
 }
-
+// TODO: rename time_offset to time_shift, it is confusing ...
 
 MIDIClockTime MIDIMultiTrackIteratorState::GetShiftedTime(const MIDITimedMessage* msg, int trk) {
     if (!time_offset_mode)

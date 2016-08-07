@@ -32,7 +32,6 @@
 #define _JDKMIDI_PROCESS_H
 
 #include "msg.h"
-#include "sysex.h"
 
 #include <iostream>
 #include <vector>

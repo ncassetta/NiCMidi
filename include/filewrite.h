@@ -49,7 +49,6 @@
 #include "midi.h"
 #include "msg.h"
 #include "sysex.h"
-#include "file.h"
 
 
 ///
@@ -122,9 +121,9 @@ class MIDIFileWriter {
     protected:
         virtual	void    Error(char *s);
 
-        void            WriteCharacter( uchar c ) { if(out_stream->WriteChar(c) < 0) error = true; }
-        void            Seek(long pos)            { if(out_stream->Seek(pos) < 0) error = true; }
-        void            IncrementCounters(int c)  { track_length += c; file_length += c; }
+        void            WriteCharacter(unsigned char c) { if(out_stream->WriteChar(c) < 0) error = true; }
+        void            Seek(long pos)                  { if(out_stream->Seek(pos) < 0) error = true; }
+        void            IncrementCounters(int c)        { track_length += c; file_length += c; }
         void            WriteShort(unsigned short c);
         void            Write3Char(long c);
         void            WriteLong(unsigned long c);
@@ -138,7 +137,7 @@ class MIDIFileWriter {
         unsigned long   track_length;
         unsigned long   track_time;
         unsigned long   track_position;
-        uchar           running_status;
+        unsigned char   running_status;
 
         MIDIFileWriteStream *out_stream;
 };

@@ -36,7 +36,6 @@
 ** see header for changes against jdksmidi
 */
 
-#include "../include/world.h"
 #include "../include/filereadmultitrack.h"
 
 

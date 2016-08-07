@@ -35,10 +35,7 @@
 #ifndef _JDKMIDI_MIDI_H
 #define _JDKMIDI_MIDI_H
 
-#include "world.h"
 
-
-//
 // MIDI Status bytes
 //
 

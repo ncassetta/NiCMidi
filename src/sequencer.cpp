@@ -16,12 +16,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-// TODO: da rivedere! Adattarlo a jdksmidi porterebbe a modifiche nell'interfaccia (AddTrack, GetNumTracks e
-// forse altre
 
-
-
-#include "../include/world.h"
 #include "../include/sequencer.h"
 #include "../include/manager.h"     // goes here, for SetPort()
 
@@ -134,7 +129,7 @@ MIDISequencerTrackState::MIDISequencerTrackState() {
 void MIDISequencerTrackState::Reset() {
     program = -1;
     for (unsigned int i = 0; i < C_ALL_NOTES_OFF; i++)
-        control_values[i] = 0xff;
+        control_values[i] = -1;
     track_name = "";
     notes_are_on = false;
     bender_value = 0;

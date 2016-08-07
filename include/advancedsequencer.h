@@ -133,6 +133,7 @@ class AdvancedSequencer {
         void                                ExtractWarpPositions();
         void                                CatchEventsBefore();
         void                                CatchEventsBefore(int trk);
+        static void                         AutoStopProc(void* p);
 
         MIDISequencerGUINotifier*           notifier;
         MIDIMultiTrack*                     multitrack;

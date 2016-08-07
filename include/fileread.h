@@ -51,7 +51,6 @@
 #include "midi.h"
 #include "msg.h"
 #include "sysex.h"
-#include "file.h"
 
 
 ///
@@ -134,6 +133,15 @@ class MIDIFileEventHandler {
 };
 
 
+
+struct MIDIFileHeader {
+    MIDIFileHeader() : format(0), ntrks(0), division(0) {}
+    short format;
+    short ntrks;
+    short division;
+};
+
+
 ///
 /// This class converts a stream of *char* read from a MIDIFileReadStream object into MIDI data
 ///
@@ -168,6 +176,10 @@ class MIDIFileReader {
         unsigned char*                  the_msg;
         int		                        max_msg_len;
         int   	                        msg_index;
+
+        static const unsigned long      _MThd = ('M')*0x1000000 + ('T')*0x10000 + ('h')*0x100 + ('d');
+        static const unsigned long      _MTrk = ('M')*0x1000000 + ('T')*0x10000 + ('r')*0x100 + ('k');
+
 
     private:
         unsigned long                   ReadVariableNum();

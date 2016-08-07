@@ -39,7 +39,7 @@
 #define JDKSMIDI_SYSEX_H
 
 #include "midi.h"
-
+#include <cstring>                  // for memcmp()
 
 class  MIDISystemExclusive {
     public:
@@ -87,7 +87,7 @@ class  MIDISystemExclusive {
         static const unsigned char GMReset_data[];
         static const unsigned char GSReset_data[];
         static const unsigned char XGReset_data[];
-    };
+};
 
 
 

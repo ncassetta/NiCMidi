@@ -1,6 +1,5 @@
-#include "../include/world.h"
 #include "../include/advancedsequencer.h"
-#include "../include/filereadmultitrack.h"
+#include "../include/filereadmultitrack.h"          // for LoadMIDIFile()
 
 #include <iostream>
 
@@ -17,6 +16,7 @@ AdvancedSequencer::AdvancedSequencer(MIDISequencerGUINotifier *n) :
     ctor_type (CTOR_1)              // remembers what objects are owned
 {
     mgr->SetAutoSeqOpen(false);     // takes the control on out ports
+    mgr->SetAutoStopProc(AutoStopProc, this);
 }
 
 
@@ -30,6 +30,7 @@ AdvancedSequencer::AdvancedSequencer(MIDIMultiTrack* mlt, MIDISequencerGUINotifi
 
 {
     mgr->SetAutoSeqOpen(false);     // takes the control on out ports
+    mgr->SetAutoStopProc(AutoStopProc, this);
     if (multitrack->GetNumTracksWithEvents() == 0 && multitrack->GetEndTime() == 0)
         file_loaded = false;        // the multitrack is empty
     else
@@ -48,6 +49,7 @@ AdvancedSequencer::AdvancedSequencer(MIDIManager *mg) :
 
 {
     mgr->SetAutoSeqOpen(false);     // takes the control on out ports
+    mgr->SetAutoStopProc(AutoStopProc, this);
     if (multitrack->GetNumTracksWithEvents() == 0 && multitrack->GetEndTime() == 0)
         file_loaded = false;        // the multitrack is empty
     else
@@ -128,7 +130,7 @@ void AdvancedSequencer::UnLoad() {
     ExtractWarpPositions();
 }
 
-
+// TODO: revise this
 void AdvancedSequencer::Reset() {
     Stop();
     MIDITimer::Wait(500);    // pauses for 0.5 sec (TROUBLE WITHOUT THIS!!!! I DON'T KNOW WHY)
@@ -479,7 +481,7 @@ double AdvancedSequencer::GetTrackVelocityScale (int trk) const {
 void AdvancedSequencer::SetTrackRechannelize (int trk, int chan) {
     if (!file_loaded)
         return;
-    if (mgr->IsSeqPlay() && GetTrackChannel(trk) != chan && !GetTrackChannel(trk) == -1) {
+    if (mgr->IsSeqPlay() && GetTrackChannel(trk) != chan && !(GetTrackChannel(trk) == -1)) {
         mgr->GetOutDriver(seq->GetTrackPort(trk))->AllNotesOff(GetTrackChannel(trk));
         seq->GetTrackState (trk)->note_matrix.Clear();
     }
@@ -506,7 +508,7 @@ void AdvancedSequencer::SetTrackTranspose (int trk, int trans) {
     if (!file_loaded)
         return;
 
-    if (mgr->IsSeqPlay() && GetTrackTranspose(trk) != trans && !GetTrackChannel(trk) == -1) {
+    if (mgr->IsSeqPlay() && GetTrackTranspose(trk) != trans && !(GetTrackChannel(trk) == -1)) {
         mgr->GetOutDriver(seq->GetTrackPort(trk))->AllNotesOff(GetTrackChannel(trk));
         seq->GetTrackState (trk)->note_matrix.Clear();
     }
@@ -597,48 +599,6 @@ int AdvancedSequencer::FindFirstChannelOnTrack (int trk) {
 */
 
 
-/* OLD
-void AdvancedSequencer::ExtractWarpPositions()
-{
-    if ( !file_loaded )
-    {
-        for ( int i = 0; i < num_warp_positions; ++i )
-        {
-            jdks_safe_delete_object ( warp_positions[i] );
-        }
-
-        num_warp_positions = 0;
-        return;
-    }
-
-    Stop();
-    // delete all our current warp positions
-
-    for ( int i = 0; i < num_warp_positions; ++i )
-    {
-        jdks_safe_delete_object ( warp_positions[i] );
-    }
-
-    num_warp_positions = 0;
-
-    while ( num_warp_positions < MAX_WARP_POSITIONS )
-    {
-        if ( !seq.GoToMeasure ( num_warp_positions * MEASURES_PER_WARP, 0 ) )
-        {
-            break;
-        }
-
-        // save current sequencer state at this position
-        warp_positions[num_warp_positions++] =
-            new MIDISequencerState (
-            *seq.GetState()
-        );
-    }
-
-    seq.GoToMeasure ( 0, 0 );
-}
-*/
-/* NEW by NC */
 void AdvancedSequencer::ExtractWarpPositions()
 {
     if ( !file_loaded ) {
@@ -803,72 +763,8 @@ void AdvancedSequencer::CatchEventsBefore(int trk) {
 
 }
 
-/* OLD FUNCTION
-void AdvancedSequencer::CatchEventsBefore(int trk) {
-    MIDITimedMessage msg;
-    MIDITrack* t = multitrack->GetTrack(trk);
-    unsigned int port = seq->GetPort(trk);
 
-    for (unsigned int i = 0; i < t->GetNumEvents(); ++i )
-    {
-        msg = t->GetEvent( i );
-        if ( msg.GetTime() >= seq->GetCurrentMIDIClockTime() )
-        {
-            break;
-        }
-
-        if (msg.IsChannelMsg()) // channel messages
-        {
-            if ( msg.IsControlChange() || msg.IsProgramChange() || msg.IsPitchBend() )
-            {   // only send these messages
-                OutputMessage(msg, port);
-            }
-        }
-        else
-        if ( msg.IsSysEx() )      // TODO: which SysEx should we send???
-        {
-            OutputMessage(msg, port);
-            MIDITimer::Wait( 10 );
-        }
-    }
+void AdvancedSequencer::AutoStopProc(void* p) {
+    AdvancedSequencer* seq = static_cast<AdvancedSequencer *>(p);
+    seq->Stop();
 }
-*/
-
-
-/* OLD
-bool AdvancedSequencer::OpenMIDI (int in_port, int out_port, int timer_resolution) {
-    CloseMIDI();
-    if (!driver->StartTimer(timer_resolution)) return false;
-    if (in_port != -1) driver->OpenMIDIInPort (in_port);
-    if (driver->OpenMIDIOutPort (out_port)) return true;
-    else return false;
-}
-
-
-void AdvancedSequencer::CloseMIDI() {
-    Stop();
-    driver->StopTimer();
-    Sleep (100);
-    driver->CloseMIDIInPort();
-    driver->CloseMIDIOutPort();
-}
-
-void AdvancedSequencer::SetMultiTrack(MIDIMultiTrack* mlt, TimeSigList* ts) {
-    Reset();
-    MIDISequencerGUIEventNotifier* nt = seq->GetState()->notifier;
-    if (!file_loaded) delete seq->GetState()->multitrack;
-                                        // delete the MIDIMultiTrack if it is the dummy one
-    delete seq;
-
-    seq = new MIDISequencer(mlt, nt);
-    mgr->SetSeq(seq);
-    timesigs = ts;                      // it's not owned by the class
-    file_loaded = true;
-
-    ExtractWarpPositions();             // with last modifies no more need for Clear()
-    Reset();
-}
-
-*/
-
-

@@ -16,11 +16,6 @@
 */
 
 
-// Questo file e il relativo .cpp sono stati confrontati con l'equivalente in jdksmid ed aggiornati
-
-
-
-
 #ifndef MIDI_TRACK_H_INCLUDED
 #define MIDI_TRACK_H_INCLUDED
 
@@ -227,13 +222,15 @@ class MIDITrackIterator {
         MIDIClockTime               GetCurTime() const          { return cur_time; }
 
         char                        GetProgram() const          { return program; }
-        char                        GetControl(uchar c) const   { return controls[c]; }
+        char                        GetControl(unsigned char c) const
+                                                                { return controls[c]; }
         short                       GetBender() const           { return bender_value; }
         char                        GetMIDIChannel() const      { return channel; }
         int                         NotesOn() const             { return num_notes_on; }
-        char                        IsNoteOn(uchar n) const     { return notes_on[n]; }
+        char                        IsNoteOn(unsigned char n) const
+                                                                { return notes_on[n]; }
         bool                        IsPedalOn() const           { return controls[64] > 64; }
-        bool                        FindNoteOff(uchar note, MIDITimedMessage** msg);
+        bool                        FindNoteOff(unsigned char note, MIDITimedMessage** msg);
         bool                        FindPedalOff(MIDITimedMessage** msg);
         bool                        GetCurEvent(MIDITimedMessage** msg, MIDIClockTime end = TIME_INFINITE);
                                         // in **msg next event on track,
@@ -256,14 +253,14 @@ class MIDITrackIterator {
                                         // event at a new time!
 
         MIDITrack*                  track;
-        char                        channel;
+        char                        channel;    // can be -1
         int                         cur_ev_num;
         MIDIClockTime               cur_time;
 
         char                        program;        // current program change, or -1
         char                        controls[128];  // value of ervery control change, or -1
         short                       bender_value;	// last seen bender value
-        uchar                       num_notes_on;	// number of notes currently on
+        unsigned char               num_notes_on;	// number of notes currently on
         char		                notes_on[128];  // 0 if off, or velocity
 };
 

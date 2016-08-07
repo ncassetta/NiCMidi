@@ -36,14 +36,13 @@
 ** see header for changes against jdksmidi
 */
 
-#include "../include/world.h"
 #include "../include/filewrite.h"
 
 
 
 MIDIFileWriteStream::MIDIFileWriteStream(const char *fname) : begin(0), del(true) {
     outfs = new std::ofstream(fname, std::ios::out | std::ios::binary);
-    if (!outfs->fail()) {
+    if (outfs->fail()) {
         delete outfs;
         outfs = 0;
     }
@@ -102,8 +101,6 @@ bool MIDIFileWriteStream::IsValid() {
 
 
 MIDIFileWriter::MIDIFileWriter(MIDIFileWriteStream *out_stream_) : out_stream(out_stream_) {
-    ENTER( "MIDIFileWriter::MIDIFileWriter()" );
-
     file_length = 0;
     error = 0;
     track_length = 0;
@@ -114,30 +111,22 @@ MIDIFileWriter::MIDIFileWriter(MIDIFileWriteStream *out_stream_) : out_stream(ou
 
 
 MIDIFileWriter::~MIDIFileWriter() {
-    ENTER( "MIDIFileWriter::~MIDIFileWriter()" );
 }
 
 
 void MIDIFileWriter::Error(char *s) {
-    ENTER( "void	MIDIFileWriter::Error()" );
-
     // NULL method; can override.
-
     error = true;
 }
 
 
 void MIDIFileWriter::WriteShort(unsigned short c) {
-    ENTER( "void    MIDIFileWriter::WriteShort()" );
-
     WriteCharacter((unsigned char)((c >> 8) & 0xff));
     WriteCharacter((unsigned char)((c & 0xff)));
 }
 
 
 void MIDIFileWriter::Write3Char(long c) {
-    ENTER( "void	MIDIFileWriter::Write3Char()" );
-
     WriteCharacter((unsigned char)((c >> 16) & 0xff));
     WriteCharacter((unsigned char)((c >> 8) & 0xff));
     WriteCharacter((unsigned char)((c & 0xff)));
@@ -145,8 +134,6 @@ void MIDIFileWriter::Write3Char(long c) {
 
 
 void MIDIFileWriter::WriteLong(unsigned long c) {
-    ENTER( "void	MIDIFileWriter::WriteLong()" );
-
     WriteCharacter((unsigned char)((c >> 24) & 0xff));
     WriteCharacter((unsigned char)((c >> 16) & 0xff));
     WriteCharacter((unsigned char)((c >> 8) & 0xff));
@@ -155,8 +142,6 @@ void MIDIFileWriter::WriteLong(unsigned long c) {
 
 
 void MIDIFileWriter::WriteFileHeader(int format, int ntrks, int division) {
-    ENTER( "void	MIDIFileWriter::WriteFileHeader()" );
-
     WriteCharacter((unsigned char) 'M');
     WriteCharacter((unsigned char) 'T');
     WriteCharacter((unsigned char) 'h');
@@ -170,8 +155,6 @@ void MIDIFileWriter::WriteFileHeader(int format, int ntrks, int division) {
 
 
 void MIDIFileWriter::WriteTrackHeader(unsigned long length) {
-    ENTER( "void	MIDIFileWriter::WriteTrackHeader()" );
-
     track_position = file_length;
     track_length = 0;
     track_time = 0;
@@ -189,8 +172,6 @@ void MIDIFileWriter::WriteTrackHeader(unsigned long length) {
 
 
 int	MIDIFileWriter::WriteVariableNum(unsigned long n) {
-    ENTER( "short	MIDIFileWriter::WriteVariableNum()" );
-
     register unsigned long buffer;
     short cnt = 0;
 
@@ -214,8 +195,6 @@ int	MIDIFileWriter::WriteVariableNum(unsigned long n) {
 
 
 void MIDIFileWriter::WriteDeltaTime(unsigned long abs_time) {
-    ENTER( "void	MIDIFileWriter::WriteDeltaTime()" );
-
     long dtime = abs_time - track_time;
     if(dtime < 0) {
 //		Error( "Events out of order" );
@@ -406,8 +385,6 @@ void MIDIFileWriter::WriteChannelEvent(const MIDITimedMessage &msg) {
 
 
 void MIDIFileWriter::WriteSysExEvent(const MIDITimedMessage &msg) {
-    ENTER( "void	MIDIFileWriter::WriteSysExEvent()" );
-
     WriteDeltaTime(msg.GetTime());
 
     int len = msg.GetSysEx()->GetLength();
@@ -443,8 +420,6 @@ void MIDIFileWriter::WriteTextEvent(unsigned long time, unsigned short text_type
 */
 
 void MIDIFileWriter::WriteMetaEvent(unsigned long time, unsigned char type, const unsigned char *data, long length) {
-    ENTER( "void	MIDIFileWriter::WriteMetaEvent()" );
-
     WriteDeltaTime(time);
     WriteCharacter((unsigned char) 0xff);   // META-Event
     WriteCharacter((unsigned char) type);	// Meta-event type
@@ -511,8 +486,6 @@ void MIDIFileWriter::WriteTimeSignature(
 
 
 void MIDIFileWriter::WriteEndOfTrack(unsigned long time)  {
-    ENTER( "void	MIDIFileWriter::WriteEndOfTrack()" );
-
     if(within_track == true) {
         if(time ==  0)
             time = track_time;
@@ -528,8 +501,6 @@ void MIDIFileWriter::WriteEndOfTrack(unsigned long time)  {
 
 
 void MIDIFileWriter::RewriteTrackLength() {
-    ENTER( "void	MIDIFileWriter::RewriteTrackLength()" );
-
     // go back and patch in the tracks length into the track chunk
     // header, now that we know the proper value.
     // then make sure we go back to the end of the file

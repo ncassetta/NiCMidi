@@ -31,12 +31,11 @@
 **
 */
 
-#include "../include/world.h"
 #include "../include/smpte.h"
 
 
 
-const uchar smpte_max_frames[] =
+const unsigned char smpte_max_frames[] =
 {
     24, 25, 30, 30, 30, 30
 };
@@ -101,20 +100,20 @@ SMPTE::SMPTE(const SMPTE &s) {
 }
 
 
-void SMPTE::SetSampleNumber (ulong n) {
+void SMPTE::SetSampleNumber (unsigned long n) {
     sample_number = n;
     SampleToTime();
 }
 
 
-ulong SMPTE::GetSampleNumber() {
+unsigned long SMPTE::GetSampleNumber() {
     if (sample_number_dirty)
         TimeToSample();
     return sample_number;
 }
 
 
-void SMPTE::SetTime (uchar h, uchar m, uchar s, uchar f, uchar sf) {
+void SMPTE::SetTime (unsigned char h, unsigned char m, unsigned char s, unsigned char f, unsigned char sf) {
     hours = h;
     minutes = m;
     seconds = s;
@@ -124,16 +123,16 @@ void SMPTE::SetTime (uchar h, uchar m, uchar s, uchar f, uchar sf) {
 }
 
 
-void SMPTE::SetMilliSeconds (ulong msecs) {
-    sample_number = (ulong) (msecs * GetSampleRateFrequency(sample_rate) / 1000);
+void SMPTE::SetMilliSeconds (unsigned long msecs) {
+    sample_number = (unsigned long) (msecs * GetSampleRateFrequency(sample_rate) / 1000);
     SampleToTime();
 }
 
 
-ulong SMPTE::GetMilliSeconds () {
+unsigned long SMPTE::GetMilliSeconds () {
     if (sample_number_dirty)
         TimeToSample();
-    return (ulong ) (sample_number * 1000 / GetSampleRateFrequency(sample_rate));
+    return (unsigned long) (sample_number * 1000 / GetSampleRateFrequency(sample_rate));
 }
 
 
@@ -193,14 +192,14 @@ void SMPTE::AddSubFrames(char sf) {
 void SMPTE::SampleToTime() {
 
     // make a temporary copy of the sample number
-    ulong tmp_sample=sample_number;
+    unsigned long tmp_sample=sample_number;
 
     // keep track of the actual rates in use in doubles.
     double the_smpte_rate = smpte_smpte_rates[ smpte_rate ];
     double the_sample_rate = smpte_sample_rates[ sample_rate ];
 
     // keep track of the maximum frame number for this smpte format.
-    uchar max_frame = smpte_max_frames[ smpte_rate ];
+    unsigned char max_frame = smpte_max_frames[ smpte_rate ];
 
     // Calculate the number of samples per frame
     double samples_per_frame = smpte_sample_rates[sample_rate] / smpte_smpte_rates[smpte_rate];
@@ -220,17 +219,17 @@ void SMPTE::SampleToTime() {
         int drops = (num_minutes - ten_minutes) * 2;
 
         // Offset the tmp_sample number by this amount of frames.
-        tmp_sample += (ulong)(drops * samples_per_frame);
+        tmp_sample += (unsigned long)(drops * samples_per_frame);
     }
 
     // Calculate the time in sub frames, frames, seconds, minutes, hours
-    ulong rounded_sub_frames= (ulong)((tmp_sample*the_smpte_rate * 100)/the_sample_rate +.5);
+    unsigned long rounded_sub_frames= (unsigned long)((tmp_sample*the_smpte_rate * 100)/the_sample_rate +.5);
 
-    sub_frames = (uchar) ((rounded_sub_frames) % 100);
-    frames 	   = (uchar) ((rounded_sub_frames / 100) % max_frame);
-    seconds	   = (uchar) ((rounded_sub_frames / (100L * max_frame)) % 60 );
-    minutes	   = (uchar) ((rounded_sub_frames / (100L * 60L * max_frame)) % 60 );
-    hours	   = (uchar) ((rounded_sub_frames / (100L * 60L * 24L *max_frame)) % 24 );
+    sub_frames = (unsigned char) ((rounded_sub_frames) % 100);
+    frames 	   = (unsigned char) ((rounded_sub_frames / 100) % max_frame);
+    seconds	   = (unsigned char) ((rounded_sub_frames / (100L * max_frame)) % 60 );
+    minutes	   = (unsigned char) ((rounded_sub_frames / (100L * 60L * max_frame)) % 60 );
+    hours	   = (unsigned char) ((rounded_sub_frames / (100L * 60L * 24L *max_frame)) % 24 );
 }
 
 
@@ -269,7 +268,7 @@ void SMPTE::TimeToSample() {
     }
 
     // save the calculated sample number in self.
-    sample_number = (ulong)tmp_sample;
+    sample_number = (unsigned long)tmp_sample;
 }
 
 
@@ -287,8 +286,8 @@ void SMPTE::Copy(const SMPTE &s) {
 
 
 int	SMPTE::Compare(SMPTE & s) {
-    ulong a = GetSampleNumber();
-    ulong b = s.GetSampleNumber();
+    unsigned long a = GetSampleNumber();
+    unsigned long b = s.GetSampleNumber();
 
     if(a < b)
        return -1;
@@ -299,16 +298,16 @@ int	SMPTE::Compare(SMPTE & s) {
 
 
 void SMPTE::Add(SMPTE &s) {
-    ulong a = GetSampleNumber();
-    ulong b = s.GetSampleNumber();
+    unsigned long a = GetSampleNumber();
+    unsigned long b = s.GetSampleNumber();
 
     SetSampleNumber(a + b);
 }
 
 
 void SMPTE::Subtract(SMPTE &s) {
-    ulong a = GetSampleNumber();
-    ulong b = s.GetSampleNumber();
+    unsigned long a = GetSampleNumber();
+    unsigned long b = s.GetSampleNumber();
 
     SetSampleNumber(a - b);
 }

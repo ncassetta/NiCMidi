@@ -23,7 +23,6 @@
 */
 
 
-#include "../include/world.h"
 #include "../include/driver.h"
 #include "../include/timer.h"
 
