@@ -5,35 +5,38 @@
 const char MIDISequencerGUIEvent::group_names[][10] =
         { "All      ", "Conductor", "Transport", "Track    " };
         const char MIDISequencerGUIEvent::conductor_items_names[][10] =
-        { "All      ", "Tempo    ", "Timesig  ", "Keysig   ", "Marker   " };
+        { "All      ", "Tempo    ", "Timesig  ", "Keysig   ", "Marker   ", "User    " };
         const char MIDISequencerGUIEvent::transport_items_names[][10] =
-        { "All      ", "Mode     ", "Measure  ", "Beat     ", "EndOfSong" };
+        { "All      ", "Mode     ", "Measure  ", "Beat     ", "EndOfSong", "User    " };
         const char MIDISequencerGUIEvent::track_items_names[][10] =
-        { "All      ", "Name     ", "Patch    ", "Note     ", "Volume   " };
+        { "All      ", "Name     ", "Patch    ", "Note     ", "Volume   ", "User    " };
 
 
 void MIDISequencerGUINotifierText::Notify(MIDISequencerGUIEvent e) {
     if (sequencer == 0) return;         // TODO: raise a warning
     if (!en) return;                    // not enabled
 
-    ost << "GUI EVENT: " << MIDISequencerGUIEvent::group_names[e.GetEventGroup()] << " ";
+    ost << "GUI EVENT: " << MIDISequencerGUIEvent::group_names[e.GetGroup()] << " ";
 
-    switch(e.GetEventGroup()) {
+    switch(e.GetGroup()) {
         case MIDISequencerGUIEvent::GROUP_ALL:
             ost << "GENERAL RESET";
             break;
         case MIDISequencerGUIEvent::GROUP_TRANSPORT:
-            switch (e.GetEventItem()) {
+            switch (e.GetItem()) {
                 case MIDISequencerGUIEvent::GROUP_TRANSPORT_BEAT:
                     ost << "MEAS " << sequencer->GetCurrentMeasure() + 1 << " " <<
                            "BEAT " << sequencer->GetCurrentBeat() + 1;
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRANSPORT_ENDOFSONG:
                     ost << "ENDOFSONG";
+                    break;
+                case MIDISequencerGUIEvent::GROUP_TRANSPORT_USER:
+                    ost << "USER DEFINED";
             }
             break;
         case MIDISequencerGUIEvent::GROUP_CONDUCTOR:
-            switch (e.GetEventItem()) {
+            switch (e.GetItem()) {
                 case MIDISequencerGUIEvent::GROUP_CONDUCTOR_TEMPO:
                     ost << "TEMPO: " << sequencer->GetState()->tempobpm ;
                     break;
@@ -42,7 +45,8 @@ void MIDISequencerGUINotifierText::Notify(MIDISequencerGUIEvent e) {
                            sequencer->GetState()->timesig_denominator;
                     break;
                 case MIDISequencerGUIEvent::GROUP_CONDUCTOR_KEYSIG:
-                    ost << "KEYSIG: ";  // TODO: manage this
+                    ost << "KEYSIG: " << KeyName(sequencer->GetState()->keysig_sharpflat,
+                                                 sequencer->GetState()->keysig_mode);
                     break;
                 case MIDISequencerGUIEvent::GROUP_CONDUCTOR_MARKER:
                     ost << "MARKER: " << sequencer->GetState()->marker_text;
@@ -50,9 +54,9 @@ void MIDISequencerGUINotifierText::Notify(MIDISequencerGUIEvent e) {
             break;
         case MIDISequencerGUIEvent::GROUP_TRACK: {
             char s[10];
-            int track_num = e.GetEventSubGroup();
+            int track_num = e.GetSubGroup();
             sprintf (s, "TRACK %3d ", track_num);
-            switch (e.GetEventItem()) {
+            switch (e.GetItem()) {
                 case MIDISequencerGUIEvent::GROUP_TRACK_NAME:
                     ost << s << "NAME: " << sequencer->GetTrackState(track_num)->track_name;
                     break;

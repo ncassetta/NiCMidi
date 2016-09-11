@@ -113,8 +113,7 @@ std::string MIDIMessage::MsgToText () const {
                 break;
 
             case META_KEYSIG:
-                // TODO: add a function to translate into a readable string
-                sprintf(buf, "Data %02d %02d", byte2, byte3);
+                sprintf(buf, "Key %s", KeyName(byte2, byte3));
                 break;
 
             default:
@@ -426,7 +425,7 @@ void MIDIMessage::SetMetaEvent(unsigned char type, unsigned short val) {
 void MIDIMessage::SetText(const char* text, unsigned char type) {
     SetMetaEvent(type, 0);
     AllocateSysEx(strlen(text));
-    for(int i = 0; i < strlen(text); ++i)
+    for(unsigned int i = 0; i < strlen(text); ++i)
         sysex->PutSysByte(text[i]);
 }
 

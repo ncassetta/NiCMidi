@@ -37,7 +37,7 @@ class MIDISequencer;
 /// implementing muting, soloing, rechanneling, velocity scaling and transposing.
 /// Moreover, you can set a custom MIDIProcessor pointer which extra-processes messages.
 /// The MIDISequencer class contains an independent MIDISequencerTrackProcessor for every MIDI Track.
-/// Advanced classes like MIDISequencer and AdvancedSequencer allow you to set muting, tramsposing,
+/// Advanced classes like MIDISequencer and AdvancedSequencer allow you to set muting, transposing,
 /// etc. without dealing with it: the only useful function for the user is the extra processing hook.
 /// However, you could subclass this for getting new features.
 ///
@@ -49,6 +49,11 @@ class MIDISequencerTrackProcessor : public MIDIProcessor {
         virtual         ~MIDISequencerTrackProcessor() {}
         /// Resets all values to default state
         virtual void    Reset();
+        /// Sets the extra processor for the track. The user processing is done before all internal
+        /// processing, and if the user Process() function returns _false_ it is not done at all.
+        /// If you want to eliminate an already set processor call this with 0 as parameter
+        void            SetExternalProcessor(MIDIProcessor* proc)
+                                                { extra_proc = proc; }
         /// Processes message msg, changing its parameters according to the state of the processor
         virtual bool    Process ( MIDITimedMessage *msg );
 
@@ -127,7 +132,7 @@ class MIDISequencerState : public MIDIProcessor {   // TODO: inherits also from 
         void                    Reset();
         /// This is the process function inherited from MIDIProcessor. When you get a MIDI message
         /// from the sequencer, it is processed by the state, which update its parameters and
-        /// notifies the GUI. The user hadn't to worry about this.
+        /// notifies the GUI if required.
         bool                    Process( MIDITimedMessage* msg );
 
         /// These are used internally for notifying the GUI when a something happens (a parameter
@@ -153,7 +158,6 @@ class MIDISequencerState : public MIDIProcessor {   // TODO: inherits also from 
         std::string             marker_text;        ///< The current marker
         std::vector<MIDISequencerTrackState>        // TODO: should we have a vector of pointers?
                                 track_states;
-
         int                     last_event_track;   ///< Internal use
 };
 

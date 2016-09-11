@@ -67,7 +67,7 @@ MIDIRawMessage& MIDIRawMessageQueue::PeekMessage(unsigned int n) {
 
 
 MIDIOutDriver::MIDIOutDriver(int id) :
-    processor(0), port_id(id), num_open(0), thru_channel(-1), busy(0) {
+    processor(0), port_id(id), num_open(0), thru_channel(-1) {
     try {
         port = new RtMidiOut();
     }
@@ -157,8 +157,7 @@ void MIDIOutDriver::AllNotesOff( int chan ) {
     if (!port->isPortOpen())
         return;
 
-    busy++;
-    //out_mutex.lock();
+    out_mutex.lock();
 
 #if DRIVER_USES_MIDIMATRIX                      // send a note off for every note on in the out_matrix
     if(out_matrix.GetChannelCount(chan) > 0) {
@@ -176,20 +175,17 @@ void MIDIOutDriver::AllNotesOff( int chan ) {
     msg.SetAllNotesOff( (unsigned char)chan );
     HardwareMsgOut(msg);
 
-    //out_mutex.unlock();
-    busy--;
+    out_mutex.unlock();
 }
 
 
 void MIDIOutDriver::AllNotesOff() {
-    busy++;
-    //out_mutex.lock();
+    out_mutex.lock();
 
     for(int i = 0; i < 16; ++i)
         AllNotesOff(i);
 
-    //out_mutex.unlock();
-    busy--;
+    out_mutex.unlock();
 }
 
 
@@ -201,14 +197,15 @@ void MIDIOutDriver::OutputMessage(const MIDITimedMessage& msg) {    // MIDITimed
 
     int i = 0;
     for( ; i < DRIVER_MAX_RETRIES; i++) {
-        if (!busy) {
+        if (out_mutex.try_lock()) {
             HardwareMsgOut(msg_copy);
+            out_mutex.unlock();
             break;
         }
         std::cerr << "busy driver (" << (i + 1) << ") ... " << std::endl;
         MIDITimer::Wait(1);
     }
-    if (i == 100)
+    if (i == DRIVER_MAX_RETRIES)
         std::cerr << "MIDIOutDriver::OutputMessage() failed!" << std::endl;
 }
 
@@ -223,8 +220,6 @@ void MIDIOutDriver::MIDIThru(MIDITimedMessage msg) {
 void MIDIOutDriver::HardwareMsgOut(const MIDIMessage &msg) {
     if (!port->isPortOpen())
         return;
-    //out_mutex.lock();
-    busy++;
     msg_bytes.clear();
 #if DRIVER_USES_MIDIMATRIX
     if (msg.IsChannelMsg())
@@ -261,8 +256,6 @@ void MIDIOutDriver::HardwareMsgOut(const MIDIMessage &msg) {
     }
     if (msg.IsSysEx()) // || msg.IsReset())
         MIDITimer::Wait(DRIVER_WAIT_AFTER_SYSEX);
-    //out_mutex.unlock();
-    busy--;
 }
 
 
@@ -334,12 +327,6 @@ void MIDIInDriver::ClosePort() {
     }
     else
         std::cout << "Attempt to close an already closed port!" << std::endl;
-}
-
-
-void MIDIInDriver::ForcedClosePort() {
-    port->closePort();
-    num_open = 0;
 }
 
 

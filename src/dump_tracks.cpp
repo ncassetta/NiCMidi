@@ -37,8 +37,6 @@ void DumpMIDITimedMessage (MIDITimedMessage* const msg) {
 
 
 void DumpMIDITrack (MIDITrack* const t) {
-    MIDITimedMessage *msg;
-
     std::cout << "Track dump" << std::endl;
     for (unsigned int i = 0; i < t->GetNumEvents(); ++i)
         DumpMIDITimedMessage (t->GetEventAddress (i));
@@ -49,9 +47,9 @@ void DumpAllTracks (MIDIMultiTrack* const mlt) {
     std::cout << "DUMP OF MIDI MULTITRACK\n";
     std::cout << "Clocks per beat: " << mlt->GetClksPerBeat() << "\n" << std::endl;
 
-    for (int i = 0; i < mlt->GetNumTracks(); ++i) {
+    for (unsigned int i = 0; i < mlt->GetNumTracks(); ++i) {
         std::cout << "Dump of track" << i << std::endl;
-        for (int j = 0; j < mlt->GetTrack(i)->GetNumEvents(); j++)
+        for (unsigned int j = 0; j < mlt->GetTrack(i)->GetNumEvents(); j++)
             DumpMIDITimedMessage(mlt->GetTrack (i)->GetEventAddress(j));
         std::cout << std::endl;
     }

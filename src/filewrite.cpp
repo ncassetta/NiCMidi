@@ -269,7 +269,7 @@ void MIDIFileWriter::WriteEvent(const MIDITimedMessage &msg) {
             WriteMetaEvent(
             msg.GetTime(),
             msg.GetMetaType(),
-            msg.GetSysEx()->GetBuf(),
+            msg.GetSysEx()->GetBuffer(),
             msg.GetSysEx()->GetLength());
         }
         else {

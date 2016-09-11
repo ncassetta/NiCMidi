@@ -35,6 +35,8 @@
 #ifndef _JDKMIDI_MIDI_H
 #define _JDKMIDI_MIDI_H
 
+char* KeyName (signed char sharp_flats, unsigned char major_minor, bool uppercase = true,
+               bool space = false, bool use_Mm = true);
 
 // MIDI Status bytes
 //

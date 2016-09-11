@@ -43,50 +43,51 @@
 
 class  MIDISystemExclusive {
     public:
-                                MIDISystemExclusive(int size=384 );
+                                MIDISystemExclusive(int size = 384);
                                 MIDISystemExclusive(const MIDISystemExclusive &e);
-                                MIDISystemExclusive(unsigned char *buf_, int max_len_, int cur_len_, bool deletable_);
+                                MIDISystemExclusive(const unsigned char *buf, int max_len_, int cur_len_);
         virtual	               ~MIDISystemExclusive();
 
-        friend bool             operator== (const MIDISystemExclusive &e1, const MIDISystemExclusive &e2 );
+        MIDISystemExclusive&    operator= (const MIDISystemExclusive& se);
+        bool                    operator== (const MIDISystemExclusive &se) const;
 
-        void	                Clear()				        { cur_len=0; chk_sum=0;	}
-        void	                ClearChecksum()		        { chk_sum=0; }
+        void	                Clear()				        { cur_len = 0; chk_sum = 0;	}
+        void	                ClearChecksum()		        { chk_sum = 0; }
 
         void	                PutSysByte(unsigned char b)	// does not add to chksum
-                                    { if( cur_len<max_len ) buf[cur_len++]=b; }
-        void	                PutByte(unsigned char b)    { PutSysByte(b); chk_sum+=b; }
-        void	                PutEXC()                    { PutSysByte( SYSEX_START ); }
-        void	                PutEOX()	                { PutSysByte( SYSEX_END ); }
+                                    { if (cur_len < max_len) buffer[cur_len++] = b; }
+        void	                PutByte(unsigned char b)    { PutSysByte(b); chk_sum += b; }
+        void	                PutEXC()                    { PutSysByte(SYSEX_START); }
+        void	                PutEOX()	                { PutSysByte(SYSEX_END); }
 
+        void	                PutNibblizedByte(unsigned char b)       // low nibble first
+                                    { PutByte((unsigned char)(b & 0xf)); PutByte((unsigned char)(b >> 4)); }
+        void	                PutNibblizedByte2(unsigned char b)      // high nibble first
+                                    { PutByte((unsigned char)(b >> 4)); PutByte((unsigned char)(b & 0xf)); }
+        void	                PutChecksum()               { PutByte((unsigned char)(chk_sum & 0x7f)); }
 
-        void	                PutNibblizedByte( unsigned char b )     // low nibble first
-                                    { PutByte( (unsigned char)(b&0xf) ); PutByte( (unsigned char)(b>>4) ); }
-        void	                PutNibblizedByte2( unsigned char b )    // high nibble first
-                                    { PutByte( (unsigned char)(b>>4) ); PutByte( (unsigned char)(b&0xf) ); }
-        void	                PutChecksum()               { PutByte( (unsigned char)(chk_sum&0x7f )); }
-
-        unsigned char	        GetChecksum() const         { return (unsigned char)(chk_sum&0x7f); }
-        int                     GetLengthSE() const         { return cur_len; }
+        unsigned char	        GetChecksum() const         { return (unsigned char)(chk_sum & 0x7f); }
         int		                GetLength() const           { return cur_len; }
-        unsigned char	        GetData( int i) const       { return buf[i]; }
-        bool	                IsFull() const              { return cur_len>=max_len; }
-        unsigned char*          GetBuf()                    { return buf; }
-        const unsigned char*    GetBuf() const              { return buf; }
-        bool                    IsGMReset() const           { return memcmp(buf, GMReset_data, cur_len) == 0; }
-        bool                    IsGSReset() const           { return memcmp(buf, GSReset_data, cur_len) == 0; }
-        bool                    IsXGReset() const           { return memcmp(buf, XGReset_data, cur_len) == 0; }
+        unsigned char	        GetData(int i) const        { return buffer[i]; }
+        bool	                IsFull() const              { return cur_len >= max_len; }
+        unsigned char*          GetBuffer()                 { return buffer; }
+        const unsigned char*    GetBuffer() const           { return buffer; }
+        bool                    IsGMReset() const;
+        bool                    IsGSReset() const;
+        bool                    IsXGReset() const;
 
     private:
-        unsigned char*          buf;
+        unsigned char*          buffer;
         int                     max_len;
         int                     cur_len;
         unsigned char           chk_sum;
-        bool                    deletable;
 
         static const unsigned char GMReset_data[];
         static const unsigned char GSReset_data[];
         static const unsigned char XGReset_data[];
+        static const int           GMReset_len = 6;
+        static const int           GSReset_len = 11;
+        static const int           XGReset_len = 9;
 };
 
 

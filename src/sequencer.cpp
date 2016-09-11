@@ -136,70 +136,6 @@ void MIDISequencerTrackState::Reset() {
     note_matrix.Clear();
     got_good_track_name = false;
 }
-// Note by NC: I eliminated GoToZero()
-
-
-
-/*  MOVED TO MIDISequencerState
-bool MIDISequencerTrackState::Process( MIDITimedBigMessage *msg ) {
-    // is the event a NoOp?
-
-    if( msg->IsNoOp() )
-        // yes, ignore event.
-        return false;
-
-    // is it a normal MIDI channel message?
-    if( msg->IsChannelMsg() ) {
-
-        if( msg->GetType()==PITCH_BEND )    // is it a bender event?
-            // yes, remember the bender wheel value
-             bender_value = msg->GetBenderValue();
-        else if( msg->IsControlChange() ) { // is it a control change event?
-            // yes
-            // is it a volume change event?
-
-            if( msg->GetController()==C_MAIN_VOLUME ) {
-                // yes, store the current volume level
-                volume = msg->GetControllerValue();
-                Notify( MIDISequencerGUIEvent::GROUP_TRACK_VOLUME );
-            }
-        }
-        else if( msg->IsProgramChange() ) { // is it a program change event?
-            // yes, update the current program change value
-            pg = msg->GetPGValue();
-            Notify( MIDISequencerGUIEvent::GROUP_TRACK_PG );
-        }
-        // pass the message to our note matrix to keep track of all notes on
-        // on this track
-
-        if( note_matrix.Process( *msg ) ) {
-            // did the "any notes on" status change?
-            if(    ( notes_are_on && note_matrix.GetTotalCount()==0)
-                      || (!notes_are_on && note_matrix.GetTotalCount()>0 ) ) {
-                // yes, toggle our notes_are_on flag
-                notes_are_on = !notes_are_on;
-                // and notify the gui about the activity on this track
-                Notify( MIDISequencerGUIEvent::GROUP_TRACK_NOTE );
-            }
-        }
-    }
-    else if( ( msg->GetMetaType()==META_TRACK_NAME
-                 || msg->GetMetaType()==META_INSTRUMENT_NAME
-                 || (!got_good_track_name && msg->GetMetaType()==META_GENERIC_TEXT && msg->GetTime()==0) )
-               && msg->GetSysEx() ) {
-    // this is a META message (sent only to track_state[0]) is it a track name event?
-            got_good_track_name = true;
-            int len = msg->GetSysEx()->GetLength();
-            if( len > (int)sizeof(track_name) - 1 )
-                len = (int)sizeof(track_name) - 1;
-            memcpy(track_name, msg->GetSysEx()->GetBuf(), len );
-            track_name[len]='\0';
-            FixQuotes( track_name );
-            Notify( MIDISequencerGUIEvent::GROUP_TRACK_NAME );
-    }
-    return true;
-}
-*/
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -344,7 +280,7 @@ bool MIDISequencerState::Process( MIDITimedMessage *msg ) {
                    MIDISequencerGUIEvent::GROUP_CONDUCTOR_KEYSIG);
         }
         else if ( msg->IsMarkerText()) {
-            marker_text = std::string((const char *)msg->GetSysEx()->GetBuf(), msg->GetSysEx()->GetLength());
+            marker_text = std::string((const char *)msg->GetSysEx()->GetBuffer(), msg->GetSysEx()->GetLength());
             Notify(MIDISequencerGUIEvent::GROUP_CONDUCTOR,
                    MIDISequencerGUIEvent::GROUP_CONDUCTOR_MARKER);
         }
@@ -388,7 +324,7 @@ bool MIDISequencerState::Process( MIDITimedMessage *msg ) {
             // is it a track name event?
             t_state.got_good_track_name = true;
             int len = msg->GetSysEx()->GetLength();
-            t_state.track_name = std::string((const char *)msg->GetSysEx()->GetBuf(), len);
+            t_state.track_name = std::string((const char *)msg->GetSysEx()->GetBuffer(), len);
             //FixQuotes( track_name );
             NotifyTrack(MIDISequencerGUIEvent::GROUP_TRACK_NAME);
         }

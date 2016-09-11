@@ -43,7 +43,6 @@
 #include "midi.h"
 #include "msg.h"
 #include "sysex.h"
-//#include "file.h"
 #include "fileread.h"
 #include "multitrack.h"
 

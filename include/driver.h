@@ -38,10 +38,9 @@
 #include <vector>
 #include <string>
 #include <mutex>
-#include <atomic>
+//#include <atomic>
 
 
-// TODO: resolve using mutex or atomic
 // TODO: implements RtMidi functions (error callback, selection of input, etc.)
 // TODO: finish documentation
 
@@ -122,7 +121,7 @@ class MIDIOutDriver {
             /// Creates a MIDIOutDriver object sending messages to the given out port. The number of
             /// available MIDI out ports and their names can be retrieved by the
             /// MIDIManager::GetNumMIDIOutPorts() and MIDIManager::GetMIDIOutName() methods.
-            // TODO: what to do if id is not valid?
+            /// \note If id is not valid or the function fails, a dummy port with no functionality is open.
                                 MIDIOutDriver (int id);
             /// Closes the port and deletes the object.
         virtual                 ~MIDIOutDriver();
@@ -187,8 +186,7 @@ class MIDIOutDriver {
         MIDIProcessorRechannelizer  rechannelizer;
                                             ///< Used internally for rechannelizing thru messagess
 
-        //std::recursive_mutex    out_mutex;
-        std::atomic<unsigned char> busy;        // TODO: use the mutex???
+        std::recursive_mutex    out_mutex;
 
 #if DRIVER_USES_MIDIMATRIX
         MIDIMatrix              out_matrix; ///< To keep track of notes on going to MIDI out
@@ -221,7 +219,6 @@ class MIDIInDriver {
         virtual void            OpenPort();
             /// Closes the open MIDI in port. The function does nothing if the port is already closed.
         virtual void            ClosePort();
-        virtual void            ForcedClosePort();
             /// Returns the id number of the MIDI in port.
         int                     GetPortId() const               { return port_id; }
             /// Returns the name of the port.

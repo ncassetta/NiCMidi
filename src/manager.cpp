@@ -43,7 +43,7 @@ MIDIManager::MIDIManager(MIDISequencerGUINotifier *n, MIDISequencer *seq_) :
     auto_stop_proc(AutoStopProc), auto_stop_param(this)
 
 {
-#ifdef WIN32    //TODO: this is temporary, needed by WIstd::atomic<unsigned char> busy;        // TODO: use the mutex???NDOWS10
+#ifdef WIN32    //TODO: this is temporary, needed by WINDOWS10
      CoInitializeEx(NULL, COINIT_MULTITHREADED);
 #endif // WIN32
     try {

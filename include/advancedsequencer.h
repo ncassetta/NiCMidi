@@ -11,7 +11,6 @@
 
 
 
-//#include "midi.h"
 #include "msg.h"
 #include "driver.h"
 #include "multitrack.h"

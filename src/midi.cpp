@@ -34,6 +34,9 @@
 
 #include "../include/midi.h"
 
+#include <cstdio>           // for function KeyName()
+#include <cctype>
+
 
 const char* get_chan_msg_name(unsigned char status) {
     static const char* chan_msg_names[16] = {
@@ -184,4 +187,20 @@ const char* get_meta_name(unsigned char b) {
 
 
 
-
+char* KeyName(signed char sharp_flats, unsigned char major_minor, bool uppercase,
+              bool space, bool use_Mm) {
+    static char s[8];
+    static const char key_names[][4] =
+    { "Cb", "Gb", "Db", "Ab", "Eb", "Bb", "F", "C", "G", "D", "A", "E", "B", "F#", "C#", "G#", "D#", "A#" };
+    int index = (major_minor == 0 ? sharp_flats + 7 : sharp_flats + 10 );
+    int p = sprintf(s, key_names[index]);
+    if (space)
+        p += sprintf(s + p, " ");
+    if (!uppercase)
+        s[0] = tolower(s[0]);
+    if (use_Mm)
+        sprintf (s + p, "%s", (major_minor == 0 ? "M" : "m"));
+    else
+        sprintf (s + p, "%s", (major_minor == 0 ? "Maj" : "min"));
+    return s;
+}

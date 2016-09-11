@@ -696,7 +696,7 @@ void AdvancedSequencer::CatchEventsBefore() {
             events_sent += 2;
             // set the controllers
             for (unsigned int j = 0; j < C_ALL_NOTES_OFF; j++) {
-                if (state->control_values[j] != 0xff) {
+                if (state->control_values[j] != -1) {
                     msg.SetControlChange(channel, j, state->control_values[j]);
                     OutputMessage(msg, port);
                     events_sent++;
@@ -749,7 +749,7 @@ void AdvancedSequencer::CatchEventsBefore(int trk) {
             events_sent += 2;
             // set the controllers
             for (unsigned int i = 0; i < C_ALL_NOTES_OFF; i++) {
-                if (state->control_values[i] != 0xff) {
+                if (state->control_values[i] != -1) {
                     msg.SetControlChange(channel, i, state->control_values[i]);
                     OutputMessage(msg, port);
                     events_sent++;

@@ -20,7 +20,7 @@ class MIDISequencer;
 /// - GROUP_TRACK: note, program, control change ...
 /// Every group has some items, denoting different events
 /// For GROUP_TRACK is also used a subgroup parameter, i.e. the track of the event.
-/// For effective sending messages see the MIDISequencerGUIEventNotifier class.
+/// For effective sending messages see the MIDISequencerGUINotifier class.
 ///
 class MIDISequencerGUIEvent {
     public:
@@ -39,19 +39,20 @@ class MIDISequencerGUIEvent {
         void        SetEvent( int group, int subgroup = 0, int item = 0 ) {
                         bits = ((group&0xff)<<24) | ((subgroup&0xfff)<<12) | (item&0xfff); }
             /// Gets the event group.
-        int         GetEventGroup() const                   { return (int)((bits>>24)&0xff); }
+        int         GetGroup() const                        { return (int)((bits>>24)&0xff); }
             /// Gets the event subgroup (only effective for GROUP_TRACK events, where it is
             /// the track of the event; it is 0 for other groups).
-        int         GetEventSubGroup() const                { return (int)((bits>>12)&0xfff); }
+        int         GetSubGroup() const                     { return (int)((bits>>12)&0xfff); }
             /// Gets the event item (i.e. the kind of the event).
-        int         GetEventItem() const                    { return (int)((bits>>0)&0xfff); }
+        int         GetItem() const                         { return (int)((bits>>0)&0xfff); }
 
             /// Main groups
         enum {
             GROUP_ALL = 0,              ///< Generic group: used by the MIDISequencer to request a full GUI reset
             GROUP_CONDUCTOR,            ///< Conductor group
             GROUP_TRANSPORT,            ///< Transport group
-            GROUP_TRACK                 ///< Track group (the subgroup is the track of the event)
+            GROUP_TRACK,                ///< Track group (the subgroup is the track of the event)
+            GROUP_USER                  ///< User defined group
         };
 
             /// Items in conductor group
@@ -60,7 +61,8 @@ class MIDISequencerGUIEvent {
             GROUP_CONDUCTOR_TEMPO,      ///< Tempo change
             GROUP_CONDUCTOR_TIMESIG,    ///< Timesig change
             GROUP_CONDUCTOR_KEYSIG,     ///< Keysig change
-            GROUP_CONDUCTOR_MARKER      ///< Marker
+            GROUP_CONDUCTOR_MARKER,     ///< Marker
+            GROUP_CONDUCTOR_USER        ///< User defined item
     };
 
             /// Items in transport group
@@ -69,7 +71,8 @@ class MIDISequencerGUIEvent {
             GROUP_TRANSPORT_MODE,       ///< Sequencer start and stop
             GROUP_TRANSPORT_MEASURE,    ///< Start of a measure
             GROUP_TRANSPORT_BEAT,       ///< Beat marker
-            GROUP_TRANSPORT_ENDOFSONG   ///< End of playback
+            GROUP_TRANSPORT_ENDOFSONG,  ///< End of playback
+            GROUP_TRANSPORT_USER        ///< User defined item
         };
 
             /// Items in track group (the track is in the subgroup)
@@ -81,7 +84,8 @@ class MIDISequencerGUIEvent {
             GROUP_TRACK_VOLUME,         ///< Volume change
             GROUP_TRACK_PAN,            ///< Pan change
             GROUP_TRACK_CHR,            ///< Chorus change
-            GROUP_TRACK_REV             ///< Reverb change
+            GROUP_TRACK_REV,            ///< Reverb change
+            GROUP_TRACK_USER            ///< User defined item
         };
 
 
@@ -141,33 +145,6 @@ class MIDISequencerGUINotifierText : public MIDISequencerGUINotifier {
     private:
         std::ostream& ost;
 };
-
-
-/* NOTE BY NC: I eliminated this class because its name was somewhat confusing: it is a notifier,
-   but inherits by a MIDIProcessor and CONTAINS a notifier.
-   The class was only inherited by the MIDISequencerTrackState class and had no utility for the end user,
-   so its features are incorporated in the latter
-class MIDISequencerTrackNotifier : public MIDIProcessor {
-    public:
-                        MIDISequencerTrackNotifier(MIDISequencer*  seq_, int trk,
-                            MIDISequencerGUIEventNotifier *n)  :
-                            seq(seq_), track_num(trk), notifier(n) {}
-
-        virtual         ~MIDISequencerTrackNotifier()   {}
-
-        void            SetNotifier(MIDISequencer *seq_, int trk,
-                            MIDISequencerGUIEventNotifier *n ) {
-                                seq = seq_; track_num = trk; notifier = n; }
-
-        void            Notify( int item );
-        void            NotifyConductor( int item );
-
-    protected:
-        MIDISequencer*  seq;
-        int             track_num;
-        MIDISequencerGUIEventNotifier *notifier;
-};
-*/
 
 
 #ifdef _WIN32

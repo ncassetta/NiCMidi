@@ -37,15 +37,6 @@
 
 #include "../include/sysex.h"
 
-#ifndef DEBUG_MDSYSEX
-# define DEBUG_MDSYSEX 0
-#endif
-
-#if DEBUG_MDSYSEX
-# undef DBG
-# define DBG(a) a
-#endif
-
 #include <iostream>
 
 
@@ -54,53 +45,73 @@ const unsigned char MIDISystemExclusive::GSReset_data[] = { 0xF0, 0x41, 0x10, 0x
 const unsigned char MIDISystemExclusive::XGReset_data[] = { 0xF0, 0x43, 0x10, 0x4C, 0x00, 0x00, 0x7E, 0x00, 0xF7 };
 
 
-MIDISystemExclusive::MIDISystemExclusive( int size_ ) {
-    buf=new unsigned char[size_];
-    if( buf )
-        max_len=size_;
+MIDISystemExclusive::MIDISystemExclusive(int size) : cur_len(0), chk_sum(0) {
+    buffer = new unsigned char[size];
+    if(buffer)
+        max_len = size;
     else
-        max_len=0;
-    //std::cout << "Allocati " << max_len << " bytes in " << &buf  << " da ctor1\n";
-    cur_len=0;
-    chk_sum=0;
-    deletable=true;
+        max_len = 0;
+    //std::cout << "Sysex: allocated " << max_len << " bytes in " << &buffer  << " by ctor1\n";
 }
 
 
-MIDISystemExclusive::MIDISystemExclusive( const MIDISystemExclusive &e ) {
-    buf = new unsigned char [e.max_len];
-    max_len = e.max_len;
-    //std::cout << "Allocati " << max_len << " bytes in " << &buf  << " da ctor2\n";
-    cur_len = e.cur_len;
-    chk_sum = e.chk_sum;
-    deletable = true;
-
-    for( int i=0; i<cur_len; ++i )
-        buf[i] = e.buf[i];
+MIDISystemExclusive::MIDISystemExclusive(const MIDISystemExclusive &se) :
+    max_len(se.max_len), cur_len(se.cur_len), chk_sum(se.chk_sum) {
+    buffer = new unsigned char [se.max_len];
+    //std::cout << "Sysex: allocated " << max_len << " bytes in " << &buffer  << " by ctor2\n";
+    memcpy(buffer, se.buffer, cur_len);
 }
 
 
-MIDISystemExclusive::MIDISystemExclusive(unsigned char *buf_, int max_len_, int cur_len_, bool deletable_) {
-    //std::cout << "Chiamato ctor3. Puntatore" << &buf  << " copiato\n";
-    buf=buf_;
-    max_len=max_len_;
-    cur_len=cur_len_;
-    chk_sum=0;
-    deletable=deletable_;
+MIDISystemExclusive::MIDISystemExclusive(const unsigned char *buf, int max_len_, int cur_len_) :
+    max_len(max_len_), cur_len(cur_len_), chk_sum(0) {
+    buffer = new unsigned char [max_len_];
+    //std::cout << "Sysex: allocated " << max_len << " bytes in " << &buffer  << " by ctor3\n";
+    memcpy(buffer, buf, cur_len);
 }
 
 
 MIDISystemExclusive::~MIDISystemExclusive() {
-    if( deletable )
-        delete [] buf;
-    //std::cout << "Liberati " << max_len << " bytes in " << &buf  << " da dtor\n";
+    delete [] buffer;
+    //std::cout << "Sysex: freed " << max_len << " bytes in " << &buf  << " by dtor\n";
 }
 
 
-bool operator == ( const MIDISystemExclusive &e1, const MIDISystemExclusive &e2 ) {
-    if ( e1.cur_len != e2.cur_len )
+MIDISystemExclusive& MIDISystemExclusive::operator= (const MIDISystemExclusive& se) {
+    max_len = se.max_len;
+    cur_len = se.cur_len;
+    chk_sum = se.chk_sum;
+    buffer = new unsigned char [max_len];
+    //std::cout << "Sysex: allocated " << max_len << " bytes in " << &buffer  << " by operator=\n";
+    memcpy(buffer, se.buffer, cur_len);
+    return *this;
+}
+
+bool MIDISystemExclusive::operator == (const MIDISystemExclusive &se) const {
+    if (cur_len != se.cur_len)
         return false;
-    if ( e1.cur_len == 0 )
+    if (cur_len == 0)
         return true;
-    return memcmp( e1.buf, e2.buf, e1.cur_len ) == 0 ;
+    return memcmp(buffer, se.buffer, cur_len) == 0 ;
+}
+
+
+bool MIDISystemExclusive::IsGMReset() const {
+    if (cur_len != GMReset_len)
+        return false;
+    return memcmp(buffer, GMReset_data, cur_len) == 0 ;
+}
+
+
+bool MIDISystemExclusive::IsGSReset() const {
+    if (cur_len != GSReset_len)
+        return false;
+    return memcmp(buffer, GSReset_data, cur_len) == 0;
+}
+
+
+bool MIDISystemExclusive::IsXGReset() const {
+    if (cur_len != XGReset_len)
+        return false;
+    return memcmp(buffer, XGReset_data, cur_len) == 0;
 }
