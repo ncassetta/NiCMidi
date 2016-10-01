@@ -24,13 +24,13 @@
 
 #include "multitrack.h"
 #include "matrix.h"
-#include "process.h"
+#include "processor.h"
 #include "notifier.h"
 
 #include <string>
 
 
-class MIDISequencer;
+class MIDISequencer;        // forward declaration
 
 ///
 /// This class inherits from the pure virtual MIDIProcessor and is a multi-purpose processor
@@ -43,18 +43,18 @@ class MIDISequencer;
 ///
 class MIDISequencerTrackProcessor : public MIDIProcessor {
     public:
-        /// The constructor. Default is no processing (MIDI messages leave the processor unchanged)
+            /// The constructor. Default is no processing (MIDI messages leave the processor unchanged)
                         MIDISequencerTrackProcessor();
-        /// The destructor
+            /// The destructor
         virtual         ~MIDISequencerTrackProcessor() {}
-        /// Resets all values to default state
+            /// Resets all values to default state
         virtual void    Reset();
-        /// Sets the extra processor for the track. The user processing is done before all internal
-        /// processing, and if the user Process() function returns _false_ it is not done at all.
-        /// If you want to eliminate an already set processor call this with 0 as parameter
+            /// Sets the extra processor for the track. The user processing is done before all internal
+            /// processing, and if the user Process() function returns _false_ it is not done at all.
+            /// If you want to eliminate an already set processor call this with 0 as parameter
         void            SetExternalProcessor(MIDIProcessor* proc)
                                                 { extra_proc = proc; }
-        /// Processes message msg, changing its parameters according to the state of the processor
+            /// Processes message msg, changing its parameters according to the state of the processor
         virtual bool    Process ( MIDITimedMessage *msg );
 
         bool            mute;                   ///< track is muted
@@ -68,7 +68,7 @@ class MIDISequencerTrackProcessor : public MIDIProcessor {
 
 ///
 /// This class stores current MIDI parameters for a track.
-/// It stores track name, program, volume, pan, chorus, reverb, pitch bend and a matrix with notes on and off.
+/// It stores track name, program, pitch bend, all control changes values and a matrix with notes on and off.
 /// The MIDISequencerState class contains a MIDISequencerTrackState for every MIDI Track, and it take care of
 /// updating parameters. You can ask the MIDISequencerTrackState for knowing actual track parameters, however
 /// advanced class AdvancedSequencer allows you to get them without dealing with it, so the use of this class
@@ -76,26 +76,25 @@ class MIDISequencerTrackProcessor : public MIDIProcessor {
 ///
 class MIDISequencerTrackState {
     public:
-        /// The constructor.
-        /// Initial attributes are program = -1, volume = 100, pan = 64, chorus = 0, reverb = 0, bender_value = 0,
-        /// track_name = "", all notes off.
+            /// The constructor.
+            /// Initial attributes are program = -1 (undefined),  bender_value = 0, all controls = -1,
+            /// track_name = "", all notes off.
                         MIDISequencerTrackState();
-        /// The destructor.
+            /// The destructor.
         virtual         ~MIDISequencerTrackState() {}
 
-        /// Resets default values.
+            // Copy constructor used but unneeded!
+
+            /// Resets default values.
         virtual void    Reset();
         char            program;		    ///< current program change, or -1
         int             bender_value;		///< last seen bender value
         std::string     track_name;	        ///< track name
         bool            notes_are_on;       ///< true if there are notes currently on
         MIDIMatrix      note_matrix;        ///< to keep track of all notes on
-        char            control_values[C_ALL_NOTES_OFF];
+        char            control_values[C_ALL_NOTES_OFF];        // NOT unsigned to allow -1 if not changed
                                             ///< array of current control change values
-                                            // NOT unsigned to allow -1 if not changed
-
         bool            got_good_track_name;///< internal use
-
 };
 
 
@@ -112,42 +111,46 @@ class MIDISequencerTrackState {
 /// class is mainly internal.
 /// However, you could subclass it if you want to keep track of other parameters.
 ///
-class MIDISequencerState : public MIDIProcessor {   // TODO: inherits also from MIDISequencerGUINotifier ?
+class MIDISequencerState : public MIDIProcessor {
+// Doesn't inherit from MIDISequencerGUINotifier because notifier and sequencer must be independent objects
+// (notifier is used also by the MIDIManager)
+// All is public: used by various classes
     public:
-        /// The constructor. Appropriate values are set by the sequencer when it creates the object.
+            /// The constructor. Appropriate values are set by the sequencer when it creates the object.
                                 MIDISequencerState(MIDIMultiTrack *multitrack_,
                                                    MIDISequencerGUINotifier *n = 0);
-        /// The copy constructor.
+            /// The copy constructor.
                                 MIDISequencerState(const MIDISequencerState &s);
-        /// The destructor does nothing.
-                                ~MIDISequencerState() {}
-        /// The equal operator.
+            /// The destructor does nothing.
+                                ~MIDISequencerState();
+            /// The equal operator.
         const MIDISequencerState& operator= (const MIDISequencerState &s);
 
-        /// Returns the number of tracks of the multitrack.
+            /// Returns the number of tracks of the multitrack.
         unsigned int            GetNumTracks() const        {return multitrack->GetNumTracks();}
-        /// Resets the state to default values. These are: cur_clock = 0, tempo = 120 bpm,
-        /// time = 4/4, keysig = C Maj, no marker. Moreover resets all track states (see
-        /// MIDISequencerTrackState::Reset()).
+            /// Resets the state to default values. These are: cur_clock = 0, tempo = 120 bpm,
+            /// time = 4/4, keysig = C Maj, no marker. Moreover resets all track states (see
+            /// MIDISequencerTrackState::Reset()).
         void                    Reset();
-        /// This is the process function inherited from MIDIProcessor. When you get a MIDI message
-        /// from the sequencer, it is processed by the state, which update its parameters and
-        /// notifies the GUI if required.
+            /// This is the process function inherited from MIDIProcessor. When you get a MIDI message
+            /// from the sequencer, it is processed by the state, which update its parameters and
+            /// notifies the GUI if required.
         bool                    Process( MIDITimedMessage* msg );
 
-        /// These are used internally for notifying the GUI when a something happens (a parameter
-        /// was changed, time is moved, etc.)
+            /// These are used internally for notifying the GUI when a something happens (a parameter
+            /// was changed, time is moved, etc.)
         void                    Notify(int group, int item = 0) const;
         void                    NotifyTrack(int item) const;
 
-        MIDISequencerGUINotifier* notifier; // TODO: these should be protected but they are used
-        MIDIMultiTrack*         multitrack; // by AdvancedSequencer constructors
+        MIDISequencerGUINotifier* notifier;
+        MIDIMultiTrack*         multitrack;
         MIDIMultiTrackIterator  iterator;
 
         MIDIClockTime           cur_clock;          ///< The current MIDI clock in MIDI ticks
         double                  cur_time_ms;        ///< The current clock in milliseconds
         int                     cur_beat;           ///< The current beat in the measure (1st beat is 0)
         int                     cur_measure;        ///< The current measure (1st measure is 0)
+        MIDIClockTime           beat_length;        ///< The duration of a beat
         MIDIClockTime           next_beat_time;     ///< The MIDI time of the next beat (for internal use)
 
         double                  tempobpm;           ///< The current tempo in beats per minute
@@ -156,8 +159,8 @@ class MIDISequencerState : public MIDIProcessor {   // TODO: inherits also from 
         char                    keysig_sharpflat;   ///< The current key signature accidents (
         char                    keysig_mode;        ///< Major mode (0) or minor (1)
         std::string             marker_text;        ///< The current marker
-        std::vector<MIDISequencerTrackState>        // TODO: should we have a vector of pointers?
-                                track_states;
+        std::vector<MIDISequencerTrackState*>
+                                track_states;       ///< A track state for every track
         int                     last_event_track;   ///< Internal use
 };
 
@@ -211,9 +214,9 @@ class MIDISequencer {
         MIDISequencerState*             GetState()              { return &state; }
         const MIDISequencerState*       GetState() const        { return &state; }
         /// Returns the MIDISequencerTrackState for track _trk_.
-        MIDISequencerTrackState*        GetTrackState(int trk)  { return &state.track_states[trk]; }
+        MIDISequencerTrackState*        GetTrackState(int trk)  { return state.track_states[trk]; }
         const MIDISequencerTrackState*  GetTrackState(int trk) const
-                                                                { return &state.track_states[trk]; }
+                                                                { return state.track_states[trk]; }
         /// Returns the MIDISequencerTrackProcessor for track _trk_.
         MIDISequencerTrackProcessor*    GetTrackProcessor(int trk)
                                                                 { return track_processors[trk]; }
@@ -376,11 +379,7 @@ class MIDISequencer {
 #ifndef JDKSMIDI_SEQUENCER_H
 #define JDKSMIDI_SEQUENCER_H
 
-//#include "jdk/track.h"
-//#include "jdksmidi/multitrack.h"
-//#include "jdksmidi/tempo.h"
-//#include "jdksmidi/matrix.h"
-//#include "jdksmidi/process.h"
+
 
 namespace jdksmidi
 {
@@ -389,51 +388,6 @@ namespace jdksmidi
 
 
 /*
-class MIDISequencerTrackState : public MIDIProcessor
-{
-public:
-
-    /// The constructor.
-    /// Initial attributes are pg = -1, volume = 100, bender_value = 0, all notes off, track_name = ""
-    /// \param seq_ the seguencer that sends messages (used only for notifying)
-    /// \param trk the number of the track
-    /// \param n the notifier: if set to 0 no notifying
-    MIDISequencerTrackState (
-        const MIDISequencer *seq_,
-        int trk,
-        MIDISequencerGUIEventNotifier *n
-    );
-
-    /// The destructor
-    virtual ~MIDISequencerTrackState()
-    {
-    }
-
-    /// Resets default values, but not track_name and got_good_track_name
-    virtual void GoToZero();
-
-    /// As above, but resets also track_name and got_good_track_name
-    virtual void Reset();
-
-    /// Processes the message msg, notifying the GUI if needed
-    virtual bool Process ( MIDITimedBigMessage *msg );
-
-    /// Notifies events to the GUI
-    void Notify ( int item );
-
-    int program;                    ///< current program change, or -1 if not set
-    int volume;                     ///< current volume controller value
-    int bender_value;               ///< last seen bender value
-    char track_name[256];           ///< track name
-    bool got_good_track_name;       ///< true if we dont want to use generic text events for track name
-
-    bool notes_are_on;              ///< true if there are any notes currently on
-    MIDIMatrix note_matrix;         ///< to keep track of all notes on
-
-    const MIDISequencer* seq;       ///< the sequencer to which the track belongs
-    int track;                      ///< the number of the track
-    MIDISequencerGUIEventNotifier* notifier;        ///< the notifier: if 0 there is no notifying
-};
 
 
 

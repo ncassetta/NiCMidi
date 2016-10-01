@@ -24,8 +24,6 @@
 
 // updated to reflect changes in jdksmidi
 
-#include <iostream>         // DEBUG! togliere
-
 #include "../include/manager.h"
 
 
@@ -35,12 +33,11 @@ std::vector<std::string> MIDIManager::MIDI_in_names;
 
 
 
-MIDIManager::MIDIManager(MIDISequencerGUINotifier *n, MIDISequencer *seq_) :
-    sequencer(seq_), notifier(n), sys_time_offset(0), seq_time_offset(0), play_mode(false),
+MIDIManager::MIDIManager(MIDISequencer* seq, MIDISequencerGUINotifier *n) :
+    sequencer(seq), notifier(n), sys_time_offset(0), seq_time_offset(0), play_mode(false),
     thru_enable(false), thru_input(-1), thru_output(-1),
     repeat_play_mode(false), repeat_start_measure(0), repeat_end_measure(0),
-    auto_seq_open(true),
-    auto_stop_proc(AutoStopProc), auto_stop_param(this)
+    auto_seq_open(true), auto_stop_proc(AutoStopProc), auto_stop_param(this)
 
 {
 #ifdef WIN32    //TODO: this is temporary, needed by WINDOWS10
@@ -81,7 +78,7 @@ MIDIManager::~MIDIManager() {
 }
 
 
-void MIDIManager::Reset() { // doesn't reset open_policy
+void MIDIManager::Reset() {
     SeqStop();
     sys_time_offset = 0;
     seq_time_offset = 0;
@@ -101,13 +98,6 @@ void MIDIManager::Reset() { // doesn't reset open_policy
 }
 
 
-void MIDIManager::SetSequencer (MIDISequencer *seq) {
-    if (notifier)
-        notifier->Notify (MIDISequencerGUIEvent (MIDISequencerGUIEvent::GROUP_ALL));
-    sequencer = seq;
-}
-
-
 void MIDIManager::OpenOutPorts() {
     for (unsigned int i = 0; i < MIDI_outs.size(); i++)
         MIDI_outs[i]->OpenPort();
@@ -120,7 +110,16 @@ void MIDIManager::CloseOutPorts() {
 }
 
 
-// to manage the playback of the sequencer
+void MIDIManager::SetSequencer (MIDISequencer *seq) {
+    if (play_mode)
+        SeqStop();
+    SetRepeatPlay(false, 0, 0);
+    if (notifier)
+        notifier->Notify (MIDISequencerGUIEvent (MIDISequencerGUIEvent::GROUP_ALL));
+    sequencer = seq;
+}
+
+
 // You can call this even if sequencer is already playing: it will adjust
 // seq_time_offset and sys_time_offset (it is done by AdvancedSequencer::SetTempoScale())
 void MIDIManager::SeqPlay() {
@@ -170,7 +169,6 @@ void MIDIManager::SeqStop() {
 }
 
 
-// to set the MIDI thru
 bool MIDIManager::SetThruEnable(bool f) {
     if (thru_input == -1 || thru_output == -1)      // we have not set the thru ports yet
         return false;
@@ -254,9 +252,8 @@ void MIDIManager::SetThruChannels(char in_chan, char out_chan) {
 }
 
 
-// to manage the repeat playback of the sequencer
 void MIDIManager::SetRepeatPlay ( bool on_off, unsigned int start_measure, unsigned int end_measure ) {
-        // shut off repeat play while we muck with values
+        // shut off repeat play while we deal with values
     repeat_play_mode = false;
     repeat_start_measure = start_measure;
     repeat_end_measure = end_measure;
@@ -271,7 +268,7 @@ void MIDIManager::AllNotesOff() {
 }
 
 
-void MIDIManager::TickProc( tMsecs sys_time_, void* p ) {
+void MIDIManager::TickProc(tMsecs sys_time_, void* p) {
 /*
     MIDIManager* manager = static_cast<MIDIManager *>(p);
     for (unsigned int i = 0; i < manager->tick_procedures.size(); i++)
@@ -426,27 +423,25 @@ void MIDIManager::SequencerPlayProc( tMsecs sys_time_ )
     // find all events that exist before or at this time,
     // but only if we have space in the output queue to do so!
     // also limit ourselves to 100 midi events max.
-    int output_count=100;
+    int output_count = 100;
 
     while(
         sequencer->GetNextEventTimeMs( &next_event_time )
         && (next_event_time - seq_time_offset) <= sys_time
-        && (--output_count)>0 ) {
+        && (--output_count) > 0 ) {
 
         // found an event! get it!
         if(sequencer->GetNextEvent(&ev_track, &ev) &&
-           !ev.IsMetaEvent()) {
+           !ev.IsMetaEvent())
 
-            // ok, tell the driver the send this message now
+            // tell the driver the send this message now
             MIDI_outs[sequencer->GetTrackPort(ev_track)]->OutputMessage(ev);
-        }
     }
 
     // auto stop at end of sequence
-    if( !(repeat_play_mode && sequencer->GetCurrentMeasure()>=repeat_end_measure) &&
-            !sequencer->GetNextEventTimeMs( &next_event_time ) ) {
+    if( !(repeat_play_mode && sequencer->GetCurrentMeasure() >= repeat_end_measure) &&
+            !sequencer->GetNextEventTimeMs(&next_event_time) ) {
         // no events left
-        //stop_mode = true;
         std::thread(auto_stop_proc, auto_stop_param).detach();
 
         if(notifier) {

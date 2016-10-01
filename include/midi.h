@@ -214,18 +214,12 @@ char* KeyName (signed char sharp_flats, unsigned char major_minor, bool uppercas
         /// quarter etc) and the number of 32th for a quarter note (usually 8, but you are allowed
         /// to change this). The MIDIMessage::GetTimeSigNumerator() and MidiMessage::GetTimeSigDenominator()
         /// methods give you the timesig numerator and denominator.
-        /// Currently the MIDISequencer object ignores third byte and always assumes the metronome note
-        /// as the timesig denominator.
-        // TODO: add this
+        // DONE! add this
     META_TIMESIG            = 0x58,
         /// This meta event specifies a musical key signature change. It has 2 data bytes:
         /// the 1st is a signed char denoting the number of accidents (-7 = 7 flats, 0 =
         /// no accidents, +7 = 7 sharps), the second is the mode (0 = major, 1 = minor).
     META_KEYSIG             = 0x59,
-        /// This is a dummy, non-MIDI type used internally by the class MIDISequencer to mark
-        /// the metronome clicks (a BEAT_MARKER message will be output at every click).
-        // TODO: should be better not to use a not MIDI type. Perhaps we could change the message status byte?
-    META_BEAT_MARKER        = 0x7e,
         /// This meta event is used to specify information specific to a hardware or
         /// software sequencer. The first Data byte (or three bytes if the first byte is 0)
         /// specifies the manufacturer's ID and the following bytes contain information

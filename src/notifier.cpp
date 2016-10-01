@@ -4,11 +4,11 @@
 
 const char MIDISequencerGUIEvent::group_names[][10] =
         { "All      ", "Conductor", "Transport", "Track    " };
-        const char MIDISequencerGUIEvent::conductor_items_names[][10] =
+const char MIDISequencerGUIEvent::conductor_items_names[][10] =
         { "All      ", "Tempo    ", "Timesig  ", "Keysig   ", "Marker   ", "User    " };
-        const char MIDISequencerGUIEvent::transport_items_names[][10] =
+const char MIDISequencerGUIEvent::transport_items_names[][10] =
         { "All      ", "Mode     ", "Measure  ", "Beat     ", "EndOfSong", "User    " };
-        const char MIDISequencerGUIEvent::track_items_names[][10] =
+const char MIDISequencerGUIEvent::track_items_names[][10] =
         { "All      ", "Name     ", "Patch    ", "Note     ", "Volume   ", "User    " };
 
 

@@ -478,7 +478,7 @@ const char* GetSmpteString() {
     char s[300];
 
     // Get the group (general type) of the event
-    switch (ev.GetEventGroup()) {
+    switch (ev.GetGroup()) {
 
         case MIDISequencerGUIEvent::GROUP_ALL:
         // This is a general GUI reset event: update all textboxes
@@ -489,7 +489,7 @@ const char* GetSmpteString() {
         case MIDISequencerGUIEvent::GROUP_CONDUCTOR:
         // This is an event regarding conductor track: find the type and update appropriate textbox
 
-            switch (ev.GetEventItem()) {
+            switch (ev.GetItem()) {
                 case MIDISequencerGUIEvent::GROUP_CONDUCTOR_TEMPO:
                 // Tempo (bpm) is changed
                     sprintf (s, "%3.2f", sequencer->GetTempoWithoutScale());
@@ -516,7 +516,7 @@ const char* GetSmpteString() {
         // This is an event regarding transport (start, stop, etc): we monitor only
         // beat events to update the meas - beat box
 
-            if (ev.GetEventItem() == MIDISequencerGUIEvent::GROUP_TRANSPORT_BEAT) {
+            if (ev.GetItem() == MIDISequencerGUIEvent::GROUP_TRANSPORT_BEAT) {
                 sprintf (s, "%d:%d", sequencer->GetCurrentMeasure() + 1, sequencer->GetCurrentBeat() + 1);
                 SetWindowText ( hMeas, s );
             }
@@ -525,8 +525,8 @@ const char* GetSmpteString() {
         case MIDISequencerGUIEvent::GROUP_TRACK: {
         // This is a track event: find the track (GetEventSubGroup) and the type (GetEventItem) and proceed
 
-            int track = ev.GetEventSubGroup();
-            if (ev.GetEventItem() == MIDISequencerGUIEvent::GROUP_TRACK_PROGRAM) {
+            int track = ev.GetSubGroup();
+            if (ev.GetItem() == MIDISequencerGUIEvent::GROUP_TRACK_PROGRAM) {
                 if (track > 0 && track < 17) {
                     if (sequencer->GetTrackChannel(track) == 9)     // channel 10
                         SetWindowText(hTrackPrgrs[track - 1], GMDrumKits[sequencer->GetTrackProgram(track)] );
@@ -535,7 +535,7 @@ const char* GetSmpteString() {
                 }
             }
 
-            else if (ev.GetEventItem() == MIDISequencerGUIEvent::GROUP_TRACK_VOLUME) {
+            else if (ev.GetItem() == MIDISequencerGUIEvent::GROUP_TRACK_VOLUME) {
                 sprintf (s, "vol: %d", sequencer->GetTrackVolume(track) );
                 if (track > 0 && track < 17)
                     SetWindowText (hTrackVols[track - 1], s);
@@ -559,7 +559,7 @@ VOID SetMIDIActivity() {
         if (MIDIActDelays[i - 1] > 0)
             sprintf (s, "X");
         else
-            sprintf (s, "");
+            sprintf (s, "  ");
         SetWindowText ( hTrackActs[i - 1], s );
 
     }

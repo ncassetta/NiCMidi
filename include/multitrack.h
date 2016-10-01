@@ -185,8 +185,8 @@ class MIDIMultiTrackIteratorState {
         int                         num_tracks;
         MIDIClockTime               cur_time;
         int                         cur_event_track;
-        int*                        next_event_number;      // TODO: use vector
-        MIDIClockTime*              next_event_time;
+        std::vector<int>            next_event_number;
+        std::vector<MIDIClockTime>  next_event_time;
         std::vector<int>*           time_offsets;
         bool                        time_offset_mode;
 };

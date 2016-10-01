@@ -36,114 +36,82 @@
 ** see header for changes against jdksmidi
 */
 
-//TODO: revise, useless functions and parameters???
-
-
 #include "../include/matrix.h"
 
-  MIDIMatrix::MIDIMatrix()
-  {
-    for( int channel=0; channel<16; channel++ )
-    {
-      channel_count[channel]=0;
-      hold_pedal[channel]= false;
-      for( unsigned char note=0; note<128; note++ )
-        note_on_count[channel][note]=0;
+
+MIDIMatrix::MIDIMatrix() {
+    for(int channel = 0; channel < 16; channel++) {
+        channel_count[channel] = 0;
+        hold_pedal[channel] = false;
+        for(unsigned char note = 0; note < 128; note++)
+            note_on_count[channel][note] = 0;
     }
-
-    total_count=0;
-  }
-
-  MIDIMatrix::~MIDIMatrix()
-  {
-  }
+    total_count = 0;
+}
 
 
-  void 	MIDIMatrix::DecNoteCount( const MIDIMessage &, int channel, int note )
-  {
-    if( note_on_count[channel][note]>0 )
-    {
+void MIDIMatrix::DecNoteCount(int channel, int note) {
+    if(note_on_count[channel][note] > 0) {
       --note_on_count[channel][note];
       --channel_count[channel];
       --total_count;
     }
-  }
+}
 
-  void 	MIDIMatrix::IncNoteCount( const MIDIMessage &, int channel, int note )
-  {
+
+void MIDIMatrix::IncNoteCount(int channel, int note) {
     ++note_on_count[channel][note];
     ++channel_count[channel];
     ++total_count;
-  }
-
-  void	MIDIMatrix::OtherMessage( const MIDIMessage & )
-  {
-  }
+}
 
 
-  bool	MIDIMatrix::Process( const MIDIMessage &m )
-  {
-    bool status=false;
+bool MIDIMatrix::Process(const MIDIMessage& msg) {
+    bool ret = false;
 
-    if( m.IsChannelMsg() )
-    {
-      int channel=m.GetChannel();
-      int note=m.GetNote();
+    if(msg.IsChannelMsg()) {
+        int channel =msg.GetChannel();
+        int note = msg.GetNote();
 
-      if( m.IsAllNotesOff() )
-      {
-        ClearChannel( channel );
-        status=true;
-      }
-      else
-        if( m.IsNoteOn() )
-        {
-          if( m.GetVelocity()!=0 )
-            IncNoteCount( m, channel, note );
-          else
-            DecNoteCount( m, channel, note );
-          status=true;
+        if(msg.IsAllNotesOff()) {
+            ClearChannel(channel);
+            ret = true;
+        }
+        else if(msg.IsNoteOn()) {
+            IncNoteCount(channel, note);
+            ret = true;
+        }
+        else if(msg.IsNoteOff()) {
+            DecNoteCount(channel, note);
+            ret = true;
+        }
+        else if(msg.IsPedalOn()) {
+            hold_pedal[channel] = true;
+            ret = true;
+        }
+        else if(msg.IsPedalOff()) {
+            hold_pedal[channel] = false;
+            ret = true;
         }
         else
-          if( m.IsNoteOff() )
-          {
-            DecNoteCount( m, channel, note );
-            status=true;
-          }
-          else
-            if( m.IsControlChange() && m.GetController()==C_DAMPER )
-            {
-              if( m.GetControllerValue() & 0x40 )
-              {
-                hold_pedal[channel]=true;
-              }
-              else
-              {
-                hold_pedal[channel]=false;
-              }
-            }
-            else
-              OtherMessage( m );
+            OtherMessage(msg);
     }
-    return status;
-  }
+    return ret;
+}
 
-  void	MIDIMatrix::Clear()
-  {
-    for( int channel=0; channel<16; ++channel )
-    {
-      ClearChannel( channel );
-    }
-    total_count=0;
-  }
 
-  void	MIDIMatrix::ClearChannel( int channel )
-  {
-    for( int note=0; note<128; ++note )
-    {
+void MIDIMatrix::Clear() {
+    for(int channel = 0; channel < 16; ++channel)
+        ClearChannel(channel);
+    total_count = 0;
+}
+
+
+void MIDIMatrix::ClearChannel(int channel) {
+    for(int note = 0; note < 128; ++note) {
       total_count -= note_on_count[channel][note];
-      note_on_count[channel][note]=0;
+      note_on_count[channel][note] = 0;
     }
-    channel_count[channel]=0;
-    hold_pedal[channel]=0;
-  }
+    channel_count[channel] = 0;
+    hold_pedal[channel] = 0;
+}

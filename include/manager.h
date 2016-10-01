@@ -51,30 +51,30 @@
 ///
 class MIDIManager {
 public:
-                                MIDIManager( MIDISequencerGUINotifier *n=0,
-                                             MIDISequencer *seq_=0 );
+                                MIDIManager(MIDISequencer *seq = 0, MIDISequencerGUINotifier *n = 0);
 
     virtual                     ~MIDIManager();
 
     void                        Reset();
 
-        // to set and get the open and close ports policy
-    //void                        SetOpenPolicy(int p)            { open_policy = p; }
-    //int                         GetOpenpolicy() const           { return open_policy; }
-
-        // to get the MIDI in and out ports
+        /// Returns the number of MIDI in out ports in the system.
     static int                  GetNumMIDIOuts()                { return MIDI_out_names.size(); }
+        /// Returns the system name of the given out port.
     static const std::string&   GetMIDIOutName(int n)           { return MIDI_out_names[n]; }
+        /// Returns the number of MIDI out ports in the system.
     static int                  GetNumMIDIIns()                 { return MIDI_in_names.size(); }
+        /// Returns the system name of the given in port.
     static const std::string&   GetMIDIInName(int n)            { return MIDI_in_names[n]; }
 
+        /// Returns a pointer to the MIDIOutDriver with given port id.
     MIDIOutDriver*              GetOutDriver(int n)             { return MIDI_outs[n]; }
+        /// Returns a pointer to the MIDIInDriver with given port id.
     MIDIInDriver*               GetInDriver(int n)              { return MIDI_ins[n]; }
 
     void                        OpenOutPorts();
     void                        CloseOutPorts();
 
-        // to get the time in ms from the sequencer start
+        /// Returns the elapsed time in ms from the sequencer start (0 if the sequencer is not playing).
     tMsecs                      GetCurrentTimeInMs() const
                                                 { return play_mode ?
                                                          timer->GetSysTimeMs() + seq_time_offset - sys_time_offset : 0; }
@@ -84,34 +84,56 @@ public:
     void                        RemoveTickProc(unsigned int n);
     void                        RemoveTickProc(MIDITick proc);
     */
+        /// Sets the procedure executed when the sequencer reaches the end of MIDI data. This actually
+        /// stops the playback.
     void                        SetAutoStopProc(void(proc)(void*), void* param)
                                                                 { auto_stop_proc = proc; auto_stop_param = param; }
 
-        // to set and get the current sequencer
+        /// Sets the pointer to the sequencer (if you hadn't already done it in the ctor, you must set it).
+        /// It resets the repeat play and, if the sequencer was playing, stops it.
     void                        SetSequencer(MIDISequencer *seq);
+        /// Returns the pointer to the current sequencer.
     MIDISequencer*              GetSequencer()                  { return sequencer; }
     const MIDISequencer*        GetSequencer() const            { return sequencer; }
     void                        SetAutoSeqOpen(bool f)          { auto_seq_open = f;}
     bool                        GetAutoSeqOpen() const          { return auto_seq_open; }
 
-        // to manage the playback of the sequencer
+        /// Starts the sequencer playback.
     void                        SeqPlay();
+        /// Stops the sequencer playback.
     void                        SeqStop();
+        /// Returns *true* if the sequencer is playing.
     bool                        IsSeqPlay() const       { return play_mode; }
 
-       // To set and get the MIDI thru
+       /// Sets the MIDI thru enable on and off. For effective MIDI thru you must have already
+       /// set in and out thru ports (with SetThruPorts()) otherwise the method will fail and return
+       /// *false*.
     bool                        SetThruEnable(bool f);
+        /// Returns the MIDI thru enable status.
     bool                        GetThruEnable() const                   { return thru_enable; }
+        /// Sets the MIDI thru in and out ports. When MIDI thru is enabled (by SetThruEnable()) MIDI
+        /// messages incoming from the in port will be repeated on the out port. When the MIDIManager
+        /// is created, if at least one in and out MIDI ports exist on the system, these are set to 0, 0
+        /// ports, otherwise these are left undefined and you won't be able to enable MIDI thru.
     bool                        SetThruPorts(unsigned int in_port, unsigned int out_port);
+        /// Sets the MIDI thru in and out channels (see MIDIInDriver::SetThruChannel() and
+        /// MIDIOutDriver::SetThruChannel()).
     void                        SetThruChannels(char in_chan, char out_chan);
+        /// Returns the MIDI thru in port, that is the port from which thru messages are received.
     int                         GetThruInPort() const                   { return thru_input; }
+        /// Returns the MIDI thru in channel (see MIDIInDriver::SetThruChannel()).
     int                         GetThruInChannel() const                { return MIDI_ins[thru_input]->GetThruChannel(); }
+        /// Returns the MIDI thru out port, that is the port to whom thru messages are sent.
     int                         GetThruOutPort() const                  { return thru_output; }
+        /// Returns the MIDI thru out channel (see MIDIOutDriver::SetThruChannel()).
     int                         GetThruOutChannel() const               { return MIDI_outs[thru_output]->GetThruChannel(); }
-
+        /// Turns on and off the repeat play (loop) mode of the sequencer
     void                        SetRepeatPlay( bool on_off, unsigned int start_measure, unsigned int end_measure );
+        /// Returns the repeat play (loop) status.
     bool                        GetRepeatPlay() const           { return repeat_play_mode; }
+        /// Returns the repeat play (loop) start measure.
     int                         GetRepeatPlayStart() const      { return repeat_start_measure; }
+        /// Returns the repeat play (loop) end measure.
     int                         GetRepeatPlayEnd() const        { return repeat_end_measure; }
 
     void                        AllNotesOff();
@@ -119,40 +141,47 @@ public:
 
 protected:
 
-    /// This is the main tick procedure
+        /// This is the main tick procedure. This actually only calls the (non-static) SequencerPlayProc()
     static void                 TickProc(tMsecs sys_time_, void* p);
 
-    void                        MIDIThruProc(tMsecs sys_time_);
+    // void                        MIDIThruProc(tMsecs sys_time_); TODO: unneeded????
+        /// This is the sequencer play procedure. It examines events at current time and sends them to the
+        /// MIDI out ports, manages repeat play (loop) and calls AutoStopProc() when the sequencer reaches
+        /// the end of MIDI events.
     void                        SequencerPlayProc(tMsecs sys_time_);
+        /// This is called by SequencerPlayProc() when the sequencer reaches the end of MIDI events. The default
+        /// procedure only calls SeqStop().
     static void                 AutoStopProc(void* p);
 
-    std::vector<MIDIOutDriver*>     MIDI_outs;
-    static std::vector<std::string> MIDI_out_names;
-    std::vector<MIDIInDriver*>      MIDI_ins;
-    static std::vector<std::string> MIDI_in_names;
+    std::vector<MIDIOutDriver*>     MIDI_outs;      ///< A vector of MIDIOutDriver classes (one for each hardware port)
+    static std::vector<std::string> MIDI_out_names; ///< The system names of hardware out ports
+    std::vector<MIDIInDriver*>      MIDI_ins;       ///< A vector of MIDIInDriver classes (one for each hardware port)
+    static std::vector<std::string> MIDI_in_names;  ///< The system names of hardware in ports
 
-    MIDISequencer*              sequencer;
-    MIDISequencerGUINotifier*   notifier;
+    MIDISequencer*              sequencer;          ///< The MIDISequencer
+    MIDISequencerGUINotifier*   notifier;           ///< The MIDISequencerGUINotifier
 
-    MIDITimer*                  timer;
+    MIDITimer*                  timer;              ///< The timer which temporizes MIDI playback
 
-    tMsecs                      sys_time_offset;
-    tMsecs                      seq_time_offset;
+    tMsecs                      sys_time_offset;    ///< The time between now and timer start
+    tMsecs                      seq_time_offset;    ///< The time between the sequencer start and the timer start
 
-    volatile bool               play_mode;
+    volatile bool               play_mode;          ///< True if the sequencer is playing
 
-    bool                        thru_enable;
-    int                         thru_input;
-    int                         thru_output;
+    bool                        thru_enable;        ///< Enables the MIDI thru
+    int                         thru_input;         ///< The id of the MIDI thru in port
+    int                         thru_output;        ///< The id of the MIDI thru out port
 
-    volatile bool               repeat_play_mode;
+    volatile bool               repeat_play_mode;   ///< Enables the repeat play mode
     long                        repeat_start_measure;
-    long                        repeat_end_measure;
+                                                    ///< The loop start measure
+    long                        repeat_end_measure; ///< The loop end measure
 
     bool                        auto_seq_open;
 
     void                        (*auto_stop_proc)(void *);
-    void*                       auto_stop_param;
+                                                    ///< The auto stop procedure
+    void*                       auto_stop_param;    ///< The parameter given to the auto stop procedure
 };
 
 

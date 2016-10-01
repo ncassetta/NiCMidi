@@ -48,6 +48,7 @@
 /* ********************************************************************************************/
 
 
+bool MIDIMessage::use_note_onv0 = false;
 
 
 std::string MIDIMessage::MsgToText () const {
@@ -305,9 +306,15 @@ void MIDIMessage::SetNoteOn(unsigned char chan, unsigned char note, unsigned cha
 
 
 void MIDIMessage::SetNoteOff(unsigned char chan, unsigned char note, unsigned char vel) {
-    status = (unsigned char)(chan | NOTE_OFF);
+    if (use_note_onv0) {
+        status = (unsigned char)(chan | NOTE_ON);
+        byte2 = 0;      // vel ignored
+    }
+    else {
+        status = (unsigned char)(chan | NOTE_OFF);
+        byte2 = vel;
+    }
     byte1 = note;
-    byte2 = vel;
     byte3 = 0;
     ClearSysEx();
 }
@@ -468,6 +475,15 @@ void MIDIMessage::SetTimeSig(unsigned char num, unsigned char den,
     sysex->PutSysByte(power_of_2);
     sysex->PutSysByte(clocks_per_metronome);
     sysex->PutSysByte(num_32_per_quarter);
+}
+
+
+void MIDIMessage::SetBeatMarker() {
+    status = STATUS_SERVICE;
+    byte1 = BEAT_MARKER_VAL;
+    byte2 = 0;
+    byte3 = 0;
+    ClearSysEx();
 }
 
 

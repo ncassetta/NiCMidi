@@ -5,10 +5,9 @@
 
 
 AdvancedSequencer::AdvancedSequencer(MIDISequencerGUINotifier *n) :
-    notifier(n),
     multitrack (new MIDIMultiTrack (17)),
-    seq (new MIDISequencer (multitrack, notifier)),
-    mgr (new MIDIManager (notifier, seq)),
+    seq (new MIDISequencer (multitrack, n)),
+    mgr (new MIDIManager (seq, n)),
 
     num_measures(0),
     file_loaded (false),
@@ -21,10 +20,9 @@ AdvancedSequencer::AdvancedSequencer(MIDISequencerGUINotifier *n) :
 
 
 AdvancedSequencer::AdvancedSequencer(MIDIMultiTrack* mlt, MIDISequencerGUINotifier *n) :
-    notifier (n),
     multitrack (mlt),
-    seq (new MIDISequencer (multitrack, notifier)),
-    mgr (new MIDIManager (notifier, seq)),
+    seq (new MIDISequencer (multitrack, n)),
+    mgr (new MIDIManager (seq, n)),
 
     ctor_type (CTOR_2)              // remembers what objects are owned
 
@@ -40,9 +38,8 @@ AdvancedSequencer::AdvancedSequencer(MIDIMultiTrack* mlt, MIDISequencerGUINotifi
 
 
 AdvancedSequencer::AdvancedSequencer(MIDIManager *mg) :
-    notifier(mg->GetSequencer()->GetState()->notifier),
     multitrack ((MIDIMultiTrack *)(mg->GetSequencer()->GetState()->multitrack)),
-    seq (mgr->GetSequencer()),
+    seq (mg->GetSequencer()),
     mgr (mg),
 
     ctor_type (CTOR_3)      // remembers what objects are owned
@@ -448,15 +445,15 @@ std::string AdvancedSequencer::GetTrackName (int trk) const {
     return seq->GetTrackState (trk)->track_name;
 }
 
-// TODO: int or unsigned char ????
-int AdvancedSequencer::GetTrackVolume (int trk) const {
+
+char AdvancedSequencer::GetTrackVolume (int trk) const {
     if (!file_loaded)
         return 100;
     return (int)(seq->GetTrackState (trk)->control_values[C_MAIN_VOLUME]);
 }
 
 
-int AdvancedSequencer::GetTrackProgram (int trk) const {
+char AdvancedSequencer::GetTrackProgram (int trk) const {
     if (!file_loaded)
         return 0;
     return seq->GetTrackState (trk)->program;
@@ -474,7 +471,7 @@ void AdvancedSequencer::SetTrackVelocityScale (int trk, double scale) {
 double AdvancedSequencer::GetTrackVelocityScale (int trk) const {
     if (!file_loaded)
         return 1.0;
-    return seq->GetTrackProcessor (trk)->velocity_scale * 0.01;
+    return seq->GetTrackProcessor (trk)->velocity_scale * 0.01d;
 }
 
 
@@ -606,6 +603,8 @@ void AdvancedSequencer::ExtractWarpPositions()
         num_measures = 0;
         return;
     }
+
+    MIDISequencerGUINotifier* notifier = seq->GetState()->notifier;
 
     Stop();
     // warp_positions is now a vector of objects ( not pointers ) so we can minimize memory dealloc/alloc

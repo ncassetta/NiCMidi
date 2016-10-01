@@ -337,30 +337,21 @@ void MIDIMultiTrack::EditReplace(MIDIClockTime start, int tr_start, int times, b
 
 
 MIDIMultiTrackIteratorState::MIDIMultiTrackIteratorState(int n_tracks) :
-        num_tracks(n_tracks), time_offsets(0), time_offset_mode(false) {
-    next_event_number = new int [n_tracks];
-    next_event_time = new MIDIClockTime [n_tracks];
+        time_offsets(0), time_offset_mode(false) {
+    SetNumTracks(n_tracks);
     Reset();
 }
 
 
 MIDIMultiTrackIteratorState::MIDIMultiTrackIteratorState(const MIDIMultiTrackIteratorState &m) :
         num_tracks(m.num_tracks), cur_time(m.cur_time),
-        cur_event_track(m.cur_event_track), time_offsets(m.time_offsets),
+        cur_event_track(m.cur_event_track), next_event_number(m.next_event_number),
+        next_event_time(m.next_event_time),  time_offsets(m.time_offsets),
         time_offset_mode(m.time_offset_mode) {
-
-    next_event_number = new int [m.num_tracks];
-    next_event_time = new MIDIClockTime [m.num_tracks];
-    for(int i = 0; i < num_tracks; i++) {
-        next_event_number[i] = m.next_event_number[i];
-        next_event_time[i] = m.next_event_time[i];
-    }
 }
 
 
 MIDIMultiTrackIteratorState::~MIDIMultiTrackIteratorState() {
-    delete[] next_event_number;
-    delete[] next_event_time;
 }
 
 
@@ -370,10 +361,8 @@ const MIDIMultiTrackIteratorState& MIDIMultiTrackIteratorState::operator= (const
     cur_event_track = m.cur_event_track;
     time_offsets = m.time_offsets;
     time_offset_mode = m.time_offset_mode;
-    for(int i = 0; i < num_tracks; ++i) {
-        next_event_number[i] = m.next_event_number[i];
-        next_event_time[i] = m.next_event_time[i];
-    }
+    next_event_number = m.next_event_number;
+    next_event_time = m.next_event_time;
     return *this;
 }
 
@@ -381,10 +370,8 @@ const MIDIMultiTrackIteratorState& MIDIMultiTrackIteratorState::operator= (const
 void MIDIMultiTrackIteratorState::SetNumTracks(int n) {
     if (n != num_tracks) {
         num_tracks = n;
-        delete[] next_event_number;
-        delete[] next_event_time;
-        next_event_number = new int [n];
-        next_event_time = new MIDIClockTime [n];
+        next_event_number.resize(n);
+        next_event_time.resize(n);
         Reset();
     }
 }

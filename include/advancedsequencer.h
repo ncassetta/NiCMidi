@@ -9,15 +9,11 @@
 #include <string>
 
 
-
-
 #include "msg.h"
 #include "driver.h"
 #include "multitrack.h"
 #include "sequencer.h"
 #include "manager.h"
-
-
 
 
 class AdvancedSequencer {
@@ -46,6 +42,7 @@ class AdvancedSequencer {
 
         MIDIMultiTrack*     GetMultiTrack()                 { return multitrack; }
         const MIDIMultiTrack* GetMultiTrack() const         { return multitrack; }
+
 
         void                GoToZero()                      { GoToTime(0); }
         void                GoToMeasure(int measure, int beat = 0);
@@ -107,9 +104,8 @@ class AdvancedSequencer {
 
         int                 GetTrackNoteCount(int trk) const;
         std::string         GetTrackName(int trk) const;
-        int                 GetTrackVolume(int trk) const;
-
-        int                 GetTrackProgram ( int trk ) const;
+        char                GetTrackVolume(int trk) const;          // MIDI value or -1
+        char                GetTrackProgram ( int trk ) const;      // MIDI value or -1
         void                SetTrackVelocityScale(int trk, double scale);
         double              GetTrackVelocityScale(int trk) const;
         void                SetTrackRechannelize(int trk, int chan);
@@ -134,7 +130,6 @@ class AdvancedSequencer {
         void                                CatchEventsBefore(int trk);
         static void                         AutoStopProc(void* p);
 
-        MIDISequencerGUINotifier*           notifier;
         MIDIMultiTrack*                     multitrack;
         MIDISequencer*                      seq;
         MIDIManager*                        mgr;

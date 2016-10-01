@@ -49,6 +49,8 @@
 /// only use the data bytes, while some meta messages and sysex also use the pointer. Lots of methods are provided for
 /// setting and inspecting the message data without worrying about exadecimal values. See the file midi.h for a set of
 /// enum values for MIDI messages data.
+/// In addiction to MIDI messages, the MIDI message can also contain two types of internal messages: the NoOp (a null,
+/// not initialized message) and the beat marker, used by the MIDISequencer as metronome click.
 ///
 class 	MIDIMessage {
     public:
@@ -178,10 +180,10 @@ class 	MIDIMessage {
         /// Returns *true* if the message is a bender message. You can then call GetChannel()
         /// and GetBenderValue() for further information.
         bool	                IsPitchBend() const         { return ((status & 0xf0) == PITCH_BEND); }
-        /// Returns *true* if the message is a channel mode message.
+        /// Returns *true* if the message is a channel mode message (a control change with control >= 0x7A).
         bool                    IsChannelMode() const       { return ((status & 0xf0) == CONTROL_CHANGE) &&
                                                                       (byte1 >= C_ALL_SOUND_OFF); }
-        /// Returns *true* if the message is a all notes off message (a control change with control >= 0x7A).  // TODO: revise this
+        /// Returns *true* if the message is a all notes off message.
         bool	                IsAllNotesOff() const       { return ((status & 0xf0) == CONTROL_CHANGE) &&
                                                                       (byte1 == C_ALL_NOTES_OFF); }
         /// Returns *true* if the message is a system message (the status byte is 0xf0 or higher).
@@ -213,10 +215,10 @@ class 	MIDIMessage {
         bool	                IsKeySig() const            { return (status == META_EVENT) && (byte1 == META_KEYSIG); }
         /// Returns *true* if the message is a beat marker message (this is a dummy meta-message used by the MIDISequencer
         /// class to mark the metronome clicks).
-        bool 	                IsBeatMarker() const        { return (status == META_EVENT) && (byte1 == META_BEAT_MARKER); }
+        bool 	                IsBeatMarker() const        { return (status == STATUS_SERVICE) && (byte1 == BEAT_MARKER_VAL); }
 
         /// Returns *true* if the status is not a valid MIDI status.
-        bool	                IsNoOp() const              { return (status & 0xF0) == 0; }
+        bool	                IsNoOp() const              { return (status == STATUS_SERVICE) && (byte1 == NO_OP_VAL); }
         //@}
 
         ///@name The 'Set' methods
@@ -335,7 +337,7 @@ class 	MIDIMessage {
                                                                     { SetMetaEvent(META_KEYSIG, sharp_flats, major_minor); }
         /// Makes the message a beat marker meta-message.
         /// \see IsBeatMarker().
-        void	                SetBeatMarker()                     { SetMetaEvent(META_BEAT_MARKER, 0); }
+        void	                SetBeatMarker();
 
         /// The same of Clear(), makes the message a non valid message which will be ignored
         void	                SetNoOp()                           { Clear(); }
@@ -348,6 +350,14 @@ class 	MIDIMessage {
         /// The compare operator
         friend bool             operator== (const MIDIMessage &m1, const MIDIMessage &m2);
 
+        /// This static method determines wheater the SetNoteOff() method will produce a MIDI NOTE_OFF
+        /// message or a NOTE_ON with velocity 0. The default is *false* (NOTE_OFF messages). If you want
+        /// to use the other form call this with *true*.
+        static void             UseNoteOnv0ForOff(bool f);
+
+        /// Status and byte1 for non MIDI messages (internal use)
+        enum { STATUS_SERVICE = 0, NO_OP_VAL = 0, BEAT_MARKER_VAL = 1 };
+
     protected:
 
         unsigned char	        status;     ///< The status byte.
@@ -355,9 +365,10 @@ class 	MIDIMessage {
         unsigned char	        byte2;      ///< 2nd data byte.
         unsigned char	        byte3;		///< 3rd data byte (only used for some meta-events).
         MIDISystemExclusive*    sysex;      ///< The sysex pointer.
+        static bool             use_note_onv0;
 };
 
-// todo: Add a Reset message? (status = 0xff)
+// TODO: Add a Reset message? (status = 0xff)
 
 /* ********************************************************************************************/
 /*                   C L A S S   M I D I T i m e d M e s s a g e                              */
@@ -417,7 +428,7 @@ class 	MIDITimedMessage : public MIDIMessage {
         /// - if m1 and m2 are both channel messages sort for ascending channel
         /// - if m1 (or m2) is not a note message it's smaller (non note go before notes)
         /// - if m1 (or m2) is a Note Off it's smaller (Note Off go before Note On)
-        /// \returns **1** if _a_ < _b_ , **2** if _a_ > _b_, **0** if none of these (their order is indifferent)
+        /// \return **1** if _a_ < _b_ , **2** if _a_ > _b_, **0** if none of these (their order is indifferent)
         static int              CompareEventsForInsert (const MIDITimedMessage &m1, const MIDITimedMessage &m2);
 
         /// This function is used by the methods that search and insert events in the tracks to find events

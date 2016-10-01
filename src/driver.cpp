@@ -27,6 +27,11 @@
 #include "../include/timer.h"
 
 
+/////////////////////////////////////////////////
+//         class MIDIRawMessageQueue           //
+/////////////////////////////////////////////////
+
+
 void MIDIRawMessageQueue::Reset() {
     next_in = next_out = 0;
     for (unsigned int i = 0; i < buffer.size(); i++)
@@ -63,7 +68,9 @@ MIDIRawMessage& MIDIRawMessageQueue::PeekMessage(unsigned int n) {
 }
 
 
-
+/////////////////////////////////////////////////
+//           class MIDIOutDriver               //
+/////////////////////////////////////////////////
 
 
 MIDIOutDriver::MIDIOutDriver(int id) :
@@ -127,12 +134,6 @@ void MIDIOutDriver::ClosePort() {
     }
     else
         std::cout << "Attempt to close an already closed port!" << std::endl;
-}
-
-
-void MIDIOutDriver::ForcedClosePort() {
-    port->closePort();
-    num_open = 0;
 }
 
 
@@ -259,7 +260,9 @@ void MIDIOutDriver::HardwareMsgOut(const MIDIMessage &msg) {
 }
 
 
-
+/////////////////////////////////////////////////
+//           class MIDIInDriver                //
+/////////////////////////////////////////////////
 
 
 MIDIInDriver::MIDIInDriver(int id, unsigned int queue_size) :
