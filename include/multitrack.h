@@ -242,10 +242,10 @@ class MIDIMultiTrackIterator {
             /// changed):
         MIDIMultiTrackIteratorState&        GetState()                  { return state; }
         const MIDIMultiTrackIteratorState&  GetState() const            { return state; }
-        void                    SetState(const MIDIMultiTrackIteratorState& s) { state = s; }
+        void                        SetState(const MIDIMultiTrackIteratorState& s) { state = s; }
             /// Returns a pointer to the MIDIMultiTrack the iterator is attached to.
-        MIDIMultiTrack*             GetMultiTrack()  				    { return multitrack; }
-        const MIDIMultiTrack*       GetMultiTrack() const 	            { return multitrack; }
+        //MIDIMultiTrack*             GetMultiTrack()  				    { return multitrack; }
+        //const MIDIMultiTrack*       GetMultiTrack() const 	            { return multitrack; }
 
     protected:
         MIDIMultiTrack*             multitrack;     ///< The MIDIMultiTrack the class refers to

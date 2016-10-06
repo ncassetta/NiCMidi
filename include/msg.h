@@ -207,6 +207,9 @@ class 	MIDIMessage {
         bool	                IsTempo() const             { return (status == META_EVENT) && (byte1 == META_TEMPO); }
         /// Returns *true* if the message is a data end (i.e. end of track) meta-message.
         bool	                IsDataEnd() const           { return (status == META_EVENT) && (byte1 == META_END_OF_TRACK); }
+        /// Returns *true* if the message is a SMPTE offset meta-message. The SMPTE data are kept
+        /// in the MIDISystemExclusive object.
+        bool	                IsSMPTEOffset() const       { return (status == META_EVENT) && (byte1 == META_SMPTE); }
         /// Returns *true* if the message is a time Signature meta-message. You can then call
         /// GetTimeSigNumerator() and GetTimeSigDenominator() for further information.
         bool	                IsTimeSig() const           { return (status == META_EVENT) && (byte1 == META_TIMESIG); }

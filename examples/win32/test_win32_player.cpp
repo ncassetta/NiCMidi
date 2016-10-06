@@ -384,8 +384,13 @@ VOID LoadFile() {
             // update the filename textbox
             SetWindowText( hFileName, szFileName );
 
+            // set the correct format and time offset for SMPTE
+            sequencer->SetSMPTE(&smpte);
+
             // update the timesig, tempo ... controls
             SetControls();
+
+
         }
     }
 }

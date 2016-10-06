@@ -14,6 +14,7 @@
 #include "multitrack.h"
 #include "sequencer.h"
 #include "manager.h"
+#include "smpte.h"
 
 
 class AdvancedSequencer {
@@ -116,6 +117,8 @@ class AdvancedSequencer {
         void                SetTrackTimeOffset(int trk, int time);
         int                 GetTrackTimeOffset(int trk) const;
         std::string         GetCurrentMarker() const;
+
+        void                SetSMPTE(SMPTE* s);
 
         void                SetChanged();
         // new : added by me

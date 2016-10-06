@@ -40,6 +40,7 @@ const unsigned char smpte_max_frames[] =
     24, 25, 30, 30, 30, 30
 };
 
+
 const double smpte_smpte_rates[] =
 {
     24.0,
@@ -49,6 +50,7 @@ const double smpte_smpte_rates[] =
     30.0,
     30.0
 };
+
 
 const double smpte_smpte_rates_long[] =
 {
@@ -60,6 +62,7 @@ const double smpte_smpte_rates_long[] =
     3000
 };
 
+
 const double smpte_sample_rates[] =
 {
     32000.0,
@@ -69,6 +72,7 @@ const double smpte_sample_rates[] =
     48000.0,
     48000.0 * 1.001
 };
+
 
 const long smpte_sample_rates_long[] =
 {
@@ -86,23 +90,13 @@ SMPTE::SMPTE(SMPTE_RATE smpte_rate_, SAMPLE_RATE sample_rate_) :
     smpte_rate(smpte_rate_),
     sample_rate(sample_rate_),
     sample_number(0),
+    sample_offset(0),
     hours(0),
     minutes(0),
     seconds(0),
     frames(0),
     sub_frames(0),
     sample_number_dirty(false) {
-}
-
-
-SMPTE::SMPTE(const SMPTE &s) {
-    Copy(s);
-}
-
-
-void SMPTE::SetSampleNumber (unsigned long n) {
-    sample_number = n;
-    SampleToTime();
 }
 
 
@@ -123,22 +117,57 @@ void SMPTE::SetTime (unsigned char h, unsigned char m, unsigned char s, unsigned
 }
 
 
+unsigned char SMPTE::GetHours() {
+    if (sample_number_dirty)
+        TimeToSample();
+    return hours;
+}
+
+
+unsigned char SMPTE::GetMinutes() {
+    if (sample_number_dirty)
+        TimeToSample();
+    return minutes;
+}
+
+
+unsigned char SMPTE::GetSeconds() {
+    if (sample_number_dirty)
+        TimeToSample();
+    return seconds;
+}
+
+
+unsigned char SMPTE::GetFrames() {
+    if (sample_number_dirty)
+        TimeToSample();
+    return frames;
+}
+
+
+unsigned char SMPTE::GetSubFrames() {
+    if (sample_number_dirty)
+        TimeToSample();
+    return sub_frames;
+}
+
+
 void SMPTE::SetMilliSeconds (unsigned long msecs) {
     sample_number = (unsigned long) (msecs * GetSampleRateFrequency(sample_rate) / 1000);
-    SampleToTime();
+    sample_number_dirty = true;
 }
 
 
 unsigned long SMPTE::GetMilliSeconds () {
     if (sample_number_dirty)
         TimeToSample();
-    return (unsigned long) (sample_number * 1000 / GetSampleRateFrequency(sample_rate));
+    return (unsigned long) (sample_number * 1000 / GetSampleRateFrequency(sample_rate) + 0.5);
 }
 
 
 void SMPTE::AddSamples (long n) {
     sample_number = GetSampleNumber() + n;
-    SampleToTime();
+    sample_number_dirty = true;
 }
 
 
@@ -188,11 +217,24 @@ void SMPTE::AddSubFrames(char sf) {
 }
 
 
+void SMPTE::SetOffset (unsigned char h, unsigned char m, unsigned char s,
+                       unsigned char f, unsigned char sf) {
+    // resets the offset
+    sample_offset = 0;
+    // converts the SMPTE values to samples
+    SetTime(h, m, s, f, sf);
+    TimeToSample();
+    // copies the corresponding samples to the offset
+    sample_offset = sample_number;
+    // resets the sample number
+    sample_number = 0;
+}
+
 
 void SMPTE::SampleToTime() {
 
     // make a temporary copy of the sample number
-    unsigned long tmp_sample=sample_number;
+    unsigned long tmp_sample = sample_number + sample_offset;
 
     // keep track of the actual rates in use in doubles.
     double the_smpte_rate = smpte_smpte_rates[ smpte_rate ];
@@ -230,6 +272,8 @@ void SMPTE::SampleToTime() {
     seconds	   = (unsigned char) ((rounded_sub_frames / (100L * max_frame)) % 60 );
     minutes	   = (unsigned char) ((rounded_sub_frames / (100L * 60L * max_frame)) % 60 );
     hours	   = (unsigned char) ((rounded_sub_frames / (100L * 60L * 24L *max_frame)) % 24 );
+
+    sample_number_dirty = false;
 }
 
 
@@ -268,24 +312,13 @@ void SMPTE::TimeToSample() {
     }
 
     // save the calculated sample number in self.
-    sample_number = (unsigned long)tmp_sample;
+    sample_number = (unsigned long)tmp_sample + sample_offset;
+
+    sample_number_dirty = false;
 }
 
 
-void SMPTE::Copy(const SMPTE &s) {
-    smpte_rate = s.smpte_rate;
-    sample_rate = s.sample_rate;
-    sample_number = s.sample_number;
-    hours = s.hours;
-    minutes = s.minutes;
-    seconds = s.seconds;
-    frames = s.frames;
-    sub_frames = s.sub_frames;
-    sample_number_dirty = s.sample_number_dirty;
-}
-
-
-int	SMPTE::Compare(SMPTE & s) {
+int	SMPTE::Compare(SMPTE &s) {
     unsigned long a = GetSampleNumber();
     unsigned long b = s.GetSampleNumber();
 
@@ -296,19 +329,4 @@ int	SMPTE::Compare(SMPTE & s) {
     return 0;
 }
 
-
-void SMPTE::Add(SMPTE &s) {
-    unsigned long a = GetSampleNumber();
-    unsigned long b = s.GetSampleNumber();
-
-    SetSampleNumber(a + b);
-}
-
-
-void SMPTE::Subtract(SMPTE &s) {
-    unsigned long a = GetSampleNumber();
-    unsigned long b = s.GetSampleNumber();
-
-    SetSampleNumber(a - b);
-}
 

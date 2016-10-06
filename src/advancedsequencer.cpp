@@ -551,6 +551,50 @@ std::string AdvancedSequencer::GetCurrentMarker() const {
     return seq->GetState()->marker_text;
 }
 
+
+void AdvancedSequencer::SetSMPTE(SMPTE* s) {
+    if (!file_loaded || IsPlaying())
+        return;
+
+    const MIDIMessage* msg = 0;
+
+    // search a SMPTE event in track 0, time 0
+    const MIDITrack* trk = multitrack->GetTrack(0);
+    for (int i = 0; i < trk->GetNumEvents(); i++) {
+        if (trk->GetEventAddress(i)->GetTime() > 0)
+            break;
+        if (trk->GetEventAddress(i)->IsSMPTEOffset()) {
+            msg = trk->GetEventAddress(i);
+            break;
+        }
+    }
+    if (msg != 0) {                 // event found
+        const MIDISystemExclusive* offset = msg->GetSysEx();
+        char format = (offset->GetData(0) & 0x7f) >> 5;
+        switch (format) {
+            case 0:
+                s->SetSMPTERate(SMPTE_RATE_24);
+                break;
+            case 1:
+                s->SetSMPTERate(SMPTE_RATE_25);
+                break;
+            case 2:
+                s->SetSMPTERate(SMPTE_RATE_30DF);
+                break;
+            case 3:
+                s->SetSMPTERate(SMPTE_RATE_30);
+                break;
+        }
+        s->SetOffset(offset->GetData(0) & 0x1f, offset->GetData(1), offset->GetData(2),
+                     offset->GetData(3), offset->GetData(4));
+    }
+    else {
+        s->SetSMPTERate(SMPTE_RATE_30);
+        s->SetOffset(0);
+
+    }
+}
+
 void AdvancedSequencer::SetChanged() {
         // IMPORTANT: REWRITTEN: WAS BUGGY!!!!!
     bool was_playing = false;
