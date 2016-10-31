@@ -380,7 +380,7 @@ void MIDIFileReader::ReadTrack() {
                     MsgAdd(c = EGetC());
                 if(c == 0xf7 || no_merge == 0) {
           // make a sysex object out of the raw sysex data
-                    MIDISystemExclusive ex(the_msg, msg_index, msg_index);
+                    MIDISystemExclusive ex(the_msg, msg_index);
 
           // give the sysex object to our event handler
                     event_handler->mf_sysex( cur_time, ex );
@@ -400,7 +400,7 @@ void MIDIFileReader::ReadTrack() {
                     event_handler->mf_arbitrary(cur_time, msg_index, the_msg);
                 else if(c == 0xf7) {
           // make a sysex object out of the raw sysex data
-                    MIDISystemExclusive ex(the_msg, msg_index, msg_index);
+                    MIDISystemExclusive ex(the_msg, msg_index);
                     event_handler->mf_sysex(cur_time, ex);
                     sysexcontinue = 0;
                 }

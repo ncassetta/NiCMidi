@@ -59,7 +59,7 @@ const char* get_chan_msg_name(unsigned char status) {
     return chan_msg_names[status >> 4];
 }
 
-const char* get_chan_mode_name(unsigned char type) {
+const char* get_chan_mode_msg_name(unsigned char status) {
     static const char* chan_mode_names[8] = {
         "ALL SOUND OFF ",       // 0x78
         "RESET ALL CONTROLLERS",// 0x79
@@ -69,31 +69,11 @@ const char* get_chan_mode_name(unsigned char type) {
         "OMNI ON       ",       // 0x7d
         "MONO ON       ",       // 0x7e
         "POLY ON       "};      // 0x7f
-    return chan_mode_names[type - C_ALL_SOUND_OFF];
+    return chan_mode_names[status - C_ALL_SOUND_OFF];
 }
 
 
-const char* sys_msg_names[16] = {
-    "SYSEX    ",		// 0xf0
-    "MTC      ",		// 0xf1
-    "SONG POS ",		// 0xf2
-    "SONG SEL ",		// 0xf3
-    "ERROR    ",		// 0xf4
-    "ERROR    ",		// 0xf5
-    "TUNE REQ ",		// 0xf6
-    "SYSEX END",		// 0xf7
-    "CLOCK    ",		// 0xf8
-    "MEAS END ",		// 0xf9
-    "START    ",		// 0xfa
-    "CONTINUE ",		// 0xfb
-    "STOP     ",        // 0xfc
-    "ERROR    ",        // 0xfd
-    "SENSE    ",		// 0xfe
-    "META EV  "		    // 0xff
-};
-
-
-const char* get_meta_name(unsigned char b) {
+const char* get_meta_msg_name(unsigned char type) {
     static const char* meta_msg_names[18] {
         "SEQUENCE NUMBER ",	    // 0x00,
         "GENERIC TEXT    ",     // 0x01,
@@ -114,9 +94,9 @@ const char* get_meta_name(unsigned char b) {
         "NO OPERATION    ",     // 0x7f
         "META ERROR      "      // others
     };
-    if (b < 0x08)
-        return meta_msg_names[b];
-    switch(b) {
+    if (type < 0x08)
+        return meta_msg_names[type];
+    switch(type) {
         case 0x21:
             return meta_msg_names[8];
         case 0x2E:
@@ -141,10 +121,30 @@ const char* get_meta_name(unsigned char b) {
 }
 
 
+const char* get_sys_msg_name(unsigned char status) {
+    static const char* sys_msg_names[16] = {
+        "SYSEX    ",		// 0xf0
+        "MTC      ",		// 0xf1
+        "SONG POS ",		// 0xf2
+        "SONG SEL ",		// 0xf3
+        "ERROR    ",		// 0xf4
+        "ERROR    ",		// 0xf5
+        "TUNE REQ ",		// 0xf6
+        "SYSEX END",		// 0xf7
+        "CLOCK    ",		// 0xf8
+        "MEAS END ",		// 0xf9
+        "START    ",		// 0xfa
+        "CONTINUE ",		// 0xfb
+        "STOP     ",        // 0xfc
+        "ERROR    ",        // 0xfd
+        "SENSE    ",		// 0xfe
+        "META EV  "		    // 0xff
+    };
+    return sys_msg_names[status - 0xf0];
+}
 
 
-  const signed char lut_msglen[16] =
-  {
+const signed char chan_msg_len[16] = {
     0,0,0,0,0,0,0,0,
     3,	// 0x80=note off, 3 bytes
     3,	// 0x90=note on, 3 bytes
@@ -154,10 +154,10 @@ const char* get_meta_name(unsigned char b) {
     2,	// 0xd0=channel pressure, 2 bytes
     3,	// 0xe0=pitch bend, 3 bytes
     -1	// 0xf0=other things. may vary.
-  };
+};
 
-  const signed char lut_sysmsglen[16] =
-  {
+
+const signed char sys_msg_len[16] = {
     -1,	// 0xf0=sysex start. may vary
     2,	// 0xf1=MIDI Time Code. 2 bytes
     3,	// 0xf2=MIDI Song position. 3 bytes
@@ -177,13 +177,13 @@ const char* get_meta_name(unsigned char b) {
   };
 
 
-  const bool	lut_is_white[12] =
-  {
+const bool note_is_white[12] =
+{
 //
 //	C C# D D# E F F# G G# A A# B
 //
     1,0, 1,0, 1,1,0, 1,0, 1,0, 1
-  };
+};
 
 
 

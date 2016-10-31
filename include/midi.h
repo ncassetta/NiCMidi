@@ -35,8 +35,6 @@
 #ifndef _JDKMIDI_MIDI_H
 #define _JDKMIDI_MIDI_H
 
-char* KeyName (signed char sharp_flats, unsigned char major_minor, bool uppercase = true,
-               bool space = false, bool use_Mm = true);
 
 ///
 /// MIDI Status bytes
@@ -58,7 +56,6 @@ enum {
     RESET		        =0xff,	// 0xff never used as reset in a MIDIMessage
     META_EVENT	        =0xff	// 0xff is for non MIDI messages
 };
-
 
 
 ///
@@ -215,60 +212,49 @@ enum {
 };
 
 
-
-
-
-extern const signed char	lut_msglen[16];
-extern const signed char	lut_sysmsglen[16];
-extern const bool	        lut_is_white[12];
-
-
-extern const char*          chan_msg_names[16];
-extern const char*          sys_msg_names[16];
-extern const char*          chan_mode_names[8];
-
+/// Readable names of MIDI messages
+//<{
 const char*                 get_chan_msg_name(unsigned char status);
-const char*                 get_meta_name(unsigned char status);
-const char*                 get_chan_mode_name(unsigned char status);
-
-  //
-  // Message Length functions. Not valid for Meta-events (0xff)
-  //
-
-  inline	signed char	GetMessageLength( unsigned char stat )
-    {
-      return lut_msglen[stat>>4];
-    }
-
-  inline	signed char	GetSystemMessageLength( unsigned char stat )
-    {
-      return lut_sysmsglen[stat-0xf0];
-    }
+const char*                 get_chan_mode_msg_name(unsigned char status);
+const char*                 get_meta_msg_name(unsigned char type);
+const char*                 get_sys_msg_name(unsigned char status);
+//<}
 
 
-  //
-  // Piano key color methods
-  //
-
-  inline	bool	IsNoteWhite( unsigned char note )
-    {
-      return lut_is_white[ note%12 ];
-    }
-
-  inline	bool	IsNoteBlack( unsigned char note )
-    {
-      return !lut_is_white[ note%12 ];
-    }
+/// Length in bytes of MIDI messages
+//<{
+extern const signed char	chan_msg_len[16];
+extern const signed char	sys_msg_len[16];
+//<}
 
 
-  //
-  // Note # to standard octave conversion
-  //
+/// Piano key color methods
+//<{
+extern const bool note_is_white[12];
 
-  inline	int	GetNoteOctave( unsigned char note )
-    { return (note/12)-1;	}
+inline bool	IsNoteWhite(unsigned char note) {
+    return note_is_white[note % 12];
+}
+
+inline bool	IsNoteBlack(unsigned char note) {
+    return !note_is_white[note % 12];
+}
+//<}
 
 
+/// MIDI note number to standard octave conversion
+inline int GetNoteOctave(unsigned char note) {
+    return (note/12)-1;
+}
+
+/// Converts a MIDI key signature into a readable form
+/// \param sharp_flats the number of accidents as coded in a MIDI keysig mera messge
+/// \param major_minor the mode as coded in a MIDI keysig messages
+/// \param uppercase if true the key name (A, B, C, ...) is uppercase
+/// \param space if true put a space between the key and the mode (es. A m)
+/// \param use_Mm if true the mode is M or m, otherwise maj or min
+char* KeyName (signed char sharp_flats, unsigned char major_minor, bool uppercase = true,
+               bool space = false, bool use_Mm = true);
 
 
 

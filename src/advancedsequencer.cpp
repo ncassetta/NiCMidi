@@ -119,7 +119,7 @@ bool AdvancedSequencer::Load ( const char *fname )
 void AdvancedSequencer::UnLoad() {
     Stop();
     multitrack->Clear();
-    multitrack->SetClksPerBeat(DEFAULT_CLKS_PER_BEAT);
+    multitrack->SetClksPerBeat(MIDIMultiTrack::DEFAULT_CLKS_PER_BEAT);
     file_loaded = false;
     seq->Reset();
     seq->GoToZero();
@@ -520,7 +520,7 @@ int AdvancedSequencer::GetTrackTranspose (int trk) const {
 }
 
 
-void AdvancedSequencer::SetTrackTimeOffset (int trk, int time) {
+void AdvancedSequencer::SetTrackTimeShift (int trk, int time) {
     if (!file_loaded)
         return;
 
@@ -530,7 +530,7 @@ void AdvancedSequencer::SetTrackTimeOffset (int trk, int time) {
         //seq->GetTrackState (trk)->note_matrix.Clear();
     }
 
-    seq->SetTrackTimeOffset(trk, time);
+    seq->SetTrackTimeShift(trk, time);
     seq->GoToTime(seq->GetCurrentMIDIClockTime());
 
     if (was_playing)
@@ -538,10 +538,10 @@ void AdvancedSequencer::SetTrackTimeOffset (int trk, int time) {
 }
 
 
-int AdvancedSequencer::GetTrackTimeOffset (int trk) const {
+int AdvancedSequencer::GetTrackTimeShift (int trk) const {
     if (!file_loaded)
         return 0;
-    return seq->GetTrackTimeOffset(trk);
+    return seq->GetTrackTimeShift(trk);
 }
 
 

@@ -39,55 +39,78 @@
 #define JDKSMIDI_SYSEX_H
 
 #include "midi.h"
-#include <cstring>                  // for memcmp()
+#include <vector>
+#include <cstring>
 
+///
+/// This class stores a buffer of MIDI data bytes in a std::vector, plus a byte for the checksum. It is
+/// used by the MIDIMessage class for keeping an arbitrary amount of data (tipically the data attached to
+/// a MIDI sysex message, but also the text meta messages and some other type utilize it).
+///
 class  MIDISystemExclusive {
     public:
-                                MIDISystemExclusive(int size = 384);
-                                MIDISystemExclusive(const MIDISystemExclusive &e);
-                                MIDISystemExclusive(const unsigned char *buf, int max_len_, int cur_len_);
-        virtual	               ~MIDISystemExclusive();
+        /// Creates a new object initially empty. If you know the length of the data it will contain
+        /// you can specify it here.
+                                    MIDISystemExclusive(unsigned int len = 0);
+        /// The copy constructor.
+                                    MIDISystemExclusive(const MIDISystemExclusive &e);
+        /// Creates a new object from the given buffer of bytes. You must specify the address of the
+        /// buffer and its length.
+                                    MIDISystemExclusive(const unsigned char *buf, unsigned int len);
+        /// The destructor.
+        virtual	                    ~MIDISystemExclusive() {}
 
-        MIDISystemExclusive&    operator= (const MIDISystemExclusive& se);
-        bool                    operator== (const MIDISystemExclusive &se) const;
+        /// The assignment operator.
+        MIDISystemExclusive&        operator= (const MIDISystemExclusive& se);
+        /// The equal operator compares the data buffer and the checksum.
+        bool                        operator== (const MIDISystemExclusive &se) const;
 
-        void	                Clear()				        { cur_len = 0; chk_sum = 0;	}
-        void	                ClearChecksum()		        { chk_sum = 0; }
-
-        void	                PutSysByte(unsigned char b)	// does not add to chksum
-                                    { if (cur_len < max_len) buffer[cur_len++] = b; }
-        void	                PutByte(unsigned char b)    { PutSysByte(b); chk_sum += b; }
-        void	                PutEXC()                    { PutSysByte(SYSEX_START); }
-        void	                PutEOX()	                { PutSysByte(SYSEX_END); }
-
-        void	                PutNibblizedByte(unsigned char b)       // low nibble first
+        /// Resets the buffer to 0 length data and the checksum to 0.
+        void	                    Clear()				        { buffer.clear(); chk_sum = 0;	}
+        /// Resets the checksum to 0.
+        void	                    ClearChecksum()		        { chk_sum = 0; }
+        /// Appends a byte to the buffer, without adding it to checksum.
+        void	                    PutSysByte(unsigned char b) { buffer.push_back(b); }
+        /// Appends a byte to the buffer, adding it to checksum
+        void	                    PutByte(unsigned char b)    { PutSysByte(b); chk_sum += b; }
+        /// Appends a System exclusive Start byte (0xF0) to the buffer, without affecting the checksum.
+        void	                    PutEXC()                    { PutSysByte(SYSEX_START); }
+        /// Appends a System exclusive End byte (0xF7) to the buffer, without affecting the checksum.
+        void	                    PutEOX()	                { PutSysByte(SYSEX_END); }
+        /// Appends two bytes, containing the low (1st) and the high nibble of b. Adds them to the checksum.
+        void	                    PutNibblizedByteLH(unsigned char b)
                                     { PutByte((unsigned char)(b & 0xf)); PutByte((unsigned char)(b >> 4)); }
-        void	                PutNibblizedByte2(unsigned char b)      // high nibble first
+        /// Appends two bytes, containing the high (1st) and the low nibble of b. Adds them to the checksum.
+        void	                    PutNibblizedByteHL(unsigned char b)
                                     { PutByte((unsigned char)(b >> 4)); PutByte((unsigned char)(b & 0xf)); }
-        void	                PutChecksum()               { PutByte((unsigned char)(chk_sum & 0x7f)); }
-
-        unsigned char	        GetChecksum() const         { return (unsigned char)(chk_sum & 0x7f); }
-        int		                GetLength() const           { return cur_len; }
-        unsigned char	        GetData(int i) const        { return buffer[i]; }
-        bool	                IsFull() const              { return cur_len >= max_len; }
-        unsigned char*          GetBuffer()                 { return buffer; }
-        const unsigned char*    GetBuffer() const           { return buffer; }
-        bool                    IsGMReset() const;
-        bool                    IsGSReset() const;
-        bool                    IsXGReset() const;
+        /// Appends the checksum to the buffer.
+        void	                    PutChecksum()               { PutByte((unsigned char)(chk_sum & 0x7f)); }
+        /// Returns the checksum.
+        unsigned char	            GetChecksum() const         { return (unsigned char)(chk_sum & 0x7f); }
+        /// Returns the number of data bytes stored in the buffer.
+        int		                    GetLength() const           { return buffer.size(); }
+        /// Returns the i-th byte in the buffer.
+        unsigned char	            GetData(int i) const        { return buffer[i]; }
+        /// Returns a pointer to the data buffer.
+        //unsigned char*          GetBuffer()                 { return buffer; }
+        const unsigned char*        GetBuffer() const           { return buffer.data(); }
+        /// Returns *true* if the buffer contains a GM Reset sysex message.
+        bool                        IsGMReset() const;
+        /// Returns *true* if the buffer contains a GS Reset sysex message.
+        bool                        IsGSReset() const;
+        /// Returns *true* if the buffer contains a XG Reset sysex message.
+        bool                        IsXGReset() const;
 
     private:
-        unsigned char*          buffer;
-        int                     max_len;
-        int                     cur_len;
-        unsigned char           chk_sum;
+        std::vector<unsigned char>  buffer;
+        unsigned char               chk_sum;
 
-        static const unsigned char GMReset_data[];
-        static const unsigned char GSReset_data[];
-        static const unsigned char XGReset_data[];
-        static const int           GMReset_len = 6;
-        static const int           GSReset_len = 11;
-        static const int           XGReset_len = 9;
+        static const unsigned char  GMReset_data[];
+        static const unsigned char  GSReset_data[];
+        static const unsigned char  XGReset_data[];
+        static const int            GMReset_len = 6;
+        static const int            GSReset_len = 11;
+        static const int            XGReset_len = 9;
 };
 
 

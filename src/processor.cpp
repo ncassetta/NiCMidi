@@ -30,9 +30,13 @@
 
 #include "../include/processor.h"
 
+/////////////////////////////////////////////////////////////////
+//                    class MIDIMultiProcessor                 //
+/////////////////////////////////////////////////////////////////
+
 
  void MIDIMultiProcessor::SetProcessor(MIDIProcessor* proc, int pos) {
-    if (pos >= 0 && pos < processors.size())
+    if (pos >= 0 && (unsigned)pos < processors.size())
         processors[pos] = proc;
     else
         processors.push_back(proc);
@@ -40,7 +44,7 @@
 
 
 void MIDIMultiProcessor::RemoveProcessor(int pos) {
-    if (pos >= 0 && pos < processors.size())
+    if (pos >= 0 && (unsigned)pos < processors.size())
         processors.erase(processors.begin() + pos);
 }
 
@@ -67,6 +71,9 @@ bool MIDIMultiProcessor::Process(MIDITimedMessage *msg) {
 }
 
 
+/////////////////////////////////////////////////////////////////
+//                  lass MIDIProcessorTransposer               //
+/////////////////////////////////////////////////////////////////
 
 MIDIProcessorTransposer::MIDIProcessorTransposer() {
     for(int i = 0; i < 16; ++i)
@@ -94,6 +101,10 @@ bool MIDIProcessorTransposer::Process (MIDITimedMessage *msg) {
     return true;
 }
 
+
+/////////////////////////////////////////////////////////////////
+//                class MIDIProcessorRechannelizer             //
+/////////////////////////////////////////////////////////////////
 
 MIDIProcessorRechannelizer::MIDIProcessorRechannelizer() {
     for(int i = 0; i < 16; ++i)
@@ -125,9 +136,13 @@ bool MIDIProcessorRechannelizer::Process(MIDITimedMessage *msg) {
 }
 
 
+/////////////////////////////////////////////////////////////////
+//                  class MIDIProcessorPrinter                 //
+/////////////////////////////////////////////////////////////////
+
 bool MIDIProcessorPrinter::Process(MIDITimedMessage *msg) {
     if (print_on)
-        std::cout << msg->MsgToText() << std::endl;
+        ost << msg->MsgToText() << std::endl;
     return true;
 }
 

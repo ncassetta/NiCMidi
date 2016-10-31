@@ -132,7 +132,7 @@ void MIDIManager::SeqPlay() {
 
         seq_time_offset = (unsigned long) sequencer->GetCurrentTimeInMs();
         sys_time_offset = timer->GetSysTimeMs();
-        sequencer->SetTimeOffsetMode(true);
+        sequencer->SetTimeShiftMode(true);
         play_mode = true;
         timer->Start();
 
@@ -151,7 +151,7 @@ void MIDIManager::SeqStop() {
     if (sequencer && play_mode == true) {
         timer->Stop();
         play_mode = false;
-        sequencer->SetTimeOffsetMode(false);
+        sequencer->SetTimeShiftMode(false);
         AllNotesOff();
         if (auto_seq_open)
             CloseOutPorts();

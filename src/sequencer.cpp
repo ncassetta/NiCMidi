@@ -342,7 +342,7 @@ bool MIDISequencerState::Process( MIDITimedMessage *msg ) {
         else if( ( msg->GetMetaType()==META_TRACK_NAME
                  || msg->GetMetaType()==META_INSTRUMENT_NAME
                  || (!t_state->got_good_track_name && msg->GetMetaType()==META_GENERIC_TEXT && msg->GetTime()==0) )
-               && msg->GetSysEx() ) {           // is it a track name event?
+                 && msg->GetSysEx() ) {           // is it a track name event?
             t_state->got_good_track_name = true;
             int len = msg->GetSysEx()->GetLength();
             t_state->track_name = std::string((const char *)msg->GetSysEx()->GetBuffer(), len);
@@ -382,7 +382,7 @@ void MIDISequencerState::NotifyTrack(int item) const {
 MIDISequencer::MIDISequencer (MIDIMultiTrack *m, MIDISequencerGUINotifier *n) :
     solo_mode (false), tempo_scale (100),
     track_processors(m->GetNumTracks(), 0),
-    time_offsets(m->GetNumTracks(), 0),
+    time_shifts(m->GetNumTracks(), 0),
     track_ports(m->GetNumTracks(), 0),
     state (m, n) {
     if (n)
@@ -390,7 +390,7 @@ MIDISequencer::MIDISequencer (MIDIMultiTrack *m, MIDISequencerGUINotifier *n) :
     for (unsigned  int i = 0; i < GetNumTracks(); ++i)
         track_processors[i] = new MIDISequencerTrackProcessor;
     beat_marker_msg.SetBeatMarker();
-    state.iterator.GetState().SetTimeOffsetMode(false, &time_offsets);  // surely returns true
+    state.iterator.GetState().SetTimeShiftMode(false, &time_shifts);  // surely returns true
 }
 
 
@@ -404,17 +404,17 @@ void MIDISequencer::Reset() {
     state.Reset();
     if (track_processors.size() != GetNumTracks()) {
         track_processors.resize(GetNumTracks(), new MIDISequencerTrackProcessor);
-        time_offsets.resize(GetNumTracks());
+        time_shifts.resize(GetNumTracks());
         track_ports.resize(GetNumTracks());
     }
     for (unsigned int i = 0; i < GetNumTracks(); ++i) {
         track_processors[i]->Reset();
-        time_offsets[i] = 0;
+        time_shifts[i] = 0;
         track_ports[i] = 0;
     }
     solo_mode = false;
     tempo_scale = 100;
-    SetTimeOffsetMode(false);
+    SetTimeShiftMode(false);
 }
 
 
@@ -448,7 +448,7 @@ bool MIDISequencer::InsertTrack(int trk) {
     if (trk == -1) trk = GetNumTracks();                // if trk = -1 (default) append track
     if (state.multitrack->InsertTrack(trk)) {
         track_processors.insert(track_processors.begin() + trk, new MIDISequencerTrackProcessor);
-        time_offsets.insert(time_offsets.begin() + trk, 0);
+        time_shifts.insert(time_shifts.begin() + trk, 0);
         track_ports.insert(track_ports.begin() + trk, 0);
         MIDIClockTime now = state.cur_clock;            // remember current time
         state.Reset();                                  // reset the state (syncs the iterator and the track states)
@@ -462,7 +462,7 @@ bool MIDISequencer::InsertTrack(int trk) {
 bool MIDISequencer::DeleteTrack(int trk) {
     if (state.multitrack->DeleteTrack(trk)) {
         track_processors.erase(track_processors.begin() + trk);
-        time_offsets.erase(time_offsets.begin() + trk);
+        time_shifts.erase(time_shifts.begin() + trk);
         track_ports.erase(track_ports.begin() + trk);
         MIDIClockTime now = state.cur_clock;            // remember current time
         state.Reset();                                  // reset the state (syncs the iterator and the track states)
@@ -477,15 +477,15 @@ bool MIDISequencer::MoveTrack(int from, int to) {
     if (from == to) return true;                        // nothing to do
     if (state.multitrack->MoveTrack(from, to)) {        // checks if from and to are valid
         MIDISequencerTrackProcessor* temp_processor = track_processors[from];
-        int temp_offset = time_offsets[from];
+        int temp_offset = time_shifts[from];
         int temp_port = track_ports[from];
         track_processors.erase(track_processors.begin() + from);
-        time_offsets.erase(time_offsets.begin() + from);
+        time_shifts.erase(time_shifts.begin() + from);
         track_ports.erase(track_ports.begin() + from);
         if (from < to)
             to--;
         track_processors.insert(track_processors.begin() + to, temp_processor);
-        time_offsets.insert(time_offsets.begin() + to, temp_offset);
+        time_shifts.insert(time_shifts.begin() + to, temp_offset);
         track_ports.insert(track_ports.begin() + to, temp_port);
         MIDIClockTime now = state.cur_clock;            // remember current time
         state.Reset();                                  // reset the state (syncs the iterator)
@@ -805,9 +805,9 @@ void MIDISequencer::ScanEventsAtThisTime() {
 
     MIDIClockTime t = 0;
     int trk;
-    MIDITimedMessage ev;
+    MIDITimedMessage msg;
 
-    while( GetNextEventTime(&t) && t == orig_clock && GetNextEvent(&trk, &ev)) {
+    while( GetNextEventTime(&t) && t == orig_clock && GetNextEvent(&trk, &msg)) {
         ;  // cycle through all events at this time
     }
 

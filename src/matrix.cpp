@@ -50,22 +50,6 @@ MIDIMatrix::MIDIMatrix() {
 }
 
 
-void MIDIMatrix::DecNoteCount(int channel, int note) {
-    if(note_on_count[channel][note] > 0) {
-      --note_on_count[channel][note];
-      --channel_count[channel];
-      --total_count;
-    }
-}
-
-
-void MIDIMatrix::IncNoteCount(int channel, int note) {
-    ++note_on_count[channel][note];
-    ++channel_count[channel];
-    ++total_count;
-}
-
-
 bool MIDIMatrix::Process(const MIDIMessage& msg) {
     bool ret = false;
 
@@ -104,6 +88,22 @@ void MIDIMatrix::Clear() {
     for(int channel = 0; channel < 16; ++channel)
         ClearChannel(channel);
     total_count = 0;
+}
+
+
+void MIDIMatrix::DecNoteCount(int channel, int note) {
+    if(note_on_count[channel][note] > 0) {
+      --note_on_count[channel][note];
+      --channel_count[channel];
+      --total_count;
+    }
+}
+
+
+void MIDIMatrix::IncNoteCount(int channel, int note) {
+    ++note_on_count[channel][note];
+    ++channel_count[channel];
+    ++total_count;
 }
 
 

@@ -1,13 +1,13 @@
 #include "../include/timer.h"
 
-MIDITimer::timepoint MIDITimer::sys_clock_base = std::chrono::steady_clock::now();
+const MIDITimer::timepoint MIDITimer::sys_clock_base = std::chrono::steady_clock::now();
 
 
-MIDITimer::MIDITimer(int res) : resolution(res), tick(0), tick_param(0),
-                                timer_on(false) {}
+MIDITimer::MIDITimer(unsigned int res) : resolution(res), tick(0), tick_param(0),
+                                         timer_on(false) {}
 
 
-void MIDITimer::SetResolution(int res) {
+void MIDITimer::SetResolution(unsigned int res) {
     Stop();
     resolution = res;
 }

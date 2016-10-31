@@ -84,7 +84,6 @@ class MIDIFileReadStream {
 ///
 /// This class is used internally for reading MIDI files.
 ///
-
 class MIDIFileEventHandler {
     public:
                                         MIDIFileEventHandler() {}
@@ -145,7 +144,6 @@ struct MIDIFileHeader {
 ///
 /// This class converts a stream of *char* read from a MIDIFileReadStream object into MIDI data
 ///
-
 class MIDIFileReader {
     public:
 

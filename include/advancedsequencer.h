@@ -114,8 +114,8 @@ class AdvancedSequencer {
         int                 GetTrackChannel(int trk) const;
         void                SetTrackTranspose(int trk, int trans);
         int                 GetTrackTranspose(int trk) const;
-        void                SetTrackTimeOffset(int trk, int time);
-        int                 GetTrackTimeOffset(int trk) const;
+        void                SetTrackTimeShift(int trk, int time);
+        int                 GetTrackTimeShift(int trk) const;
         std::string         GetCurrentMarker() const;
 
         void                SetSMPTE(SMPTE* s);

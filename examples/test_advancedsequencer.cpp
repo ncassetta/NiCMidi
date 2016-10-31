@@ -276,7 +276,7 @@ int main( int argc, char **argv ) {
         else if (command == "tshift") {                 // sets the time shift (in ticks) of a track
             int track = atoi(par1.c_str());
             int amount = atoi(par2.c_str());
-            sequencer.SetTrackTimeOffset(track, amount);
+            sequencer.SetTrackTimeShift(track, amount);
             cout << "Track " << track << "time shifted by " << amount << " MIDI ticks" << endl;
         }
         else if (command == "tracknames") {             // prints track names

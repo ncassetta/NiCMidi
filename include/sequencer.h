@@ -34,27 +34,28 @@ class MIDISequencer;        // forward declaration
 
 ///
 /// This class inherits from the pure virtual MIDIProcessor and is a multi-purpose processor
-/// implementing muting, soloing, rechanneling, velocity scaling and transposing.
+/// implementing muting, soloing, rechannelizing, velocity scaling and transposing.
 /// Moreover, you can set a custom MIDIProcessor pointer which extra-processes messages.
 /// The MIDISequencer class contains an independent MIDISequencerTrackProcessor for every MIDI Track.
 /// Advanced classes like MIDISequencer and AdvancedSequencer allow you to set muting, transposing,
-/// etc. without dealing with it: the only useful function for the user is the extra processing hook.
-/// However, you could subclass this for getting new features.
+/// etc. by dedicated methods without dealing with it: the only useful function for the user is the
+/// extra processing hook.
+/// However, you could subclass this if you want to get new features.
 ///
 class MIDISequencerTrackProcessor : public MIDIProcessor {
     public:
-            /// The constructor. Default is no processing (MIDI messages leave the processor unchanged)
+        /// The constructor. Default is no processing (MIDI messages leave the processor unchanged).
                         MIDISequencerTrackProcessor();
-            /// The destructor
+        /// The destructor
         virtual         ~MIDISequencerTrackProcessor() {}
-            /// Resets all values to default state
+        /// Resets all values to default state (no processing at all).
         virtual void    Reset();
-            /// Sets the extra processor for the track. The user processing is done before all internal
-            /// processing, and if the user Process() function returns _false_ it is not done at all.
-            /// If you want to eliminate an already set processor call this with 0 as parameter
+        /// Sets the extra processor for the track. The user processing is done before all internal
+        /// processing, and if the user Process() function returns _false_ it is not done at all.
+        /// If you want to eliminate an already set processor call this with 0 as parameter
         void            SetExternalProcessor(MIDIProcessor* proc)
                                                 { extra_proc = proc; }
-            /// Processes message msg, changing its parameters according to the state of the processor
+        /// Processes message msg, changing its parameters according to the state of the processor
         virtual bool    Process ( MIDITimedMessage *msg );
 
         bool            mute;                   ///< track is muted
@@ -70,23 +71,23 @@ class MIDISequencerTrackProcessor : public MIDIProcessor {
 /// This class stores current MIDI parameters for a track.
 /// It stores track name, program, pitch bend, all control changes values and a matrix with notes on and off.
 /// The MIDISequencerState class contains a MIDISequencerTrackState for every MIDI Track, and it take care of
-/// updating parameters. You can ask the MIDISequencerTrackState for knowing actual track parameters, however
-/// advanced class AdvancedSequencer allows you to get them without dealing with it, so the use of this class
-/// is mainly internal. However, you could subclass it if you want to keep track of other parameters.
+/// updating parameters. You can ask the MIDISequencerTrackState if you want to know actual track parameters,
+/// however advanced class AdvancedSequencer allows you to get them without dealing with it, so the use of this
+/// class is mainly internal. However, you could subclass it if you want to keep track of other parameters.
 ///
 class MIDISequencerTrackState {
     public:
-            /// The constructor.
-            /// Initial attributes are program = -1 (undefined),  bender_value = 0, all controls = -1,
-            /// track_name = "", all notes off.
+        /// The constructor.
+        /// Initial attributes are program = -1 (undefined),  bender_value = 0, all controls = -1,
+        /// track_name = "", all notes off.
                         MIDISequencerTrackState();
-            /// The destructor.
         virtual         ~MIDISequencerTrackState() {}
 
-            // Copy constructor used but unneeded!
+        // Copy constructor used but unneeded!
 
-            /// Resets default values.
+        /// Resets default values.
         virtual void    Reset();
+
         char            program;		    ///< current program change, or -1
         int             bender_value;		///< last seen bender value
         std::string     track_name;	        ///< track name
@@ -116,29 +117,29 @@ class MIDISequencerState : public MIDIProcessor {
 // (notifier is used also by the MIDIManager)
 // All is public: used by various classes
     public:
-            /// The constructor. Appropriate values are set by the sequencer when it creates the object.
+        /// The constructor. Appropriate values are set by the sequencer when it creates the object.
                                 MIDISequencerState(MIDIMultiTrack *multitrack_,
                                                    MIDISequencerGUINotifier *n = 0);
-            /// The copy constructor.
+        /// The copy constructor.
                                 MIDISequencerState(const MIDISequencerState &s);
-            /// The destructor does nothing.
+        /// The destructor does nothing.
                                 ~MIDISequencerState();
-            /// The equal operator.
+        /// The equal operator.
         const MIDISequencerState& operator= (const MIDISequencerState &s);
 
-            /// Returns the number of tracks of the multitrack.
+        /// Returns the number of tracks of the multitrack.
         unsigned int            GetNumTracks() const        {return multitrack->GetNumTracks();}
-            /// Resets the state to default values. These are: cur_clock = 0, tempo = 120 bpm,
-            /// time = 4/4, keysig = C Maj, no marker. Moreover resets all track states (see
-            /// MIDISequencerTrackState::Reset()).
+        /// Resets the state to default values. These are: cur_clock = 0, tempo = 120 bpm,
+        /// time = 4/4, keysig = C Maj, no marker. Moreover resets all track states (see
+        /// MIDISequencerTrackState::Reset()).
         void                    Reset();
-            /// This is the process function inherited from MIDIProcessor. When you get a MIDI message
-            /// from the sequencer, it is processed by the state, which update its parameters and
-            /// notifies the GUI if required.
+        /// This is the process function inherited from MIDIProcessor. When you get a MIDI message
+        /// from the sequencer, it is processed by the state, which update its parameters and
+        /// notifies the GUI if required.
         bool                    Process( MIDITimedMessage* msg );
 
-            /// These are used internally for notifying the GUI when a something happens (a parameter
-            /// was changed, time is moved, etc.)
+        /// These are used internally for notifying the GUI when a something happens (a parameter
+        /// was changed, time is moved, etc.)
         void                    Notify(int group, int item = 0) const;
         void                    NotifyTrack(int item) const;
 
@@ -170,9 +171,9 @@ class MIDISequencerState : public MIDIProcessor {
 /// - a MIDIMultiTrack for storing MIDI messages
 /// - a MIDISequencerTrackProcessor for every track, allowing muting, soloing, transposing, ecc.
 /// - a MIDIMultiTrackIterator, allowing to set a 'now' time, moving it along
-/// - a MIDISequencerGUINotifier, that notifies the GUI about MIDI events
+/// - an (optional) MIDISequencerGUINotifier, that notifies the GUI about MIDI events
 /// - a MIDISequencerState (which embeds the multitrack, the iterator and the notifier) to keep track
-/// of actual parameters (tempo, keysig, track parameters, etc.).
+///   of actual parameters (tempo, keysig, track parameters, etc.).
 /// Moreover it allows the user to assign a separate MIDI port for each track and to shift the time of
 /// track events by a given amount (positive or negative) of MIDI ticks.
 /// \note This class has no playing capacity. For playing MIDI content you must use it together with a
@@ -228,8 +229,8 @@ class MIDISequencer {
         bool                            GetSoloMode() const     { return solo_mode; }
         /// Returns the time offset (in MIDI ticks) assigned to track _trk_. See SetTimeOffset(),
         /// SetTimeOffsetMode().
-        int                             GetTrackTimeOffset(int trk) const
-                                                                { return time_offsets[trk]; }
+        int                             GetTrackTimeShift(int trk) const
+                                                                { return time_shifts[trk]; }
         /// Return the number of the port assigned to track _trk_.
         unsigned int                    GetTrackPort(int trk) const
                                                                 { return track_ports[trk]; }
@@ -244,12 +245,13 @@ class MIDISequencer {
         /// \param m on/off
         /// \param trk the nunber of the track if m is true, otherwhise you can leave default value
         void                            SetSoloMode(bool m, int trk = -1);
-        /// Sets the time offset (in MIDI ticks) for track _trk_. The offset can be positive or negative;
-        /// event shifted include all channel messages and sysex messages (others remain at their time).
+        /// Sets the time shift offset (in MIDI ticks) for track _trk_. The offset can be positive or
+        /// negative; events shifted include all channel messages and sysex messages (others remain at
+        /// their time).
         /// If you select a negative offset, be sure not to have shifted events at lesser time than the
         /// offset (they won't be shifted). See also SetTimeOffsetMode().
-        void                            SetTrackTimeOffset(int trk, int offset)
-                                                                { time_offsets[trk] = offset; }
+        void                            SetTrackTimeShift(int trk, int offset)
+                                                                { time_shifts[trk] = offset; }
                                                                         // TODO: reset the iterator ?
         /// Sets the MIDI port for track _trk_.
         /// \note This only checks if _port_ is a valid port number (eventually normalizing it) and sets
@@ -301,7 +303,8 @@ class MIDISequencer {
         /// Gets the next event (respect current position). This queries the state for the next event in the
         /// multitrack, then processes it with the corresponding track processor (eventually changing the
         /// original event, for example if transposing) and updates the state. Moreover it sends appropriate
-        /// messages to the GUI,
+        /// messages to the GUI. If there are no events before the next metronome click you will get a
+        /// Beat Marker internal event.
         /// \param[out] tracknum: the track of the next event
         /// \param[out] msg the MIDI event
         /// \return _true_ if there is effectively a next event (and the parameters are valid), _false_ otherwise
@@ -318,8 +321,8 @@ class MIDISequencer {
         /// Sets the time shifting of events on and off (default is off). Time shift should only be on when
         /// playing. If you use the MIDISequencer together with a MIDIManager for playing, the manager turns
         /// automatically on and off this, so you have no need to use this function
-        void                            SetTimeOffsetMode(bool f)
-                                                        { state.iterator.GetState().SetTimeOffsetMode(f); }
+        void                            SetTimeShiftMode(bool f)
+                                                        { state.iterator.GetState().SetTimeShiftMode(f); }
 
     protected:
 
@@ -331,7 +334,7 @@ class MIDISequencer {
         int                             tempo_scale;
         std::vector<MIDISequencerTrackProcessor*>
                                         track_processors;
-        std::vector<int>                time_offsets;
+        std::vector<int>                time_shifts;
         std::vector<unsigned int>       track_ports;
         MIDISequencerState              state;
 };

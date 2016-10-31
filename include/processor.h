@@ -48,7 +48,7 @@ class MIDIProcessor {
                                         MIDIProcessor() {}
         /// The destructor
         virtual                         ~MIDIProcessor() {}
-        /// The Process() pure virtual method. It takes as parameter a MiDITimedMessage (which can
+        /// The Process() pure virtual method. It takes as parameter a MIDITimedMessage (which can
         /// be modified by the method) and returns a boolean, which can be used for filtering
         /// purposes (selecting some messages) or for notifying the result of the processing.
         virtual bool                    Process(MIDITimedMessage *msg) = 0;
@@ -61,24 +61,43 @@ class MIDIProcessor {
 ///
 class MIDIMultiProcessor : public MIDIProcessor {
     public:
+
+        /// The constructor creates an empty object.
                                         MIDIMultiProcessor() {}
-        virtual                         ~MIDIMultiProcessor() {}
 
-        // MIDIProcessors given to a MIDIMultiProcessor are NOT owned
-        // by MIDIMultiProcessor.
-
+        /// Sets the MIDIProcessor in the given position. If you leave the default value the
+        /// processor will be appended to the queue. MIDIProcessors given to a MIDIMultiProcessor
+        /// are NOT owned by MIDIMultiProcessor.
         void                            SetProcessor(MIDIProcessor* proc, int pos = -1);
+        /// These return a pointer to the MIDIProcessor at the given position.
+        //<{
         MIDIProcessor*                  GetProcessor(int pos)           { return processors[pos]; }
         const MIDIProcessor*            GetProcessor(int pos) const     { return processors[pos]; }
+        //<}
 
+        /// Determines the behavior of the MIDIMultiProcessor if any of the processors return
+        /// *false*. You can set these three values:
+        /// - MODE_IGNORE :   the MIDIMultiProcessor ignores return values and always returns *true*
+        /// - MODE_CONTINUE : the MIDIMultiProcessor performs all the processing, and returns *false*
+        /// if any processor returned *false*, *true* otherwise
+        /// - MODE_STOP :      the MIDIMultiProcessor stop processing when a processor returns *false*
+        /// and returns *false*
         void                            SetProcessMode(int mode)        { process_mode = mode; }
+        /// Gets the processing mode.
         int                             GetProcessMode() const          { return process_mode; }
 
+        /// Removes the MIDIProcessor at the given position.
         void                            RemoveProcessor(int pos);
+        /// Searches the given MIDIProcessor in the queue and removes it (it does nothing
+        /// if the processor isn't in the queue).
         void                            RemoveProcessor(const MIDIProcessor* proc);
 
+        /// The process method passes the MIDI message to the first processor and subsequently to
+        /// all other processors in the queue. If any of the processors returns *false* the behavior
+        /// is defined by the SetProcessMode() method.
         virtual bool                    Process(MIDITimedMessage *msg);
 
+        /// These are the values to be given as parameters to the SetProcessMode() method.
         enum { MODE_IGNORE, MODE_CONTINUE, MODE_STOP };
 
     private:
@@ -95,8 +114,7 @@ class MIDIProcessorTransposer : public MIDIProcessor {
     public:
         /// The constructor.
                                         MIDIProcessorTransposer();
-        /// The destructor.
-        virtual                         ~MIDIProcessorTransposer() {}
+
         /// Sets the _trans_ amount (in semitones) for the channel _chan_.
         void                            SetTransposeChannel (int chan, int trans)   { trans_amount[chan] = trans; }
         /// Gets the transpose amount (in semitones) for the channel _chan_
@@ -121,8 +139,6 @@ class MIDIProcessorRechannelizer : public MIDIProcessor {
     public:
         /// The constructor.
                                         MIDIProcessorRechannelizer();
-        /// The destructor.
-        virtual                         ~MIDIProcessorRechannelizer() {}
 
         /// Resets the default status (no rechannelizing).
         void                            Reset();
@@ -147,7 +163,7 @@ class MIDIProcessorRechannelizer : public MIDIProcessor {
 
 ///
 /// This MIDIProcessor prints a human-readable description of the processed messages to a
-/// std::ostream. Useful for debugging purposes (you could see, foe example, all messages
+/// std::ostream. Useful for debugging purposes (you could want to see, for example, all messages
 /// passing through a driver).
 ///
 class MIDIProcessorPrinter : public MIDIProcessor {
@@ -155,8 +171,7 @@ class MIDIProcessorPrinter : public MIDIProcessor {
         /// The constructor sets the std::ostream that will print the messages (default: std::cout).
                                         MIDIProcessorPrinter(std::ostream& stream = std::cout) :
                                                              print_on(true), ost(stream) {}
-        /// The destructor.
-        virtual                         ~MIDIProcessorPrinter() {}
+
         /// Sets the printing on and off (default is on).
         void                            SetPrint(bool on_off)                       { print_on = on_off; }
         /// Gets the printing status.
@@ -169,5 +184,8 @@ class MIDIProcessorPrinter : public MIDIProcessor {
         bool                            print_on;
         std::ostream&                   ost;
 };
+
+
+
 
 #endif

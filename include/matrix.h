@@ -51,41 +51,40 @@
 /// This class implements a matrix to keep track of notes on and hold pedal for every channel.
 /// It is used by MIDIDriver and MIDISequencerTrackState
 ///
-
 class  MIDIMatrix {
     public:
-            /// The constructor creates an empty matrix
+        /// The constructor creates an empty matrix
                         MIDIMatrix();
-            /// The destructor
+        /// The destructor
         virtual        ~MIDIMatrix() {}
 
-            /// Processes the given MIDI message upgrading the matrix
+        /// Processes the given MIDI message upgrading the matrix
         virtual bool    Process(const MIDIMessage &msg);
-            /// Resets the matrix (no notes on, no pedal hold)
+        /// Resets the matrix (no notes on, no pedal hold)
         virtual void    Clear();
-            /// Returns the total number of notes on
+        /// Returns the total number of notes on
         int             GetTotalCount() const                           { return total_count; }
-            /// Returns the number of notes on for given channel (channels from 0 to 15)
+        /// Returns the number of notes on for given channel (channels from 0 to 15)
         int             GetChannelCount(int channel) const              { return channel_count[channel]; }
-            /// Returns the number of notes on given the channel and the note MIDI value
+        /// Returns the number of notes on given the channel and the note MIDI value
         int             GetNoteCount(int channel, int note) const       { return note_on_count[channel][note]; }
-            /// Returns *true* if pedal is holding on given channel
+        /// Returns *true* if pedal is holding on given channel
         bool            GetHoldPedal(int channel) const                 { return hold_pedal[channel]; }
 
     protected:
 
-            /// Decrements the note count (currently _m_ is ignored)
+        /// Decrements the note count for the given channel and note
         virtual void    DecNoteCount(int channel, int note);
-            /// Increments the note count (currently _m_ is ignored)
+        /// Increments the note count for the given channel and note
         virtual void    IncNoteCount (int channel, int note);
-            /// Clear the note count and the pedal on the given channel
+        /// Clear the note count and the pedal on the given channel
         virtual void    ClearChannel(int channel);
-            /// Called by Process() for non note and non pedal messages (currently does nothing)
+        /// Called by Process() for non note and non pedal messages (currently does nothing)
         virtual void    OtherMessage(const MIDIMessage &msg) {}
-            /// Sets the note count
+        /// Sets the note count
         void            SetNoteCount(unsigned char chan, unsigned char note, unsigned char val)
                                                                         { note_on_count[chan][note] = val; }
-            /// Sets the channel note count
+        /// Sets the channel note count
         void            SetChannelCount(unsigned char chan, int val)    { channel_count[chan] = val; }
 
     private:

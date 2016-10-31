@@ -62,105 +62,108 @@ enum
 ///
 class  MIDITrack {
     public:
-
-            /// The constructor creates an empty track with only the MIDI_END event
+        /// The constructor creates an empty track with only the MIDI_END event
                                     MIDITrack(MIDIClockTime end_t = 0);
-            /// The copy constructor
+        /// The copy constructor
                                     MIDITrack(const MIDITrack &trk);
-            /// The destructor also frees the memory used by events (for ex the SysEx)
+        /// The destructor also frees the memory used by events (for ex the SysEx)
                                     ~MIDITrack();
-            /// The equal operator
+        /// The equal operator
         MIDITrack&                  operator=(const MIDITrack &trk);
-            /// Deletes all events leaving the track empty (i.e.\ with only the EOT event).
-            /// If _mantain_end_ is *true* doesn't change the time of EOT event, otherwise
-            /// sets it to 0.
+        /// Deletes all events leaving the track empty (i.e.\ with only the EOT event).
+        /// If _mantain_end_ is *true* doesn't change the time of EOT event, otherwise
+        /// sets it to 0.
         void	                    Clear(bool mantain_end = false);
-            /// Gets the number of events in the track (if the track is empty this returns
-            /// 1, for the EOT event)
+        /// Gets the number of events in the track (if the track is empty this returns
+        /// 1, for the EOT event)
         unsigned int	            GetNumEvents() const { return events.size(); }
-            /// Returns **true** if the track has only the EOT event.
+        /// Returns **true** if the track has only the EOT event.
         bool                        IsTrackEmpty() const        { return events.size() == 1; }
-            /// Returns the address of the _ev_num_ event in the track (_ev_num_ must be
-            /// in the range 0 ... GetNumEvents() - 1).
+        /// These return the address of the _ev_num_ event in the track (_ev_num_ must be
+        /// in the range 0 ... GetNumEvents() - 1).
+        ///<{
         MIDITimedMessage*           GetEventAddress(int ev_num)       { return &events[ev_num]; }
         const MIDITimedMessage*     GetEventAddress(int ev_num) const { return &events[ev_num]; }
-            /// Returns a reference to the _ev_num_ event in the track (_ev_num_ must be
-            /// in the range 0 ... GetNumEvents() - 1).
+        ///<}
+        /// These eturn a reference to the _ev_num_ event in the track (_ev_num_ must be
+        /// in the range 0 ... GetNumEvents() - 1).
+        ///<{
         MIDITimedMessage&           GetEvent(int ev_num)               { return events[ev_num]; }
         const MIDITimedMessage&     GetEvent(int ev_num) const         { return events[ev_num]; }
-            ///  Gets the time of the EOT event
+        ///<}
+        ///  Gets the time of the EOT event
         MIDIClockTime               GetEndTime() const                 { return events.back().GetTime(); }
-            /// Sets the time of the EOT event to _end_. If there are events of other type after _end_
-            /// the function does nothing and returns *false*.
+        /// Sets the time of the EOT event to _end_. If there are events of other type after _end_
+        /// the function does nothing and returns *false*.
         bool                        SetEndTime(MIDIClockTime end_t);
-            /// Sets the channel of all MIDI channel events to _ch_ (_ch_ must be in the range 0 ... 15).
+        /// Sets the channel of all MIDI channel events to _ch_ (_ch_ must be in the range 0 ... 15).
         void                        SetChannel(int ch);
-            /// Returns *true* if _ev_num_ is in the range 0 ... GetNumEvents() - 1.
+        /// Returns *true* if _ev_num_ is in the range 0 ... GetNumEvents() - 1.
         bool                        IsValidEventNum(int ev_num) const
                                                 { return (0 <= ev_num && (unsigned int)ev_num < events.size()); }
-            /// Returns the length in MIDI clocks of the given note. _msg_ must be a Note On event present in the track
-            /// (otherwise the function will return 0).
+        /// Returns the length in MIDI clocks of the given note. _msg_ must be a Note On event present in the track
+        /// (otherwise the function will return 0).
         MIDIClockTime               GetNoteLength (const MIDITimedMessage& msg) const;
-            /// Sets the default behaviour for the methods InsertEvent() and InsertNote(). This can be overriden
-            /// by them by mean of the last (default) parameter.
-            /// @param m one of @ref INSMODE_INSERT, @ref INSMODE_REPLACE, @ref INSMODE_INSERT_OR_REPLACE,
-            /// @ref INSMODE_INSERT_OR_REPLACE_BUT_NOTE; default is INSMODE_INSERT_OR_REPLACE.
-            /// @note @ref INSMODE_DEFAULT is used only in the insert methods (as default argument) and
-            /// does nothing if given as parameter here.
+        /// Sets the default behaviour for the methods InsertEvent() and InsertNote(). This can be overriden
+        /// by them by mean of the last (default) parameter.
+        /// \param m one of @ref INSMODE_INSERT, @ref INSMODE_REPLACE, @ref INSMODE_INSERT_OR_REPLACE,
+        /// \ref INSMODE_INSERT_OR_REPLACE_BUT_NOTE; default is INSMODE_INSERT_OR_REPLACE.
+        /// \note @ref INSMODE_DEFAULT is used only in the insert methods (as default argument) and
+        /// does nothing if given as parameter here.
         static void                 SetInsertMode(int mode);
-            /// Inserts a single event into the track. It could be used for imserting Note On and Note Off events,
-            /// but this is better done by InsertNote() which inserts both with a single call. The method handles
-            /// automatically the EndOfTrack message, moving it if needed, so you must not deal with it.
-            /// It also determines the correct position of events with same MIDI time,
-            /// using the MIDITimedBigMessage::CompareEventsForInsert() method for comparison.
-            /// @param msg the event to insert.
-            /// @param _ins_mode this determines the behaviour of the method if it finds an equal or similar event with
-            /// same MIDI time in the track: it may replace the event or insert a new event anyway. If you leave the
-            /// default parameter (INSMODE_DEFAULT) the method will follow the behaviour set by the static
-            /// method SetInsertMode(), otherwise you may override it giving the last parameter. For details see
-            /// @ref INSMODE_DEFAULT (default), @ref INSMODE_REPLACE, @ref INSMODE_INSERT_OR_REPLACE,
-            /// @ref INSMODE_INSERT_OR_REPLACE_BUT_NOTE.
-            /// @return **false** in some situations in which the method cannot insert:
-            /// + _msg_ was an EndOfTrack (you cannot insert it)
-            /// + __ins_mode_ was INSMODE_REPLACE but there is no event to replace
-            /// + a memory error occurred.
-            /// otherwise **true**.
+        /// Inserts a single event into the track. It could be used for inserting Note On and Note Off events,
+        /// but this is better done by InsertNote() which inserts both with a single call. The method handles
+        /// automatically the EndOfTrack message, moving it if needed, so you must not deal with it.
+        /// It also determines the correct position of events with same MIDI time,
+        /// using the MIDITimedBigMessage::CompareEventsForInsert() method for comparison.
+        /// \param msg the event to insert.
+        /// \param _ins_mode this determines the behaviour of the method if it finds an equal or similar event with
+        /// same MIDI time in the track: it may replace the event or insert a new event anyway. If you leave the
+        /// default parameter (INSMODE_DEFAULT) the method will follow the behaviour set by the static
+        /// method SetInsertMode(), otherwise you may override it giving the last parameter. For details see
+        /// \ref INSMODE_DEFAULT (default), @ref INSMODE_REPLACE, @ref INSMODE_INSERT_OR_REPLACE,
+        /// \ref INSMODE_INSERT_OR_REPLACE_BUT_NOTE.
+        /// \return **false** in some situations in which the method cannot insert:
+        /// + _msg_ was an EndOfTrack (you cannot insert it)
+        /// + __ins_mode_ was INSMODE_REPLACE but there is no event to replace
+        /// + a memory error occurred.
+        /// otherwise **true**.
         bool                        InsertEvent( const MIDITimedMessage& msg, int mode = INSMODE_DEFAULT );
-            /// Inserts a Note On and a Note Off event into the track. Use this method for inserting note messages as
-            /// InsertEvent() could be dangerous in some situations. It handles automatically the EndOfTrack message,
-            /// moving it if needed, so you must not deal with it. It also determines
-            /// the correct position of events with same MIDI time, using the MIDITimedBigMessage::CompareEventsForInsert()
-            /// method for comparison (so a Note Off always preceed a Note On with same time).
-            /// @param msg must be a Note On event.
-            /// @param len the length of the note: the method will create a Note Off event and put it after _len_ MIDI
-            /// clocks in the track.
-            /// @param _ins_mode the same for InsertEvent() (when replacing a note, the method finds and deletes both
-            /// the old Note On and Note Off events).
-            /// @return **false** in some situations in which the method cannot insert:
-            /// + _msg_ was not a Note On event
-            /// + _ins_mode_ was INSMODE_REPLACE but there is no event to replace
-            /// + a memory error occurred
-            /// otherwise **true**.
-            /// @bug In the latter case the method could leave the track in an inconsistent state (a Note On without
-            /// corresponding Note Off or viceversa).
+        /// Inserts a Note On and a Note Off event into the track. Use this method for inserting note messages as
+        /// InsertEvent() doesn't check the correct order of note on/note off. It handles automatically the
+        /// EndOfTrack message, moving it if needed, so you must not deal with it. It also determines
+        /// the correct position of events with same MIDI time, using the MIDITimedBigMessage::CompareEventsForInsert()
+        /// method for comparison (so a Note Off always preceed a Note On with same time).
+        /// \param msg must be a Note On event.
+        /// \param len the length of the note: the method will create a Note Off event and put it after _len_ MIDI
+        /// clocks in the track.
+        /// \param _ins_mode the same for InsertEvent() (when replacing a note, the method finds and deletes both
+        /// the old Note On and Note Off events).
+        /// \return **false** in some situations in which the method cannot insert:
+        /// + _msg_ was not a Note On event
+        /// + _ins_mode_ was INSMODE_REPLACE but there is no event to replace
+        /// + a memory error occurred
+        /// otherwise **true**.
+        /// \bug In the latter case the method could leave the track in an inconsistent state (a Note On without
+        /// corresponding Note Off or viceversa).
         bool                        InsertNote( const MIDITimedMessage& msg, MIDIClockTime len,
                                                 int mode = INSMODE_DEFAULT );
-            /// Deletes an event from the track. Use DeleteNote() for safe deleting both Note On and Note Off. You cannot
-            /// delete the EndOfTrack event.
-            /// @param msg a copy of the event to delete.
-            /// @return **false** if an exact copy of the event was not found, or if a memory error occurred, otherwise **true**.
+        /// Deletes an event from the track. Use DeleteNote() for safe deleting both Note On and Note Off. You cannot
+        /// delete the EndOfTrack event.
+        /// \param msg a copy of the event to delete.
+        /// \return **false** if an exact copy of the event was not found, or if a memory error occurred, otherwise **true**.
         bool                        DeleteEvent( const MIDITimedMessage& msg );
-            /// Deletes a Note On and corresponding Note Off events from the track. Don't use DeleteEvent() for deleting
-            /// notes.
-            /// @param msg a copy of the Note On event to delete.
-            /// @return **false** if an exact copy of the event was not found, or if a memory error occurred, otherwise **true**.
-            /// @bug In the latter case the method could leave the track in an inconsistent state (a Note On without
-            /// corresponding Note Off or viceversa).
+        /// Deletes a Note On and corresponding Note Off events from the track. Don't use DeleteEvent() for deleting
+        /// notes.
+        /// \param msg a copy of the Note On event to delete.
+        /// \return **false** if an exact copy of the event was not found, or if a memory error occurred, otherwise **true**.
+        /// \bug In the latter case the method could leave the track in an inconsistent state (a Note On without
+        /// corresponding Note Off or viceversa).
         bool                        DeleteNote( const MIDITimedMessage& msg );
 
-            /// Inserts the event as last, adjusting the EndOfTrack. This function should be used with caution, as it doesn't
-            /// check temporal order and track consistency. You could use it if you would manually copy tracks
-            /// (MultiTrack::AssignEventsToTracks() does it).
+        /// Inserts the event as last, adjusting the EndOfTrack. This function should be used with caution, as it doesn't
+        /// check temporal order and track consistency. You could use it if you would manually copy tracks
+        /// (MultiTrack::AssignEventsToTracks() does it).
         void                        PushEvent( const MIDITimedMessage& msg);
 
         void                        InsertInterval(MIDIClockTime start, MIDIClockTime length, const MIDITrack* src = 0);
@@ -173,74 +176,104 @@ class  MIDITrack {
                                                     // deletes events leaving subsequents unchanged
         void                        ReplaceInterval(MIDIClockTime start, MIDIClockTime length,
                                                    bool sysex, const MIDITrack* src);
-            /// Cuts note and pedal events at the time _t_. All sounding notes and held pedals are truncated (the
-            /// corresponding off events are properly managed) and the pitch bend is reset. This function is
-            /// intended for "slicing" a track in cut, copy and paste editing.
+        /// Cuts note and pedal events at the time _t_. All sounding notes and held pedals are truncated (the
+        /// corresponding off events are properly managed) and the pitch bend is reset. This function is
+        /// intended for "slicing" a track in cut, copy and paste editing.
         void                        CloseOpenEvents(MIDIClockTime t);
 
-
-            /// Finds an event in the track matching a given event.
-            /// @param[in] msg the event to look for
-            /// @param[out] event_num contains the event number in the track if the event was found; otherwise it contains
-            /// **-1** if *event time* was invalid, or the number of the first event with the same event time.
-            /// @param[in] _comp_mode (compare mode) an enum value with the following meaning.
-            /// + @ref COMPMODE_EQUAL : the event must be equal to *msg*.
-            /// + @ref COMPMODE_SAMEKIND : the event is a same kind event (see MIDITimedBigMessage::IsSameKind()).
-            /// + @ref COMPMODE_TIME : the behaviour is the same of FindEventNumber(time, event_num).
-            /// @return **true** if an event matching _msg_ was found, *false* otherwise.
+        /// Finds an event in the track matching a given event.
+        /// \param[in] msg the event to look for
+        /// \param[out] event_num contains the event number in the track if the event was found; otherwise it contains
+        /// **-1** if *event time* was invalid, or the number of the first event with the same event time.
+        /// \param[in] _comp_mode (compare mode) an enum value with the following meaning.
+        /// + \ref COMPMODE_EQUAL : the event must be equal to *msg*.
+        /// + \ref COMPMODE_SAMEKIND : the event is a same kind event (see MIDITimedBigMessage::IsSameKind()).
+        /// + \ref COMPMODE_TIME : the behaviour is the same of FindEventNumber(time, event_num).
+        /// \return **true** if an event matching _msg_ was found, *false* otherwise.
         bool                        FindEventNumber( const MIDITimedMessage& msg, int *event_num,
                                                      int mode = COMPMODE_EQUAL) const;
 
-            /// Finds the first event in the track with the given time.
-            /// @param[in] time the time to look for.
-            /// @param[out] event_num contains the event number in the track if an event was found; otherwise it contains
-            /// **-1** if *time* was invalid, or the number of the last event before *time*.
-            /// @return **true** if an event with given time was found, **false** otherwise.
+        /// Finds the first event in the track with the given time.
+        /// \param[in] time the time to look for.
+        /// \param[out] event_num contains the event number in the track if an event was found; otherwise it contains
+        /// **-1** if *time* was invalid, or the number of the last event before *time*.
+        /// \return **true** if an event with given time was found, **false** otherwise.
         bool                        FindEventNumber (MIDIClockTime time, int *event_num) const;
-
 
 
     protected :
         std::vector<MIDITimedMessage>
-                                    events;
-        static int                  ins_mode;
+                                    events;     ///< The buffer of events
+        static int                  ins_mode;   ///< See SetInsertMode()
 };
 
 
 ///
-/// Forward iterator for moving along a MIDITrack. When moving, it keeps track of
+/// Forward iterator for moving along a MIDITrack. It defines a current time (initially 0)
+/// and a current event. You can move to any time in the track: when moving, it keeps track of
 /// program, bender, control changes and notes on.
 ///
 class MIDITrackIterator {
     public:
+        /// The constructor. You must specify the track which the iterator is attached to.
                                     MIDITrackIterator(MIDITrack* trk);
-
+        /// Sets the current time to 0, updating the iterator status.
         void                        Reset();
+        /// These returns a pointer to the track the iterator is attached to.
+        ///<{
         MIDITrack*                  GetTrack()                  { return track; }
         const MIDITrack*            GetTrack() const 	        { return track;  }
+        ///<}
+        /// Sets the iterator track (causes a reset).
         void                        SetTrack(MIDITrack* trk);
+        /// Returns the current time of the iterator.
         MIDIClockTime               GetCurTime() const          { return cur_time; }
-
+        /// Returns the current track program
         char                        GetProgram() const          { return program; }
+        /// Returns the current value for the given control.
         char                        GetControl(unsigned char c) const
                                                                 { return controls[c]; }
+        /// Returns the current bender value.
         short                       GetBender() const           { return bender_value; }
+        /// Returns the track channel.
         char                        GetMIDIChannel() const      { return channel; }
+        /// Returns the number of notes on at current time.
         int                         NotesOn() const             { return num_notes_on; }
+        /// Returns *true* if the given note is on at current time.
         char                        IsNoteOn(unsigned char n) const
                                                                 { return notes_on[n]; }
+        /// Returns *true* if the hold pedal is on at current time.
         bool                        IsPedalOn() const           { return controls[64] > 64; }
+        /// Finds the message in the track corresponding to the note off for the given note.
+        /// \param[in] note : the note on
+        /// \param[out] msg : a pointer to the note off message
+        /// \return *true* if msg is valid, *false* otherwise (a note off was not found).
         bool                        FindNoteOff(unsigned char note, MIDITimedMessage** msg);
+        /// Finds the next hold pedal off message in the track.
+        /// \param[out] msg : a pointer to the pedal off message
+        /// \return *true* if msg is valid, *false* otherwise (a pedal off was not found).
         bool                        FindPedalOff(MIDITimedMessage** msg);
-        bool                        GetCurEvent(MIDITimedMessage** msg, MIDIClockTime end = TIME_INFINITE);
-                                        // in **msg next event on track,
-                                        // true if msg is valid and cur_time <= end
+        /// Returns the next event in the track.
+        /// \param *msg a pointer to the event in the MidiMultiTrack
+        /// \return *true* if there is effectively a next event (we aren't at the end of the
+        /// MIDIMultiTrack, *false* otherwise (*track and **msg don't contain valid values).
+        bool                        GetCurEvent(MIDITimedMessage** msg);
+        /// Gets the time of the next event in the track (it can be different from current time if
+        /// at current time there are not events).
+        /// \param t here we get the time of next event, if valid.
+        /// \return *true* if there is effectively a next event (we aren't at the end of the
+        /// MIDIMultiTrack, *false* otherwise (*t doesn't contain a valid time).
         MIDIClockTime               GetCurEventTime() const;
                                         // returns TIME_INFINITE if we are at end of track
+        /// Returns *true* if at the current time there is
         bool                        EventIsNow(const MIDITimedMessage& msg);
                                         // true if at cur_time there is msg
-
+        /// Discards the current event and set as current the subsequent.
+        /// \return *true* if there is effectively a next event (we aren't at the end of the track),
+        /// *false* otherwise.
         bool                        GoToNextEvent();
+        /// Goes to the given time, which becomes the current time, and sets then the current event as the
+        /// first event in the track with time greater or equal to _time_.
         bool                        GoToTime(MIDIClockTime time);
 
 
@@ -253,12 +286,12 @@ class MIDITrackIterator {
                                         // event at a new time!
 
         MIDITrack*                  track;
-        char                        channel;    // can be -1
-        int                         cur_ev_num;
-        MIDIClockTime               cur_time;
+        char                        channel;        // can be -1
+        int                         cur_ev_num;     // number of the current event
+        MIDIClockTime               cur_time;       // current time
 
         char                        program;        // current program change, or -1
-        char                        controls[128];  // value of ervery control change, or -1
+        char                        controls[128];  // value of every control change, or -1
         short                       bender_value;	// last seen bender value
         unsigned char               num_notes_on;	// number of notes currently on
         char		                notes_on[128];  // 0 if off, or velocity

@@ -35,14 +35,12 @@
 
 
 
-const unsigned char smpte_max_frames[] =
-{
+const unsigned char SMPTE::smpte_max_frames[] = {
     24, 25, 30, 30, 30, 30
 };
 
 
-const double smpte_smpte_rates[] =
-{
+const double SMPTE::smpte_rates[] = {
     24.0,
     25.0,
     30.0 / 1.001,
@@ -52,19 +50,17 @@ const double smpte_smpte_rates[] =
 };
 
 
-const double smpte_smpte_rates_long[] =
-{
+const long SMPTE::smpte_rates_long[] = {
     2400,
     2500,
-    3000 / 1.001,
-    3000 / 1.001,
+    (long) (3000.0 / 1.001),
+    (long) (3000.0 / 1.001),
     3000,
     3000
 };
 
 
-const double smpte_sample_rates[] =
-{
+const double SMPTE::sample_rates[] = {
     32000.0,
     44100.0 / 1.001,
     44100.0,
@@ -74,14 +70,13 @@ const double smpte_sample_rates[] =
 };
 
 
-const long smpte_sample_rates_long[] =
-{
+const long SMPTE::sample_rates_long[] = {
     320000,
-    ( long ) ( 441000.0 / 1.001 ),
+    (long) (441000.0 / 1.001),
     441000,
-    ( long ) ( 480000.0 / 1.001 ),
+    (long) (480000.0 / 1.001),
     480000,
-    ( long ) ( 480000.0 * 1.001 )
+    (long) (480000.0 * 1.001)
 };
 
 
@@ -153,7 +148,7 @@ unsigned char SMPTE::GetSubFrames() {
 
 
 void SMPTE::SetMilliSeconds (unsigned long msecs) {
-    sample_number = (unsigned long) (msecs * GetSampleRateFrequency(sample_rate) / 1000);
+    sample_number = (unsigned long) (msecs * sample_rates[sample_rate] / 1000);
     sample_number_dirty = true;
 }
 
@@ -161,7 +156,7 @@ void SMPTE::SetMilliSeconds (unsigned long msecs) {
 unsigned long SMPTE::GetMilliSeconds () {
     if (sample_number_dirty)
         TimeToSample();
-    return (unsigned long) (sample_number * 1000 / GetSampleRateFrequency(sample_rate) + 0.5);
+    return (unsigned long) (sample_number * 1000 / sample_rates[sample_rate] + 0.5);
 }
 
 
@@ -172,47 +167,46 @@ void SMPTE::AddSamples (long n) {
 
 
 void SMPTE::AddHours(char h) {
-    AddSamples( GetSampleRateLong() // samples per second times 10
-                 * h *
-                 (  60		        // seconds per minute
-                    * 60		    // minutes per hour
-                    / 10		    // compensate for freq*10
-                   )
+    AddSamples( sample_rates_long[sample_rate]  // samples per second times 10
+                 * h *                          // number of hours
+                 (  60		                    // seconds per minute
+                    * 60		                // minutes per hour
+                    / 10 )		                // compensate for freq*10
       );
   }
 
 
 void SMPTE::AddMinutes(char m) {
-    AddSamples( GetSampleRateLong() // samples per second times 10
-                * m *
-                ( 60 		        // seconds per minute
-                  / 10 )	        // compensate for freq*10
+    AddSamples( sample_rates_long[sample_rate]  // samples per second times 10
+                * m *                           // number of minutes
+                ( 60 		                    // seconds per minute
+                  / 10 )	                    // compensate for freq*10
     );
 }
 
 
 void SMPTE::AddSeconds(char s) {
-    AddSamples( GetSampleRateLong() // samples per second times 10
-                * s		            // number of seconds
-                  / 10		        // compensate for freq*10
+    AddSamples( sample_rates_long[sample_rate]  // samples per second times 10
+                * s		                        // number of seconds
+                / 10		                    // compensate for freq*10
     );
 }
 
 
 void SMPTE::AddFrames(char f) {
-    AddSamples( GetSampleRateLong() // samples per second times 10
-                * f 			    // number of frames
-                * 10			    // times 10
-                / GetSMPTERateLong()// divide by smpte rate (frames per second) times 100
+    AddSamples( sample_rates_long[sample_rate]  // samples per second times 10
+                * f 			                // number of frames
+                * 10			                // times 10
+                / smpte_rates_long[smpte_rate]  // divide by smpte rate (frames per second) times 100
     );
 }
 
 
 void SMPTE::AddSubFrames(char sf) {
-    AddSamples( GetSampleRateLong()	// samples per second times 10
-                * sf			    // number of sub frames
-                / GetSMPTERateLong()// divide by smpte rate (frames per second) times 100
-                / 10			    // divide by 10 to get hundredths of a frame
+    AddSamples( sample_rates_long[sample_rate]	// samples per second times 10
+                * sf			                // number of sub frames
+                / smpte_rates_long[smpte_rate]  // divide by smpte rate (frames per second) times 100
+                / 10			                // divide by 10 to get hundredths of a frame
     );
 }
 
@@ -237,14 +231,14 @@ void SMPTE::SampleToTime() {
     unsigned long tmp_sample = sample_number + sample_offset;
 
     // keep track of the actual rates in use in doubles.
-    double the_smpte_rate = smpte_smpte_rates[ smpte_rate ];
-    double the_sample_rate = smpte_sample_rates[ sample_rate ];
+    double the_smpte_rate = smpte_rates[ smpte_rate ];
+    double the_sample_rate = sample_rates[ sample_rate ];
 
     // keep track of the maximum frame number for this smpte format.
     unsigned char max_frame = smpte_max_frames[ smpte_rate ];
 
     // Calculate the number of samples per frame
-    double samples_per_frame = smpte_sample_rates[sample_rate] / smpte_smpte_rates[smpte_rate];
+    double samples_per_frame = sample_rates[sample_rate] / smpte_rates[smpte_rate];
 
     // If the smpte rate is a drop frame type, calculate the number
     // of frames that must be dropped.
@@ -280,8 +274,8 @@ void SMPTE::SampleToTime() {
 void SMPTE::TimeToSample() {
 
     // keep track of the actual rates in use in doubles.
-    double the_smpte_rate = smpte_smpte_rates[smpte_rate];
-    double the_sample_rate = smpte_sample_rates[sample_rate];
+    double the_smpte_rate = smpte_rates[smpte_rate];
+    double the_sample_rate = sample_rates[sample_rate];
 
     // optimize a coupla similiar double divides by calculating it once
     double samples_per_frame = the_sample_rate / the_smpte_rate;
@@ -299,7 +293,7 @@ void SMPTE::TimeToSample() {
     if(smpte_rate == SMPTE_RATE_30DF || smpte_rate==SMPTE_RATE_2997DF) {
 
         // Calculate number of minutes that have gone by
-        int num_minutes = (int)((double)tmp_sample / (smpte_sample_rates[sample_rate] * 60));
+        int num_minutes = (int)((double)tmp_sample / (sample_rates[sample_rate] * 60));
 
         // Calculate the number of tens of minutes that have gone by, including minute 00
         int ten_minutes = num_minutes / 10;

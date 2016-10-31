@@ -41,9 +41,9 @@
 #include <iostream>
 
 
-/////////////////////////////////////////
-//      class MIDIMultiTrack           //
-/////////////////////////////////////////
+////////////////////////////////////////////////////////////////
+//                    class MIDIMultiTrack                    //
+////////////////////////////////////////////////////////////////
 
 
 MIDIMultiTrack::MIDIMultiTrack(unsigned int num_tracks, unsigned int cl_p_b) :
@@ -68,11 +68,13 @@ MIDIMultiTrack::~MIDIMultiTrack() {
 
 
 MIDIMultiTrack& MIDIMultiTrack::operator=(const MIDIMultiTrack& mlt) {
-    Clear();
-    clks_per_beat = mlt.clks_per_beat;
-    tracks.resize(mlt.GetNumTracks());
-    for (unsigned int i = 0; i < mlt.GetNumTracks(); i++)
-        tracks[i] = new MIDITrack(*mlt.GetTrack(i));
+    if (&mlt != this) {         // check for autoassignment
+        Clear();
+        clks_per_beat = mlt.clks_per_beat;
+        tracks.resize(mlt.GetNumTracks());
+        for (unsigned int i = 0; i < mlt.GetNumTracks(); i++)
+            tracks[i] = new MIDITrack(*mlt.GetTrack(i));
+    }
     return *this;
 }
 
@@ -80,7 +82,7 @@ MIDIMultiTrack& MIDIMultiTrack::operator=(const MIDIMultiTrack& mlt) {
 void MIDIMultiTrack::SetClksPerBeat(unsigned int cl_p_b) {
     MIDIClockTime ev_time;
         // calculate the ratio between new and old value
-    double ratio = cl_p_b / clks_per_beat;
+    double ratio = cl_p_b / (double)clks_per_beat;
         // substitute new value
     clks_per_beat = cl_p_b;
         // update the times of all events, multiplying them by the ratio
@@ -330,40 +332,16 @@ void MIDIMultiTrack::EditReplace(MIDIClockTime start, int tr_start, int times, b
 
 
 
-//////////////////////////////////////////////////////
-//      class MIDIMultiTrackIteratorState           //
-//////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////
+//              class MIDIMultiTrackIteratorState              //
+/////////////////////////////////////////////////////////////////
 
 
 
 MIDIMultiTrackIteratorState::MIDIMultiTrackIteratorState(int n_tracks) :
-        time_offsets(0), time_offset_mode(false) {
+        time_shifts(0), time_shift_mode(false) {
     SetNumTracks(n_tracks);
     Reset();
-}
-
-
-MIDIMultiTrackIteratorState::MIDIMultiTrackIteratorState(const MIDIMultiTrackIteratorState &m) :
-        num_tracks(m.num_tracks), cur_time(m.cur_time),
-        cur_event_track(m.cur_event_track), next_event_number(m.next_event_number),
-        next_event_time(m.next_event_time),  time_offsets(m.time_offsets),
-        time_offset_mode(m.time_offset_mode) {
-}
-
-
-MIDIMultiTrackIteratorState::~MIDIMultiTrackIteratorState() {
-}
-
-
-const MIDIMultiTrackIteratorState& MIDIMultiTrackIteratorState::operator= (const MIDIMultiTrackIteratorState &m) {
-    SetNumTracks(m.num_tracks);
-    cur_time = m.cur_time;
-    cur_event_track = m.cur_event_track;
-    time_offsets = m.time_offsets;
-    time_offset_mode = m.time_offset_mode;
-    next_event_number = m.next_event_number;
-    next_event_time = m.next_event_time;
-    return *this;
 }
 
 
@@ -376,21 +354,6 @@ void MIDIMultiTrackIteratorState::SetNumTracks(int n) {
     }
 }
 
-/* OLD
-void MIDIMultiTrackIteratorState::SetNumTracks(int n) {
-    if (n != num_tracks) {
-        num_tracks = n;
-        delete[] next_event_number;
-        delete[] next_event_time;
-        delete[] time_shifts;
-        next_event_number = new int [n];
-        next_event_time = new MIDIClockTime [n];
-        time_shifts = new int[n];
-    }
-    Reset();
-    ResetTimeShift();
-}
-*/
 
 void MIDIMultiTrackIteratorState::Reset() {
     cur_time = 0;
@@ -399,6 +362,42 @@ void MIDIMultiTrackIteratorState::Reset() {
         next_event_number[i] = 0;
         next_event_time[i] = TIME_INFINITE;
     }
+}
+
+
+bool MIDIMultiTrackIteratorState::SetTimeShiftMode(bool f, std::vector<int>* v) {
+    if (v != 0) {                           // we want to set or change the time_offsets vector
+        if (time_shift_mode)
+            return false;                   // can't do it while time_offset_mode is on
+        else
+            time_shifts = v;
+    }
+
+    if (f == false) {                       // time offset_mode off
+        time_shift_mode = false;
+        std::cout << "Time shift mode off" << std::endl;
+    }
+    else {                                  // time_offset_mode on
+        if (time_shifts!= 0) {              // the out driver is set
+            time_shift_mode = true;         // turn thru on
+            std::cout << "Time shift mode on" << std::endl;
+        }
+        else {
+            time_shift_mode = false;        // the out driver isn't set yet
+            return false;                   // the function failed
+        }
+    }
+    return true;
+}
+
+
+MIDIClockTime MIDIMultiTrackIteratorState::GetShiftedTime(const MIDITimedMessage* msg, int trk) {
+    if (!time_shift_mode)
+        return msg->GetTime();
+    if (!msg->IsChannelMsg() && !msg->IsSysEx())
+        return msg->GetTime();
+    long shifted_time = (signed)msg->GetTime() + time_shifts->operator[](trk);
+    return shifted_time < 0 ? 0: (MIDIClockTime)shifted_time;
 }
 
 
@@ -424,55 +423,15 @@ int MIDIMultiTrackIteratorState::FindTrackOfFirstEvent() {
 }
 
 
-bool MIDIMultiTrackIteratorState::SetTimeOffsetMode(bool f, std::vector<int>* v) {
-    if (v != 0) {                           // we want to set or change the time_offsets vector
-        if (time_offset_mode)
-            return false;                   // can't do it while time_offset_mode is on
-        else
-            time_offsets = v;
-    }
-
-    if (f == false) {                       // time offset_mode off
-        time_offset_mode = false;
-        std::cout << "Time offset mode off" << std::endl;
-    }
-    else {                                  // time_offset_mode on
-        if (time_offsets!= 0) {             // the out driver is set
-            time_offset_mode = true;        // turn thru on
-            std::cout << "Time offset mode on" << std::endl;
-        }
-        else {
-            time_offset_mode = false;       // the out driver isn't set yet
-            return false;                   // the function failed
-        }
-    }
-    return true;
-}
-// TODO: rename time_offset to time_shift, it is confusing ...
-
-MIDIClockTime MIDIMultiTrackIteratorState::GetShiftedTime(const MIDITimedMessage* msg, int trk) {
-    if (!time_offset_mode)
-        return msg->GetTime();
-    if (!msg->IsChannelMsg() && !msg->IsSysEx())
-        return msg->GetTime();
-    long shifted_time = (signed)msg->GetTime() + time_offsets->operator[](trk);
-    return shifted_time < 0 ? 0: (MIDIClockTime)shifted_time;
-}
-
-
-/////////////////////////////////////////////////
-//      class MIDIMultiTrackIterator           //
-/////////////////////////////////////////////////
-
+/////////////////////////////////////////////////////////////////
+//                  class MIDIMultiTrackIterator               //
+/////////////////////////////////////////////////////////////////
 
 
 MIDIMultiTrackIterator::MIDIMultiTrackIterator(MIDIMultiTrack *mlt) :
     multitrack(mlt), state(mlt->GetNumTracks()) {
     Reset();
 }
-
-
-MIDIMultiTrackIterator::~MIDIMultiTrackIterator() {}
 
 
 void MIDIMultiTrackIterator::Reset() {
@@ -520,8 +479,7 @@ bool MIDIMultiTrackIterator::GetCurEventTime(MIDIClockTime *t) const {
         *t = state.GetCurTime();
         return true;
     }
-    else
-      return false;
+    return false;
 }
 
 

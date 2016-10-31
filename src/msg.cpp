@@ -39,17 +39,70 @@
 // MODIFIED by N. Cassetta  ncassetta@tiscali.it
 //
 
-
+#include <cstring>      // for strlen()
 #include "../include/msg.h"
 
 
-/* ********************************************************************************************/
-/*                         C L A S S   M I D I M e s s a g e                                  */
-/* ********************************************************************************************/
-
+////////////////////////////////////////////////////////////////////////////
+//                              class MIDIMessage                         //
+////////////////////////////////////////////////////////////////////////////
 
 bool MIDIMessage::use_note_onv0 = false;
 
+
+//
+// constructors
+//
+
+MIDIMessage::MIDIMessage() : status(0), byte1(0), byte2(0) , byte3(0), sysex(0)
+{}
+
+
+MIDIMessage::MIDIMessage(const MIDIMessage &msg) :
+    status(msg.status), byte1(msg.byte1), byte2(msg.byte2), byte3(msg.byte3), sysex(0) {
+    if(msg.sysex)
+        sysex = new MIDISystemExclusive(*msg.sysex);
+}
+
+
+MIDIMessage::~MIDIMessage() {
+    ClearSysEx();
+}
+
+
+void MIDIMessage::Clear() {
+    status = byte1 = byte2 = byte3 = 0;
+    ClearSysEx();
+}
+
+
+void MIDIMessage::ClearSysEx() {
+    if (sysex) {
+        delete sysex;
+        sysex = 0;
+    }
+}
+
+//
+// operator =
+//
+
+const MIDIMessage& MIDIMessage::operator= (const MIDIMessage &msg) {
+    if (this != &msg) {
+        status = msg.status,
+        byte1 = msg.byte1;
+        byte2 = msg.byte2;
+        byte3 = msg.byte3;
+        ClearSysEx();
+        if(msg.sysex)
+            sysex = new MIDISystemExclusive(*msg.sysex);
+    }
+    return *this;
+}
+
+//
+// MsgToText()
+//
 
 std::string MIDIMessage::MsgToText () const {
     char buf[256];
@@ -57,9 +110,9 @@ std::string MIDIMessage::MsgToText () const {
 
     // Meta Events
     if (IsMetaEvent()) {
-        sprintf (buf, "%s ", sys_msg_names[status - 0xF0]);
+        sprintf (buf, "%s ", get_sys_msg_name(status));
         txt += buf;
-        txt += get_meta_name(byte1);            // type of meta
+        txt += get_meta_msg_name(byte1);            // type of meta
 
         switch (byte1) {
 
@@ -126,7 +179,7 @@ std::string MIDIMessage::MsgToText () const {
 
     // System Exclusive Events
     else if (IsSysEx()) {
-        sprintf (buf, "%s ", sys_msg_names[status - 0xF0]);
+        sprintf (buf, "%s ", get_sys_msg_name(status));
         txt += buf;
         if (GetSysEx()->IsGMReset())
             sprintf(buf, "GM Reset");
@@ -146,7 +199,7 @@ std::string MIDIMessage::MsgToText () const {
         txt += buf;
 
         if (IsChannelMode()) {
-            sprintf (buf, "%s ", get_chan_mode_name(GetController()));
+            sprintf (buf, "%s ", get_chan_mode_msg_name(GetController()));
             txt += buf;
             if (GetType() == C_LOCAL)
                 txt += (byte1 ? " On" : " Off");
@@ -193,65 +246,14 @@ std::string MIDIMessage::MsgToText () const {
 }
 
 //
-// constructors
-//
-
-
-MIDIMessage::MIDIMessage() : status(0), byte1(0), byte2(0) , byte3(0), sysex(0)
-{}
-
-
-MIDIMessage::MIDIMessage(const MIDIMessage &msg) :
-    status(msg.status), byte1(msg.byte1), byte2(msg.byte2), byte3(msg.byte3), sysex(0) {
-    if(msg.sysex)
-        sysex = new MIDISystemExclusive(*msg.sysex);
-}
-
-
-MIDIMessage::~MIDIMessage() {
-    ClearSysEx();
-}
-
-
-void MIDIMessage::Clear() {
-    status = byte1 = byte2 = byte3 = 0;
-    ClearSysEx();
-}
-
-
-void MIDIMessage::ClearSysEx() {
-    if (sysex) {
-        delete sysex;
-        sysex = 0;
-    }
-}
-
-//
-// operator =
-//
-
-const MIDIMessage& MIDIMessage::operator= (const MIDIMessage &msg) {
-    status = msg.status,
-    byte1 = msg.byte1;
-    byte2 = msg.byte2;
-    byte3 = msg.byte3;
-    ClearSysEx();
-    if(msg.sysex)
-        sysex = new MIDISystemExclusive(*msg.sysex);
-    return *this;
-}
-
-
-//
 // Query methods
 //
 
-
 char MIDIMessage::GetLength() const {
     if((status & 0xf0) == 0xf0)
-        return GetSystemMessageLength(status);
+        return sys_msg_len[status - 0xf0];
     else
-        return GetMessageLength(status);
+        return chan_msg_len[status >> 4];
 }
 
 
@@ -277,7 +279,6 @@ std::string MIDIMessage::GetText() const {
         s += sysex->GetData(i);
     return s;
 }
-
 
 //
 // Set methods
@@ -513,21 +514,9 @@ bool operator== (const MIDIMessage &m1, const MIDIMessage &m2) {
 }
 
 
-/* ********************************************************************************************/
-/*                   C L A S S   M I D I T i m e d M e s s a g e                              */
-/* ********************************************************************************************/
-
-
-std::string MIDITimedMessage::MsgToText() const {
-    char buf[256];
-    std::string txt;
-
-    sprintf (buf, "%8ld : ", GetTime());
-    txt += buf;
-    txt += MIDIMessage::MsgToText();
-    return txt;
-}
-
+////////////////////////////////////////////////////////////////////////////
+//                         class MIDITimedMessage                         //
+////////////////////////////////////////////////////////////////////////////
 
 //
 // Constructors
@@ -559,7 +548,6 @@ void MIDITimedMessage::Clear() {
 // operator =
 //
 
-
 const MIDITimedMessage &MIDITimedMessage::operator= (const MIDITimedMessage &msg) {
     time = msg.time;
     MIDIMessage::operator= (msg);
@@ -573,8 +561,22 @@ const MIDITimedMessage &MIDITimedMessage::operator= (const MIDIMessage &msg) {
     return *this;
 }
 
+//
+// MsgToText()
+//
 
-int  MIDITimedMessage::CompareEventsForInsert (const MIDITimedMessage &m1, const MIDITimedMessage &m2) {
+std::string MIDITimedMessage::MsgToText() const {
+    char buf[256];
+    std::string txt;
+
+    sprintf (buf, "%8ld : ", GetTime());
+    txt += buf;
+    txt += MIDIMessage::MsgToText();
+    return txt;
+}
+
+
+int CompareEventsForInsert (const MIDITimedMessage &m1, const MIDITimedMessage &m2) {
     bool n1 = m1.IsNoOp();
     bool n2 = m2.IsNoOp();
     // NOP's always are larger.
@@ -653,8 +655,11 @@ int  MIDITimedMessage::CompareEventsForInsert (const MIDITimedMessage &m1, const
     return 0;
 }
 
+//
+// Friend functions for comparing
+//
 
-bool  MIDITimedMessage::IsSameKind (const MIDITimedMessage &m1, const MIDITimedMessage &m2) {
+bool IsSameKind (const MIDITimedMessage &m1, const MIDITimedMessage &m2) {
     if (m1.IsNoOp() && m2.IsNoOp())
         return true;
 

@@ -49,33 +49,33 @@
 /// only use the data bytes, while some meta messages and sysex also use the pointer. Lots of methods are provided for
 /// setting and inspecting the message data without worrying about exadecimal values. See the file midi.h for a set of
 /// enum values for MIDI messages data.
-/// In addiction to MIDI messages, the MIDI message can also contain two types of internal messages: the NoOp (a null,
-/// not initialized message) and the beat marker, used by the MIDISequencer as metronome click.
+/// In addition to MIDI messages, the MIDIMessage can also contain two types of internal service messages: the NoOp
+/// (a null, not initialized message) and the beat marker, used by the MIDISequencer as metronome click.
 ///
 class 	MIDIMessage {
     public:
         ///@name The Constructors, Destructor and Initializing methods
         //@{
 
-        /// Creates a a MIDIMessage object which holds no value. The message will be ignored in playing.
+        /// Creates a a NoOp MIDIMessage (i.e. an undefined MIDI message). The message will be ignored
+        /// when playing.
                                 MIDIMessage();
         /// The copy constructor. If the target message has a MIDISystemExclusive object it is duplicated,
         /// so every MIDIBigMessage has its own object.
                                 MIDIMessage(const MIDIMessage &msg);
         /// The destructor
         virtual                 ~MIDIMessage();
-        /// Resets the message and frees the MIDISystemExclusive. The message becomes non valid.
+        /// Resets the message and frees the MIDISystemExclusive. The message becomes a NoOp.
         void	                Clear();
         /// Frees the MIDISystemExclusive without changing other bytes.
         void                    ClearSysEx();
-        /// The equal operator. It primarily frees the old MIDISystemExclusive object if it was allocated,
+        /// The assignment operator. It primarily frees the old MIDISystemExclusive object if it was allocated,
         /// then duplicates the (eventual) new MIDISystemExclusive, so every MIDIBigMessage has its own object.
         const MIDIMessage&      operator= (const MIDIMessage &msg);
 
         //@}
 
-        /// Create a human readable ascii string describing the message.  This is potentially unsafe as the 'txt'
-        /// param must point to a buffer of at least 64 chars long.
+        /// Returns a human readable ascii string describing the message content.
         std::string	            MsgToText() const;
 
         ///@name The Query methods.
@@ -83,7 +83,8 @@ class 	MIDIMessage {
 
         /// Returns the length in bytes of the entire message.
         char	                GetLength() const;
-        /// Returns the status byte of the message.
+        /// Returns the status byte of the message. If the message is a channel message this
+        /// contains the message type in the top 4 bits and the channel in the bottom 4.
         unsigned char	        GetStatus() const	        { return (unsigned char)status;	}
         /// If the message is a channel message, returns its MIDI channel (0...15).
         unsigned char	        GetChannel() const          { return (unsigned char)(status  &0x0f);	}
@@ -139,11 +140,11 @@ class 	MIDIMessage {
         /// Returns *true* if the message is some sort of channel message. You can then call
         /// GetChannel() for further information.
         bool	                IsChannelMsg() const        { return (status >= 0x80) && (status < 0xf0); }
-        /// Returns *true* if the message is a note on message (status = NOTE_ON and velocity > 0).
+        /// Returns *true* if the message is a note on message (status == NOTE_ON and velocity > 0).
         /// You can then call GetChannel(), GetNote() and GetVelocity() for further information.
         bool	                IsNoteOn() const            { return ((status & 0xf0) == NOTE_ON) && byte2; }
-        /// Returns *true* if the message is a note off message (status = NOTE_OFF or status = NOTE_ON
-        /// and velocity = 0). You can then call GetChannel(), GetNote() and GetVelocity() for
+        /// Returns *true* if the message is a note off message (status == NOTE_OFF or status == NOTE_ON
+        /// and velocity == 0). You can then call GetChannel(), GetNote() and GetVelocity() for
         /// further information.
         bool	                IsNoteOff() const           { return ((status & 0xf0) == NOTE_OFF) ||
                                                               (((status & 0xf0) == NOTE_ON) && byte2 == 0); }
@@ -157,17 +158,17 @@ class 	MIDIMessage {
         /// on channel mode messages (which have the same status byte of control changes).
         bool	                IsControlChange() const     { return ((status & 0xf0) == CONTROL_CHANGE) &&
                                                                         (byte1 < C_ALL_SOUND_OFF); }
-        /// Returns *true* if the message is a volume change message (control = 0x07). You can then
+        /// Returns *true* if the message is a volume change message (control == 0x07). You can then
         /// call GetChannel() and GetControllerValue() for further information.
         bool                    IsVolumeChange() const      { return IsControlChange() && GetController() == C_MAIN_VOLUME; }
-        /// Returns *true* if the message is a pan change message (control = 0x0A). You can
+        /// Returns *true* if the message is a pan change message (control == 0x0A). You can
         /// then call GetChannel() and GetControllerValue() for further information.
         bool                    IsPanChange() const         { return IsControlChange() && GetController() == C_PAN; }
-        /// Returns *true* if the message is a pedal on message (control = 0x40 and value >= 0x64). You can
+        /// Returns *true* if the message is a pedal on message (control == 0x40 and value >= 0x64). You can
         /// then call GetChannel() for further information.
         bool                    IsPedalOn() const           { return IsControlChange() && GetController() == C_DAMPER &&
                                                                                           GetControllerValue() & 0x40; }
-        /// Returns *true* if the message is a pedal off message (control = 0x40 and value < 0x64). You can
+        /// Returns *true* if the message is a pedal off message (control == 0x40 and value < 0x64). You can
         /// then call GetChannel() for further information.
         bool                    IsPedalOff() const          { return IsControlChange() && GetController() == C_DAMPER &&
                                                                                           !(GetControllerValue() & 0x40); }
@@ -202,8 +203,8 @@ class 	MIDIMessage {
         /// Returns *true* if the message is a marker text meta-message. You can then
         /// call GetText() for further information.
         bool                    IsMarkerText() const        { return (IsTextEvent() && GetMetaType() == META_MARKER_TEXT); }
-        /// Returns *true* if the message is a tempo change meta-message. You can then call GetTempo32()
-        /// for further information.
+        /// Returns *true* if the message is a tempo change meta-message. You can then call GetTempo() or
+        /// GetInternalTempo() for further information.
         bool	                IsTempo() const             { return (status == META_EVENT) && (byte1 == META_TEMPO); }
         /// Returns *true* if the message is a data end (i.e. end of track) meta-message.
         bool	                IsDataEnd() const           { return (status == META_EVENT) && (byte1 == META_END_OF_TRACK); }
@@ -216,12 +217,12 @@ class 	MIDIMessage {
         /// Returns *true* if the message is a key signature meta-message. You can then call
         /// GetKeySigSharpFlats() and GetKeySigMajorMinor() for further information.
         bool	                IsKeySig() const            { return (status == META_EVENT) && (byte1 == META_KEYSIG); }
-        /// Returns *true* if the message is a beat marker message (this is a dummy meta-message used by the MIDISequencer
-        /// class to mark the metronome clicks).
-        bool 	                IsBeatMarker() const        { return (status == STATUS_SERVICE) && (byte1 == BEAT_MARKER_VAL); }
 
-        /// Returns *true* if the status is not a valid MIDI status.
+        /// Returns *true* if the message is a not inizialized message.
         bool	                IsNoOp() const              { return (status == STATUS_SERVICE) && (byte1 == NO_OP_VAL); }
+        /// Returns *true* if the message is a beat marker message (an internal service message used by the MIDISequencer
+        /// class to mark the metronome clicks).
+        bool                    IsBeatMarker() const        { return (status == STATUS_SERVICE) && (byte1 == BEAT_MARKER_VAL); }
         //@}
 
         ///@name The 'Set' methods
@@ -260,6 +261,9 @@ class 	MIDIMessage {
         /// Makes the message a note on message with given channel, note and velocity. Frees the sysex pointer.
         void	                SetNoteOn(unsigned char chan, unsigned char note, unsigned char vel);
         /// Makes the message a note off message with given channel, note and velocity. Frees the sysex pointer.
+        /// The default behavior of this method is to put a NOTE OFF type message and copy the given velocity;
+        /// you can also make the method put a NOTE ON with 0 velocity (ignoring the third parameter).
+        /// See the USeNoteOnv0ForOff() static method.
         void	                SetNoteOff(unsigned char chan, unsigned char note, unsigned char vel);
         /// Makes the message a polyphonic aftertouch message with given channel, note and pressure.
         /// Frees the sysex pointer.
@@ -267,11 +271,11 @@ class 	MIDIMessage {
         /// Makes the message a control change message with given channel, controller and value.
         /// Frees the sysex pointer.
         void	                SetControlChange(unsigned char chan, unsigned char ctrl, unsigned char val);
-        /// Makes the message a volume change (control = 0x07) message with given channel and value.
+        /// Makes the message a volume change (control == 0x07) message with given channel and value.
         /// Frees the sysex pointer.
         void                    SetVolumeChange (unsigned char chan, unsigned char val)
                                             { SetControlChange( chan, C_MAIN_VOLUME, val); }
-        /// Makes the message a pan change (control = 0x0A) message with given channel and value.
+        /// Makes the message a pan change (control == 0x0A) message with given channel and value.
         /// Frees the sysex pointer.
         void                    SetPanChange (unsigned char chan, unsigned char val)
                                             { SetControlChange( chan, C_PAN, val); }
@@ -325,53 +329,54 @@ class 	MIDIMessage {
         /// Makes the message a data end (i.e. end of track) meta-message.
         void	                SetDataEnd()                        { SetMetaEvent(META_END_OF_TRACK, 0); }
         /// Makes the message a tempo change meta-message with given tempo (in bpm). The tempo is stored in the
-        /// sysex object as a 3 byte value according to the MIDIfile format. The eventual old pointer is freed.
+        /// sysex object as a 3 byte value according to the MIDIfile format and the eventual old pointer is freed.
         void	                SetTempo(double tempo_bpm);
         /// Makes the message a SMPTE offset meta-message with given data. The bytes are stored in the
-        /// sysex object.(the eventual old pointer is freed).
+        /// sysex object and the eventual old pointer is freed.
         void                    SetSMPTEOffset(unsigned char hour, unsigned char min, unsigned char sec,
                                                unsigned char frame,unsigned char subframe);
-        /// Makes the message a time signature meta-message with given time (numerator and denominator).
+        /// Makes the message a time signature meta-message with given time (numerator and denominator) The bytes
+        /// are stored in the sysex object and the eventual old pointer is freed..
         void	                SetTimeSig(unsigned char num, unsigned char den,
                                            unsigned char clocks_per_metronome = 0, unsigned char num_32_per_quarter = 8);
-        /// Makes the message a key signature meta-message with given accidents and mode \see GetKeySigSharpFlats(),
-        /// GetKeySigMajorMinor().
+        /// Makes the message a key signature meta-message with given accidents and mode.
         void                    SetKeySig( signed char sharp_flats, unsigned char major_minor )
                                                                     { SetMetaEvent(META_KEYSIG, sharp_flats, major_minor); }
-        /// Makes the message a beat marker meta-message.
-        /// \see IsBeatMarker().
+
+        /// The same of Clear(), makes the message an uninitialized message which will be ignored
+        void	                SetNoOp()                           { Clear(); }
+        /// Makes the message a beat marker internal service message.
         void	                SetBeatMarker();
 
-        /// The same of Clear(), makes the message a non valid message which will be ignored
-        void	                SetNoOp()                           { Clear(); }
+
         /// Allocates a MIDISystemExclusive object, with a buffer of given max size. The buffer
         /// is initially empty and can be accessed with GetSysEx(). An eventual old object is freed.
         void                    AllocateSysEx(unsigned int len);
         /// Copies the given MIDISystemExclusive object into the message without changing other bytes.
         /// An eventual old object is freed.
         void                    CopySysEx(const MIDISystemExclusive* se);
-        /// The compare operator
+        /// The compare operator execute a bitwise comparison.
         friend bool             operator== (const MIDIMessage &m1, const MIDIMessage &m2);
 
         /// This static method determines wheater the SetNoteOff() method will produce a MIDI NOTE_OFF
         /// message or a NOTE_ON with velocity 0. The default is *false* (NOTE_OFF messages). If you want
         /// to use the other form call this with *true*.
-        static void             UseNoteOnv0ForOff(bool f);
+        static void             UseNoteOnv0ForOff(bool f)           { use_note_onv0 = f; }
 
         /// Status and byte1 for non MIDI messages (internal use)
         enum { STATUS_SERVICE = 0, NO_OP_VAL = 0, BEAT_MARKER_VAL = 1 };
 
     protected:
 
-        unsigned char	        status;     ///< The status byte.
-        unsigned char	        byte1;      ///< 1st data byte.
-        unsigned char	        byte2;      ///< 2nd data byte.
-        unsigned char	        byte3;		///< 3rd data byte (only used for some meta-events).
-        MIDISystemExclusive*    sysex;      ///< The sysex pointer.
-        static bool             use_note_onv0;
+        unsigned char	        status;         ///< The status byte.
+        unsigned char	        byte1;          ///< 1st data byte.
+        unsigned char	        byte2;          ///< 2nd data byte.
+        unsigned char	        byte3;		    ///< 3rd data byte (only used for some meta-events).
+        MIDISystemExclusive*    sysex;          ///< The sysex pointer.
+        static bool             use_note_onv0;  ///< This flag influences the SetNoteOff() method behavior.
 };
 
-// TODO: Add a Reset message? (status = 0xff)
+// NO NEED TO ADD A Reset MESSAGE (status = 0xff)! If you want it can use SetSystemMessage(0xff)
 
 /* ********************************************************************************************/
 /*                   C L A S S   M I D I T i m e d M e s s a g e                              */
@@ -399,18 +404,19 @@ class 	MIDITimedMessage : public MIDIMessage {
                                 MIDITimedMessage(const MIDIMessage &msg);
         /// Destructor
                                 ~MIDITimedMessage();
-        /// Resets the message and frees the MIDISystemExclusive. The message becomes non valid.
+        /// Resets the message, frees the MIDISystemExclusive pointer and sets the time to 0.
+        /// The message becomes a NoOp.
         void	                Clear();
 
-        void                    SetNoOp()                       { Clear(); }
-
-        /// The equal operators \see MIDIMessage::operator=()
+        /// The assignment operators \see MIDIMessage::operator=()
         const MIDITimedMessage &operator= (const MIDITimedMessage &msg);
         const MIDITimedMessage &operator= (const MIDIMessage &msg);
 
+        /// Inherited from MIDIMessage.
+        std::string             MsgToText() const;
+
         /// Returns the MIDIClockTime associated with the event.
         MIDIClockTime	        GetTime() const                 { return time; }
-
         /// Sets the MIDIClockTime associated with the event.
         void	                SetTime(MIDIClockTime t)        { time = t; }
         /// Adds the given amount to the associated time.
@@ -418,8 +424,8 @@ class 	MIDITimedMessage : public MIDIMessage {
         /// Subtracts the given amount from the associated time (if _t_ is greater set the time to 0).
         void                    SubTime(MIDIClockTime t)        { time = (t > time ? 0 : time - t); }
 
-        /// Inherited from MIDIMessage.
-        std::string             MsgToText() const;
+        /// The same of Clear(), makes the message a non valid message which will be ignored
+        void	                SetNoOp()                       { Clear(); }
 
         /// This function is used by the MIDITrack::InsertEvent() and MIDITrack::InsertNote() methods for ordering
         /// events when inserting. It compares events _m1_ and _m2_: the following tests are done in sequence:
@@ -432,7 +438,7 @@ class 	MIDITimedMessage : public MIDIMessage {
         /// - if m1 (or m2) is not a note message it's smaller (non note go before notes)
         /// - if m1 (or m2) is a Note Off it's smaller (Note Off go before Note On)
         /// \return **1** if _a_ < _b_ , **2** if _a_ > _b_, **0** if none of these (their order is indifferent)
-        static int              CompareEventsForInsert (const MIDITimedMessage &m1, const MIDITimedMessage &m2);
+        friend int              CompareEventsForInsert (const MIDITimedMessage &m1, const MIDITimedMessage &m2);
 
         /// This function is used by the methods that search and insert events in the tracks to find events
         /// that are of the same kind and would normally be incompatible.
@@ -446,11 +452,14 @@ class 	MIDITimedMessage : public MIDIMessage {
         /// If the input mode is set to INSMODE_REPLACE or INSMODE_INSERT_OR_REPLACE the functions
         /// MIDITrack::InsertEvent and MIDITrack::InsertNote search if at same MIDI time of the event to insert exists
         /// such an event and, if they find it, they replace the event, rather than inserting it.
-        static bool             IsSameKind (const MIDITimedMessage &m1, const MIDITimedMessage &m2);
+        friend bool             IsSameKind (const MIDITimedMessage &m1, const MIDITimedMessage &m2);
+
+        /// The equal operator
+        friend bool             operator==(const MIDITimedMessage &m1, const MIDITimedMessage &m2);
 
     protected:
 
-        MIDIClockTime	        time;
+        MIDIClockTime	        time;           ///< The time of the event
 };
 
 #endif
