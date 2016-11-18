@@ -196,7 +196,7 @@ class MIDISequencer {
         MIDIClockTime                   GetCurrentMIDIClockTime() const
                                                                 { return state.cur_clock; }
         /// Returns current time in milliseconds.
-        double                          GetCurrentTimeInMs() const
+        double                          GetCurrentTimeMs() const
                                                                 { return state.cur_time_ms; }
         /// Returns current beat in the measure (1st beat is 0).
         int                             GetCurrentBeat() const  { return state.cur_beat; }
@@ -239,7 +239,7 @@ class MIDISequencer {
         /// jump from a time to another saving and retrieving sequencer states.
         void                            SetState(MIDISequencerState* s)
                                                                 { state = *s; }
-        /// Set the global tempo scale (1.00 = no scaling, 2.00 = twice faster, etc.).
+        /// Sets the global tempo scale (1.00 = no scaling, 2.00 = twice faster, etc.).
         void                            SetTempoScale(double scale);
         /// Soloes/unsoloes a track
         /// \param m on/off
@@ -279,27 +279,20 @@ class MIDISequencer {
         /// \return *true* if the track was effectively moved
         /// \see note to InsertTrack()
         bool                            MoveTrack(int from, int to);
-        /// Sets the 'now' time to the beginning of the song, upgrading the internal status.
+        /// Sets the current time to the beginning of the song, updating the internal status.
         /// Notifies the GUI a GROUP_ALL event to signify a GUI reset.
         void                            GoToZero();
-        /// Sets the 'now' time to the MIDI time _time_clk_, upgrading the internal status.
+        /// Sets the current time to the MIDI time _time_clk_, updating the internal status.
         /// Notifies the GUI a GROUP_ALL event to signify a GUI reset
         /// \return _true_ if the time _time_clk_ is effectively reached, _false_ otherwise
         /// (_time_clk_ is after the end of the song)
         bool                            GoToTime (MIDIClockTime time_clk);
         /// Same as GoToTime(), but time is given in milliseconds.
         bool                            GoToTimeMs (double time_ms);
-        /// Sets the 'now' time to the given measure and beat, upgrading the internal status.
+        /// Sets the current time to the given measure and beat, updating the internal status.
         /// Notifies the GUI a GROUP_ALL event to signify a GUI reset
         /// \return see GoToTime()
         bool                            GoToMeasure (int measure, int beat = 0);
-        /// Gets the time of the next event
-        /// \param[out] t: the requested time in MIDI ticks from the beginning
-        /// \return _true_ if there is effectively a next event (and *t is a valid time) _false_ if we are at
-        /// the end of the song (*t is undefined)
-        bool                            GetNextEventTime (MIDIClockTime *time_clk);
-        /// Same of GetNextEventTime(), but time is returned in milliseconds from the beginning.
-        bool                            GetNextEventTimeMs (double *time_ms);
         /// Gets the next event (respect current position). This queries the state for the next event in the
         /// multitrack, then processes it with the corresponding track processor (eventually changing the
         /// original event, for example if transposing) and updates the state. Moreover it sends appropriate
@@ -310,7 +303,14 @@ class MIDISequencer {
         /// \return _true_ if there is effectively a next event (and the parameters are valid), _false_ otherwise
         /// (parameters are undefined)
         bool                            GetNextEvent (int *trk, MIDITimedMessage *msg);
-
+        /// Gets the time of the next event (it can be different from current time if at current time there
+        /// are not events).
+        /// \param[out] t: the requested time in MIDI ticks from the beginning
+        /// \return _true_ if there is effectively a next event (and *t is a valid time) _false_ if we are at
+        /// the end of the song (*t is undefined)
+        bool                            GetNextEventTime (MIDIClockTime *time_clk);
+        /// Same of GetNextEventTime(), but time is returned in milliseconds from the beginning.
+        bool                            GetNextEventTimeMs (double *time_ms);
         /// Converts the time_time_clk_, given in MIDi ticks, into milliseconds, taking account of tempo changes.
         double                          MIDItoMs(MIDIClockTime time_clk);  // new : added by me
         /// This function is the equivalent of GoToTime(state.cur_time) and should be used to update the sequencer

@@ -54,21 +54,20 @@
 ///
 /// This class is used internally for writing MIDI files. It writes a stream of *char* to a C++ ostream object,
 ///
-
 class MIDIFileWriteStream {
 public:
     /// In this constructor you must specify the filename.\ The constructor tries to open the file, you
-    /// should call IsValid() for checking if it was successful
+    /// should call IsValid() for checking if it was successful.
     MIDIFileWriteStream( const char *fname );
     /// In this constructor you must specify and already open ostream object, so you can write to whatever
-    /// output stream
+    /// output stream.
     MIDIFileWriteStream(std::ostream* ofs);
-    /// The destructor deletes the ostream if it was opened by the ctor
+    /// The destructor deletes the ostream if it was opened by the ctor.
     virtual ~MIDIFileWriteStream();
 
-    /// Implements pure virtual parent function
+    /// Mves the stream position along the stream.
     long Seek( long pos, int whence=SEEK_SET );
-    /// Implements pure virtual parent function
+    /// Writes a char to the stream.
     int WriteChar( int c );
     /// Returns *true* if the ostream is open
     bool IsValid();

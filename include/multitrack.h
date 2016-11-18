@@ -221,37 +221,8 @@ class MIDIMultiTrackIterator {
                                     MIDIMultiTrackIterator (MIDIMultiTrack *mlt);
         /// Syncs _num_tracks_ with the multitrack and resets time to 0.
         void                        Reset();
-        /// Goes to the given time, which becomes the current time, and sets then the current event as the
-        /// first event (in any track) with time greater or equal to _time_. If there are more events with
-        /// same time in different tracks their order is not defined, as the iterator tries to rotate
-        /// across the tracks rather than to get first all events in a single track. However, temporal order
-        /// is always granted.
-        void                        GoToTime(MIDIClockTime time);
         /// Gets the current time of the iterator.
-        MIDIClockTime               GetCurTime() const  { return state.GetCurTime(); }
-        /// Gets the time of the next event in the multitrack (it can be different from current time if
-        /// at current time there are not events). If the iterator state has time shifting mode on it is the
-        /// shifted time (see MIDIMultiTrackIteratorState::GetShiftedTime().
-        /// \param t here we get the time of next event, if valid.
-        /// \return *true* if there is effectively a next event (we aren't at the end of the
-        /// MIDIMultiTrack, *false* otherwise (*t doesn't contain a valid time).
-        bool                        GetCurEventTime(MIDIClockTime *t) const;
-        /// Gets the next event in the multitrack in temporal order. If the iterator state has time shifting
-        /// mode on events are sorted according to their shifted time.
-        /// @param track the track of the event, if valid.
-        /// @param *msg a pointer to the event in the MidiMultiTrack
-        /// @return *true* if there is effectively a next event (we aren't at the end of the
-        /// MIDIMultiTrack, *false* otherwise (*track and **msg don't contain valid values).
-        bool                        GetCurEvent(int *track, MIDITimedMessage **msg);
-        /// Discards the current event and set as current the subsequent. If the iterator state has time
-        /// shifting mode on events are sorted according to their shifted time.
-        /// @return *true* if there is effectively a next event (we aren't at the end of the
-        /// MIDIMultiTrack, *false* otherwise.
-        bool                        GoToNextEvent();
-        /// Set as current the next event on track _track_.
-        /// @return *true* if there is effectively a next event (we aren't at the end of the
-        /// MIDIMultiTrack, *false* otherwise.
-        bool                        GoToNextEventOnTrack(int track);
+        MIDIClockTime               GetCurrentTime() const              { return state.GetCurTime(); }
         /// Gets the current MIDIMultiTackIteratorState. You can save and then restore it for a
         /// faster processing in GoTo operations (admitting the contents of the multitrack are not
         /// changed).
@@ -261,6 +232,37 @@ class MIDIMultiTrackIterator {
         ///<}
         /// Sets the given MIDIMultiTrackIteratorState as current state.
         void                        SetState(const MIDIMultiTrackIteratorState& s) { state = s; }
+        /// Goes to the given time, which becomes the current time, and sets then the current event as the
+        /// first event (in any track) with time greater or equal to _time_. If there are more events with
+        /// same time in different tracks their order is not defined, as the iterator tries to rotate
+        /// across the tracks rather than to get first all events in a single track. However, temporal order
+        /// is always granted.
+        /// \return *true* if the given time is effectively reached, *false* otherwise (it is after the end
+        /// of the multitrack)
+        bool                        GoToTime(MIDIClockTime time);
+        /// Gets the next event in the multitrack in temporal order and updates the iterator state. If the
+        /// state has time shifting mode on the events are sorted according to their shifted time.
+        /// \param track the track of the event, if valid.
+        /// \param *msg a pointer to the event in the MidiMultiTrack
+        /// \return *true* if there is effectively a next event (we aren't at the end of the
+        /// MIDIMultiTrack), *false* otherwise (*track and **msg don't contain undefined values).
+        bool                        GetNextEvent(int *track, MIDITimedMessage **msg);
+        /// Discards the current event and set as current the subsequent. If the iterator state has time
+        /// shifting mode on events are sorted according to their shifted time.
+        /// @return *true* if there is effectively a next event (we aren't at the end of the
+        /// MIDIMultiTrack, *false* otherwise.
+        //bool                        GoToNextEvent() {}
+        /// Set as current the next event on track _track_.
+        /// @return *true* if there is effectively a next event (we aren't at the end of the
+        /// MIDIMultiTrack, *false* otherwise.
+        bool                        GetNextEventOnTrack(int track, MIDITimedMessage **msg);
+        /// Gets the time of the next event in the multitrack (it can be different from current time if
+        /// at current time there are not events). If the iterator state has time shifting mode on it
+        /// is the shifted time (see MIDIMultiTrackIteratorState::GetShiftedTime().
+        /// \param t here we get the time of next event, if valid.
+        /// \return *true* if there is effectively a next event (we aren't at the end of the
+        /// MIDIMultiTrack, *false* otherwise (*t doesn't contain a valid time).
+        bool                        GetNextEventTime(MIDIClockTime *t) const;
         // Returns a pointer to the MIDIMultiTrack the iterator is attached to.
         //MIDIMultiTrack*             GetMultiTrack()  				    { return multitrack; }
         //const MIDIMultiTrack*       GetMultiTrack() const 	            { return multitrack; }

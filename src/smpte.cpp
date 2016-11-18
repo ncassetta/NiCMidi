@@ -114,35 +114,35 @@ void SMPTE::SetTime (unsigned char h, unsigned char m, unsigned char s, unsigned
 
 unsigned char SMPTE::GetHours() {
     if (sample_number_dirty)
-        TimeToSample();
+        SampleToTime();
     return hours;
 }
 
 
 unsigned char SMPTE::GetMinutes() {
     if (sample_number_dirty)
-        TimeToSample();
+        SampleToTime();
     return minutes;
 }
 
 
 unsigned char SMPTE::GetSeconds() {
     if (sample_number_dirty)
-        TimeToSample();
+        SampleToTime();
     return seconds;
 }
 
 
 unsigned char SMPTE::GetFrames() {
     if (sample_number_dirty)
-        TimeToSample();
+        SampleToTime();
     return frames;
 }
 
 
 unsigned char SMPTE::GetSubFrames() {
     if (sample_number_dirty)
-        TimeToSample();
+        SampleToTime();
     return sub_frames;
 }
 

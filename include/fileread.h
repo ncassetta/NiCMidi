@@ -54,25 +54,24 @@
 
 
 ///
-/// This class is used internally for reading MIDI files. It inherits from MIDIFileReadStream and reads
-/// a stream of *char* from a C++ istream object,
+/// This class is used internally for reading MIDI files. It reads a stream of *char* from a C++ istream object.
 ///
 class MIDIFileReadStream {
     public:
         /// In this constructor you must specify the filename.\ The constructor tries to open the file, you
-        /// should call IsValid() for checking if it was successful
+        /// should call IsValid() for checking if it was successful.
         explicit                        MIDIFileReadStream(const char *fname);
         /// In this constructor you must specify and already open istream object, so you can read from whatever
-        /// input stream
+        /// input stream.
         explicit                        MIDIFileReadStream(std::istream* ifs);
-        /// The destructor deletes the istream if it was opened by the ctor
+        /// The destructor deletes the istream if it was opened by the ctor.
         virtual                         ~MIDIFileReadStream();
 
-        /// Implements pure virtual parent function
+        /// Rewind the stream to the beginning.
         virtual void                    Rewind();
-        /// Implements pure virtual parent function
+        /// Reads a char from the stream.
         virtual int                     ReadChar();
-        /// Returns *true* if the istream is open
+        /// Returns *true* if the istream is open.
         virtual bool                    IsValid();
 
     private:

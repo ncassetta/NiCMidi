@@ -89,11 +89,11 @@ bool MIDISequencerTrackProcessor::Process( MIDITimedMessage *msg ) {
         if(msg->IsNoteOn() && msg->GetVelocity() > 0) {
             // yes, scale the velocity value as required
             int vel = (int)msg->GetVelocity();
-            vel = vel * velocity_scale / 100;
+            vel = (int)((float)vel * velocity_scale / 100.0 + 0.5);
 
-            // make sure velocity is never less than 0
-            if( vel < 0 )
-                vel = 0;
+            // make sure velocity is never more than 127
+            if(vel > 127)
+                vel = 127;
 
             // rewrite the velocity
             msg->SetVelocity((unsigned char)vel);
@@ -539,7 +539,7 @@ bool MIDISequencer::GoToTime(MIDIClockTime time_clk) {
         else if (t == time_clk) {       // next event is at the right time
             MIDIMultiTrackIteratorState istate(state.iterator.GetState());  // save the state of the iterator
             GetNextEvent(&trk, &msg);           // get the event (cur_time becomes time_clk)
-            state.iterator.SetState( istate );  // restore the iterator state, so ev is the next event
+            state.iterator.SetState(istate);    // restore the iterator state, so ev is the next event
         }
         else {                          // next event is after time_clk : set cur_time to time_clk
             state.cur_clock = time_clk;
@@ -629,7 +629,7 @@ bool MIDISequencer::GoToMeasure (int measure, int beat) {
         state.notifier->SetEnable (false);
     }
 
-//    OLD VERSIONif (measure < state.cur_measure ||
+//    OLD VERSION if (measure < state.cur_measure ||
 //         // ADDED FOLLOWING LINE:  this failed in this case!!!
 //        (measure == state.cur_measure && beat < state.cur_beat) ||
 //        (measure == 0 && beat == 0))
@@ -669,9 +669,70 @@ bool MIDISequencer::GoToMeasure (int measure, int beat) {
 }
 
 
+bool MIDISequencer::GetNextEvent(int *trk, MIDITimedMessage *msg) {
+    MIDIClockTime t;
+
+    // ask the iterator for the current event time
+    if( state.iterator.GetNextEventTime(&t) ) {
+        // move current time forward one event
+        MIDIClockTime new_clock;
+        GetNextEventTime(&new_clock);
+        double new_time_ms = MIDItoMs(new_clock);
+
+        // must set cur_clock AFTER GetNextEventTimeMs() is called
+        // since GetNextEventTimeMs() uses cur_clock to calculate
+        state.cur_clock = new_clock;
+        state.cur_time_ms = new_time_ms;
+
+        // is the next beat marker before this event?
+        if(state.next_beat_time <= t) {
+            // yes, this is a beat event now.
+            // say this event came on track 0, the conductor track
+            state.last_event_track = *trk = 0;
+
+            // put current info into beat marker message
+            beat_marker_msg.SetTime(state.next_beat_time);
+            *msg = beat_marker_msg;
+
+            state.Process(msg);
+        }
+        else    {   // this event comes before the next beat
+            MIDITimedMessage *msg_ptr;
+
+            if(state.iterator.GetNextEvent(trk, &msg_ptr)) {
+                state.last_event_track = *trk;
+
+                // copy the event so Process can modify it
+                *msg = *msg_ptr;
+                 bool allow_msg = true;
+
+                // are we in solo mode?
+                if( solo_mode ) {
+                    // yes, only allow this message thru if
+                    // the track is either track 0
+                    // or it is explicitly solod.
+                    allow_msg = (*trk == 0 || track_processors[*trk]->solo) ? true : false;
+                }
+                if(!(allow_msg
+                   && track_processors[*trk]->Process(msg)
+                   && state.Process(msg)))
+                    // the message is not allowed to come out!
+                    // erase it
+                    msg->Clear();
+
+                // go to the next event on the multitrack
+                // state.iterator.GoToNextEvent(); no more used
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
+
 bool MIDISequencer::GetNextEventTime(MIDIClockTime *time_clk) {
     // ask the iterator for the current event time
-    bool f = state.iterator.GetCurEventTime(time_clk);
+    bool f = state.iterator.GetNextEventTime(time_clk);
 
     if(f) {
         // if we have an event in the future, check to see if it is
@@ -694,79 +755,24 @@ bool MIDISequencer::GetNextEventTimeMs(double *time_ms) {
 }
 
 
-bool MIDISequencer::GetNextEvent(int *trk, MIDITimedMessage *msg) {
-    MIDIClockTime t;
-
-    // ask the iterator for the current event time
-    if( state.iterator.GetCurEventTime(&t) ) {
-        // move current time forward one event
-        MIDIClockTime new_clock;
-        double new_time_ms;
-        GetNextEventTime(&new_clock);
-        GetNextEventTimeMs(&new_time_ms);
-
-        // must set cur_clock AFTER GetNextEventTimeMs() is called
-        // since GetNextEventTimeMs() uses cur_clock to calculate
-        state.cur_clock = new_clock;
-        state.cur_time_ms = new_time_ms;
-
-        // is the next beat marker before this event?
-        if(state.next_beat_time <= t) {
-            // yes, this is a beat event now.
-            // say this event came on track 0, the conductor track
-            state.last_event_track = *trk = 0;
-
-            // put current info into beat marker message
-            beat_marker_msg.SetTime(state.next_beat_time);
-            *msg = beat_marker_msg;
-
-            state.Process(msg);
-        }
-        else    {   // this event comes before the next beat
-            MIDITimedMessage *msg_ptr;
-
-            if(state.iterator.GetCurEvent(trk, &msg_ptr)) {
-                state.last_event_track = *trk;
-
-                // copy the event so Process can modify it
-                *msg = *msg_ptr;
-                 bool allow_msg = true;
-
-                // are we in solo mode?
-                if( solo_mode ) {
-                    // yes, only allow this message thru if
-                    // the track is either track 0
-                    // or it is explicitly solod.
-                    allow_msg = (*trk == 0 || track_processors[*trk]->solo) ? true : false;
-                }
-                if(!(allow_msg
-                   && track_processors[*trk]->Process(msg)
-                   && state.Process(msg)))
-                    // the message is not allowed to come out!
-                    // erase it
-                    msg->Clear();
-
-                // go to the next event on the multitrack
-                state.iterator.GoToNextEvent();
-            }
-        }
-        return true;
-    }
-    return false;
-}
-
-
 double MIDISequencer::MIDItoMs(MIDIClockTime t) {
-    MIDITimedMessage* msg;
-    MIDITrackIterator tr_iter(state.multitrack->GetTrack(0));
+    //MIDITrackIterator tr_iter(state.multitrack->GetTrack(0));
+    MIDITrack* track = state.multitrack->GetTrack(0);
+    int ev_num = 0;
     MIDIClockTime base_t = 0, delta_t = 0, now_t = 0;
     double ms_time = 0.0, old_tempo = 120.0, ms_per_clock;
+    MIDITimedMessage* msg;
 
     while (now_t < t) {
-        if (!tr_iter.GetCurEvent(&msg, t))      // next message is after t or doesn't exists
+        if (!track->IsValidEventNum(ev_num) || track->GetEventAddress(ev_num)->GetTime() >= t)
+            // next message doesn't exists or is at t or after t
             now_t = t;
-        else
+        else {
+            msg = track->GetEventAddress(ev_num);
             now_t = msg->GetTime();
+        }
+        // if we are at our time or have a tempo change must calculate the time
+        // in msecs between the last tempo change and now
         if (msg->IsTempo() || now_t == t) {
             // delta time in MIDI clocks
             delta_t = now_t - base_t;
@@ -782,12 +788,12 @@ double MIDISequencer::MIDItoMs(MIDIClockTime t) {
             // and add it to ms_time
             ms_time += (delta_t * ms_per_clock);
 
-            // update variables
+            // update variables for next tempo change (or now_t == t)
             base_t = msg->GetTime();
             if (msg->IsTempo())
                 old_tempo = msg->GetTempo();
-            if (now_t == t) break;
         }
+        ev_num++;
     }
     return ms_time;
 }

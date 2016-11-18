@@ -95,7 +95,6 @@ MIDIClockTime MIDITrack::GetNoteLength(const MIDITimedMessage& msg) const {
         ev_num++;
     }
         // this should not happen: there wasn't the corresponding Note Off
-        // TODO: must we raise a warning?
     return TIME_INFINITE;
 }
 
@@ -445,7 +444,7 @@ void MIDITrack::CloseOpenEvents(MIDIClockTime t) {
 
     iter.GoToTime(t);
     msg.SetTime(t);                         // set right time for msg
-    if (iter.NotesOn()) {                   // there are notes on at time t
+    if (iter.GetNotesOn()) {                // there are notes on at time t
         for (int i = 0; i < 0x7f; i++) {
             msg.SetNoteOn(ch, i, 100);
             if (iter.IsNoteOn(i) && !iter.EventIsNow(msg)) {
@@ -458,17 +457,17 @@ void MIDITrack::CloseOpenEvents(MIDIClockTime t) {
     }
     msg.SetControlChange(ch, C_DAMPER, 127);
     if (iter.IsPedalOn()&& !iter.EventIsNow(msg))   {               // pedal (CTRL 64) on at time t
-        iter.GoToTime(t);               // TODO: ia this necessary? I don't remember
+        iter.GoToTime(t);                   // TODO: ia this necessary? I don't remember
         if (iter.FindPedalOff(&msgp))
-            DeleteEvent(*msgp);         // delete original pedal OFF
+            DeleteEvent(*msgp);             // delete original pedal OFF
         msg.SetControlChange(ch, C_DAMPER, 0);
-        InsertEvent(msg);               // insert a pedal OFF at time t
+        InsertEvent(msg);                   // insert a pedal OFF at time t
         msg.SetTime(t);
     }
     msg.SetPitchBend(ch, 0);
     if (iter.GetBender()) {                 // pitch bend not 0 at time t
         iter.GoToTime(t);                   // updates iter
-        while (iter.GetCurEvent(&msgp)) {   // chase and delete all subsequent bender messages,
+        while (iter.GetNextEvent(&msgp)) {  // chase and delete all subsequent bender messages,
             if (msgp->IsPitchBend()) {      // until bender == 0
                 short val = msgp->GetBenderValue(); // remember bender value
                 DeleteEvent(*msgp);
@@ -643,24 +642,37 @@ bool MIDITrackIterator::FindPedalOff(MIDITimedMessage** msg) {
 }
 
 
-bool MIDITrackIterator::GetCurEvent(MIDITimedMessage** msg) {
+bool MIDITrackIterator::GoToTime(MIDIClockTime time) {
+    MIDIClockTime t;
+    MIDITimedMessage* msg;
+
+    if (time > track->GetEndTime()) return false;
+    if (time <= cur_time)
+        Reset();
+    while (GetNextEventTime(&t) && t < time)
+        GetNextEvent(&msg);
+    cur_time = time;
+    ScanEventsAtThisTime();
+    return true;
+}
+
+
+bool MIDITrackIterator::GetNextEvent(MIDITimedMessage** msg) {
     if (!track->IsValidEventNum(cur_ev_num)) return false;
     *msg = track->GetEventAddress(cur_ev_num);
-    MIDIClockTime new_time = (*msg)->GetTime();
-    if (new_time > cur_time) {                              // is new time > cur_time?
-        if (new_time > end)
-            return false;
-        cur_time = new_time;
+    MIDIClockTime old_time = cur_time;
+    cur_time = (*msg)->GetTime();
+    if (cur_time > old_time)
         ScanEventsAtThisTime();                             // update status processing all messages at this time
-    }
     cur_ev_num++;                                           // increment message pointer
     return true;
 }
 
 
-MIDIClockTime MIDITrackIterator::GetCurEventTime() const {
-    if (!track->IsValidEventNum(cur_ev_num)) return TIME_INFINITE;     // we are at the end of track
-    return track->GetEventAddress(cur_ev_num)->GetTime();
+bool MIDITrackIterator::GetNextEventTime(MIDIClockTime* t) const {
+    if (!track->IsValidEventNum(cur_ev_num)) return false;  // we are at the end of track
+    *t = track->GetEventAddress(cur_ev_num)->GetTime();
+    return true;
 }
 
 
@@ -677,6 +689,7 @@ bool MIDITrackIterator::EventIsNow(const MIDITimedMessage& msg) {
 }
 
 
+/* This was eliminated
 bool MIDITrackIterator::GoToNextEvent() {
     if (!track->IsValidEventNum(cur_ev_num)) return false;
     cur_ev_num++;
@@ -687,24 +700,11 @@ bool MIDITrackIterator::GoToNextEvent() {
     }
     return true;
 }
-
-
-bool MIDITrackIterator::GoToTime(MIDIClockTime time) {
-    MIDITimedMessage* msg;
-
-    if (time > track->GetEndTime()) return false;
-    if (time <= cur_time)
-        Reset();
-    while (GetCurEventTime() < time)
-        GetCurEvent(&msg);
-    cur_time = time;
-    ScanEventsAtThisTime();
-    return true;
-}
+*/
 
 
 void MIDITrackIterator::FindChannel() {
-    channel = 0xff;
+    channel = -1;
     for (unsigned int i = 0; i < track->GetNumEvents(); i ++) {
         if (track->GetEvent(i).IsChannelMsg()) {
             channel = track->GetEvent(i).GetChannel();
@@ -760,16 +760,12 @@ void MIDITrackIterator::ScanEventsAtThisTime() {
 // process all messages up to and including this time only
 // warning: this can be used only when we reach the first event at a new time!
 
-    MIDIClockTime oldtime = cur_time;
-    int oldnum = cur_ev_num;
-    //cur_ev_num = track->FindEventNumber(cur_time);      // is it necessary? I think no
-    MIDITimedMessage *msg;
-
-    while(GetCurEvent(&msg, oldtime))
-        Process(msg);
-    cur_time = oldtime;
-    cur_ev_num = oldnum;
-
+    int ev_num = cur_ev_num;
+    while (track->GetEventAddress(ev_num)->GetTime() == cur_time) {
+        Process(track->GetEventAddress(ev_num));
+        ev_num++;
+    }
+}
 
 
 ////////////////////////////////////////////////////////////////
@@ -1531,9 +1527,4 @@ void MIDITrack::CloseOpenEvents(MIDIClockTime t) {
 }
 
 *********/
-
-
-
-
-}
 

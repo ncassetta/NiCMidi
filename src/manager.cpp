@@ -130,7 +130,7 @@ void MIDIManager::SeqPlay() {
         if (auto_seq_open)
             OpenOutPorts();
 
-        seq_time_offset = (unsigned long) sequencer->GetCurrentTimeInMs();
+        seq_time_offset = (unsigned long) sequencer->GetCurrentTimeMs();
         sys_time_offset = timer->GetSysTimeMs();
         sequencer->SetTimeShiftMode(true);
         play_mode = true;
@@ -417,7 +417,7 @@ void MIDIManager::SequencerPlayProc( tMsecs sys_time_ )
 
         // the sequencer time offset now must be reset to the
         // time in milliseconds of the sequence start point
-        seq_time_offset = (unsigned long)sequencer->GetCurrentTimeInMs();
+        seq_time_offset = (unsigned long)sequencer->GetCurrentTimeMs();
     }
 
     // find all events that exist before or at this time,

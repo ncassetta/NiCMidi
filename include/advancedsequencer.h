@@ -75,7 +75,7 @@ class AdvancedSequencer {
 
         /// Returns 'now' time in milliseconds.
         /// When playing or jumping from one time to another, you can use this to feed a SMPTE
-        tMsecs              GetCurrentTimeInMs() const;
+        tMsecs              GetCurrentTimeMs() const;
 
         /// Set MIDI ticks per beat (quarter note).
         /// \return **true** if clocks per beat are effectively changed

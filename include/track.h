@@ -102,7 +102,8 @@ class  MIDITrack {
         bool                        IsValidEventNum(int ev_num) const
                                                 { return (0 <= ev_num && (unsigned int)ev_num < events.size()); }
         /// Returns the length in MIDI clocks of the given note. _msg_ must be a Note On event present in the track
-        /// (otherwise the function will return 0).
+        /// (otherwise the function will return 0). It returns TIME_INFINITE if there isn't the corresponding
+        /// Note Off event in the track.
         MIDIClockTime               GetNoteLength (const MIDITimedMessage& msg) const;
         /// Sets the default behaviour for the methods InsertEvent() and InsertNote(). This can be overriden
         /// by them by mean of the last (default) parameter.
@@ -227,55 +228,53 @@ class MIDITrackIterator {
         /// Sets the iterator track (causes a reset).
         void                        SetTrack(MIDITrack* trk);
         /// Returns the current time of the iterator.
-        MIDIClockTime               GetCurTime() const          { return cur_time; }
-        /// Returns the current track program
+        MIDIClockTime               GetCurrentTime() const      { return cur_time; }
+        /// Returns the current track program (-1 if not set).
         char                        GetProgram() const          { return program; }
-        /// Returns the current value for the given control.
+        /// Returns the current value for the given control (-1 if not set).
         char                        GetControl(unsigned char c) const
                                                                 { return controls[c]; }
         /// Returns the current bender value.
         short                       GetBender() const           { return bender_value; }
-        /// Returns the track channel.
+        /// Returns the track channel (-1 if there aren't channel events in the track).
         char                        GetMIDIChannel() const      { return channel; }
         /// Returns the number of notes on at current time.
-        int                         NotesOn() const             { return num_notes_on; }
+        int                         GetNotesOn() const          { return num_notes_on; }
         /// Returns *true* if the given note is on at current time.
         char                        IsNoteOn(unsigned char n) const
                                                                 { return notes_on[n]; }
         /// Returns *true* if the hold pedal is on at current time.
         bool                        IsPedalOn() const           { return controls[64] > 64; }
-        /// Finds the message in the track corresponding to the note off for the given note.
+        /// Finds the MIDITimedMessage in the track corresponding to the note off for the given note.
         /// \param[in] note : the note on
         /// \param[out] msg : a pointer to the note off message
         /// \return *true* if msg is valid, *false* otherwise (a note off was not found).
         bool                        FindNoteOff(unsigned char note, MIDITimedMessage** msg);
-        /// Finds the next hold pedal off message in the track.
+        /// Finds the next hold pedal off MIDITimedMessage in the track.
         /// \param[out] msg : a pointer to the pedal off message
         /// \return *true* if msg is valid, *false* otherwise (a pedal off was not found).
         bool                        FindPedalOff(MIDITimedMessage** msg);
+        /// Goes to the given time, which becomes the current time, and sets then the current event as the
+        /// first event in the track with time greater or equal to _time_.
+        bool                        GoToTime(MIDIClockTime time);
         /// Returns the next event in the track.
         /// \param *msg a pointer to the event in the MidiMultiTrack
         /// \return *true* if there is effectively a next event (we aren't at the end of the
-        /// MIDIMultiTrack, *false* otherwise (*track and **msg don't contain valid values).
-        bool                        GetCurEvent(MIDITimedMessage** msg);
+        /// track), *false* otherwise (and **msg doesn't contain valid value).
+        bool                        GetNextEvent(MIDITimedMessage** msg);
         /// Gets the time of the next event in the track (it can be different from current time if
         /// at current time there are not events).
         /// \param t here we get the time of next event, if valid.
         /// \return *true* if there is effectively a next event (we aren't at the end of the
-        /// MIDIMultiTrack, *false* otherwise (*t doesn't contain a valid time).
-        MIDIClockTime               GetCurEventTime() const;
-                                        // returns TIME_INFINITE if we are at end of track
+        /// track), *false* otherwise (*t doesn't contain a valid time).
+        bool                        GetNextEventTime(MIDIClockTime* t) const;
         /// Returns *true* if at the current time there is
         bool                        EventIsNow(const MIDITimedMessage& msg);
                                         // true if at cur_time there is msg
-        /// Discards the current event and set as current the subsequent.
-        /// \return *true* if there is effectively a next event (we aren't at the end of the track),
-        /// *false* otherwise.
-        bool                        GoToNextEvent();
-        /// Goes to the given time, which becomes the current time, and sets then the current event as the
-        /// first event in the track with time greater or equal to _time_.
-        bool                        GoToTime(MIDIClockTime time);
-
+        // /// Discards the current event and set as current the subsequent.
+        // /// \return *true* if there is effectively a next event (we aren't at the end of the track),
+        // /// *false* otherwise.
+        //bool                        GoToNextEvent();
 
     private:
 

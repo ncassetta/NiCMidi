@@ -33,15 +33,14 @@ void DumpMIDITimedMessage (MIDITimedMessage* const msg, std::ostream& ost) {
 
 
 void DumpMIDITrack (MIDITrack* const t, std::ostream& ost) {
-    ost << "Track dump" << std::endl;
     for (unsigned int i = 0; i < t->GetNumEvents(); ++i)
         DumpMIDITimedMessage (t->GetEventAddress (i), ost);
 }
 
 
 void DumpAllTracks (MIDIMultiTrack* const mlt, std::ostream& ost) {
-    ost << "DUMP OF MIDI MULTITRACK\n";
-    ost << "Clocks per beat: " << mlt->GetClksPerBeat() << "\n" << std::endl;
+    ost << "DUMP OF MIDI MULTITRACK BY TRACKS" << std::endl;
+    ost << "Clocks per beat: " << mlt->GetClksPerBeat() << std::endl << std::endl;
 
     for (unsigned int i = 0; i < mlt->GetNumTracks(); ++i) {
         ost << "Dump of track" << i << std::endl;
@@ -53,20 +52,18 @@ void DumpAllTracks (MIDIMultiTrack* const mlt, std::ostream& ost) {
 
 
 void DumpMIDIMultiTrack (MIDIMultiTrack* const mlt, std::ostream& ost) {
-    MIDIMultiTrackIterator i (mlt);
+    MIDIMultiTrackIterator iter (mlt);
     MIDITimedMessage *msg;
     char s[10];
     int trk_num;
 
     ost << "DUMP OF MIDI MULTITRACK\n";
-    ost << "Clocks per beat: " << mlt->GetClksPerBeat() << "\n" << std::endl;
+    ost << "Clocks per beat: " << mlt->GetClksPerBeat() << std::endl << std::endl;
 
-    i.GoToTime (0);
-    do {
-        if (i.GetCurEvent (&trk_num, &msg)) {
+    iter.GoToTime (0);
+    while (iter.GetNextEvent (&trk_num, &msg)) {
             sprintf (s, "#%2d - ", trk_num);
             ost << s;
             DumpMIDITimedMessage (msg, ost);
-        }
-    } while (i.GoToNextEvent());
+    }
 }

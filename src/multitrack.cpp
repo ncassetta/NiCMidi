@@ -350,8 +350,8 @@ void MIDIMultiTrackIteratorState::SetNumTracks(int n) {
         num_tracks = n;
         next_event_number.resize(n);
         next_event_time.resize(n);
-        Reset();
     }
+    Reset();
 }
 
 
@@ -413,6 +413,8 @@ int MIDIMultiTrackIteratorState::FindTrackOfFirstEvent() {
         if(next_event_number[i] >= 0 && next_event_time[i] < minimum_time) {
             minimum_time = next_event_time[i];
             minimum_time_track = i;
+            if (minimum_time == cur_time)
+                break;
         }
     }
 
@@ -435,55 +437,45 @@ MIDIMultiTrackIterator::MIDIMultiTrackIterator(MIDIMultiTrack *mlt) :
 
 
 void MIDIMultiTrackIterator::Reset() {
-    state.SetNumTracks(multitrack->GetNumTracks());
-    GoToTime(0);
-}
-
-
-void MIDIMultiTrackIterator::GoToTime(MIDIClockTime time) {
-    // start at time 0
-    state.Reset();
+    state.SetNumTracks(multitrack->GetNumTracks());     // calls state.Reset()
 
     // transfer info from the first events in each track in the
     // multitrack object to our current state.
     for(unsigned int i = 0; i < multitrack->GetNumTracks(); ++i) {
-        MIDITrack *track = multitrack->GetTrack(i);
 
     // extract the time of the first event of the track (already one exists)
-        MIDITimedMessage *msg = track->GetEventAddress(0);
+        MIDITimedMessage *msg = multitrack->GetTrack(i)->GetEventAddress(0);
 
-    // Keep track of the event number and the event time.
-        state.next_event_number[i] = 0;
+    // keep track of the event number and the event time.
+        //state.next_event_number[i] = 0; already done by state.Reset()
         state.next_event_time[i] = state.GetShiftedTime(msg, i);
     }
-
-    // are there any events at all? find the track with the earliest event
-    if(state.FindTrackOfFirstEvent() != -1) {
-    // yes iterate through all the events until we find a time >= the requested time
-        while(state.GetCurTime() < time) {
-
-    // did not get to the requested time yet.
-    // go to the next chronological event on all tracks
-            if(!GoToNextEvent()) break;
-    // there is no more events to go to
-
-        }
-    }
+    // sets cur_event_track
+    state.FindTrackOfFirstEvent();
 }
 
 
+bool MIDIMultiTrackIterator::GoToTime(MIDIClockTime time) {
+    if (time > multitrack->GetEndTime())
+        return false;
+    // we must restart also if cur_clock is equal to cur_clock, as we could
+    // already have got some event.
+    if (time <= state.cur_time)
+        Reset();
 
-bool MIDIMultiTrackIterator::GetCurEventTime(MIDIClockTime *t) const {
-    // if there is a next event, then set *t to the time of the event and return true
-    if(state.GetCurEventTrack() != -1) {
-        *t = state.GetCurTime();
-        return true;
-    }
-    return false;
+    MIDIClockTime t;
+    int trk;
+    MIDITimedMessage *msg;
+    // iterate through all the events until we find a time >= the requested time
+    while(GetNextEventTime(&t) && t < time)
+        GetNextEvent(&trk, &msg);
+    state.cur_time = time;
+    return true;
 }
 
 
-bool MIDIMultiTrackIterator::GetCurEvent(int *track, MIDITimedMessage **msg) {
+/*
+bool MIDIMultiTrackIterator::GetNextEvent(int *track, MIDITimedMessage **msg) {
     int t = state.GetCurEventTrack();
 
     if(t != -1) {
@@ -506,8 +498,39 @@ bool MIDIMultiTrackIterator::GetCurEvent(int *track, MIDITimedMessage **msg) {
     return false;
 
 }
+*/
 
 
+bool MIDIMultiTrackIterator::GetNextEvent(int *track, MIDITimedMessage **msg) {
+    int trk = state.GetCurEventTrack();
+
+    if(trk != -1) {
+        *track = trk;
+        int ev_num = state.next_event_number[trk];
+
+        if(ev_num >= 0) {
+            MIDITrack* t = multitrack->GetTrack(trk);
+            *msg = t->GetEventAddress(ev_num);
+            state.cur_time = state.GetShiftedTime(*msg, trk);
+            if (t->IsValidEventNum(ev_num + 1)) {
+                state.next_event_number[trk]++;
+                state.next_event_time[trk] = state.GetShiftedTime(t->GetEventAddress(ev_num + 1), trk);
+            }
+            else
+                state.next_event_number[trk] = -1;
+            state.FindTrackOfFirstEvent();
+            return true;
+        }
+        else {
+            *msg = 0;
+            return false;
+        }
+    }
+    return false;
+
+}
+
+/* OLD
 bool MIDIMultiTrackIterator::GoToNextEvent() {
     // find the next event in the multitrack and return it
     // if there is no event left, return false
@@ -531,40 +554,42 @@ bool MIDIMultiTrackIterator::GoToNextEvent() {
 
     return true;
 }
+*/
 
+bool MIDIMultiTrackIterator::GetNextEventOnTrack(int track, MIDITimedMessage **msg) {
+    // Get the current event number for this track
+    int ev_num = state.next_event_number[track];
 
-bool MIDIMultiTrackIterator::GoToNextEventOnTrack(int track_num) {
-    // Get the track that we are dealing with
-    MIDITrack *track = multitrack->GetTrack(track_num);
-
-    // Get ptr to the current event number for this track
-    int *event_num = &state.next_event_number[track_num];
-
-    // skip this track if this event number is <0 - This track has hit end already.
-    if(*event_num < 0)
-        return false; // at end of track
-
-    // increment *event_num to next event on track
-    (*event_num) += 1;
-
-    // are we at end of track?
-    if(*event_num >= track->GetNumEvents()) {
-        // yes, set *event_num to -1
-        *event_num=-1;
-        return false; // at end of track
+    // ev_num is valid, so the track isn't yet finished
+    if (ev_num >= 0) {
+        // get the event
+        *msg = multitrack->GetTrack(track)->GetEventAddress(ev_num);
+        // adjust current time
+        state.cur_time = state.GetShiftedTime(*msg, track);
+        // adjust the next event num in the track trk
+        if (multitrack->GetTrack(track)->IsValidEventNum(ev_num + 1))
+            state.next_event_number[track]++;
+        else
+            state.next_event_number[track] = -1;
+        state.FindTrackOfFirstEvent();
+        return true;
     }
+    // return false if this event number is -1 - This track has finished already.
     else {
-    // not at end of track yet - get the time of the event
-        MIDITimedMessage *msg;
-        msg = track->GetEventAddress( *event_num );
-        state.next_event_time[track_num] = state.GetShiftedTime(msg, track_num);
+        *msg = 0;
+        return false;
     }
-
-    return true;
 }
 
 
-
+bool MIDIMultiTrackIterator::GetNextEventTime(MIDIClockTime *t) const {
+    // if there is a next event, then set *t to the time of the event and return true
+    if(state.GetCurEventTrack() != -1) {
+        *t = state.GetCurTime();
+        return true;
+    }
+    return false;
+}
 
 
 

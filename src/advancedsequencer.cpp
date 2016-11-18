@@ -353,7 +353,7 @@ void AdvancedSequencer::SetTempoScale(double scale) {
 MIDIClockTime AdvancedSequencer::GetCurrentMIDIClockTime() const {
     MIDIClockTime time = seq->GetCurrentMIDIClockTime();
     if (mgr->IsSeqPlay()) {
-        double ms_offset = mgr->GetCurrentTimeInMs() - seq->GetCurrentTimeInMs();
+        double ms_offset = mgr->GetCurrentTimeMs() - seq->GetCurrentTimeMs();
         double ms_per_clock = 60000.0 / (seq->GetState()->tempobpm *
                                 seq->GetTempoScale() * multitrack->GetClksPerBeat());
         time += (MIDIClockTime)(ms_offset / ms_per_clock);
@@ -362,12 +362,12 @@ MIDIClockTime AdvancedSequencer::GetCurrentMIDIClockTime() const {
 }
 
 
-tMsecs AdvancedSequencer::GetCurrentTimeInMs() const {
+tMsecs AdvancedSequencer::GetCurrentTimeMs() const {
 // NEW: this is now effective also during playback
     if (mgr->IsSeqPlay())
-        return mgr->GetCurrentTimeInMs();
+        return mgr->GetCurrentTimeMs();
     else
-       return seq->GetCurrentTimeInMs();
+       return seq->GetCurrentTimeMs();
 }
 
 
@@ -710,7 +710,7 @@ void AdvancedSequencer::CatchEventsBefore() {
     int trk;
     iter.GoToTime(0);
     // re-send all sysex, except real-time ones
-    while (iter.GetCurEvent( &trk, &msgp ) && msgp->GetTime() < seq->GetCurrentMIDIClockTime()) {
+    while (iter.GetNextEvent( &trk, &msgp ) && msgp->GetTime() < seq->GetCurrentMIDIClockTime()) {
         msg = *msgp;
         unsigned int port = seq->GetTrackPort(trk);
 
@@ -719,7 +719,7 @@ void AdvancedSequencer::CatchEventsBefore() {
             OutputMessage(msg, port);
             events_sent++;
         }
-        iter.GoToNextEvent();
+        //iter.GoToNextEvent();     not yet used
     }
 
     // now set program, controls and pitch bend

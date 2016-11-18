@@ -75,7 +75,7 @@ public:
     void                        CloseOutPorts();
 
         /// Returns the elapsed time in ms from the sequencer start (0 if the sequencer is not playing).
-    tMsecs                      GetCurrentTimeInMs() const
+    tMsecs                      GetCurrentTimeMs() const
                                                 { return play_mode ?
                                                          timer->GetSysTimeMs() + seq_time_offset - sys_time_offset : 0; }
 
