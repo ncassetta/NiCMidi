@@ -99,7 +99,7 @@ void MIDIMultiTrack::SetClksPerBeat(unsigned int cl_p_b) {
 unsigned int MIDIMultiTrack::GetNumTracksWithEvents() const {
     unsigned int num_tracks = 0;
     for (unsigned int i = 0; i < tracks.size(); i++ )
-            if (!tracks[i]->IsTrackEmpty())
+            if (!tracks[i]->IsEmpty())
                 num_tracks++;
     return num_tracks;
 }
@@ -164,7 +164,7 @@ void MIDIMultiTrack::AssignEventsToTracks ( const MIDITrack *src )
     }
 }
 
-
+/* NO MORE USED
 int MIDIMultiTrack::FindFirstChannelOnTrack (int trk) const {
     int first_channel = -1;
 
@@ -178,7 +178,7 @@ int MIDIMultiTrack::FindFirstChannelOnTrack (int trk) const {
     }
     return first_channel;
 }
-
+*/
 
 bool MIDIMultiTrack::InsertTrack(int trk) {
     if (trk == -1) trk = tracks.size();                 // if trk = -1 (default) append track

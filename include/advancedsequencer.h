@@ -122,7 +122,7 @@ class AdvancedSequencer {
 
         void                SetChanged();
         // new : added by me
-        double               MIDItoMs(MIDIClockTime t) { return seq->MIDItoMs(t); }
+        double              MIDItoMs(MIDIClockTime t) { return seq->MIDItoMs(t); }
 
     protected:
 

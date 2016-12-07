@@ -463,7 +463,7 @@ const char* GetSmpteString() {
     static char s[100];
 
     // Get from the sequencer the current time in msecs
-    unsigned long msecs = sequencer->GetCurrentTimeInMs();
+    unsigned long msecs = sequencer->GetCurrentTimeMs();
 
     // Feed the smpte with msecs
     smpte.SetMilliSeconds(msecs);

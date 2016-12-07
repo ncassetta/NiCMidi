@@ -112,7 +112,7 @@ bool WriteMIDIFile(const char* filename, int format, const MIDIMultiTrack* track
             tmp_tracks = *tracks;
             if (strip) {
                 for (unsigned int i = 1; i < tmp_tracks.GetNumTracks(); i++) {
-                    if (tmp_tracks.GetTrack(i)->IsTrackEmpty()) {
+                    if (tmp_tracks.GetTrack(i)->IsEmpty()) {
                         tmp_tracks.DeleteTrack(i);
                         i--;
                     }

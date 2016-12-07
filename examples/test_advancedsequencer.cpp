@@ -67,12 +67,22 @@ const char helpstring[] =
                          amount is in semitones (positive or negative)\n\
    tshift track amt    : Sets the time shift for given track. The amount can\n\
                          be positive or negative.\n\
-   tracknames          : Prints the names of all tracks of the file\n\
+   trackinfo           : Shows info about all tracks of the file\n\
    b                   : (backward) Moves current time to the previous measure\n\
    f                   : (forward) Moves current time to the next measure\n\
    help                : Prints this help screen\n\
    quit                : Exits\n\
 All commands can be given during playback\n";
+
+const char TRACK_TYPES[6][12] = {
+    "MAIN TRACK",
+    "TEXT ONLY ",
+    "CHANNEL   ",
+    "IRREG CHAN",
+    "MIXED CHAN",
+    "IRREGULAR "
+
+};
 
 
 void GetCommand()
@@ -180,7 +190,7 @@ int main( int argc, char **argv ) {
                 cout << "NO MIDI IN PORTS" << endl;
             if (MIDIManager::GetNumMIDIOuts()) {
                 cout << "MIDI OUT PORTS:" << endl;
-                for (unsigned int i = 0; i < MIDIManager::GetNumMIDIOuts(); i++)
+                for (int i = 0; i < MIDIManager::GetNumMIDIOuts(); i++)
                     cout << i << ": " << MIDIManager::GetMIDIOutName( i ) << endl;
             }
             else
@@ -228,8 +238,12 @@ int main( int argc, char **argv ) {
                 DumpMIDIMultiTrackWithPauses(sequencer.GetMultiTrack());
             else {
                 int trk_num = atoi(par1.c_str());
-                MIDITrack* trk = sequencer.GetMultiTrack()->GetTrack(trk_num);
-                DumpMIDITrackWithPauses(trk, trk_num);
+                if (sequencer.GetMultiTrack()->IsValidTrackNumber(trk_num)) {
+                    MIDITrack* trk = sequencer.GetMultiTrack()->GetTrack(trk_num);
+                    DumpMIDITrackWithPauses(trk, trk_num);
+                }
+                else
+                    cout << "Invalid track number" << endl;
             }
         }
         else if (command == "solo") {               // soloes a track
@@ -296,10 +310,21 @@ int main( int argc, char **argv ) {
             sequencer.SetTrackTimeShift(track, amount);
             cout << "Track " << track << " time shifted by " << amount << " MIDI ticks" << endl;
         }
-        else if (command == "tracknames") {         // prints track names
-            cout << "\nTrack Names:" << endl;
-            for (int i = 1; i < sequencer.GetNumTracks(); i++)
-                cout << "Track " << i << ": " << sequencer.GetTrackName( i ) << endl;
+        else if (command == "trackinfo") {          // prints info about tracks
+            for (int i = 0; i < sequencer.GetNumTracks(); i++) {
+                MIDITrack* trk = sequencer.GetMultiTrack()->GetTrack(i);
+                cout << "Track " << i << ": " << sequencer.GetTrackName(i) << endl;
+                if (trk->IsEmpty())
+                    cout << "EMPTY" << endl;
+                else {
+                    cout << "Type: " << TRACK_TYPES[trk->GetType() - MIDITrack::TYPE_MAIN];
+                    if (trk->GetChannel() == -1)
+                        cout << "     ";
+                    else
+                        cout << " (" << (int)trk->GetChannel() << ") ";
+                    cout <<"Sysex: " << (trk->HasSysex() ? "Yes " : "No  ") << "Events: " << trk->GetNumEvents() << endl;
+                }
+            }
         }
         else if (command == "b") {                  // goes a measure backward
             int meas = sequencer.GetCurrentMeasure();

@@ -32,7 +32,7 @@
 int MIDITrack::ins_mode = INSMODE_INSERT_OR_REPLACE;        /* NEW BY NC */
 
 
-MIDITrack::MIDITrack(MIDIClockTime end_t) {
+MIDITrack::MIDITrack(MIDIClockTime end_t) : status(INIT_STATUS) {
 // a track always contains at least the MIDI_END event, so num_events > 0
     MIDITimedMessage msg;
     msg.SetDataEnd();
@@ -41,16 +41,13 @@ MIDITrack::MIDITrack(MIDIClockTime end_t) {
 }
 
 
-MIDITrack::MIDITrack(const MIDITrack& trk) {
-    events = trk.events;
+MIDITrack::MIDITrack(const MIDITrack &trk) : events(trk.events), status(trk.status) {
 }
 
 
-MIDITrack::~MIDITrack() {}
-
-
-MIDITrack& MIDITrack::operator=(const MIDITrack& trk) {
+MIDITrack& MIDITrack::operator=(const MIDITrack &trk) {
     events = trk.events;
+    status = trk.status;
     return *this;
 }
 
@@ -62,8 +59,50 @@ void MIDITrack::Clear(bool mantain_end) {
     msg.SetDataEnd();
     msg.SetTime(end);
     events.push_back(msg);
+    status = INIT_STATUS;
 }
 
+
+char MIDITrack::GetChannel() {
+    if (status & STATUS_DIRTY)
+        Analyze();
+    return (char)(status & 0xff);
+}
+
+char MIDITrack::GetType() {
+    if (IsEmpty())
+        return 0;
+    if (status & STATUS_DIRTY)
+        Analyze();
+    if ((status & HAS_MAIN_META) &&
+        !((status & HAS_ONE_CHAN) || (status & HAS_MANY_CHAN)))
+        return TYPE_MAIN;
+    if ((status & HAS_TEXT_META) &&
+        !((status & HAS_MAIN_META) || (status & HAS_ONE_CHAN) || (status & HAS_MANY_CHAN) || (status & HAS_RESET_SYSEX)))
+        return TYPE_TEXT;
+    if (status & HAS_ONE_CHAN) {
+        if(!((status & HAS_MAIN_META) || (status & HAS_RESET_SYSEX)))
+            return TYPE_CHAN;
+        else
+            return TYPE_IRREG_CHAN;
+    }
+    if (status & HAS_MANY_CHAN)
+        return TYPE_MIXED_CHAN;
+    return TYPE_UNKNOWN;
+}
+
+
+char MIDITrack::HasSysex() {
+    if (status & STATUS_DIRTY)
+        Analyze();
+    if ((status & HAS_SYSEX) && (status & HAS_RESET_SYSEX))
+        return TYPE_BOTH_SYSEX;
+    if ((status & HAS_SYSEX) && !(status & HAS_RESET_SYSEX))
+        return TYPE_SYSEX;
+    if (!(status & HAS_SYSEX) && (status & HAS_RESET_SYSEX))
+        return TYPE_RESET_SYSEX;
+    return 0;
+}
 
 bool MIDITrack::SetEndTime(MIDIClockTime end_t) {
     if (end_t < GetEndTime() && events.size() > 1)
@@ -80,6 +119,7 @@ void MIDITrack::SetChannel(int ch) {
         if (GetEvent(i).IsChannelMsg())
             GetEvent(i).SetChannel(ch);
     }
+    status |= STATUS_DIRTY;
 }
 
 
@@ -105,40 +145,6 @@ void MIDITrack::SetInsertMode( int mode )
         ins_mode = mode;
 }
 
-/* OLD!
-bool MIDITrack::Insert(const MIDITimedBigMessage& msg) {
-    if (msg.IsDataEnd()) return false;                  // DATA_END only managed by PutEvent
-
-    if (GetEndTime() <= msg.GetTime()) {                // insert as last event
-        SetEndTime(msg.GetTime());                      // adjust DATA_END
-        return PutEvent(num_events-1, msg);             // insert just before DATA_END
-    }
-                                                        // binsearch copied from binsearch.h
-    int min = 0,
-        max = num_events - 1,
-        mid = (max + min) / 2;
-    while (max - min > 1) {
-        if (GetEvent(mid) < msg) min = mid;
-        else max = mid;
-        mid = (max + min) / 2;
-    }
-    if (min < max && GetEvent(mid) < msg)       // max-min = 1; mid could be one of these
-        mid++;
-
-    WARNING! THIS IS DIFFERENT FROM ANALOGUE IN int_track.cpp AS MIDI MESSAGES AREN'T TOTALLY
-    ORDERED (see midi_msg.operator== and midi_msg.operator< )
-
-    min = mid;                                  // dummy, for remembering
-    while (!EndOfTrack(mid) && GetEvent(mid).GetTime() == msg.GetTime()) {
-        if (GetEvent(mid) == msg)               // element found
-            return SetEvent(mid, msg);          // WARNING: I changed this (from false): review!
-        mid++;
-    }
-    return PutEvent(min, msg);
-}
-*/
-
-
 
 bool MIDITrack::InsertEvent(const MIDITimedMessage& msg, int mode) {
     if (msg.IsDataEnd()) return false;                  // DATA_END only auto managed
@@ -146,6 +152,7 @@ bool MIDITrack::InsertEvent(const MIDITimedMessage& msg, int mode) {
     if (GetEndTime() < msg.GetTime()) {                 // insert as last event
         SetEndTime(msg.GetTime());                      // adjust DATA_END
         events.insert(events.end() - 1, msg);           // insert just before DATA_END
+        status |= STATUS_DIRTY;
         return true;
     }
 
@@ -163,6 +170,7 @@ bool MIDITrack::InsertEvent(const MIDITimedMessage& msg, int mode) {
             while (CompareEventsForInsert(msg, events[ev_num]) == 1)
                 ev_num++;
             events.insert(events.begin() + ev_num, msg);
+            status |= STATUS_DIRTY;
             return true;
 
         case INSMODE_REPLACE:                           // replace a same kind event, or do nothing
@@ -170,6 +178,7 @@ bool MIDITrack::InsertEvent(const MIDITimedMessage& msg, int mode) {
             while (IsValidEventNum(ev_num) && events[ev_num].GetTime() == msg.GetTime()) {
                 if (IsSameKind(events[ev_num], msg)) {
                     events[ev_num] = msg;               // replace if found
+                    status |= STATUS_DIRTY;
                     return true;
                 }
                 ev_num++;
@@ -183,6 +192,7 @@ bool MIDITrack::InsertEvent(const MIDITimedMessage& msg, int mode) {
                 if (IsSameKind(events[ev_num], msg) &&
                      (mode == INSMODE_INSERT_OR_REPLACE || !msg.IsNote())) {
                     events[ev_num] = msg;               // replace if found
+                    status |= STATUS_DIRTY;
                     return true;
                 }
                 ev_num++;
@@ -192,6 +202,7 @@ bool MIDITrack::InsertEvent(const MIDITimedMessage& msg, int mode) {
             while (CompareEventsForInsert(msg, events[ev_num]) == 1)
                 ev_num++;
             events.insert(events.begin() + ev_num, msg);
+            status |= STATUS_DIRTY;
             return true;                                // insert
     }
 
@@ -199,7 +210,7 @@ bool MIDITrack::InsertEvent(const MIDITimedMessage& msg, int mode) {
 }
 
 
-bool MIDITrack::InsertNote( const MIDITimedMessage& msg, MIDIClockTime len, int mode ) {
+bool MIDITrack::InsertNote(const MIDITimedMessage& msg, MIDIClockTime len, int mode) {
     if (!msg.IsNoteOn()) return false;
 
     MIDITimedMessage msgoff(msg);                    // set our NOTE_OFF message
@@ -209,7 +220,7 @@ bool MIDITrack::InsertNote( const MIDITimedMessage& msg, MIDIClockTime len, int 
     int ev_num;
 
     if (mode == INSMODE_DEFAULT)
-        mode = ins_mode;                                // set insert mode to default behaviour
+        mode = ins_mode;                                // set insert mode to default behavior
 
     switch (mode) {
         case INSMODE_INSERT:                            // always insert the event
@@ -290,6 +301,7 @@ bool MIDITrack::DeleteEvent( const MIDITimedMessage& msg )
     if (!FindEventNumber(msg, &ev_num))
         return false;
     events.erase(events.begin() + ev_num);
+    status |= STATUS_DIRTY;
     return true;
 }
 
@@ -319,6 +331,7 @@ void MIDITrack::PushEvent(const MIDITimedMessage& msg) {
     if (GetEndTime() < msg.GetTime())
         SetEndTime(msg.GetTime());                      // adjust DATA_END
     events.insert(events.end() - 1, msg);               // insert just before DATA_END
+    status |= STATUS_DIRTY;
 }
 
 
@@ -437,8 +450,10 @@ void MIDITrack::ReplaceInterval(MIDIClockTime start, MIDIClockTime length, bool 
 void MIDITrack::CloseOpenEvents(MIDIClockTime t) {
     if (t == 0 || t >= GetEndTime()) return;
                                             // there aren't open events at time 0 or after INT_END
+    if (GetType() == TYPE_MAIN || GetType() == TYPE_TEXT) return;
+                                            // there aren't channel events in the track
     MIDITrackIterator iter(this);
-    char ch  = iter.GetMIDIChannel();       // assumes all channel messages with the same channel!
+    char ch  = GetChannel();
     MIDITimedMessage* msgp;
     MIDITimedMessage msg;
 
@@ -446,7 +461,7 @@ void MIDITrack::CloseOpenEvents(MIDIClockTime t) {
     msg.SetTime(t);                         // set right time for msg
     if (iter.GetNotesOn()) {                // there are notes on at time t
         for (int i = 0; i < 0x7f; i++) {
-            msg.SetNoteOn(ch, i, 100);
+            msg.SetNoteOn(ch, i, 100);      // 100 is dummy
             if (iter.IsNoteOn(i) && !iter.EventIsNow(msg)) {
                 if (iter.FindNoteOff(i, &msgp))
                     DeleteEvent(*msgp);     // delete original note OFF
@@ -544,6 +559,40 @@ bool MIDITrack::FindEventNumber(MIDIClockTime time, int* event_num) const {
     return false;                               // found event with time < t
 }
 
+
+
+void MIDITrack::Analyze() {
+    char channel = -1;
+    const MIDITimedMessage* msg;
+    for (unsigned int i = 0; i < GetNumEvents(); i++) {
+        msg = GetEventAddress(i);
+        if (msg->IsMetaEvent() && !msg->IsDataEnd()) {
+            if (msg->IsTextEvent())
+                status |= HAS_TEXT_META;
+            else
+                status |= HAS_MAIN_META;
+        }
+        else if (msg->IsChannelMsg()) {
+            if (channel == -1)
+                channel = msg->GetChannel();
+            else if (channel != msg->GetChannel())
+                status |= HAS_MANY_CHAN;
+        }
+        else if (msg->IsSysEx()) {
+            if (msg->GetSysEx()->IsGMReset() || msg->GetSysEx()->IsGSReset() || msg->GetSysEx()->IsXGReset())
+                status |= HAS_RESET_SYSEX;
+            else
+                status |= HAS_SYSEX;
+        }
+    }
+    if (channel != -1 && !(status & HAS_MANY_CHAN)) {
+        status |= HAS_ONE_CHAN;
+        status &= 0xffffff00;
+        status |= channel;
+    }
+    status &= (~STATUS_DIRTY);
+}
+
 /* OLD!!!!!
 int MIDITrack::FindEventNumber(const MIDITimedBigMessage& m) const {
 // returns -1 if not found
@@ -592,7 +641,6 @@ int MIDITrack::FindEventNumber(MIDIClockTime time) const {
 // this is interely added by me!!!! NC
 
 MIDITrackIterator::MIDITrackIterator(MIDITrack* trk) : track(trk) {
-    FindChannel();
     Reset();
 }
 
@@ -616,7 +664,6 @@ void MIDITrackIterator::Reset() {
 
 void MIDITrackIterator::SetTrack(MIDITrack* trk) {
         track = trk;
-        FindChannel();
         Reset();
 }
 
@@ -702,7 +749,7 @@ bool MIDITrackIterator::GoToNextEvent() {
 }
 */
 
-
+/*
 void MIDITrackIterator::FindChannel() {
     channel = -1;
     for (unsigned int i = 0; i < track->GetNumEvents(); i ++) {
@@ -712,13 +759,13 @@ void MIDITrackIterator::FindChannel() {
         }
     }
 }
-
+*/
 
 bool MIDITrackIterator::Process(const MIDITimedMessage *msg) {
 
     // is it a normal MIDI channel message?
     if(msg->IsChannelMsg()) {
-        if (msg->GetChannel() != channel) return false;
+        // TODO: manage this! if (msg->GetChannel() != channel) return false;
         switch (msg->GetType()) {
             case NOTE_OFF :
                 if(notes_on[msg->GetNote()]) {

@@ -96,7 +96,7 @@ class MIDIMultiTrack {
         /// other channel events.
         /// \return -1 if the track is empty or doesn't contain channel events (the main track, for example).
         /// Otherwise the channel range is 0 ... 15.
-        int                         FindFirstChannelOnTrack(int trk) const;
+        //int                         FindFirstChannelOnTrack(int trk) const;
         /// Inserts a new empty track at position _trk_ (_trk_ must be in the range 0 ... GetNumTracks() - 1). If
         /// _trk_ == -1 appends the track at the end.
         /// \return *true* if the track was effectively inserted.

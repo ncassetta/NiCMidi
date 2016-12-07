@@ -497,7 +497,7 @@ int AdvancedSequencer::GetTrackChannel (int trk) const {
     if (!file_loaded)
         return -1;
     return (seq->GetTrackProcessor (trk)->rechannel == -1 ?
-            multitrack->FindFirstChannelOnTrack(trk) : seq->GetTrackProcessor (trk)->rechannel);
+            multitrack->GetTrack(trk)->GetChannel() : seq->GetTrackProcessor (trk)->rechannel);
 }
 
 
@@ -560,7 +560,7 @@ void AdvancedSequencer::SetSMPTE(SMPTE* s) {
 
     // search a SMPTE event in track 0, time 0
     const MIDITrack* trk = multitrack->GetTrack(0);
-    for (int i = 0; i < trk->GetNumEvents(); i++) {
+    for (unsigned int i = 0; i < trk->GetNumEvents(); i++) {
         if (trk->GetEventAddress(i)->GetTime() > 0)
             break;
         if (trk->GetEventAddress(i)->IsSMPTEOffset()) {
@@ -694,7 +694,7 @@ void AdvancedSequencer::ExtractWarpPositions()
     }
 }
 
-
+/*
 void AdvancedSequencer::CatchEventsBefore() {
     MIDITimedMessage msg;
     MIDITimedMessage *msgp;
@@ -723,7 +723,7 @@ void AdvancedSequencer::CatchEventsBefore() {
     }
 
     // now set program, controls and pitch bend
-    for (int i = 1; i < GetNumTracks(); i++) {
+    for (int i = 0; i < GetNumTracks(); i++) {
         if (!GetTrackMute(i)) {
             int channel = GetTrackChannel(i);
             unsigned int port = seq->GetTrackPort(i);
@@ -751,6 +751,88 @@ void AdvancedSequencer::CatchEventsBefore() {
     //mgr->CloseOutPorts();
     std::cout << "CatchEventsBefore finished: events sent: " << events_sent << std::endl;
 }
+*/
+
+void AdvancedSequencer::CatchEventsBefore() {
+    MIDITimedMessage msg;
+    MIDITrack* trk;
+    unsigned int port;
+    int events_sent = 0;
+
+    if (GetCurrentMIDIClockTime() == 0)         // nothing to do
+        return;
+    std::cout << "Catch events before started ..." << std::endl;
+
+    //mgr->OpenOutPorts();
+
+    //first send sysex (but not reset ones)
+    for (unsigned int i = 0; i < multitrack->GetNumTracks(); i++) {
+        trk = multitrack->GetTrack(i);
+        if (!(trk->HasSysex())) continue;
+        msg.SetTime(0);
+        port = seq->GetTrackPort(i);
+        for (unsigned int j = 0; j < trk->GetNumEvents() && msg.GetTime() <= GetCurrentMIDIClockTime(); j++) {
+            msg = trk->GetEvent(j);
+            if (msg.IsSysEx() &&
+                !(msg.GetSysEx()->IsGMReset() || msg.GetSysEx()->IsGSReset() || msg.GetSysEx()->IsXGReset())) {
+
+                OutputMessage(msg, port);
+                events_sent++;
+            }
+        }
+    }
+
+    // then set program, pitch bend and controls of ordinary channel tracks, according to the
+    // sequencer state
+    for (int i = 0; i < GetNumTracks(); i++) {
+        trk = multitrack->GetTrack(i);
+        if (!GetTrackMute(i) &&
+            (trk->GetType() == MIDITrack::TYPE_CHAN || trk->GetType() == MIDITrack::TYPE_IRREG_CHAN)) {
+            int channel = GetTrackChannel(i);
+            port = seq->GetTrackPort(i);
+            const MIDISequencerTrackState* state = seq->GetTrackState(i);
+            // set the current program
+            if (state->program != -1) {
+                msg.SetProgramChange(channel, state->program);
+                OutputMessage(msg, port);
+                events_sent++;
+            }
+            // set the current pitch bend value
+            msg.SetPitchBend(channel, state->bender_value);
+            OutputMessage(msg, port);
+            events_sent ++;
+            // set the controllers
+            for (unsigned int j = 0; j < C_ALL_NOTES_OFF; j++) {
+                if (state->control_values[j] != -1) {
+                    msg.SetControlChange(channel, j, state->control_values[j]);
+                    OutputMessage(msg, port);
+                    events_sent++;
+                }   // TODO: RPN and NRPN
+            }
+        }
+    }
+
+    // and now send program, controls and pitch bend of non compliant tracks
+    for (unsigned int i = 0; i < multitrack->GetNumTracks(); i++) {
+        trk = multitrack->GetTrack(i);
+        if (trk->GetType() == MIDITrack::TYPE_MIXED_CHAN) {
+            port = seq->GetTrackPort(i);
+            msg.SetTime(0);
+            for (unsigned int j = 0; j < trk->GetNumEvents() && msg.GetTime() <= GetCurrentMIDIClockTime(); j++) {
+                msg = trk->GetEvent(j);
+                if (msg.IsProgramChange() || msg.IsControlChange() || msg.IsPitchBend()) {
+                    OutputMessage(msg, port);
+                    events_sent++;
+                }
+            }
+        }
+    }
+
+   //mgr->CloseOutPorts();
+    std::cout << "CatchEventsBefore finished: events sent: " << events_sent << std::endl;
+}
+
+
 
 
 void AdvancedSequencer::CatchEventsBefore(int trk) {
