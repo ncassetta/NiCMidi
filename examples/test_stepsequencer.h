@@ -42,22 +42,22 @@
 #include <string>
 
 #include "../include/advancedsequencer.h"
+#include "../include/filewritemultitrack.h"
 #include "../include/dump_tracks.h"
 
 
 static const char helpstring[] =
 "\nAvailable commands:\n\
    load filename       : Loads the file into the sequencer\n\
-   save filename       : Saves the file\n\
-   outport port        : Sets port as current output device\n\
+   save [filename]     : Saves the file\n\
    play                : Starts playback from current time\n\
    stop                : Stops playback\n\
-   dump                : Prints a dump of all midi events in the file\n\
-   dump n              : Prints a dump of track n\n\
-   notify on/off       : Sets events notifying on or off\n\
+   rew                 : Rewind\n\
    goto meas [beat]    : Move current time to given meas and beat\n\
                          (numbered from 1)\n\
-   <<                  : Rewind\n\
+   dump [trk]          : Prints a dump of all midi events in the file\n\
+                         (or in the track trk)\n\
+   notify on/off       : Sets events notifying on or off\n\
    < [n]               : Moves current time n steps backward\n\
                          (if omitted, one step)\n\
    > [n]               : Moves current time n steps forward (as above)\n\
@@ -72,6 +72,7 @@ static const char helpstring[] =
    control nn val      : Inserts a control nn event at current position\n\
    patch val           : Inserts a patch event at current position\n\
    tempo val           : Inserts a tempo event at current position\n\
+   time num den        : Inserts a timesig event at current position\n\
    note nn *, volume *, etc... (followed by an asterisk)\n\
                        : Deletes the event (event must be at cur time and track)\n\
    help                : Prints this help screen\n\

@@ -1,5 +1,4 @@
 /*
-
   AdvancedSequencer class example for libJDKSmidi C++ MIDI Library
   (console app, no GUI!)
 

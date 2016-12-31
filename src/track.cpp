@@ -32,11 +32,11 @@
 int MIDITrack::ins_mode = INSMODE_INSERT_OR_REPLACE;        /* NEW BY NC */
 
 
-MIDITrack::MIDITrack(MIDIClockTime end_t) : status(INIT_STATUS) {
+MIDITrack::MIDITrack(MIDIClockTime end_time) : status(INIT_STATUS) {
 // a track always contains at least the MIDI_END event, so num_events > 0
     MIDITimedMessage msg;
     msg.SetDataEnd();
-    msg.SetTime(end_t);
+    msg.SetTime(end_time);
     events.push_back(msg);
 }
 
@@ -104,12 +104,21 @@ char MIDITrack::HasSysex() {
     return 0;
 }
 
-bool MIDITrack::SetEndTime(MIDIClockTime end_t) {
-    if (end_t < GetEndTime() && events.size() > 1)
-        if (events[events.size() - 2].GetTime() > end_t) return false;
+bool MIDITrack::SetEndTime(MIDIClockTime end_time) {
+    if (end_time < GetEndTime() && events.size() > 1)
+        if (events[events.size() - 2].GetTime() > end_time) return false;
             // we tried to insert an MIDI_END before last (musical) event
-    events.back().SetTime(end_t);
+    events.back().SetTime(end_time);
     return true;
+}
+
+
+void MIDITrack::ShrinkEndTime() {
+    if (events.size() == 1)         // empty track
+        events.back().SetTime(0);   // set end time to 0
+    else
+        events.back().SetTime(events[events.size() - 2].GetTime());
+            // set end time to the last (musical) event
 }
 
 
@@ -139,9 +148,8 @@ MIDIClockTime MIDITrack::GetNoteLength(const MIDITimedMessage& msg) const {
 }
 
 
-void MIDITrack::SetInsertMode( int mode )
-{
-    if ( mode != INSMODE_DEFAULT  )
+void MIDITrack::SetInsertMode(int mode) {
+    if (mode != INSMODE_DEFAULT)
         ins_mode = mode;
 }
 
@@ -213,7 +221,7 @@ bool MIDITrack::InsertEvent(const MIDITimedMessage& msg, int mode) {
 bool MIDITrack::InsertNote(const MIDITimedMessage& msg, MIDIClockTime len, int mode) {
     if (!msg.IsNoteOn()) return false;
 
-    MIDITimedMessage msgoff(msg);                    // set our NOTE_OFF message
+    MIDITimedMessage msgoff(msg);                       // set our NOTE_OFF message
     msgoff.SetType(NOTE_OFF);
     msgoff.SetTime(msg.GetTime() + len);
 
@@ -363,10 +371,9 @@ MIDITrack* MIDITrack::MakeInterval(MIDIClockTime start, MIDIClockTime end, MIDIT
     if (end > GetEndTime())                         // adjust end time
         end = GetEndTime();
     if (end <= start) return interval;              // return an empty track
+    interval->SetEndTime(end - start);
 
     MIDITrack edittrack(*this);                     // copy original track to make edits on it;
-
-    interval->SetEndTime(end - start);
     edittrack.CloseOpenEvents(start);               // truncate open events BEFORE start (so delete
                                                     // note off, etc in edit track)
     edittrack.CloseOpenEvents(end);                 // truncate at end
@@ -382,7 +389,7 @@ MIDITrack* MIDITrack::MakeInterval(MIDIClockTime start, MIDIClockTime end, MIDIT
        if (msg.GetTime() == end &&
             (msg.IsNoteOn() || msg.IsPedalOn() ||
             (events[ev_num].IsPitchBend() && events[ev_num].GetBenderValue() != 0)))
-            continue;
+            continue;                               // skip these events at the end of the interval
 
         msg.SubTime(start);                         // adjust message time
         interval->InsertEvent(msg);                 // insert it in interval
@@ -447,32 +454,35 @@ void MIDITrack::ReplaceInterval(MIDIClockTime start, MIDIClockTime length, bool 
 }
 
 
+/* THIS FAILS IF IN THE TRACK THERE ARE MIXED CHANNELS !!!
 void MIDITrack::CloseOpenEvents(MIDIClockTime t) {
     if (t == 0 || t >= GetEndTime()) return;
-                                            // there aren't open events at time 0 or after INT_END
+                                                    // there aren't open events at time 0 or after INT_END
     if (GetType() == TYPE_MAIN || GetType() == TYPE_TEXT) return;
-                                            // there aren't channel events in the track
-    MIDITrackIterator iter(this);
-    char ch  = GetChannel();
+                                                    // there aren't channel events in the track
     MIDITimedMessage* msgp;
     MIDITimedMessage msg;
 
-    iter.GoToTime(t);
-    msg.SetTime(t);                         // set right time for msg
-    if (iter.GetNotesOn()) {                // there are notes on at time t
-        for (int i = 0; i < 0x7f; i++) {
-            msg.SetNoteOn(ch, i, 100);      // 100 is dummy
-            if (iter.IsNoteOn(i) && !iter.EventIsNow(msg)) {
+    if (GetType() == TYPE_CHAN || GetType() == TYPE_IRREG_CHAN) {}
+        char ch  = GetChannel();
+        msg.SetTime(t);                             // set right time for msg
+        MIDITrackIterator iter(this);
+        iter.GoToTime(t);
+        if (iter.GetNotesOn()) {                    // are there notes on at time t?
+            for (int i = 0; i < 0x7f; i++) {
+                msg.SetNoteOn(ch, i, 100);      // 100 is dummy
+                if (iter.IsNoteOn(i) && !iter.EventIsNow(msg))
+
                 if (iter.FindNoteOff(i, &msgp))
-                    DeleteEvent(*msgp);     // delete original note OFF
+                    DeleteEvent(*msgp);             // delete original note OFF
                 msg.SetNoteOff(ch, i, 0);
-                InsertEvent(msg);           // insert a note OFF at time t
+                InsertEvent(msg);                   // insert a note OFF at time t
             }
         }
-    }
-    msg.SetControlChange(ch, C_DAMPER, 127);
-    if (iter.IsPedalOn()&& !iter.EventIsNow(msg))   {               // pedal (CTRL 64) on at time t
-        iter.GoToTime(t);                   // TODO: ia this necessary? I don't remember
+        iter.GoToTime(t);                           // update iterator status
+        msg.SetControlChange(ch, C_DAMPER, 127);
+        if (iter.IsPedalOn()&& !iter.EventIsNow(msg)) {     // pedal (CTRL 64) on at time t
+                                   //
         if (iter.FindPedalOff(&msgp))
             DeleteEvent(*msgp);             // delete original pedal OFF
         msg.SetControlChange(ch, C_DAMPER, 0);
@@ -490,6 +500,90 @@ void MIDITrack::CloseOpenEvents(MIDIClockTime t) {
             }
         }
         InsertEvent(msg);                   // insert a new pitch bend = 0 at time t
+    }
+}
+*/
+
+/* This is the old functione, more complicated, but working even on tracks with mixed
+   MIDI channels
+*/
+void MIDITrack::CloseOpenEvents(MIDIClockTime t) {
+    if (t == 0 || t >= GetEndTime()) return;        // there aren't open events at beginning or end
+
+    MIDIMatrix matrix;
+    int pitchbend[16];
+    MIDITimedMessage msg;
+    unsigned int ev_num = 0;
+    // scan events before current time, remembering notes, pedal and pitch bend
+    while (ev_num < GetNumEvents() && (msg = GetEvent(ev_num)).GetTime() < t) {
+        matrix.Process(msg);
+        if (msg.IsPitchBend())
+            pitchbend[msg.GetChannel()] = msg.GetBenderValue();
+        ev_num++;
+    }
+    // now scan events at current time, closing open notes, pedal and pitch bend
+    while (ev_num < GetNumEvents() && (msg = GetEvent(ev_num)).GetTime() == t) {
+        if (msg.IsNoteOff() || msg.IsPedalOff())
+            matrix.Process (msg);
+        if (msg.IsPitchBend() && msg.GetBenderValue() == 0)
+            pitchbend[msg.GetChannel()] = msg.GetBenderValue();
+        ev_num++;
+    }                                           // ev_num is now the index of 1st event with timw > t
+
+    for (int ch = 0; ch < 16; ch++) {           // for every channel ...
+        // get the number of notes on of the channel
+        int note_count = matrix.GetChannelCount(ch);
+        // search which notes are on
+        for (int note = 0; note < 0x7f && note_count > 0; note++) {
+            // if the note is on ... (i should normally be 1)
+            for (int i = matrix.GetNoteCount(ch, note); i > 0; i--) {
+                msg.SetNoteOff(ch, note, 0);
+                msg.SetTime(t);
+                InsertEvent(msg);               // ... insert a note off at time t
+                ev_num++;                       // and adjust ev_num
+                // now search the corresponding note off after t ...
+                for (unsigned int j = ev_num; j < GetNumEvents(); j++) {
+                    msg = GetEvent(j);
+                    if (msg.IsNoteOff() && msg.GetChannel() == ch && msg.GetNote() == note ) {
+                        DeleteEvent( msg );     // ... and delete it
+                        break;
+                    }
+                }
+                note_count--;
+            }
+        }
+
+        if (matrix.GetHoldPedal(ch)) {
+            msg.SetControlChange(ch, C_DAMPER, 0);
+            msg.SetTime(t);
+            InsertEvent(msg);
+            ev_num++;
+            for (unsigned int j = ev_num; j < GetNumEvents(); j++) {
+                // search the corresponding pedal off after t ...
+                msg = GetEvent(j);
+                if (msg.IsPedalOff() && msg.GetChannel() == ch) {
+                    DeleteEvent(msg);           // ... and delete it
+                    break;
+                }
+            }
+        }
+
+        if (pitchbend[ch]) {
+            msg.SetPitchBend(ch, 0);
+            msg.SetTime(t);
+            InsertEvent(msg);
+            ev_num++;
+            for (unsigned int j = ev_num; j < GetNumEvents(); j++) {
+                // search other pitch bend messages after t until we find a o value ...
+                msg = GetEvent(j);
+                if (msg.IsPitchBend() && msg.GetChannel() == ch) {
+                    if (msg.GetBenderValue() != 0)
+                        DeleteEvent(msg);       // ... and delete it
+                    else
+                        break;
+                }
+            }
+        }
     }
 }
 
@@ -765,38 +859,20 @@ bool MIDITrackIterator::Process(const MIDITimedMessage *msg) {
 
     // is it a normal MIDI channel message?
     if(msg->IsChannelMsg()) {
-        // TODO: manage this! if (msg->GetChannel() != channel) return false;
-        switch (msg->GetType()) {
-            case NOTE_OFF :
-                if(notes_on[msg->GetNote()]) {
-                    notes_on[msg->GetNote()] = 0;
-                    num_notes_on--;
-                }
-                break;
-            case NOTE_ON :
-                if (msg->GetVelocity()) {
-                    if (!notes_on[msg->GetNote()]) {
-                        notes_on[msg->GetNote()] = msg->GetVelocity();
-                        num_notes_on++;
-                    }
-                }
-                else {
-                    if (notes_on[msg->GetNote()]) {
-                        notes_on[msg->GetNote()] = 0;
-                        num_notes_on--;
-                    }
-                }
-                break;
-            case PITCH_BEND :
-                bender_value = msg->GetBenderValue();
-                break;
-            case CONTROL_CHANGE :
-                controls[msg->GetController()] = msg->GetControllerValue();
-                break;
-            case PROGRAM_CHANGE :
-                program = msg->GetProgramValue();
-                break;
+        if (msg->IsNoteOff() && notes_on[msg->GetNote()]) {
+            notes_on[msg->GetNote()]--;
+            num_notes_on--;
         }
+        else if (msg->IsNoteOn() && !notes_on[msg->GetNote()]) {
+            notes_on[msg->GetNote()]++;
+            num_notes_on++;
+        }
+        else if (msg->IsPitchBend())
+            bender_value = msg->GetBenderValue();
+        else if (msg->IsControlChange())
+            controls[msg->GetController()] = msg->GetControllerValue();
+        else if (msg->IsProgramChange())
+            program = msg->GetProgramValue();
         return true;
     }
     return false;

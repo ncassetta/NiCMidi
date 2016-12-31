@@ -67,6 +67,8 @@ MIDIManager::MIDIManager(MIDISequencer* seq, MIDISequencerGUINotifier *n) :
 
 
 MIDIManager::~MIDIManager() {
+    SeqStop();
+    delete timer;
     for (unsigned int i = 0; i < MIDI_outs.size(); i++)
         delete MIDI_outs[i];
     for (unsigned int i = 0; i < MIDI_ins.size(); i++)
@@ -130,19 +132,19 @@ void MIDIManager::SeqPlay() {
         if (auto_seq_open)
             OpenOutPorts();
 
+        if (notifier) {
+            notifier->Notify ( MIDISequencerGUIEvent (
+                                   MIDISequencerGUIEvent::GROUP_TRANSPORT,
+                                   0,
+                                   MIDISequencerGUIEvent::GROUP_TRANSPORT_START
+                               ) );
+        }
+
         seq_time_offset = (unsigned long) sequencer->GetCurrentTimeMs();
         sys_time_offset = timer->GetSysTimeMs();
         sequencer->SetTimeShiftMode(true);
         play_mode = true;
         timer->Start();
-
-        if (notifier) {
-            notifier->Notify ( MIDISequencerGUIEvent (
-                                   MIDISequencerGUIEvent::GROUP_TRANSPORT,
-                                   0,
-                                   MIDISequencerGUIEvent::GROUP_TRANSPORT_MODE
-                               ) );
-        }
     }
 }
 
@@ -160,7 +162,7 @@ void MIDIManager::SeqStop() {
             notifier->Notify ( MIDISequencerGUIEvent (
                                    MIDISequencerGUIEvent::GROUP_TRANSPORT,
                                    0,
-                                   MIDISequencerGUIEvent::GROUP_TRANSPORT_MODE
+                                   MIDISequencerGUIEvent::GROUP_TRANSPORT_STOP
                                ) );
         }
 
@@ -193,10 +195,10 @@ bool MIDIManager::SetThruPorts(unsigned int in_port, unsigned int out_port) {
     if (in_port >= MIDI_ins.size() || out_port >= MIDI_outs.size())
         return false;                               // invalid port number: the function fails
 
-    if (in_port == thru_input && out_port == thru_output)
+    if (in_port == (unsigned)thru_input && out_port == (unsigned)thru_output)
         return true;                                // trying to assign same ports: nothing to do
 
-    if (in_port == thru_input) {                    // same input port: avoids closing and reopening
+    if (in_port == (unsigned)thru_input) {          // same input port: avoids closing and reopening
         MIDI_ins[thru_input]->SetThruEnable(false); // locks the driver and mutes the actual out port
         MIDI_ins[thru_input]->SetThruEnable(thru_enable, MIDI_outs[out_port]);
                                                     // sets the new port
@@ -440,25 +442,9 @@ void MIDIManager::SequencerPlayProc( tMsecs sys_time_ )
 
     // auto stop at end of sequence
     if( !(repeat_play_mode && sequencer->GetCurrentMeasure() >= repeat_end_measure) &&
-            !sequencer->GetNextEventTimeMs(&next_event_time) ) {
+            !sequencer->GetNextEventTimeMs(&next_event_time))
         // no events left
         std::thread(auto_stop_proc, auto_stop_param).detach();
-
-        if(notifier) {
-            notifier->Notify( MIDISequencerGUIEvent(
-                                  MIDISequencerGUIEvent::GROUP_TRANSPORT,
-                                  0,
-                                  MIDISequencerGUIEvent::GROUP_TRANSPORT_MODE
-                              ) );
-
-            notifier->Notify( MIDISequencerGUIEvent(
-                                  MIDISequencerGUIEvent::GROUP_TRANSPORT,
-                                  0,
-                                  MIDISequencerGUIEvent::GROUP_TRANSPORT_ENDOFSONG
-                              ) );
-
-        }
-    }
 }
 
 

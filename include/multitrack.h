@@ -76,6 +76,11 @@ class MIDIMultiTrack {
                                                                     { return (0 <= trk && (unsigned)trk < tracks.size()); }
         /// Returns the end time of the longest track.
         MIDIClockTime               GetEndTime() const;
+        /// Sets the time of the data end event to _end_time_. If there are events of other type after
+        /// _end_time_ the function fails and returns *false*.
+        bool                        SetEndTime(MIDIClockTime end_time);
+        /// Sets the time of the data end event equal to the time of the last event of every track.
+        void                        ShrinkEndTime();
         /// Deletes all tracks leaving the multitrack empty.
         void                        Clear();
         /// Clears all content in the Multitrack and resize it to the given number of tracks

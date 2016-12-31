@@ -155,7 +155,8 @@ class 	MIDIMessage {
         bool	                IsPolyPressure() const      { return ((status & 0xf0) == POLY_PRESSURE); }
         /// Returns *true* if the message is a control change message. You can then call GetChannel(),
         /// GetController() and GetControllerValue() for further information. \note This will return *false*
-        /// on channel mode messages (which have the same status byte of control changes).
+        /// on channel mode messages (which have the same status byte of control changes). Call IsChannelMode()
+        /// for inspecting them.
         bool	                IsControlChange() const     { return ((status & 0xf0) == CONTROL_CHANGE) &&
                                                                         (byte1 < C_ALL_SOUND_OFF); }
         /// Returns *true* if the message is a volume change message (control == 0x07). You can then

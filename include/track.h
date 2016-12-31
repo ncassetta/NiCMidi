@@ -63,7 +63,7 @@ enum
 class  MIDITrack {
     public:
         /// The constructor creates an empty track with only the MIDI data end event
-                                    MIDITrack(MIDIClockTime end_t = 0);
+                                    MIDITrack(MIDIClockTime end_time = 0);
         /// The copy constructor.
                                     MIDITrack(const MIDITrack &trk);
         /// The destructor deletes the events in the track.
@@ -98,9 +98,11 @@ class  MIDITrack {
         ///<}
         ///  Gets the time of the data end event
         MIDIClockTime               GetEndTime() const                 { return events.back().GetTime(); }
-        /// Sets the time of the data end event to _end_. If there are events of other type after _end_
-        /// the function does nothing and returns *false*.
-        bool                        SetEndTime(MIDIClockTime end_t);
+        /// Sets the time of the data end event to _end_time_. If there are events of other type after
+        /// _end_time_ the function fails and returns *false*.
+        bool                        SetEndTime(MIDIClockTime end_time);
+        /// Sets the time of the data end event equal to the time of the last event of the track.
+        void                        ShrinkEndTime();
         /// Sets the channel of all MIDI channel events to _ch_ (_ch_ must be in the range 0 ... 15).
         void                        SetChannel(int ch);
         /// Returns *true* if _ev_num_ is in the range 0 ... GetNumEvents() - 1.
@@ -172,8 +174,10 @@ class  MIDITrack {
         /// (MultiTrack::AssignEventsToTracks() does it).
         void                        PushEvent( const MIDITimedMessage& msg);
 
+        /// Inserts a
         void                        InsertInterval(MIDIClockTime start, MIDIClockTime length, const MIDITrack* src = 0);
                                                     // if src == 0 only shift events of length clocks
+        /// Copies events from _start_ to _end_ into the track _interval_.
         MIDITrack*                  MakeInterval(MIDIClockTime start, MIDIClockTime end, MIDITrack* interval) const;
                                                     // copies selected interval into another interval
         void                        DeleteInterval(MIDIClockTime start, MIDIClockTime end);
@@ -185,6 +189,7 @@ class  MIDITrack {
         /// Cuts note and pedal events at the time _t_. All sounding notes and held pedals are truncated (the
         /// corresponding off events are properly managed) and the pitch bend is reset. This function is
         /// intended for "slicing" a track in cut, copy and paste editing.
+        // TODO: restored old version: test this (involves even interval methods)
         void                        CloseOpenEvents(MIDIClockTime t);
 
         /// Finds an event in the track matching a given event.
@@ -206,32 +211,36 @@ class  MIDITrack {
         /// \return **true** if an event with given time was found, **false** otherwise.
         bool                        FindEventNumber (MIDIClockTime time, int *event_num) const;
 
+        /// Used in the status request
         enum {
-            TYPE_MAIN = 1,
-            TYPE_TEXT = 2,
-            TYPE_CHAN = 3,
-            TYPE_IRREG_CHAN = 4,
-            TYPE_MIXED_CHAN = 5,
-            TYPE_UNKNOWN = 6,
-            TYPE_SYSEX = 7,
-            TYPE_RESET_SYSEX = 8,
-            TYPE_BOTH_SYSEX = 9,
-            INIT_STATUS = 0xff,
-            HAS_MAIN_META = 0x100,
-            HAS_TEXT_META = 0x200,
-            HAS_ONE_CHAN = 0x400,
-            HAS_MANY_CHAN = 0x800,
-            HAS_SYSEX = 0x1000,
-            HAS_RESET_SYSEX = 0x2000,
-            STATUS_DIRTY = 0x4000
+            TYPE_MAIN = 1,          ///< Track has Main meta events (time, tempo, key ...) and no channel events
+            TYPE_TEXT = 2,          ///< Track has only text meta events (probably lyrics)
+            TYPE_CHAN = 3,          ///< Track is a normal channel track. You can find the channel with GetChannel()
+            TYPE_IRREG_CHAN = 4,    ///< Track is an irregular channel track (it can contain Main meta events)
+            TYPE_MIXED_CHAN = 5,    ///< Track has events with more than one channel
+            TYPE_UNKNOWN = 6,       ///< None of the above
+            TYPE_SYSEX = 7,         ///< Track has only common sysex events
+            TYPE_RESET_SYSEX = 8,   ///< Track has reset sysex (GM Reset, Gs Reset, XG Reset)
+            TYPE_BOTH_SYSEX = 9,    ///< Track has both types of sysex
+            INIT_STATUS = 0xff,     ///< Internal use
+            HAS_MAIN_META = 0x100,  ///< Flag for Main meta
+            HAS_TEXT_META = 0x200,  ///< Flag for text meta
+            HAS_ONE_CHAN = 0x400,   ///< Flag for one channel
+            HAS_MANY_CHAN = 0x800,  ///< Flag for more channels
+            HAS_SYSEX = 0x1000,     ///< Flag for common sysex
+            HAS_RESET_SYSEX = 0x2000,///< Flag for reset sysex
+            STATUS_DIRTY = 0x4000   ///< Internal use
         };
 
+        /// Analyzes events in the track upgrading the track status. When a track is created or loaded by
+        /// the AdvancedSequencer class this is automatically called. If you edit the track, changing its
+        /// events, you should call this for upgrading its status.
         void Analyze();
 
     protected :
         std::vector<MIDITimedMessage>
                                     events;     ///< The buffer of events
-        int                         status;
+        int                         status;     ///< The track status
         static int                  ins_mode;   ///< See SetInsertMode()
 };
 
@@ -256,6 +265,8 @@ class MIDITrackIterator {
         void                        SetTrack(MIDITrack* trk);
         /// Returns the current time of the iterator.
         MIDIClockTime               GetCurrentTime() const      { return cur_time; }
+        /// Returns the current event number in the track.
+        int                         GetCurrentEventNum() const  { return cur_ev_num; }
         /// Returns the current track program (-1 if not set).
         char                        GetProgram() const          { return program; }
         /// Returns the current value for the given control (-1 if not set).

@@ -1,9 +1,9 @@
 /*
- *
- * Example using the classes MIDITrack and MIDIMultiTrack for
- * libJDKSmidi C++ MIDI Library.
- * A simple step sequencer: you can add, remove, edit MIDI
- * events and play and save your file (console app, no GUI!)
+ * A simple step sequencer: you can
+ * - Add, remove, edit MIDI events;
+ * - Cut, copy and paste measures
+ * - Play and save your file
+ * (console app, no GUI!)
  *
  * Copyright (C) 2014 N.Cassetta
  * ncassetta@tiscali.it
@@ -26,7 +26,7 @@
  */
 
 
-/* This is a very basic, and not comfortable, step sequencer, made for demostrating
+/* This is a very basic, and not comfortable, step sequencer, made for demonstrating
    editing capabilities of the jdksmidi library. It creates an AdvancedSequencer class instance,
    gets it MultiTrack, and allow the user to edit it.
    You can load and save MIDI files, play them, view the file content, edit the file.
@@ -56,7 +56,6 @@ position cur_pos(multitrack);                       // the cursor position
 char filename[200];
 
 
-
 void GetCommand() {
 // gets from the user the string command_buf, then parses it
 // dividing it into command, par1, par2 and par3 substrings
@@ -64,7 +63,7 @@ void GetCommand() {
     size_t pos1, pos2;
 
     cout << "\n=> ";
-    getline( cin, command_buf );
+    getline(cin, command_buf);
 
     command = "";
     par1 = "";
@@ -78,26 +77,70 @@ void GetCommand() {
     pos2 = command_buf.find_first_of (" ", pos1 + 1);
     if (pos1 == string::npos)
         return;
-    command = command_buf.substr (pos1, pos2 - pos1);
 
-    pos1 = command_buf.find_first_not_of (" ", pos2);
-    pos2 = command_buf.find_first_of (" ", pos1+1);
-    if ( pos1 == string::npos )
-        return;
-    par1 = command_buf.substr (pos1, pos2 - pos1);
+    command = command_buf.substr (pos1, pos2 - pos1);
     pos1 = command_buf.find_first_not_of (" ", pos2);
     pos2 = command_buf.find_first_of (" ", pos1 + 1);
     if ( pos1 == string::npos )
-    {
         return;
-    }
-    par2 = command_buf.substr (pos1, pos2 - pos1);
 
+    par1 = command_buf.substr (pos1, pos2 - pos1);
+    pos1 = command_buf.find_first_not_of (" ", pos2);
+    pos2 = command_buf.find_first_of (" ", pos1 + 1);
+    if (pos1 == string::npos)
+        return;
+
+    par2 = command_buf.substr (pos1, pos2 - pos1);
     pos1 = command_buf.find_first_not_of ( " ", pos2);
-    pos2 = command_buf.find_first_of (" ", pos1+1);
-    if ( pos1 == string::npos )
+    pos2 = command_buf.find_first_of (" ", pos1 + 1);
+    if (pos1 == string::npos)
         return;
     par3 = command_buf.substr (pos1, pos2 - pos1);
+}
+
+
+void DumpMIDIMultiTrackWithPauses (MIDIMultiTrack *mlt) {
+    MIDIMultiTrackIterator iter (mlt);
+    MIDITimedMessage *msg;
+    int trk_num;
+    int num_lines = 0;
+
+    printf ("DUMP OF MIDI MULTITRACK\n");
+    printf ("Clocks per beat: %d\n\n", mlt->GetClksPerBeat() );
+
+    iter.GoToTime (0);
+
+    while (iter.GetNextEvent (&trk_num, &msg)) {
+        printf ("Tr %2d - ", trk_num);
+        DumpMIDITimedMessage (msg);
+        num_lines++;
+        if (num_lines == 80) {
+            printf ("Press <ENTER> to continue or q + <ENTER> to exit ...\n");
+            char ch = std::cin.get();
+            if (tolower(ch) == 'q')
+                return;
+            num_lines = 0;
+        }
+    }
+}
+
+
+void DumpMIDITrackWithPauses (MIDITrack *trk, int trk_num) {
+    int num_lines = 0;
+
+    printf ("DUMP OF MIDI TRACK %d\n", trk_num);
+
+    for (unsigned int ev_num = 0; ev_num < trk->GetNumEvents(); ev_num++) {
+        DumpMIDITimedMessage (trk->GetEventAddress(ev_num));
+        num_lines++;
+        if (num_lines == 80) {
+            printf ("Press <ENTER> to continue or q + <ENTER> to exit ...\n");
+            char ch = std::cin.get();
+            if (tolower(ch) == 'q')
+                return;
+            num_lines = 0;
+        }
+    }
 }
 
 
@@ -129,41 +172,28 @@ unsigned char NameToValue( string s ) {
 }
 
 
-void DumpMIDIMultiTrackWithPauses (MIDIMultiTrack *mlt) {
-    MIDIMultiTrackIterator i (mlt);
-    MIDITimedMessage *msg;
-    int trk_num;
-    int num_lines = 0;
-
-    printf ("DUMP OF MIDI MULTITRACK\n");
-    printf ("Clocks per beat: %d\n\n", mlt->GetClksPerBeat() );
-
-    i.GoToTime (0);
-
-    do {
-        if (i.GetCurEvent (&trk_num, &msg)) {
-            printf ("Tr %2d - ", trk_num);
-            DumpMIDITimedMessage (msg);
-            num_lines++;
-        }
-        if (num_lines == 80) {
-            printf ("Press <ENTER> to continue or q + <ENTER> to exit ...\n");
-            char ch = std::cin.get();
-            if (tolower(ch) == 'q')
-                return;
-            num_lines = 0;
-        }
-    } while (i.GoToNextEvent());
-}
-
-
 void PrintResolution() {
-// prints info about current position and step size
+// prints info about multitrack and step size
     cout << "MultiTrack resolution is " << multitrack->GetClksPerBeat() << " clocks per beat" << endl;
     cout << "Current step size is " << cur_pos.getstep() << " clocks" << endl;
 }
 
 
+void PrintCurrentStatus() {
+// prints info about current edited track and position
+    sequencer.GoToTime(cur_pos.gettime());
+    cout << "*** Current cursor pos: Track: " << cur_pos.gettrack() << " Time: " << cur_pos.gettime() << " (" <<
+        sequencer.GetCurrentMeasure() + 1 <<":" << sequencer.GetCurrentBeat() + 1;
+    if (sequencer.GetCurrentBeatOffset() > 0)
+        cout << ":" << sequencer.GetCurrentBeatOffset();
+    cout << ")" << endl;
+}
+
+
+
+////////////////////////////////////////////////////////////
+/////                       M A I N                    /////
+////////////////////////////////////////////////////////////
 
 int main(int argc, char **argv) {
     MIDITimedMessage msg;
@@ -176,7 +206,7 @@ int main(int argc, char **argv) {
     multitrack->SetClksPerBeat(120);
     cur_pos.setstep (120);
     cout << "Step sequencer example for jdksmidi library" << endl <<
-            "Copyright 2014 Nicola Cassetta" << endl << endl;
+            "Copyright 2014 - 2016 Nicola Cassetta" << endl << endl;
     PrintResolution();
     cout << endl << "TYPE help TO GET A LIST OF AVAILABLE COMMANDS" << endl << endl;
 
@@ -184,7 +214,7 @@ int main(int argc, char **argv) {
     // MIDIMultiTrack methods
 
     while (command != "quit") {                     // main loop
-        cout << "*** Current cursor pos: Track: " << cur_pos.gettrack() << " Time: " << cur_pos.gettime() << endl;
+        PrintCurrentStatus();
         GetCommand();                               // gets user input and parse it
 
         if(command == "load") {                     // loads a file
@@ -202,34 +232,48 @@ int main(int argc, char **argv) {
                 strcpy (filename, par1.c_str() );
             if (strlen(filename ) == 0)
                 cout << "File name not defined" << endl;
-            else {/*
-                    TODO: save file
-                if (WriteMidiFile(*multitrack, filename))
+            else {
+                if (WriteMIDIFile(filename, 1, multitrack))
                     cout << "File saved" << endl;
                 else
                     cout << "Error writing file" << endl;
-                    */
             }
         }
 
-        else if (command == "outport") {            // changes the midi out port
-            int port = atoi(par1.c_str());
-            sequencer.SetOutputPort(port);
-            cout << "Assigned out port n. " << sequencer.GetOutputPort();
-        }
-
-        else if (command == "play") {              // starts playback
-            sequencer.GoToTime( cur_pos.gettime() );
-            // this has no effect if cur_pos is after the sequencer last event
+        else if (command == "play")                 // starts playback
             sequencer.Play();
-        }
 
         else if (command == "stop")                 // stops playback
             sequencer.Stop();
 
+        else if ( command == "rew") {               // rewind
+            cur_pos.rewind();
+            sequencer.GoToZero();
+        }
+
+        else if (command == "goto") {               // goes to meas and beat
+            int measure = atoi(par1.c_str()) - 1;
+            int beat = (par2.length() == 0 ? 0 : atoi(par2.c_str()) - 1);
+            if (measure < 0 || measure > sequencer.GetNumMeasures() - 1)
+                cout << "Invalid position" << endl;
+            else {
+                sequencer.GoToMeasure(measure, beat);
+                cur_pos.settime(sequencer.GetCurrentMIDIClockTime());
+            }
+        }
+
         else if (command == "dump") {               // prints a dump of the sequencer contents
-            int dump_trk =  (par1.length() == 0 ? -1 : atoi(par1.c_str())); // TODO: reimplement dump of a single track
-            DumpMIDIMultiTrackWithPauses(sequencer.GetMultiTrack());
+            if (par1.size() == 0)
+                DumpMIDIMultiTrackWithPauses(sequencer.GetMultiTrack());
+            else {
+                int trk_num = atoi(par1.c_str());
+                if (sequencer.GetMultiTrack()->IsValidTrackNumber(trk_num)) {
+                    MIDITrack* trk = sequencer.GetMultiTrack()->GetTrack(trk_num);
+                    DumpMIDITrackWithPauses(trk, trk_num);
+                }
+                else
+                    cout << "Invalid track number" << endl;
+            }
         }
 
         else if (command == "notify") {             // sets notifier on/off
@@ -239,30 +283,23 @@ int main(int argc, char **argv) {
                 notifier.SetEnable(false);
         }
 
-        else if (command == "goto") {               // goes to meas and beat
-            int measure = atoi(par1.c_str()) - 1;
-            int beat = (par2.length() == 0 ? 0 : atoi(par2.c_str()) - 1);
-            if (measure < 0 || measure > sequencer.GetNumMeasures() - 1)
-                cout << "Invalid position" << endl;
-            else {
-                sequencer.GoToMeasure( measure, beat );
-                cur_pos.settime( sequencer.GetCurrentMIDIClockTime() );
-            }
-        }
-
-        else if ( command == "<<")                  // rewind
-            cur_pos.rewind();
-
         else if (command == "<") {                  // step backward
             int steps = (par1.length() == 0 ? 1 : atoi(par1.c_str()));
             for (int i = 0; i < steps; i++)
                 cur_pos.stepback();
+            sequencer.GoToTime(cur_pos.gettime());
         }
 
         else if (command == ">") {                  // step forward
             int steps = (par1.length() == 0 ? 1 : atoi( par1.c_str()));
             for (int i = 0; i < steps; i++)
                 cur_pos.stepforward();
+            MIDIClockTime cur_time = cur_pos.gettime();
+            if (cur_time > multitrack->GetEndTime()) {
+                multitrack->SetEndTime(cur_time);
+                sequencer.SetChanged();
+            }
+            sequencer.GoToTime(cur_time);
         }
 
         else if (command == "t<") {                 // previous track
@@ -289,7 +326,7 @@ int main(int argc, char **argv) {
                 trk->InsertNote (msg, len);
             }
             else {
-                msg.SetNoteOn(cur_pos.gettrack() - 1, atoi(par1.c_str()), 100);
+                msg.SetNoteOn(cur_pos.gettrack() - 1, NameToValue(par1), 100);
                 if (!trk->FindEventNumber(msg, &event_num, COMPMODE_SAMEKIND))
                     cout << "Event not found" << endl;
                 else {
@@ -374,7 +411,6 @@ int main(int argc, char **argv) {
         }
 
         else if ( command == "tempo") {                     // inserts a tempo event in track 0
-
             msg.SetTime (cur_pos.gettime());
             if (par1 != "*") {
                 msg.SetTempo(atoi(par1.c_str()));
@@ -392,10 +428,28 @@ int main(int argc, char **argv) {
             sequencer.SetChanged();
         }
 
-        else if ( command == "help")                    // prints help screen
+        else if (command == "time") {
+            msg.SetTime (cur_pos.gettime());
+            if (par1 != "*") {
+                msg.SetTimeSig(atoi(par1.c_str()), atoi(par2.c_str()));
+                multitrack->GetTrack(0)->InsertEvent(msg);
+            }
+            else {
+                msg.SetTimeSig(4, 4);
+                if (!multitrack->GetTrack(0)->FindEventNumber (msg, &event_num, COMPMODE_SAMEKIND))
+                    cout << "Event not found" << endl;
+                else {
+                    msg = multitrack->GetTrack(0)->GetEvent(event_num);
+                    trk->DeleteEvent(msg);
+                }
+            }
+            sequencer.SetChanged();
+        }
+
+        else if (command == "help")                     // prints help screen
             cout << helpstring;
 
-        else if ( command != "quit" )                   // unrecognized
+        else if (command != "quit")                     // unrecognized
             cout << "Unrecognized command" << endl;
     }
 

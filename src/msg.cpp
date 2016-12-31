@@ -510,6 +510,8 @@ bool operator== (const MIDIMessage &m1, const MIDIMessage &m2) {
     if ((m1.sysex == 0 && m2.sysex != 0) ||
         (m1.sysex != 0 && m2.sysex == 0))
         return false;
+    if (m1.sysex == 0 && m2.sysex == 0)
+        return true;
     return (*m1.sysex == *m2.sysex);
 }
 

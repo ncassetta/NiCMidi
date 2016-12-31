@@ -89,7 +89,7 @@ void AdvancedSequencer::SetMIDIThruTranspose (int amt) {
 }
 
 
-bool AdvancedSequencer::Load ( const char *fname )
+bool AdvancedSequencer::Load (const char *fname)
 {
     char realname[1024];
     strcpy ( realname, fname );
@@ -391,6 +391,13 @@ int AdvancedSequencer::GetCurrentBeat() const {
     if (!file_loaded)
         return 0;
     return seq->GetCurrentBeat();
+}
+
+
+int AdvancedSequencer::GetCurrentBeatOffset() const {
+    if (!file_loaded)
+        return 0;
+    return seq->GetCurrentBeatOffset();
 }
 
 

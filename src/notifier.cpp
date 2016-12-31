@@ -12,76 +12,81 @@ const char MIDISequencerGUIEvent::track_items_names[][10] =
         { "All      ", "Name     ", "Patch    ", "Note     ", "Volume   ", "User    " };
 
 
-void MIDISequencerGUINotifierText::Notify(MIDISequencerGUIEvent e) {
+void MIDISequencerGUINotifierText::Notify(const MIDISequencerGUIEvent &ev) {
     if (sequencer == 0) return;         // TODO: raise a warning
     if (!en) return;                    // not enabled
 
-    ost << "GUI EVENT: " << MIDISequencerGUIEvent::group_names[e.GetGroup()] << " ";
+    ost << "GUI EVENT: " << MIDISequencerGUIEvent::group_names[ev.GetGroup()] << " ";
 
-    switch(e.GetGroup()) {
+    char s[100];
+    int track_num = ev.GetSubGroup();   // used only for track events
+    switch(ev.GetGroup()) {
         case MIDISequencerGUIEvent::GROUP_ALL:
             ost << "GENERAL RESET";
             break;
         case MIDISequencerGUIEvent::GROUP_TRANSPORT:
-            switch (e.GetItem()) {
+            switch (ev.GetItem()) {
+                case MIDISequencerGUIEvent::GROUP_TRANSPORT_START:
+                    ost << "SEQUENCER START";
+                    break;
+                case MIDISequencerGUIEvent::GROUP_TRANSPORT_STOP:
+                    ost << "SEQUENCER STOP";
+                    break;
+                case MIDISequencerGUIEvent::GROUP_TRANSPORT_MEASURE:
+                    ost << "MEAS " << sequencer->GetCurrentMeasure() + 1;
+                    break;
                 case MIDISequencerGUIEvent::GROUP_TRANSPORT_BEAT:
                     ost << "MEAS " << sequencer->GetCurrentMeasure() + 1 << " " <<
                            "BEAT " << sequencer->GetCurrentBeat() + 1;
-                    break;
-                case MIDISequencerGUIEvent::GROUP_TRANSPORT_ENDOFSONG:
-                    ost << "ENDOFSONG";
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRANSPORT_USER:
                     ost << "USER DEFINED";
             }
             break;
         case MIDISequencerGUIEvent::GROUP_CONDUCTOR:
-            switch (e.GetItem()) {
+            switch (ev.GetItem()) {
                 case MIDISequencerGUIEvent::GROUP_CONDUCTOR_TEMPO:
-                    ost << "TEMPO: " << sequencer->GetState()->tempobpm ;
+                    ost << "TEMPO:    " << sequencer->GetState()->tempobpm ;
                     break;
                 case MIDISequencerGUIEvent::GROUP_CONDUCTOR_TIMESIG:
-                    ost << "TIMESIG: " << sequencer->GetState()->timesig_numerator << "/" <<
-                           sequencer->GetState()->timesig_denominator;
+                    ost << "TIMESIG:  " << (int)sequencer->GetState()->timesig_numerator << "/" <<
+                           (int)sequencer->GetState()->timesig_denominator;
                     break;
                 case MIDISequencerGUIEvent::GROUP_CONDUCTOR_KEYSIG:
-                    ost << "KEYSIG: " << KeyName(sequencer->GetState()->keysig_sharpflat,
+                    ost << "KEYSIG:   " << KeyName(sequencer->GetState()->keysig_sharpflat,
                                                  sequencer->GetState()->keysig_mode);
                     break;
                 case MIDISequencerGUIEvent::GROUP_CONDUCTOR_MARKER:
-                    ost << "MARKER: " << sequencer->GetState()->marker_text;
+                    ost << "MARKER:   " << sequencer->GetState()->marker_text;
             }
             break;
-        case MIDISequencerGUIEvent::GROUP_TRACK: {
-            char s[10];
-            int track_num = e.GetSubGroup();
+        case MIDISequencerGUIEvent::GROUP_TRACK:
             sprintf (s, "TRACK %3d ", track_num);
-            switch (e.GetItem()) {
+            switch (ev.GetItem()) {
                 case MIDISequencerGUIEvent::GROUP_TRACK_NAME:
                     ost << s << "NAME: " << sequencer->GetTrackState(track_num)->track_name;
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRACK_PROGRAM:
-                    ost << s << "PROGRAM: " << sequencer->GetTrackState(track_num)->program;
+                    ost << s << "PROGRAM: " << (int)sequencer->GetTrackState(track_num)->program;
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRACK_NOTE:
                     ost << s << "NOTE: ";  // TODO: manage this
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRACK_VOLUME:
-                    ost << s << "VOLUME: " << sequencer->GetTrackState(track_num)->control_values[C_MAIN_VOLUME];
+                    ost << s << "VOLUME: " << (int)(sequencer->GetTrackState(track_num)->control_values[C_MAIN_VOLUME]);
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRACK_PAN:
-                    ost << s << "PAN: " << sequencer->GetTrackState(track_num)->control_values[C_PAN];
+                    ost << s << "PAN: " << (int)sequencer->GetTrackState(track_num)->control_values[C_PAN];
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRACK_CHR:
-                    ost << s << "CHORUS: " << sequencer->GetTrackState(track_num)->control_values[C_CHORUS_DEPTH];
+                    ost << s << "CHORUS: " << (int)sequencer->GetTrackState(track_num)->control_values[C_CHORUS_DEPTH];
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRACK_REV:
-                    ost << s << "REVERB: " << sequencer->GetTrackState(track_num)->control_values[C_EFFECT_DEPTH];
-                break;
+                    ost << s << "REVERB: " << (int)sequencer->GetTrackState(track_num)->control_values[C_EFFECT_DEPTH];
+                    break;
             }
-        }
-        ost << std::endl;
     }
+    ost << std::endl;
 }
 
 
@@ -224,9 +229,9 @@ MIDISequencerGUINotifierWin32::MIDISequencerGUINotifierWin32 ( HWND w ) :
     dest_window ( w ), window_msg ( GetSafeSystemMsgId() ), wparam_value ( 0 ) {}
 
 
-void MIDISequencerGUINotifierWin32::Notify (MIDISequencerGUIEvent e) {
+void MIDISequencerGUINotifierWin32::Notify (const MIDISequencerGUIEvent &ev) {
     if ( en )
-        PostMessage ( dest_window, window_msg, wparam_value, ( unsigned long ) e );
+        PostMessage (dest_window, window_msg, wparam_value, (unsigned long) ev);
 }
 
 

@@ -122,6 +122,25 @@ MIDIClockTime MIDIMultiTrack::GetEndTime() const {
 }
 
 
+bool MIDIMultiTrack::SetEndTime(MIDIClockTime end_time) {
+    // try to set new time on a copy of the tracks (calls copy ctor)
+    for (unsigned int i = 0; i < tracks.size(); i++ )
+        if (!(*tracks[i]).SetEndTime(end_time))
+            // fails if it's not possible
+            return false;
+    // effectively change end time to the tracks
+    for (unsigned int i = 0; i < tracks.size(); i++ )
+        tracks[i]->SetEndTime(end_time);
+    return true;
+}
+
+
+void MIDIMultiTrack::ShrinkEndTime() {
+    for (unsigned int i = 0; i < tracks.size(); i++ )
+        tracks[i]->ShrinkEndTime();
+}
+
+
 void MIDIMultiTrack::Clear() {
     for(unsigned int i = 0; i < tracks.size(); i++)
         delete tracks[i];

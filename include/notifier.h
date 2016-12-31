@@ -29,12 +29,12 @@ class MIDISequencerGUIEvent {
             /// This constructor creates the object directly from its parameters.
                     MIDISequencerGUIEvent(unsigned long bits_) : bits(bits_) {}
             /// Copy constructor.
-                    MIDISequencerGUIEvent( const MIDISequencerGUIEvent &e ) : bits(e.bits) {}
+                    MIDISequencerGUIEvent(const MIDISequencerGUIEvent &ev) : bits(ev.bits) {}
             /// This constructor creates the object starting from its group, subgroup, item
-                    MIDISequencerGUIEvent( int group, int subgroup, int item=0 ) {
+                    MIDISequencerGUIEvent( int group, int subgroup=0, int item=0 ) {
                         bits = ((group&0xff)<<24) | ((subgroup&0xfff)<<12) | (item&0xfff); }
             /// Converts the object into an unsigned long
-                    operator unsigned long () const         { return bits; }
+                    operator unsigned long () const             { return bits; }
             /// Sets the event group, subgroup and item.
         void        SetEvent( int group, int subgroup = 0, int item = 0 ) {
                         bits = ((group&0xff)<<24) | ((subgroup&0xfff)<<12) | (item&0xfff); }
@@ -68,12 +68,12 @@ class MIDISequencerGUIEvent {
             /// Items in transport group
         enum {
             GROUP_TRANSPORT_ALL = 0,    ///< Generic event (not currently used)
-            GROUP_TRANSPORT_MODE,       ///< Sequencer start and stop
+            GROUP_TRANSPORT_START,      ///< Sequencer start
+            GROUP_TRANSPORT_STOP,       ///< Sequencer stop
             GROUP_TRANSPORT_MEASURE,    ///< Start of a measure
             GROUP_TRANSPORT_BEAT,       ///< Beat marker
-            GROUP_TRANSPORT_ENDOFSONG,  ///< End of playback
             GROUP_TRANSPORT_USER        ///< User defined item
-        };
+        };      // TODO: add a GROUP_TRANSPORT_ENDOFSONG for midi type 3 files?
 
             /// Items in track group (the track is in the subgroup)
         enum {
@@ -94,7 +94,7 @@ class MIDISequencerGUIEvent {
         static const char transport_items_names[][10];
         static const char track_items_names[][10];
 
-    private:
+    protected:
         unsigned long bits;
 };
 
@@ -110,20 +110,21 @@ class MIDISequencerGUIEvent {
 ///
 class MIDISequencerGUINotifier {
     public:
-            /// The constructor. To actually send messages, the notifier must know the sequencer which
-            /// sends them; you can set it in the constructor or later.
+        /// The constructor. To actually send messages, the notifier must know the sequencer which
+        /// sends them; you can set it in the constructor or later.
                         MIDISequencerGUINotifier(const MIDISequencer* seq = 0) :
                             sequencer(seq), en(true)                {}
-            /// The destructor.
+        /// The destructor.
         virtual         ~MIDISequencerGUINotifier()                 {}
-            /// This sets the sequencer which generates messages sent to the GUI.
-            /// @warning Don't use this if you want to join the notifier with a sequencer
+        /// This sets the sequencer which generates messages sent to the GUI.
+        /// \warning If you use the notifier in conjunction with an AdvancedSequencer class,
+        /// this is automatically set by the class
         virtual void    SetSequencer(const MIDISequencer* seq)      { sequencer = seq; }
-            /// Notifies the MIDISequencerGUIEvent _e_, originated from the MIDISequencer _seq_.
-        virtual void    Notify(MIDISequencerGUIEvent e) = 0;
-            /// Returns the enable/disable status.
+        /// Notifies the MIDISequencerGUIEvent _e_, originated from the MIDISequencer _seq_.
+        virtual void    Notify(const MIDISequencerGUIEvent &ev) = 0;
+        /// Returns the enable/disable status.
         virtual bool    GetEnable() const                           { return en;};
-             /// Sets message sending on/off.
+        /// Sets message sending on/off.
         virtual void    SetEnable(bool f)                           { en = f; }
     protected:
         const MIDISequencer*  sequencer;
@@ -140,7 +141,7 @@ class MIDISequencerGUINotifierText : public MIDISequencerGUINotifier {
                         MIDISequencerGUINotifierText(const MIDISequencer* seq = 0, std::ostream& o = std::cout) :
                                 MIDISequencerGUINotifier(seq), ost(o)   {}
         virtual         ~MIDISequencerGUINotifierText()                 {}
-        virtual void    Notify(MIDISequencerGUIEvent e);
+        virtual void    Notify(const MIDISequencerGUIEvent &ev);
 
     private:
         std::ostream& ost;
@@ -152,30 +153,36 @@ class MIDISequencerGUINotifierText : public MIDISequencerGUINotifier {
 #include "mmsystem.h"
 
 
+///
+/// This class inherits from the MIDISequencerGUINotifier and sends messages to a Win32 window
 class MIDISequencerGUINotifierWin32 : public MIDISequencerGUINotifier {
-public:
-
+    public:
+            /// In this form of the constructor you must give the Windows parameters to the notifier.
+            /// \param w the id of the window to whom sending messages
+            /// \param wmmsg a Windows message id used by the notifier to communicate with the window
+            /// \param wparam_value an optional parameter sent by the message.
                             MIDISequencerGUINotifierWin32 (HWND w, DWORD wmmsg, WPARAM wparam_value_ = 0);
 
-        // Auto sets the Windows message id and wparam_value
+            /// This form auto sets the Windows message id and wparam_value, so you don't have to worry
+            /// about them.
                             MIDISequencerGUINotifierWin32 (HWND w);
+            /// The destructor.
+            virtual         ~MIDISequencerGUINotifierWin32() {}
 
-    virtual                 ~MIDISequencerGUINotifierWin32() {}
+            /// Returns the Window message id.
+            DWORD           GetMsgId() const            { return window_msg; }
 
-        // Gets the Window message id (so you can retrieve it if you used the 2nd constructor)
-    DWORD                    GetMsgId() const            { return window_msg; }
+            /// Sends the MIDISequencerGUIEvent _e_ to the window.
+            virtual void    Notify (const MIDISequencerGUIEvent &ev);
 
-        // Sends the MIDISequencerGUIEvent _e_ to the window
-    virtual void             Notify (MIDISequencerGUIEvent e);
+    protected:
 
- private:
+            /// Returns a safe Windows message id, so we can create the notifier without worrying about this
+            static UINT     GetSafeSystemMsgId()        { static UINT base = WM_APP; return base++; }
 
-        // Returns a safe Windows message id, so we can create the notifier without worrying about this
-    static UINT              GetSafeSystemMsgId()        { static UINT base = WM_APP; return base++; }
-
-    HWND                     dest_window;
-    DWORD                    window_msg;
-    WPARAM                   wparam_value;
+            HWND            dest_window;
+            DWORD           window_msg;
+            WPARAM          wparam_value;
 };
 
 #endif // _WIN32
