@@ -191,7 +191,9 @@ void AdvancedSequencer::GoToMeasure (int measure, int beat) {
         warp_to_item = warp_positions.size() - 1;
 
     if (mgr->IsSeqPlay()) {
+        std::cout << "Calling MIDIManager::SeqStop() from AdvancedSequencer::GoToMeasure()...\n";
         mgr->SeqStop();
+        std::cout << "... done (SeqStop)\n";
         seq->SetState (&warp_positions[warp_to_item]);
         seq->GoToMeasure (measure, beat);
         mgr->SeqPlay();
@@ -227,12 +229,16 @@ void AdvancedSequencer::Stop() {
     if (!file_loaded || !mgr->IsSeqPlay())
         return;
 
+    std::cout << "\t\tEntered in AdvancedSequencer::Stop() ...\n";
     mgr->SeqStop();
+    std::cout << "\t\t...mgr->SeqStop() called ...\n";
     mgr->CloseOutPorts();
+    std::cout <<"\t\t...mgr->CloseOutPorts() called ...\n";
     //mgr->AllNotesOff();       // already done by SeqStop()
     //mgr->Reset();
     // stops on a beat (and clear midi matrix)
     GoToMeasure(seq->GetState()->cur_measure, seq->GetState()->cur_beat);
+    std::cout << "\t\t ... GoToMeasure() called. Exiting from AdvancedSequencer::Stop()\n";
 }
 
 
@@ -403,28 +409,28 @@ int AdvancedSequencer::GetCurrentBeatOffset() const {
 
 int AdvancedSequencer::GetTimeSigNumerator() const {
     if (!file_loaded)
-        return 4;
+        return MIDI_DEFAULT_TIMESIG_NUMERATOR;
     return seq->GetState ()->timesig_numerator;
 }
 
 
 int AdvancedSequencer::GetTimeSigDenominator() const {
     if (!file_loaded)
-        return 4;
+        return MIDI_DEFAULT_TIMESIG_DENOMINATOR;
     return seq->GetState ()->timesig_denominator;
 }
 
 
 int AdvancedSequencer::GetKeySigSharpFlat() const {
     if (!file_loaded)
-        return 0;
+        return MIDI_DEFAULT_KEYSIG_KEY;
     return seq->GetState ()->keysig_sharpflat;
 }
 
 
 int AdvancedSequencer::GetKeySigMode() const {
     if (!file_loaded)
-        return 0;
+        return MIDI_DEFAULT_KEYSIG_MODE;
     return seq->GetState ()->keysig_mode;
 }
 
@@ -897,6 +903,8 @@ void AdvancedSequencer::CatchEventsBefore(int trk) {
 
 
 void AdvancedSequencer::AutoStopProc(void* p) {
+    std::cout << "\t\tEntered in AdvancedSquencer::AutoStopProc ...\n";
     AdvancedSequencer* seq = static_cast<AdvancedSequencer *>(p);
     seq->Stop();
+    std::cout << "\t\tExiting from AdvancedSequencer::AutoStopProc()\n";
 }

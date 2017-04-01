@@ -208,11 +208,11 @@ void MIDISequencerState::Reset() {
     cur_beat = 0;
     cur_measure = 0;
     beat_length = next_beat_time = multitrack->GetClksPerBeat();
-    tempobpm = 120.0;
-    timesig_numerator = 4;
-    timesig_denominator = 4;
-    keysig_sharpflat = 0;
-    keysig_mode = 0;
+    tempobpm = MIDI_DEFAULT_TEMPO;
+    timesig_numerator = MIDI_DEFAULT_TIMESIG_NUMERATOR;
+    timesig_denominator = MIDI_DEFAULT_TIMESIG_DENOMINATOR;
+    keysig_sharpflat = MIDI_DEFAULT_KEYSIG_KEY;
+    keysig_mode = MIDI_DEFAULT_KEYSIG_MODE;
     marker_text = "";
     if (multitrack->GetNumTracks() != track_states.size()) {
         for (unsigned int i = 0; i < track_states.size(); i++)
@@ -314,7 +314,7 @@ bool MIDISequencerState::Process( MIDITimedMessage *msg ) {
         if(msg->IsTempo()) {                    // is it a tempo event?
             tempobpm = msg->GetTempo();
             //if(tempobpm < 1 )
-            //tempobpm=120.0;
+            //tempobpm=MIDI_DEFAULT_TEMPO;
             Notify(MIDISequencerGUIEvent::GROUP_CONDUCTOR,
                    MIDISequencerGUIEvent::GROUP_CONDUCTOR_TEMPO);
         }
@@ -781,42 +781,47 @@ bool MIDISequencer::GetNextEventTimeMs(double *time_ms) {
 
 
 double MIDISequencer::MIDItoMs(MIDIClockTime t) {
-    //MIDITrackIterator tr_iter(state.multitrack->GetTrack(0));
     MIDITrack* track = state.multitrack->GetTrack(0);
     int ev_num = 0;
     MIDIClockTime base_t = 0, delta_t = 0, now_t = 0;
-    double ms_time = 0.0, old_tempo = 120.0, ms_per_clock;
+    double ms_time = 0.0;
     MIDITimedMessage* msg;
-
+    // see below
+    double ms_per_clock = 6000000.0 / (MIDI_DEFAULT_TEMPO * (double)tempo_scale *
+                                       state.multitrack->GetClksPerBeat());
+;
     while (now_t < t) {
-        if (!track->IsValidEventNum(ev_num) || track->GetEventAddress(ev_num)->GetTime() >= t)
+        if (!track->IsValidEventNum(ev_num) || track->GetEventAddress(ev_num)->GetTime() >= t) {
             // next message doesn't exists or is at t or after t
             now_t = t;
+            // calculate delta_time in MIDI clocks
+            delta_t = now_t - base_t;
+            // and add it in msecs to ms_time
+            ms_time += (delta_t * ms_per_clock);
+        }
         else {
             msg = track->GetEventAddress(ev_num);
             now_t = msg->GetTime();
-        }
-        // if we are at our time or have a tempo change must calculate the time
-        // in msecs between the last tempo change and now
-        if (msg->IsTempo() || now_t == t) {
-            // delta time in MIDI clocks
-            delta_t = now_t - base_t;
+            // if we have a tempo change must calculate the time
+            // in msecs between the last tempo change and now
+            if (msg->IsTempo()) {
+                // calculate delta time in MIDI clocks
+                delta_t = now_t - base_t;
+                // and add it in msecs to ms_time
+                ms_time += (delta_t * ms_per_clock);
 
-            // calculate delta time in milliseconds: this comes from
-            //  -true_bpm = old_tempo * tempo_scale / 100
-            //  -clocks_per_sec = true_bpm * clks_per_beat / 60
-            //  -clocks_per_ms = clocks_per_sec / 1000
-            //  -ms_per_clock = 1 / clocks_per_ms
-            ms_per_clock = 6000000.0 / (old_tempo *
+                // calculate new milliseconds per clock: this comes from
+                //  -true_bpm = old_tempo * tempo_scale / 100
+                //  -clocks_per_sec = true_bpm * clks_per_beat / 60
+                //  -clocks_per_ms = clocks_per_sec / 1000
+                //  -ms_per_clock = 1 / clocks_per_ms
+                ms_per_clock = 6000000.0 / (msg->GetTempo() *
                                 (double)tempo_scale * state.multitrack->GetClksPerBeat());
 
-            // and add it to ms_time
-            ms_time += (delta_t * ms_per_clock);
+                // update variables for next tempo change (or now_t == t)
+                base_t = now_t;
 
-            // update variables for next tempo change (or now_t == t)
-            base_t = msg->GetTime();
-            if (msg->IsTempo())
-                old_tempo = msg->GetTempo();
+            }
         }
         ev_num++;
     }

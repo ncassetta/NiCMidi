@@ -241,6 +241,13 @@ inline bool	IsNoteBlack(unsigned char note) {
 }
 //<}
 
+/// Default constants for timesig, tempo, keysig.
+const int MIDI_DEFAULT_TIMESIG_NUMERATOR = 4;
+const int MIDI_DEFAULT_TIMESIG_DENOMINATOR = 4;
+const double MIDI_DEFAULT_TEMPO = 120.0;
+const int MIDI_DEFAULT_KEYSIG_KEY = 0;
+const int MIDI_DEFAULT_KEYSIG_MODE = 0;
+
 
 /// MIDI note number to standard octave conversion
 inline int GetNoteOctave(unsigned char note) {

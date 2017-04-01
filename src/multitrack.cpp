@@ -259,16 +259,17 @@ bool MIDIMultiTrack::DeleteNote(int trk, const MIDITimedMessage& msg) {
 void MIDIMultiTrack::EditCopy(MIDIClockTime start, MIDIClockTime end,
                                 int tr_start, int tr_end, MIDIEditMultiTrack* edit) {
     if (tr_start < 0 || (unsigned int)tr_end >= GetNumTracks()) return;
-
     edit->Clear();
-    for (int i = 0; i <= tr_end; i++)
+    // does nothing if tr_end < tr_start
+    for (int i = 0; i <= tr_end - tr_start; i++) {
         edit->InsertTrack();
+        edit->tracks[i]->SetEndTime(end - start);
+    }
     edit->SetStartTrack(tr_start);
     edit->SetEndTrack(tr_end);
 
-    edit->tracks[0]->SetEndTime(end - start);
-    for (int i = tr_start; i <= tr_end; i++)
-        tracks[i]->MakeInterval(start, end, edit->tracks[i]);
+    for (int i = 0; i <= tr_end - tr_start; i++)
+        tracks[tr_start + i]->MakeInterval(start, end, edit->tracks[i]);
 
     DumpMIDIMultiTrack(this);
     DumpMIDIMultiTrack(edit);
@@ -278,7 +279,8 @@ void MIDIMultiTrack::EditCopy(MIDIClockTime start, MIDIClockTime end,
 void MIDIMultiTrack::EditCut(MIDIClockTime start, MIDIClockTime end, MIDIEditMultiTrack* edit) {
     DumpMIDIMultiTrack(this);
 
-    EditCopy(start, end, 0, GetNumTracks()-1, edit);
+    if (edit)
+        EditCopy(start, end, 0, GetNumTracks()-1, edit);
 
     for (unsigned int i = 0; i < tracks.size(); i++)
         GetTrack(i)->DeleteInterval(start, end);

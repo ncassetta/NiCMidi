@@ -36,6 +36,7 @@
 
 #include <vector>
 #include <thread>
+#include <atomic>
 
 
 
@@ -170,7 +171,7 @@ protected:
     void                        SequencerPlayProc(tMsecs sys_time_);
     /// This is called by SequencerPlayProc() when the sequencer reaches the end of MIDI events. The default
     /// procedure only calls SeqStop().
-    static void                 AutoStopProc(void* p);
+    //static void                 AutoStopProc(void* p);
 
     std::vector<MIDIOutDriver*>     MIDI_outs;      ///< A vector of MIDIOutDriver classes (one for each hardware port)
     static std::vector<std::string> MIDI_out_names; ///< The system names of hardware out ports
@@ -185,13 +186,13 @@ protected:
     tMsecs                      sys_time_offset;    ///< The time between now and timer start
     tMsecs                      seq_time_offset;    ///< The time between the sequencer start and the timer start
 
-    volatile bool               play_mode;          ///< True if the sequencer is playing
+    std::atomic<bool>           play_mode;          ///< True if the sequencer is playing
 
     bool                        thru_enable;        ///< Enables the MIDI thru
     int                         thru_input;         ///< The id of the MIDI thru in port
     int                         thru_output;        ///< The id of the MIDI thru out port
 
-    volatile bool               repeat_play_mode;   ///< Enables the repeat play mode
+    std::atomic<bool>           repeat_play_mode;   ///< Enables the repeat play mode
     long                        repeat_start_measure;
                                                     ///< The loop start measure
     long                        repeat_end_measure; ///< The loop end measure
@@ -201,6 +202,8 @@ protected:
     void                        (*auto_stop_proc)(void *);
                                                     ///< The auto stop procedure
     void*                       auto_stop_param;    ///< The parameter given to the auto stop procedure
+
+    std::atomic<int>            times;
 };
 
 

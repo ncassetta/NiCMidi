@@ -31,8 +31,9 @@ class MIDISequencerGUIEvent {
             /// Copy constructor.
                     MIDISequencerGUIEvent(const MIDISequencerGUIEvent &ev) : bits(ev.bits) {}
             /// This constructor creates the object starting from its group, subgroup, item
-                    MIDISequencerGUIEvent( int group, int subgroup=0, int item=0 ) {
+                    MIDISequencerGUIEvent( int group, int subgroup, int item ) {
                         bits = ((group&0xff)<<24) | ((subgroup&0xfff)<<12) | (item&0xfff); }
+                        // leave unchanged! overloading trouble, too many ctors
             /// Converts the object into an unsigned long
                     operator unsigned long () const             { return bits; }
             /// Sets the event group, subgroup and item.

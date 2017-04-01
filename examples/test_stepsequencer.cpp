@@ -53,7 +53,9 @@ AdvancedSequencer sequencer(&notifier);             // an AdvancedSequencer
 MIDIMultiTrack* multitrack = sequencer.GetMultiTrack();
                                                     // our multitrack which will be edited
 position cur_pos(multitrack);                       // the cursor position
-char filename[200];
+edit_block cur_block;                               // used for cut, copy, paste
+MIDIEditMultiTrack edit_multitrack;                 // used for cut, copy, paste
+char filename[200];                                 // our filename
 
 
 void GetCommand() {
@@ -181,7 +183,6 @@ void PrintResolution() {
 
 void PrintCurrentStatus() {
 // prints info about current edited track and position
-    sequencer.GoToTime(cur_pos.gettime());
     cout << "*** Current cursor pos: Track: " << cur_pos.gettrack() << " Time: " << cur_pos.gettime() << " (" <<
         sequencer.GetCurrentMeasure() + 1 <<":" << sequencer.GetCurrentBeat() + 1;
     if (sequencer.GetCurrentBeatOffset() > 0)
@@ -206,7 +207,7 @@ int main(int argc, char **argv) {
     multitrack->SetClksPerBeat(120);
     cur_pos.setstep (120);
     cout << "Step sequencer example for jdksmidi library" << endl <<
-            "Copyright 2014 - 2016 Nicola Cassetta" << endl << endl;
+            "Copyright 2014 - 2017 Nicola Cassetta" << endl << endl;
     PrintResolution();
     cout << endl << "TYPE help TO GET A LIST OF AVAILABLE COMMANDS" << endl << endl;
 
@@ -217,6 +218,8 @@ int main(int argc, char **argv) {
         PrintCurrentStatus();
         GetCommand();                               // gets user input and parse it
 
+        if(command == "")                           // empty command
+            continue;
         if(command == "load") {                     // loads a file
             if (sequencer.Load(par1.c_str())) {
                 cout << "Loaded file " << par1 << endl;
@@ -240,8 +243,12 @@ int main(int argc, char **argv) {
             }
         }
 
-        else if (command == "play")                 // starts playback
-            sequencer.Play();
+        else if (command == "play") {               // starts playback
+            if (sequencer.IsLoaded())
+                sequencer.Play();
+            else
+                cout << "No content in the multitrack!" << endl;
+        }
 
         else if (command == "stop")                 // stops playback
             sequencer.Stop();
@@ -320,8 +327,8 @@ int main(int argc, char **argv) {
         else if (command == "note") {               // inserts a note event
             msg.SetTime(cur_pos.gettime());
             if (par2 != "*") {
-                int vel = (par2.length() == 0 ? last_note_vel : atoi(par2.c_str()));
-                MIDIClockTime len = (par3.length() == 0 ? last_note_length : atoi(par3.c_str()));
+                MIDIClockTime len = (par2.length() == 0 ? last_note_length : atoi(par2.c_str()));
+                int vel = (par3.length() == 0 ? last_note_vel : atoi(par3.c_str()));
                 msg.SetNoteOn(cur_pos.gettrack() - 1, NameToValue(par1), vel);
                 trk->InsertNote (msg, len);
             }
@@ -446,8 +453,71 @@ int main(int argc, char **argv) {
             sequencer.SetChanged();
         }
 
-        else if (command == "help")                     // prints help screen
-            cout << helpstring;
+        else if (command == "bb") {
+            cur_block.time_begin = cur_block.time_end = cur_pos.gettime();
+            if (par1.size() == 0) {
+                cur_block.track_begin = 0;
+                cur_block.track_end = multitrack->GetNumTracks() - 1;
+            }
+            else {
+                cur_block.track_begin = cur_block.track_end = atoi(par1.c_str());
+            }
+        }
+
+        else if (command == "be") {
+            if (cur_pos.gettime() < cur_block.time_begin)
+                cout << "Selection error" << endl;
+            else {
+                cur_block.time_end = cur_pos.gettime();
+                cout << "Block selected: from " << cur_block.time_begin << " to " <<
+                        cur_block.time_end << "; tracks " << cur_block.track_begin <<
+                        "-" << cur_block.track_end << endl;
+            }
+        }
+
+        else if (command == "bcopy") {
+            multitrack->EditCopy(cur_block.time_begin, cur_block.time_end,
+                                 cur_block.track_begin, cur_block.track_end, &edit_multitrack);
+        }
+
+        else if (command == "bclear") {
+            multitrack->EditClear(cur_block.time_begin, cur_block.time_end,
+                                  cur_block.track_begin, cur_block.track_end);
+            sequencer.SetChanged();
+        }
+
+        else if (command == "bcut") {
+            if (cur_block.track_begin != 0 && cur_block.track_end != multitrack->GetNumTracks() + 1)
+                cout << "You can't cut a number of tracks lesser than actual number" << endl;
+            else {
+                multitrack->EditCut(cur_block.time_begin, cur_block.time_end, 0);
+                sequencer.SetChanged();
+            }
+        }
+
+        else if (command == "bpaste") {
+            unsigned int tr_start = atoi(par1.c_str());
+            if (par2.size() == 0) {
+                multitrack->EditInsert(cur_pos.gettime(), tr_start, 1, true, &edit_multitrack);
+                sequencer.SetChanged();
+            }
+            else if (par2 == "o") {
+                multitrack->EditReplace(cur_pos.gettime(), tr_start, 1, true, &edit_multitrack);
+                sequencer.SetChanged();
+            }
+            else
+                cout << "You must indicate initial track" << endl;
+        }
+
+        else if (command == "help") {                   // prints help screen
+            cout << helpstring1;
+            cout << "Press ENTER to continue";
+            getchar();
+            cout << helpstring2;
+            cout << "Press ENTER to continue";
+            getchar();
+            cout << helpstring3;
+        }
 
         else if (command != "quit")                     // unrecognized
             cout << "Unrecognized command" << endl;

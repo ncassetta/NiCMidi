@@ -46,27 +46,32 @@
 #include "../include/dump_tracks.h"
 
 
-static const char helpstring[] =
-"\nAvailable commands:\n\
-   load filename       : Loads the file into the sequencer\n\
+static const char helpstring1[] =
+"\nGeneral commands:\n\
+   load filename       : Loads a file into the sequencer\n\
    save [filename]     : Saves the file\n\
    play                : Starts playback from current time\n\
    stop                : Stops playback\n\
-   rew                 : Rewind\n\
-   goto meas [beat]    : Move current time to given meas and beat\n\
+   rew                 : Rewinds to the beginning of the file\n\
+   goto meas [beat]    : Moves current time to given meas and beat\n\
                          (numbered from 1)\n\
    dump [trk]          : Prints a dump of all midi events in the file\n\
                          (or in the track trk)\n\
-   notify on/off       : Sets events notifying on or off\n\
+   notify on/off       : Sets events notifying during playback on or off\n\
    < [n]               : Moves current time n steps backward\n\
                          (if omitted, one step)\n\
    > [n]               : Moves current time n steps forward (as above)\n\
    t<                  : Moves insert position to previous track\n\
    t>                  : Moves insert position to next track\n\
    step sss            : Sets the step length in MIDI clocks\n\
-   note nn [vel len]   : Inserts a note event: nn note name, vel velocity, len length\n\
-                         (remembers last note vel and len, so you can omit\n\
-                          them, or only len, if they are the same)\n\
+   help                : Prints this help screen\n\
+   quit                : Exits\n";
+
+static const char helpstring2[] =
+"\nEvent commands:\n\
+   note nn [len vel]   : Inserts a note event: nn note name, len length, vel velocity\n\
+                         (remembers last note len and vel, so you can omit\n\
+                          them, or only vel, if they are the same)\n\
    volume val          : Inserts a volume event at current position\n\
    pan val             : Inserts a pan event at current position\n\
    control nn val      : Inserts a control nn event at current position\n\
@@ -74,11 +79,24 @@ static const char helpstring[] =
    tempo val           : Inserts a tempo event at current position\n\
    time num den        : Inserts a timesig event at current position\n\
    note nn *, volume *, etc... (followed by an asterisk)\n\
-                       : Deletes the event (event must be at cur time and track)\n\
-   help                : Prints this help screen\n\
-   quit                : Exits\n\n\
-   note names must be introduced as C5 (middle C), a#3, Bb6, etc.\n\
-   (the note name can be lower or upper case)\n\n\
+                       : Deletes the event (event must be at current time and track)\n\
+   Note names must be introduced as C5 (middle C), a#3, Bb6, etc.\n\
+   (the note name can be lower or upper case)\n";
+
+
+static const char helpstring3[] =
+"\nEdit commands:\n\
+   bb [tr1]            : Marks block begin. You can specify a track number (only this\n\
+                         track wil be copied); if you omit it all tracks are copied\n\
+   be                  : Marks block end\n\
+   bcopy               : Copies the currently marked block into memory\n\
+   bclear              : Clears all events in the currently marked block\n\
+   bcut                : Deletes the currently marked block, shifting all subsequent\n\
+                         events. This has no effect if a single track is marked\n\
+   bpaste num [o]      : Pastes the currently marked block at current position, starting\n\
+                         from track num\n\
+                         (if you specify \"o\" overwrites events, otherwise inserts them)\n\
+   \n\
    NOTE: when playing, the sequencer notifier will print beat messages,\n\
    messing up the program input prompt. You can turn it off with the ""notify""\n\
    command. However you can still type your commands during playback.\n\n";
@@ -113,5 +131,13 @@ private:
 };
 
 
+struct edit_block {
+    edit_block() : time_begin(0), time_end(0), track_begin(0), track_end(0) {}
+    bool is_empty() { return time_begin == time_end; }
+    MIDIClockTime time_begin;
+    MIDIClockTime time_end;
+    unsigned int track_begin;
+    unsigned int track_end;
+};
 
 #endif // TEST_STEPSEQUENCER_H_INCLUDED

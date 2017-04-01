@@ -37,7 +37,7 @@ MIDIManager::MIDIManager(MIDISequencer* seq, MIDISequencerGUINotifier *n) :
     sequencer(seq), notifier(n), sys_time_offset(0), seq_time_offset(0), play_mode(false),
     thru_enable(false), thru_input(-1), thru_output(-1),
     repeat_play_mode(false), repeat_start_measure(0), repeat_end_measure(0),
-    auto_seq_open(true), auto_stop_proc(AutoStopProc), auto_stop_param(this)
+    auto_seq_open(true), auto_stop_proc(0), auto_stop_param(0)
 
 {
 #ifdef WIN32    //TODO: this is temporary, needed by WINDOWS10
@@ -151,6 +151,7 @@ void MIDIManager::SeqPlay() {
 
 void MIDIManager::SeqStop() {
     if (sequencer && play_mode == true) {
+        std::cout << "Entered MIDIManager::SeqStop()\n";
         timer->Stop();
         play_mode = false;
         sequencer->SetTimeShiftMode(false);
@@ -404,6 +405,8 @@ void MIDIManager::SequencerPlayProc( tMsecs sys_time_ )
     int ev_track;
     MIDITimedMessage ev;
 
+    times++;
+
     // if we are in repeat mode, repeat if we hit end of the repeat region
     if(repeat_play_mode && sequencer->GetCurrentMeasure() >= repeat_end_measure) {
         // yes we hit the end of our repeat block
@@ -444,11 +447,18 @@ void MIDIManager::SequencerPlayProc( tMsecs sys_time_ )
     if( !(repeat_play_mode && sequencer->GetCurrentMeasure() >= repeat_end_measure) &&
             !sequencer->GetNextEventTimeMs(&next_event_time))
         // no events left
-        std::thread(auto_stop_proc, auto_stop_param).detach();
+        if (auto_stop_proc) {
+            std::thread(auto_stop_proc, auto_stop_param).detach();
+            std::string s = "\t\tExit from MIDIManager::SequencerPlayProc() times = " +
+                std::to_string(times) +"\n";
+            std::cout << s;
+        }
+    times--;
 }
 
-
+/*
 void MIDIManager::AutoStopProc(void* p) {
     MIDIManager* manager = static_cast<MIDIManager *>(p);
     manager->SeqStop();
 }
+*/
