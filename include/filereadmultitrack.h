@@ -49,42 +49,62 @@
 #include <string>
 
 
+///
+/// Receives MIDI data from a MIDIFileReader class and writes them to a MIDIMultiTrack.
+/// Used for reading MIDI files; actually it ignores these kind of messages:
+/// - META Sequencer Specific
+/// - other not identified meta data
+/// You have no need to deal with this unless you want to implement your own routines
+/// for reading MIDI files.
+///
 class MIDIFileReadMultiTrack : public MIDIFileEventHandler {
     public:
                                         MIDIFileReadMultiTrack (MIDIMultiTrack *tracks);
-        virtual                         ~MIDIFileReadMultiTrack();
+        virtual                         ~MIDIFileReadMultiTrack()       {}
 
 
 //
 // The possible events in a MIDI Files
 //
 
-        virtual void                    mf_sysex( MIDIClockTime time, const MIDISystemExclusive &ex );
-        virtual void                    mf_arbitrary( MIDIClockTime time, int len, unsigned char *data );
-        virtual void                    mf_metamisc( MIDIClockTime time, int, int, unsigned char * );
-        virtual void                    mf_meta16( MIDIClockTime time, int type, int b1, int b2 );
-        virtual void                    mf_smpte( MIDIClockTime time, int h, int m, int s, int f, int sf );
-        virtual void                    mf_timesig( MIDIClockTime time, int a, int b, int c, int d );
-        virtual void                    mf_tempo( MIDIClockTime time, int b1, int b2, int b3 );
-        virtual void                    mf_keysig(MIDIClockTime time, int sf, int majmin );
-        virtual void                    mf_sqspecific( MIDIClockTime time, int len, unsigned char *data );
-        virtual void                    mf_text( MIDIClockTime time, int type, int len, unsigned char *data );
-        virtual void                    mf_eot( MIDIClockTime time );
+            // these are all unused because globally managed by ChanMessage()
+        virtual void                    mf_system_mode(const MIDITimedMessage &msg)     {}
+        virtual void                    mf_note_on(const MIDITimedMessage &msg)         {}
+        virtual void                    mf_note_off(const  MIDITimedMessage &msg)       {}
+        virtual void                    mf_poly_after(const MIDITimedMessage &msg)      {}
+        virtual void                    mf_bender(const MIDITimedMessage &msg)          {}
+        virtual void                    mf_program(const MIDITimedMessage &msg)         {}
+        virtual void                    mf_chan_after(const MIDITimedMessage &msg)      {}
+        virtual void                    mf_control(const MIDITimedMessage &msg)         {}
+
+            // these implement pure virtual methods in MIDIFile EventHandler
+        virtual void                    mf_sysex(MIDIClockTime time, const MIDISystemExclusive &ex);
+        virtual void                    mf_arbitrary(MIDIClockTime time, int len, unsigned char *data);
+        virtual void                    mf_metamisc(MIDIClockTime time, int b1, int b2, unsigned char *ch);
+        virtual void                    mf_meta16(MIDIClockTime time, int type, int b1, int b2);
+        virtual void                    mf_smpte(MIDIClockTime time, int h, int m, int s, int f, int sf);
+        virtual void                    mf_timesig(MIDIClockTime time, int a, int b, int c, int d);
+        virtual void                    mf_tempo(MIDIClockTime time, int b1, int b2, int b3);
+        virtual void                    mf_keysig(MIDIClockTime time, int sf, int majmin);
+        virtual void                    mf_sqspecific(MIDIClockTime time, int len, unsigned char *data);
+        virtual void                    mf_text(MIDIClockTime time, int type, int len, unsigned char *data);
+        virtual void                    mf_eot(MIDIClockTime time);
 
 //
 // the following methods are to be overridden for your specific purpose
 //
 
-        virtual void                    mf_error( char* err );
-        virtual void                    mf_starttrack( int trk );
-        virtual void                    mf_endtrack( int trk );
-        virtual void                    mf_header( int format_, int ntrks_, int division_ );
+        virtual void                    mf_error(const char* err);
+        virtual void                    mf_starttrack(int trk);
+        virtual void                    mf_endtrack(int trk);
+        virtual void                    mf_header(int format_, int ntrks_, int division_);
 
 //
 // Higher level dispatch functions
 //
 
-        virtual	void                    ChanMessage( const MIDITimedMessage &msg );
+        virtual void                    UpdateTime(MIDIClockTime delta_time)    {}
+        virtual	void                    ChanMessage(const MIDITimedMessage &msg);
 
     protected:
 

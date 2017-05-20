@@ -43,31 +43,39 @@
 
 #include <string>
 
+
+/// \file
+/// Contains the definitions of classes MIDIMessage and MIDITimedMessage.
+
+
 ///
-/// This class stores data representing a MIDI message. It consists of a status byte, three data bytes for subsequent
-/// data and a pointer to a MIDISystemExclusive object that can store larger amounts of data. Ordinary channel messages
-/// only use the data bytes, while some meta messages and sysex also use the pointer. Lots of methods are provided for
-/// setting and inspecting the message data without worrying about exadecimal values. See the file midi.h for a set of
+/// This class stores data representing a MIDI message.
+/// It consists of a status byte, three data bytes for subsequent data and a pointer to a MIDISystemExclusive
+/// object that can store larger amounts of data. Ordinary channel messages only use the data bytes, while
+/// some meta messages and sysex messages also use the pointer. Lots of methods are provided for setting and
+/// inspecting the message data without worrying about hexadecimal values. See the file \ref midi.h for a set of
 /// enum values for MIDI messages data.
-/// In addition to MIDI messages, the MIDIMessage can also contain two types of internal service messages: the NoOp
-/// (a null, not initialized message) and the beat marker, used by the MIDISequencer as metronome click.
+/// In addition to MIDI messages, the MIDIMessage can also contain two types of internal service messages:
+/// the NoOp (a null, not initialized message) and the beat marker, used by the MIDISequencer as metronome click.
 ///
+
 class 	MIDIMessage {
     public:
         ///@name The Constructors, Destructor and Initializing methods
         //@{
 
-        /// Creates a a NoOp MIDIMessage (i.e. an undefined MIDI message). The message will be ignored
+        /// Creates a a NoOp MIDIMessage (i.e. an undefined MIDI message), which will be ignored
         /// when playing.
+        ///
                                 MIDIMessage();
         /// The copy constructor. If the target message has a MIDISystemExclusive object it is duplicated,
         /// so every MIDIBigMessage has its own object.
                                 MIDIMessage(const MIDIMessage &msg);
-        /// The destructor
+        /// The destructor.
         virtual                 ~MIDIMessage();
-        /// Resets the message and frees the MIDISystemExclusive. The message becomes a NoOp.
+        /// Resets the message and frees the MIDISystemExclusive pointer; the message becomes a NoOp.
         void	                Clear();
-        /// Frees the MIDISystemExclusive without changing other bytes.
+        /// Frees the MIDISystemExclusive pointer without changing other bytes.
         void                    ClearSysEx();
         /// The assignment operator. It primarily frees the old MIDISystemExclusive object if it was allocated,
         /// then duplicates the (eventual) new MIDISystemExclusive, so every MIDIBigMessage has its own object.
@@ -360,8 +368,8 @@ class 	MIDIMessage {
         friend bool             operator== (const MIDIMessage &m1, const MIDIMessage &m2);
 
         /// This static method determines wheater the SetNoteOff() method will produce a MIDI NOTE_OFF
-        /// message or a NOTE_ON with velocity 0. The default is *false* (NOTE_OFF messages). If you want
-        /// to use the other form call this with *true*.
+        /// message or a NOTE_ON with velocity 0. The default is **false** (NOTE_OFF messages). If you want
+        /// to use the other form call this with **true**.
         static void             UseNoteOnv0ForOff(bool f)           { use_note_onv0 = f; }
 
         /// Status and byte1 for non MIDI messages (internal use)
@@ -389,7 +397,7 @@ const MIDIClockTime TIME_INFINITE = 0xffffffff;
 
 ///
 /// The MIDITimedMessage class inherits from the MIDIMessage and represents a message associated with a
-/// specific MIDIClockTime (i.e. the number of MIDI ticks from the start. The MIDITrack class stores a
+/// specific MIDIClockTime (i.e\. the number of MIDI ticks from the start. The MIDITrack class stores a
 /// vector of ordered MIDITimedMessage items, and they are used for playing, writing and loading MIDI files.
 ///
 class 	MIDITimedMessage : public MIDIMessage {
@@ -442,15 +450,15 @@ class 	MIDITimedMessage : public MIDIMessage {
         friend int              CompareEventsForInsert (const MIDITimedMessage &m1, const MIDITimedMessage &m2);
 
         /// This function is used by the methods that search and insert events in the tracks to find events
-        /// that are of the same kind and would normally be incompatible.
-        /// It compares the events _m1_ and _m2_ and returns **true** if they have the same MIDI time and they are:
+        /// that are of the same kind and would normally be incompatible in the same track and at the same time.
+        /// It compares the events _m1_ and _m2_ and returns **true** if they have <b>the same MIDI time</b> and they are:
         /// - both NoOp
         /// - both Note On or Note Off with the same channel and the same note number
         /// - both Control Change with the same channel and the same control number
         /// - both channel messages (not notes or control) with the same channel and type
         /// - both MetaEvent with the same meta type
         /// - both non channel events (not Meta) with the same status
-        /// If the input mode is set to INSMODE_REPLACE or INSMODE_INSERT_OR_REPLACE the functions
+        /// If the input mode is set to ::INSMODE_REPLACE or ::INSMODE_INSERT_OR_REPLACE the functions
         /// MIDITrack::InsertEvent and MIDITrack::InsertNote search if at same MIDI time of the event to insert exists
         /// such an event and, if they find it, they replace the event, rather than inserting it.
         friend bool             IsSameKind (const MIDITimedMessage &m1, const MIDITimedMessage &m2);

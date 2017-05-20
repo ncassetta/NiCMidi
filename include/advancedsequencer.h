@@ -1,5 +1,5 @@
-/** Some code Copyright 1986 to 1998 By J.D. Koftinoff Software, Ltd.
-**
+/* Some code Copyright 1986 to 1998 By J.D. Koftinoff Software, Ltd.
+ *
 */
 
 #ifndef _JDKMIDI_ADVANCEDSEQUENCER_H
@@ -7,7 +7,6 @@
 
 #include <vector>
 #include <string>
-
 
 #include "msg.h"
 #include "driver.h"
@@ -17,6 +16,24 @@
 #include "smpte.h"
 
 
+/// \file
+/// Contains the definition of the class AdvancedSequencer.
+
+///
+/// A high level, all-in-one object capable to load an play MIDI files.
+/// Its features include:
+/// - Loading of MIDI files with a single call to a class method
+/// - Play, Repeat Play (i.e. loop) and Stop commands
+/// - Allows jumping from one time to another (even during playback) with correct responding
+/// to wheel, patch, controls and sysex changes
+/// - Individual solo, mute, velocity scale, transpose and rechannelize for every track
+/// - Global tempo scale
+/// - MIDI thru: you can play along with your MIDI instrument while the sequencer is playing
+///
+/// This class embeds many library objects: a MIDISequencer (with its MIDIMultiTrack) for
+/// storing MIDI data, a MIDIDriver to communicate with hardware MIDI ports, a MIDIManager for
+/// handling sequencer playing, some MIDIProcessor for thru transposing, rechannelizing, etc.
+///
 class AdvancedSequencer {
     public:
 

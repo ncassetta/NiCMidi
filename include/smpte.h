@@ -72,12 +72,13 @@ enum SAMPLE_RATE
 
 
 ///
-/// This class performs conversions between number of samples, milliseconds and smpte format
+/// Performs conversions between number of samples, milliseconds and smpte format
 /// (hours::minutes::seconds::frames::subframes).
 /// You can choose between several smpte formats and sample rates
 /// (see \ref rates "SMPTE and sample rates"). Moreover you can set an initial time offset to
 /// be added to every value passed to the SMPTE.
 /// \note Many get functions are NOT const because they can perform internal conversions
+///
 class  SMPTE {
     public:
 

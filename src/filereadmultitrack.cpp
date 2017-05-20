@@ -45,25 +45,9 @@ MIDIFileReadMultiTrack::MIDIFileReadMultiTrack (MIDIMultiTrack *mlttrk) :
     multitrack(mlttrk), cur_track(-1) {}
 
 
-MIDIFileReadMultiTrack::~MIDIFileReadMultiTrack() {}
-
-
-void MIDIFileReadMultiTrack::mf_header (int format_, int ntrks_, int division_) {
-    header.format = format_;
-    header.ntrks = ntrks_;
-    header.division = division_;
-
-    multitrack->SetClksPerBeat( header.division );
-    if (header.format == 0)                        // this is modified by me
-        // split format 0 files into separate tracks, one for each channel,
-        multitrack->ClearAndResize(17);         //
-    else
-        multitrack->ClearAndResize(header.ntrks); //
-  }
-
 
 // TODO: modified when I modified MIDI Messages names: is it right?
-void MIDIFileReadMultiTrack::mf_sysex( MIDIClockTime time, const MIDISystemExclusive &ex ) {
+void MIDIFileReadMultiTrack::mf_sysex(MIDIClockTime time, const MIDISystemExclusive &ex) {
     MIDITimedMessage msg;
 
     msg.SetSysEx(&ex);
@@ -91,12 +75,12 @@ void    MIDIFileReadMultiTrack::mf_sysex( MIDIClockTime time, const MIDISystemEx
 
 
 
-void MIDIFileReadMultiTrack::mf_arbitrary( MIDIClockTime time, int len, unsigned char *data ) {
+void MIDIFileReadMultiTrack::mf_arbitrary(MIDIClockTime time, int len, unsigned char *data) {
     // ignore arbitrary byte strings
 }
 
 
-void MIDIFileReadMultiTrack::mf_metamisc( MIDIClockTime time, int, int, unsigned char *) {
+void MIDIFileReadMultiTrack::mf_metamisc(MIDIClockTime time, int a, int b, unsigned char *ch) {
     // ignore miscellaneous meta events
 }
 
@@ -210,7 +194,7 @@ void MIDIFileReadMultiTrack::mf_eot( MIDIClockTime time ){
 }
 
 
-void MIDIFileReadMultiTrack::mf_error(char* err) {}
+void MIDIFileReadMultiTrack::mf_error(const char* err) {}
 
 
 void MIDIFileReadMultiTrack::mf_starttrack (int trk) {
@@ -222,6 +206,19 @@ void MIDIFileReadMultiTrack::mf_endtrack (int trk) {
     cur_track = -1;
 }
 
+
+void MIDIFileReadMultiTrack::mf_header (int format_, int ntrks_, int division_) {
+    header.format = format_;
+    header.ntrks = ntrks_;
+    header.division = division_;
+
+    multitrack->SetClksPerBeat( header.division );
+    if (header.format == 0)                        // this is modified by me
+        // split format 0 files into separate tracks, one for each channel,
+        multitrack->ClearAndResize(17);         //
+    else
+        multitrack->ClearAndResize(header.ntrks); //
+  }
 
 /* NO MORE USED
   // TODO: modified when I changed MIDI messages names: is it right?
@@ -281,7 +278,7 @@ void MIDIFileReadMultiTrack::ChanMessage( const MIDITimedMessage &msg ) {
     }
 }
 
-
+/*
 MIDIFileHeader GetMIDIFileHeader(const char* filename) {
     MIDIFileHeader header;
     MIDIFileReadStream mfreader_stream( filename );
@@ -295,12 +292,15 @@ MIDIFileHeader GetMIDIFileHeader(const char* filename) {
     }
     return header;
 }
-
+*/
 
 bool LoadMIDIFile(const char* filename, MIDIMultiTrack* tracks) {
-    MIDIFileReadStream mfreader_stream ( filename );
-    MIDIFileReadMultiTrack track_loader ( tracks );
-    MIDIFileReader reader ( &mfreader_stream, &track_loader );
+    std::ifstream read_stream (filename, std::ios::in | std::ios::binary);
+    if (read_stream.fail())
+        return false;
+
+    MIDIFileReadMultiTrack track_loader (tracks);
+    MIDIFileReader reader (&read_stream, &track_loader);
     return reader.Parse();
 }
 

@@ -27,8 +27,12 @@
 
 #include <vector>
 
+/// \file
+/// Contains the definition of the classes MIDIMultiTrack, MIDIMultiTrackIteratorState, MIDIMultiTrakIterator
+/// and MIDIEditMultiTrack.
 
-class MIDIEditMultiTrack;
+
+class MIDIEditMultiTrack;       // forward declaration
 
 ///
 /// This class holds an array of pointers to MIDITrack objects to be played simultaneously. Every track contains

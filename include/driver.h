@@ -42,7 +42,10 @@
 
 
 // TODO: implements RtMidi functions (error callback, selection of input, etc.)
-// TODO: finish documentation
+
+/// \file
+/// Contains the definition of the classes MIDIOutDriver and MIDIInDriver, used by the library to
+/// communicate with hardware MIDI ports.
 
 
 /// This item only affects AllNotesOff() function. All modern MIDI devices should respond to all notes off
@@ -57,7 +60,7 @@
 /// This is the number of milliseconds the driver waits after sending a MIDI system exclusive message.
 #define DRIVER_WAIT_AFTER_SYSEX 20
 
-///
+/// \ingroup INTERNALS
 /// This structure is used by the MIDIInDriver to keep track of incoming messages. It holds
 /// a MIDIMessage, a timestamp in milliseconds (from the start of the timer) and the id of
 /// the MIDI in port from which the message comes.
@@ -72,7 +75,7 @@ struct MIDIRawMessage {
 };
 
 
-///
+/// \ingroup INTERNALS
 /// This is a queue of MIDIRawMessage
 class MIDIRawMessageQueue {
     public:
@@ -114,9 +117,9 @@ class MIDIRawMessageQueue {
 
 
 ///
-/// The MidiOutDriver class is a device that sends MIDI messages to an hardware MIDI out port.
+/// Sends MIDI messages to an hardware MIDI out port.
 /// Every MIDI out port is denoted by a specific id number, enumerated by the RtMidi class.
-/// You can set a MIDIProcessor for processing outcoming MIDI messages; moreover, the class
+/// You can set a MIDIProcessor for processing outgoing MIDI messages; moreover, the class
 /// can directly receive MIDI thru messages from a MIDIInDriver and send them to the port (and
 /// you can redirect thru messages to a specific channel). MIDI thru is better managed by the
 /// MIDIManager class, which has specific methods.
@@ -157,26 +160,26 @@ class MIDIOutDriver {
         /// Gets the out processor.
         MIDIProcessor*          GetOutProcessor()               { return processor; }
         const MIDIProcessor*    GetOutProcessor() const         { return processor; }
-        /// Sets the out processor. If you want to eliminate a processor already set, call it
-        /// with 0 as parameter (warning: this only sets the processor pointer to 0! The driver
-        /// doesn't own its processor).
+        /// Sets the out processor, which can manipulate all outgoing messages (see MIDIProcessor). If you
+        /// want to eliminate a processor already set, call it with 0 as parameter (this only sets the processor
+        /// pointer to 0! The driver doesn't own its processor).
         virtual void            SetOutProcessor(MIDIProcessor* proc)
                                                                 { processor = proc; }
-        /// Sets the channel for outcoming thru messages.
-        /// \param 0 ... 15: the driver will redirect messages to a specific channel; -1: the driver will leave
+        /// Sets the channel for outgoing thru messages.
+        /// \param chan 0 ... 15: the driver will redirect messages to a specific channel; -1: the driver will leave
         /// channel messages unchanged (this is the default).
         /// \note for MIDI thru you need to join a MIDIInDriver (which catches incoming messages from a in port)
         /// with a MIDIOutDriver (which sends them to a out port). You can do this with driver methods,
         /// but it's better to use the MIDIManager class which has specific methods.
         virtual void            SetThruChannel(char chan);
-        /// Returns the thru channel ( \see SetThruChannel())
+        /// Returns the thru channel (see SetThruChannel())
         int                     GetThruChannel() const          { return (int)thru_channel; }
 
         /// Turns off all the sounding notes on the given MIDI channel. This is normally done by
-        /// sending an All Notes Off message, but you can change this behaviour
+        /// sending an All Notes Off message, but you can change this behavior
         /// \see DRIVER_USES_MIDIMATRIX.
         virtual void            AllNotesOff(int chan);
-        /// Turns off all sounding notes on the hardware port. \see  AllNotesOff(chan).
+        /// Turns off all sounding notes on the hardware port. (see  AllNotesOff(chan)).
         virtual void            AllNotesOff();
         /// Makes a copy of the message, processes it with the out processor and then sends it to
         /// the hardware port. If the port is busy waits 1 msec and retries until DRIVER_MAX_RETRIES
@@ -207,7 +210,7 @@ class MIDIOutDriver {
 #endif // DRIVER_USES_MIDIMATRIX
 
     private:
-        /// this vector is used by HardwareMsgOut to feed the port
+        // this vector is used by HardwareMsgOut to feed the port
         std::vector<unsigned char>      msg_bytes;
 };
 
@@ -215,24 +218,23 @@ class MIDIOutDriver {
 
 
 ///
-/// The MidiOutDriver class is a device that receives MIDI messages from an hardware MIDI in port.
+/// Receives MIDI messages from an hardware MIDI in port.
 /// Every MIDI in port is denoted by a specific id number, enumerated by the RtMidi class.
-/// You can set a MIDIProcessor for processing outcoming MIDI messages; moreover, the class
+/// You can set a MIDIProcessor for processing incoming MIDI messages; moreover, the class
 /// can directly send MIDI received messages to a MIDIOutDriver performing MIDI thru (and
 /// you can separately process thru messages).  MIDI thru is better managed by the
 /// MIDIManager class, which has specific methods.
 ///
 class MIDIInDriver {
     public:
+        /// Creates a MIDIInDriver object which can receive MIDI messages from the given hardware in port.
+        /// The incoming MIDI messages are queued into a MIDIRawMessageQueue (the messages are stamped with
+        /// the system time in milliseconds and the port number), and you can get them with the methods
+        /// GetMessage() and PeekMessage().
         /// \param id The id of the hardware port. Numbers of the ports and their names can be retrieved
         /// by the MIDIManager::GetNumMIDIOutPorts() and MIDIManager::GetMIDIOutName() static methods.
-        /// \note If id is not valid or the function fails, a dummy port with no functionality is open.
-        /// Creates a MIDIInDriver object getting messages from the given hardware in port. The incoming
-        /// MIDI messages are queued into a MIDIRawMessageQueue (the messages are stamped with the system
-        /// time in milliseconds and the port number), and you can get them with the methods GetMessage()
-        /// and PeekMessage(). The default queue size is 256.
-        /// \param id The id of the hardware port. Numbers of the ports and their names can be retrieved
-        /// by the MIDIManager::GetNumMIDIOutPorts() and MIDIManager::GetMIDIOutName() static methods.
+        /// \param queue_size The size of the queue; you could try to change this if you have trouble in
+        /// receiving MIDI messages from the hardware, otherwise left unchanged (default size is 256).
         /// \note If id is not valid or the function fails, a dummy port with no functionality is open.
                                 MIDIInDriver(int id, unsigned int queue_size = DEFAULT_QUEUE_SIZE);
         /// Closes the hardware port and deletes the object.
@@ -240,7 +242,7 @@ class MIDIInDriver {
         /// Resets the driver to default conditions:
         /// - Hardware MIDI port closed (resets the open count)
         /// - In queue empty
-        /// - No extra processor (warning: this only sets the processor pointer to 0! The driver
+        /// - No extra processor (this only sets the processor pointer to 0! The driver
         ///   doesn't own its processor).
         /// - Thru off (and undefined thru out driver)
         /// - Thru output channel: all
@@ -272,9 +274,9 @@ class MIDIInDriver {
         /// Gets the in processor.
         MIDIProcessor*          GetProcessor()                  { return processor; }
         const MIDIProcessor*    GetProcessor() const            { return processor; }
-        /// Sets the in processor. If you want to eliminate a processor already set, call it
-        /// with 0 as parameter (warning: this only sets the processor pointer to 0! The driver
-        /// doesn't own its processor).
+        /// Sets the in processor, which can manipulate all incoming messages (see MIDIProcessor). If you
+        /// want to eliminate a processor already set, call it with 0 as parameter (this only sets the
+        /// processor pointer to 0! The driver doesn't own its processor).
         virtual void            SetProcessor(MIDIProcessor* proc);
         /// Sets the thru enable on/off and the MIDIOutDriver to which incoming messages are sent.
         /// \param f true or false

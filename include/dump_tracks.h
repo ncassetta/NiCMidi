@@ -4,6 +4,10 @@
 #include <iostream>
 #include "multitrack.h"
 
+/// \file
+/// Contains the definition of some helper functions which can be useful for debugging
+/// purposes.
+
 
 /// Prints a readable string describing the contents of the MIDITimedMessage.
 void DumpMIDITimedMessage (MIDITimedMessage* const msg, std::ostream& ost = std::cout);

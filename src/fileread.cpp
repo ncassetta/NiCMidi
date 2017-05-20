@@ -51,7 +51,7 @@
 // TODO: decide which way is right for this flag and fix it - The standard midi file format specs are (were?) unclear
 #define MIDIFRD_ALLOW_STATUS_ACROSS_META_EVENT 0 // correct value is 0 !
 
-
+/*
 MIDIFileReadStream::MIDIFileReadStream(const char *fname) : del(true) {
     infs = new std::ifstream(fname, std::ios::in | std::ios::binary);
     if (infs->fail()) {
@@ -88,7 +88,7 @@ int MIDIFileReadStream::ReadChar() {
 bool MIDIFileReadStream::IsValid() {
     return infs != 0;
 }
-
+*/
 
 
 
@@ -149,7 +149,7 @@ void MIDIFileEventHandler::MetaEvent(MIDIClockTime time, int type, int leng, uns
             // These are all text events
 
             m[leng] = 0;      // make sure string ends in NULL
-            mf_text(time,type, leng, m);
+            mf_text(time, type, leng, m);
             break;
         case META_CHANNEL_PREFIX:
         case META_OUTPUT_CABLE:
@@ -185,14 +185,9 @@ void MIDIFileEventHandler::MetaEvent(MIDIClockTime time, int type, int leng, uns
 
 
 
-
-
-
-MIDIFileReader::MIDIFileReader(MIDIFileReadStream *input_stream_, MIDIFileEventHandler *event_handler_,
-                               unsigned long max_msg_len_) :
-    no_merge(0), cur_time(0), skip_init(1), to_be_read(0),
-    cur_track(0), abort_parse(0), max_msg_len(max_msg_len_), msg_index(0),
-    input_stream(input_stream_), event_handler(event_handler_) {
+MIDIFileReader::MIDIFileReader(std::istream *ist, MIDIFileEventHandler *ev_h, unsigned long max_msg_len_) :
+    no_merge(0), cur_time(0), skip_init(1), to_be_read(0), cur_track(0), abort_parse(0),
+    max_msg_len(max_msg_len_), msg_index(0), in_stream(ist), event_handler(ev_h) {
     the_msg = new unsigned char[max_msg_len];
 }
 
@@ -459,9 +454,9 @@ int MIDIFileReader::Read16Bit() {
 int MIDIFileReader::EGetC() {
     int c;
 
-    c = input_stream->ReadChar();
+    c = in_stream->get();
 
-    if(c < 0) {
+    if(!in_stream->good()) {
         mf_error( "Unexpected Stream Error" );
         abort_parse = true;
         return -1;

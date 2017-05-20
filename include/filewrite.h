@@ -50,7 +50,7 @@
 #include "msg.h"
 #include "sysex.h"
 
-
+/*   ELIMINATE THIS!
 ///
 /// This class is used internally for writing MIDI files. It writes a stream of *char* to a C++ ostream object,
 ///
@@ -78,17 +78,19 @@ private:
     bool del;
 };
 
+*/
+
 
 
 ///
-/// This class is used internally for writing MIDI files.
+/// Implements a low level set of methods for writing MIDI events to a std::ostream in MIDI file format.
+/// Used by the MIDIFileWriteMultiTrack class and higher level functions, and you don't need to deal with
+/// this (unless you want to implement your custom routines for writing MIDI files).
 ///
-
 class MIDIFileWriter {
     public:
-                        MIDIFileWriter(MIDIFileWriteStream *out_stream_);
-        virtual   	    ~MIDIFileWriter();
-
+                        MIDIFileWriter(std::ostream *out_stream_);
+        virtual   	    ~MIDIFileWriter()       {}
 
         bool            ErrorOccurred()         { return error; }
         unsigned long   GetFileLength()         { return file_length; }
@@ -120,8 +122,8 @@ class MIDIFileWriter {
     protected:
         virtual	void    Error(char *s);
 
-        void            WriteCharacter(unsigned char c) { if(out_stream->WriteChar(c) < 0) error = true; }
-        void            Seek(long pos)                  { if(out_stream->Seek(pos) < 0) error = true; }
+        void            WriteCharacter(unsigned char c) { out_stream->put(c); if(!out_stream->good()) error = true; }
+        void            Seek(unsigned long pos)         { out_stream->seekp(pos); if (!out_stream->good()) error = true; }
         void            IncrementCounters(int c)        { track_length += c; file_length += c; }
         void            WriteShort(unsigned short c);
         void            Write3Char(long c);
@@ -138,7 +140,7 @@ class MIDIFileWriter {
         unsigned long   track_position;
         unsigned char   running_status;
 
-        MIDIFileWriteStream *out_stream;
+        std::ostream*   out_stream;
 };
 
 

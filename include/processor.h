@@ -36,8 +36,14 @@
 #include <iostream>
 #include <vector>
 
+/// \file
+/// Contains the definition of the pure virtual MIDIProcessor class and its specializations
+/// MIDIMultiProcessor, MIDIProcessorTransposer, MIDIProcessorRechannelizer, MIDIProcessorPrinter.
+/// These are devices that can manipulate a MIDITimedMessage.
+
+
 ///
-/// This is a pure virtual class implementing a MIDI processor, i.e. a device that can process
+/// A pure virtual class implementing a MIDI processor, i.e.\ a device that can manipulate
 /// a MIDI message, eventually changing its content. Many objects, such as MIDIDriver,
 /// MIDIManager and MIDISequencer, allow you to insert a MIDIProcessor into the flow of outgoing
 /// messages.
@@ -56,8 +62,7 @@ class MIDIProcessor {
 
 
 ///
-/// The class MIDIMultiProcessor allows the user to queue many MIDIProcessor objects, passing
-/// the result of each one to the next.
+/// Allows the user to queue many MIDIProcessor objects, passing the result of each one to the next.
 ///
 class MIDIMultiProcessor : public MIDIProcessor {
     public:
@@ -80,7 +85,7 @@ class MIDIMultiProcessor : public MIDIProcessor {
         /// - MODE_IGNORE :   the MIDIMultiProcessor ignores return values and always returns *true*
         /// - MODE_CONTINUE : the MIDIMultiProcessor performs all the processing, and returns *false*
         /// if any processor returned *false*, *true* otherwise
-        /// - MODE_STOP :      the MIDIMultiProcessor stop processing when a processor returns *false*
+        /// - MODE_STOP :      the MIDIMultiProcessor stops processing when a processor returns *false*
         /// and returns *false*
         void                            SetProcessMode(int mode)        { process_mode = mode; }
         /// Gets the processing mode.
@@ -106,9 +111,8 @@ class MIDIMultiProcessor : public MIDIProcessor {
 };
 
 ///
-/// This MIDIProcessor shifts the pitch of MIDI note and polyphonic pressure
-/// messages by a given amount of semitones. You can set a different amount for each
-/// channel, or the same amount for all the channels.
+/// Shifts the pitch of MIDI note and polyphonic pressure messages by a given amount of semitones.
+/// You can set a different amount for each channel, or the same amount for all the channels.
 ///
 class MIDIProcessorTransposer : public MIDIProcessor {
     public:
@@ -124,7 +128,7 @@ class MIDIProcessorTransposer : public MIDIProcessor {
         /// The process() method. It affects only Note on, Note off and Poly pressure
         /// messages, changing their note number according to the settings. If the resulting
         /// note number is not in the MIDI range (0 ... 127) the message is left unchanged and
-        /// function returns *false*, otherwise it returns *true*.
+        /// the method returns *false*, otherwise it returns *true*.
         virtual bool                    Process (MIDITimedMessage *msg);
 
     private:
@@ -132,8 +136,9 @@ class MIDIProcessorTransposer : public MIDIProcessor {
 };
 
 ///
-/// This MIDIProcessor rechannelizes all MIDI channel messages. You can set a one-to-one
-/// correspondence between channels, or send all channel messages to a single channel.
+/// Changes the channel of all MIDI channel messages.
+/// You can set a one-to-one correspondence between channels, or send all channel messages
+/// to a single channel.
 ///
 class MIDIProcessorRechannelizer : public MIDIProcessor {
     public:
@@ -144,12 +149,13 @@ class MIDIProcessorRechannelizer : public MIDIProcessor {
         void                            Reset();
         /// Set the correspondence between two channels (will transform _src_chan_ into
         /// _dest_chan_). Channel range is 0 ... 15, however you can set _dest_chan_ to -1
+        /// (see the Process() method).
         void                            SetRechanMap (int src_chan, int dest_chan)  { rechan_map[src_chan] = dest_chan; }
         /// Gets the corresponding channel for _src_chan_.
         int                             GetRechanMap (int src_chan) const           { return rechan_map[src_chan]; }
         /// Sends all channel messages to channel _dest_chan_.
         void                            SetAllRechan (int dest_chan);
-        /// The Process() method. If _msg_ is not a channel message, it is left unchanged
+        /// The Process() method. If _msg_ is not a channel message it is left unchanged
         /// and the function returns *true*. Otherwise its channel is changed according to the
         /// rechannel map. If its destination channel is -1 the msg remains unchanged but
         /// the function returns *false* (you can use this for filtering messages by channel)
@@ -162,8 +168,8 @@ class MIDIProcessorRechannelizer : public MIDIProcessor {
 
 
 ///
-/// This MIDIProcessor prints a human-readable description of the processed messages to a
-/// std::ostream. Useful for debugging purposes (you could want to see, for example, all messages
+/// Prints a human-readable description of the processed messages to a std::ostream.
+/// Useful for debugging purposes (you could want to see, for example, all messages
 /// passing through a driver).
 ///
 class MIDIProcessorPrinter : public MIDIProcessor {

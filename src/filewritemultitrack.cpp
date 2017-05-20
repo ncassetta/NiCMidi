@@ -32,11 +32,8 @@
 
 
 
-MIDIFileWriteMultiTrack::MIDIFileWriteMultiTrack(const MIDIMultiTrack *mlt_, MIDIFileWriteStream *strm_) :
-    multitrack( mlt_ ), writer( strm_ ) {}
-
-
-MIDIFileWriteMultiTrack::~MIDIFileWriteMultiTrack() {}
+MIDIFileWriteMultiTrack::MIDIFileWriteMultiTrack(const MIDIMultiTrack *mlt, std::ostream *ost) :
+    multitrack(mlt), writer(ost) {}
 
 
 bool MIDIFileWriteMultiTrack::Write(int num_tracks, int division) {
@@ -122,8 +119,8 @@ bool WriteMIDIFile(const char* filename, int format, const MIDIMultiTrack* track
         default:
             return false;       // TODO: allow format 2 3
     }
-    MIDIFileWriteStream write_stream (filename);
-    if (!write_stream.IsValid())
+    std::ofstream write_stream (filename, std::ios::out | std::ios::binary);
+    if (write_stream.fail())
         return false;
     MIDIFileWriteMultiTrack writer (&tmp_tracks, &write_stream);
     return writer.Write(tmp_tracks.GetNumTracks(), tmp_tracks.GetClksPerBeat());

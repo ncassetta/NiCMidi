@@ -52,7 +52,7 @@
 #include "msg.h"
 #include "sysex.h"
 
-
+/*
 ///
 /// This class is used internally for reading MIDI files. It reads a stream of *char* from a C++ istream object.
 ///
@@ -78,10 +78,14 @@ class MIDIFileReadStream {
         std::istream*                   infs;
         bool                            del;
 };
+*/
+
 
 
 ///
-/// This class is used internally for reading MIDI files.
+/// An abstract class for objects that can manipulate MIDI events sent by a MIDIFile Reader.
+/// Actually it's only implemented in the MIDIFileReadMultiTrack, which creates a MIDIultitrack
+/// from these events. This has no interest for the user.
 ///
 class MIDIFileEventHandler {
     public:
@@ -92,63 +96,71 @@ class MIDIFileEventHandler {
     // The possible events in a MIDI Files
     //
 
-        virtual void                    mf_system_mode(const MIDITimedMessage &msg) {}
-        virtual void                    mf_note_on(const MIDITimedMessage &msg) {}
-        virtual void                    mf_note_off(const  MIDITimedMessage &msg) {}
-        virtual void                    mf_poly_after(const MIDITimedMessage &msg) {}
-        virtual void                    mf_bender(const MIDITimedMessage &msg) {}
-        virtual void                    mf_program(const MIDITimedMessage &msg) {}
-        virtual void                    mf_chan_after(const MIDITimedMessage &msg) {}
-        virtual void                    mf_control(const MIDITimedMessage &msg) {}
+        virtual void                    mf_system_mode(const MIDITimedMessage &msg) = 0;
+        virtual void                    mf_note_on(const MIDITimedMessage &msg) = 0;
+        virtual void                    mf_note_off(const  MIDITimedMessage &msg) = 0;
+        virtual void                    mf_poly_after(const MIDITimedMessage &msg) = 0;
+        virtual void                    mf_bender(const MIDITimedMessage &msg) = 0;
+        virtual void                    mf_program(const MIDITimedMessage &msg) = 0;
+        virtual void                    mf_chan_after(const MIDITimedMessage &msg) = 0;
+        virtual void                    mf_control(const MIDITimedMessage &msg) = 0;
 
-        virtual void                    mf_sysex(MIDIClockTime time, const MIDISystemExclusive &ex) {}
-        virtual void                    mf_arbitrary(MIDIClockTime time, int len, unsigned char *data) {}
-        virtual void                    mf_metamisc(MIDIClockTime time, int, int, unsigned char*) {}
-        virtual void                    mf_meta16 (MIDIClockTime time, int type, int b1, int b2 ) {}
-        virtual void                    mf_smpte( MIDIClockTime time, int h, int m, int s, int f, int sf ) {}
-        virtual void                    mf_timesig( MIDIClockTime time, int m1, int m2, int m3, int m4 ) {}
-        virtual void                    mf_tempo( MIDIClockTime time, int b1, int b2, int b3) {}
-        virtual void                    mf_keysig(MIDIClockTime time, int sf, int majmin ) {}
-        virtual void                    mf_sqspecific( MIDIClockTime time, int len, unsigned char *data ) {}
-        virtual void                    mf_text( MIDIClockTime time, int type, int len, unsigned char *data ) {}
-        virtual void                    mf_eot( MIDIClockTime time ) {}
+        virtual void                    mf_sysex(MIDIClockTime time, const MIDISystemExclusive &ex) = 0;
+        virtual void                    mf_arbitrary(MIDIClockTime time, int len, unsigned char *data) = 0;
+        virtual void                    mf_metamisc(MIDIClockTime time, int b1, int b2, unsigned char *ch) = 0;
+        virtual void                    mf_meta16 (MIDIClockTime time, int type, int b1, int b2) = 0;
+        virtual void                    mf_smpte(MIDIClockTime time, int h, int m, int s, int f, int sf) = 0;
+        virtual void                    mf_timesig(MIDIClockTime time, int m1, int m2, int m3, int m4) = 0;
+        virtual void                    mf_tempo(MIDIClockTime time, int b1, int b2, int b3) = 0;
+        virtual void                    mf_keysig(MIDIClockTime time, int sf, int majmin) = 0;
+        virtual void                    mf_sqspecific(MIDIClockTime time, int len, unsigned char *data) = 0;
+        virtual void                    mf_text(MIDIClockTime time, int type, int len, unsigned char *data) = 0;
+        virtual void                    mf_eot(MIDIClockTime time) = 0;
 
     //
     // the following methods are to be overridden for your specific purpose
     //
 
-        virtual void                    mf_error(const char* err)   {}
-        virtual void                    mf_starttrack(int trk)      {}
-        virtual void                    mf_endtrack(int trk)        {}
-        virtual void                    mf_header(int, int, int)    {}
+        virtual void                    mf_error(const char* err)   = 0;
+        virtual void                    mf_starttrack(int trk)      = 0;
+        virtual void                    mf_endtrack(int trk)        = 0;
+        virtual void                    mf_header(int, int, int)    = 0;
 
     //
     // Higher level dispatch functions
     //
-        virtual	void	                UpdateTime(MIDIClockTime delta_time) {}
+        virtual	void	                UpdateTime(MIDIClockTime delta_time) = 0;
         virtual	void                    ChanMessage(const MIDITimedMessage &msg);
         virtual	void                    MetaEvent(MIDIClockTime time, int type, int len, unsigned char *buf);
 };
 
 
 
+
+///
+/// A structure holding data which represent the header of a MIDI file.
+///
 struct MIDIFileHeader {
     MIDIFileHeader() : format(0), ntrks(0), division(0) {}
-    short format;
-    short ntrks;
-    short division;
+    short format;               ///< the file format (currently only 0 and 1 are allowed).
+    short ntrks;                ///< the number of tracks.
+    short division;             ///< the number of MIDI ticks for a quarter note.
 };
 
 
+
 ///
-/// This class converts a stream of *char* read from a MIDIFileReadStream object into MIDI data
+/// Converts a stream of *char* read from a std::istream into MIDI data and sends them to a
+/// MIDIFileEventHandler.
+/// Used in conjunction with the MIDIFileReadMultiTrack class for reading MIDI files, and you don't need
+/// to deal with this (unless you want to implement your custom routines for reading MIDI files).
 ///
 class MIDIFileReader {
     public:
 
-        /// In the constructor you must specify the MIDIFileReadStream.\ The stream must be already open
-                                        MIDIFileReader (MIDIFileReadStream* input_stream_,
-                                                        MIDIFileEventHandler *event_handler_,
+        /// In the constructor you must specify the MIDIFileReadStream.\ The stream must be already open.
+                                        MIDIFileReader (std::istream* ist,
+                                                        MIDIFileEventHandler *ev_h,
                                                         unsigned long max_msg_len = 8192);
 
         virtual                         ~MIDIFileReader();
@@ -192,7 +204,7 @@ class MIDIFileReader {
 
         MIDIFileHeader                  header;
 
-        MIDIFileReadStream*             input_stream;
+        std::istream*                   in_stream;
         MIDIFileEventHandler*           event_handler;
 };
 

@@ -7,6 +7,9 @@
 
 #include <iostream>     // for debug
 
+/// \file
+/// Contains the definition of the MIDITimer class and some other typedef related to MIDI timing.
+
 
 /// The type of a variable which can hold the elapsed time in milliseconds.
 typedef unsigned long long tMsecs;
@@ -14,12 +17,12 @@ typedef unsigned long long tMsecs;
 typedef  void (*MIDITick)(tMsecs, void*);
 
 ///
-/// The MIDITimer class provides the timing required for MIDI playback. It implements
-/// a clock which can call a user-defined callback function at a regular pace; when you start
-/// the timer, a background thread is created for this task. You can set the timer resolution
-/// in milliseconds (default is DEFAULT_RESOLUTION) and the  callback function.
-/// Moreover, it provides some other timing utility as static functions: you can stop a thread
-/// for a given number of milliseconds and can get the system time elapsed from the application
+/// Provides the timing required for MIDI playback, using the C++11 &lt;chrono&gt; methods. It
+/// implements a timer which can call a user-defined callback function at a regular pace; when
+/// the timer is started, a background thread is created for this task. You can set the timer
+/// resolution in milliseconds (default is \ref DEFAULT_RESOLUTION) and the  callback function.
+/// Moreover, it provides some other timing utilities as static functions: you can stop a thread
+/// for a given number of milliseconds and get the system time elapsed from the application
 /// start.
 /// If you only want to play MIDI files (i.e. use a MIDISequencer) you don't need to deal with
 /// this directly, but you can use the MIDIManager class (which creates and properly handles a

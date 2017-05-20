@@ -35,6 +35,9 @@
 #ifndef _JDKMIDI_MIDI_H
 #define _JDKMIDI_MIDI_H
 
+/// \defgroup midienum "MIDI Enumerations"
+/// Enumerations for MIDI hexadecimal values
+//@{
 
 ///
 /// MIDI Status bytes
@@ -265,7 +268,7 @@ char* KeyName (signed char sharp_flats, unsigned char major_minor, bool uppercas
 
 
 
-
+//@}
 
 
 #endif

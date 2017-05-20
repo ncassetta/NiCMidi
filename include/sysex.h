@@ -42,10 +42,13 @@
 #include <vector>
 #include <cstring>
 
+/// \file
+/// Contains the definition of the class MIDISystemExclusive.
+
 ///
-/// This class stores a buffer of MIDI data bytes in a std::vector, plus a byte for the checksum. It is
-/// used by the MIDIMessage class for keeping an arbitrary amount of data (tipically the data attached to
-/// a MIDI sysex message, but also the text meta messages and some other type utilize it).
+/// Stores a buffer of MIDI data bytes in a std::vector, plus a byte for the checksum.
+/// It is used by the MIDIMessage class for keeping an arbitrary amount of data (tipically the data
+/// attached to a MIDI sysex message, but also the text meta messages and some other type utilizes it).
 ///
 class  MIDISystemExclusive {
     public:
@@ -71,7 +74,7 @@ class  MIDISystemExclusive {
         void	                    ClearChecksum()		        { chk_sum = 0; }
         /// Appends a byte to the buffer, without adding it to checksum.
         void	                    PutSysByte(unsigned char b) { buffer.push_back(b); }
-        /// Appends a byte to the buffer, adding it to checksum
+        /// Appends a byte to the buffer, adding it to checksum.
         void	                    PutByte(unsigned char b)    { PutSysByte(b); chk_sum += b; }
         /// Appends a System exclusive Start byte (0xF0) to the buffer, without affecting the checksum.
         void	                    PutEXC()                    { PutSysByte(SYSEX_START); }

@@ -39,14 +39,16 @@
 #include <atomic>
 
 
+/// \file
+/// Contains the definition of the class MIDIManager.
 
 
 ///
 /// This class manages MIDI playback, picking MIDI messages from a MIDISequencer and sending them to the
-/// MIDIDriver classes (and then to hardware MIDI ports).
-/// It embeds a MIDIDriver for every hardware in and out port and a MIDITimer for timing the playback:
-/// when we start playback the timer is open, calling the static TickProc() method in a separate thread at
-/// a regular pace. This moves MIDI messages from the sequencer to the drivers according to their timing.
+/// hardware MIDI ports.
+/// It embeds a MIDIInDriver or MIDIOutDriver) for every hardware in and out port and a MIDITimer for timing
+/// the playback: when we start playback the timer is open, calling the static TickProc() method in a separate
+/// thread at a regular pace. This moves MIDI messages from the sequencer to the drivers according to their timing.
 /// This class implements also the MIDI thru, sending directly incoming MIDI messages from an in port to an out one.
 /// The AdvancedSequencer class is an all-in-one object embedding a MIDIManager and a MIDISequencer with methods for
 /// an easy playback and thru. See example files for effective using.

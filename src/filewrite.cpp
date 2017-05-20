@@ -39,7 +39,7 @@
 #include "../include/filewrite.h"
 
 
-
+/*     NOW UNUSED!!!! DELETE WHEN YOU ARE SURE
 MIDIFileWriteStream::MIDIFileWriteStream(const char *fname) : begin(0), del(true) {
     outfs = new std::ofstream(fname, std::ios::out | std::ios::binary);
     if (outfs->fail()) {
@@ -89,56 +89,16 @@ int MIDIFileWriteStream::WriteChar(int c) {
 bool MIDIFileWriteStream::IsValid() {
     return outfs != 0;
 }
+*/
 
 
 
 
 
 
-
-
-
-
-
-MIDIFileWriter::MIDIFileWriter(MIDIFileWriteStream *out_stream_) : out_stream(out_stream_) {
-    file_length = 0;
-    error = 0;
-    track_length = 0;
-    track_time = 0;
-    running_status = 0;
-    track_position = 0;
-}
-
-
-MIDIFileWriter::~MIDIFileWriter() {
-}
-
-
-void MIDIFileWriter::Error(char *s) {
-    // NULL method; can override.
-    error = true;
-}
-
-
-void MIDIFileWriter::WriteShort(unsigned short c) {
-    WriteCharacter((unsigned char)((c >> 8) & 0xff));
-    WriteCharacter((unsigned char)((c & 0xff)));
-}
-
-
-void MIDIFileWriter::Write3Char(long c) {
-    WriteCharacter((unsigned char)((c >> 16) & 0xff));
-    WriteCharacter((unsigned char)((c >> 8) & 0xff));
-    WriteCharacter((unsigned char)((c & 0xff)));
-}
-
-
-void MIDIFileWriter::WriteLong(unsigned long c) {
-    WriteCharacter((unsigned char)((c >> 24) & 0xff));
-    WriteCharacter((unsigned char)((c >> 16) & 0xff));
-    WriteCharacter((unsigned char)((c >> 8) & 0xff));
-    WriteCharacter((unsigned char)((c & 0xff)));
-}
+MIDIFileWriter::MIDIFileWriter(std::ostream *out_stream_) : error(0), within_track(0), file_length(0), track_length(0),
+    track_time(0), track_position(0), running_status(0),  out_stream(out_stream_)
+{}
 
 
 void MIDIFileWriter::WriteFileHeader(int format, int ntrks, int division) {
@@ -168,41 +128,6 @@ void MIDIFileWriter::WriteTrackHeader(unsigned long length) {
     WriteLong(length);
     file_length += 8;
     within_track = true;
-}
-
-
-int	MIDIFileWriter::WriteVariableNum(unsigned long n) {
-    register unsigned long buffer;
-    short cnt = 0;
-
-    buffer = n & 0x7f;
-    while((n >>= 7) > 0) {
-        buffer <<= 8;
-        buffer |= 0x80;
-        buffer += (n & 0x7f);
-    }
-
-    while(true) {
-      WriteCharacter((unsigned char) (buffer & 0xff));
-      cnt++;
-      if(buffer & 0x80)
-            buffer >>= 8;
-      else
-            break;
-    }
-    return cnt;
-}
-
-
-void MIDIFileWriter::WriteDeltaTime(unsigned long abs_time) {
-    long dtime = abs_time - track_time;
-    if(dtime < 0) {
-//		Error( "Events out of order" );
-      dtime = 0;
-    }
-
-    IncrementCounters(WriteVariableNum(dtime));
-    track_time = abs_time;
 }
 
 /* DELETE THIS FUNCTION
@@ -250,7 +175,6 @@ void MIDIFileWriter::WriteEvent(const MIDITimedMessage &m) {
     }
 }
 */
-
 
 
 void MIDIFileWriter::WriteEvent(const MIDITimedMessage &msg) {
@@ -510,3 +434,66 @@ void MIDIFileWriter::RewriteTrackLength() {
     Seek(track_position + 8 + track_length);
 }
 
+
+void MIDIFileWriter::Error(char *s) {
+    // NULL method; can override.
+    error = true;
+}
+
+
+void MIDIFileWriter::WriteShort(unsigned short c) {
+    WriteCharacter((unsigned char)((c >> 8) & 0xff));
+    WriteCharacter((unsigned char)((c & 0xff)));
+}
+
+
+void MIDIFileWriter::Write3Char(long c) {
+    WriteCharacter((unsigned char)((c >> 16) & 0xff));
+    WriteCharacter((unsigned char)((c >> 8) & 0xff));
+    WriteCharacter((unsigned char)((c & 0xff)));
+}
+
+
+void MIDIFileWriter::WriteLong(unsigned long c) {
+    WriteCharacter((unsigned char)((c >> 24) & 0xff));
+    WriteCharacter((unsigned char)((c >> 16) & 0xff));
+    WriteCharacter((unsigned char)((c >> 8) & 0xff));
+    WriteCharacter((unsigned char)((c & 0xff)));
+}
+
+
+
+
+int	MIDIFileWriter::WriteVariableNum(unsigned long n) {
+    register unsigned long buffer;
+    short cnt = 0;
+
+    buffer = n & 0x7f;
+    while((n >>= 7) > 0) {
+        buffer <<= 8;
+        buffer |= 0x80;
+        buffer += (n & 0x7f);
+    }
+
+    while(true) {
+      WriteCharacter((unsigned char) (buffer & 0xff));
+      cnt++;
+      if(buffer & 0x80)
+            buffer >>= 8;
+      else
+            break;
+    }
+    return cnt;
+}
+
+
+void MIDIFileWriter::WriteDeltaTime(unsigned long abs_time) {
+    long dtime = abs_time - track_time;
+    if(dtime < 0) {
+//		Error( "Events out of order" );
+      dtime = 0;
+    }
+
+    IncrementCounters(WriteVariableNum(dtime));
+    track_time = abs_time;
+}

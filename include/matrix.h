@@ -47,9 +47,14 @@
 #include "msg.h"
 
 
+/// \file
+/// Contains the definition of the class MIDIMatrix.
+
 ///
-/// This class implements a matrix to keep track of notes on and hold pedal for every channel.
-/// It is used by MIDIDriver and MIDISequencerTrackState
+/// Implements a matrix to keep track of notes on and hold pedal for every channel.
+/// The matrix is initially empty; every time you call Process() giving it a MIDIMessage it
+/// upates the count of notes on and pedal (does nothing if the message is not a note or
+/// pedal message). It is used by MIDIDriver and MIDISequencerTrackState.
 ///
 class  MIDIMatrix {
     public:
