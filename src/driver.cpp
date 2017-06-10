@@ -136,7 +136,7 @@ void MIDIOutDriver::ClosePort() {
         std::cout << "Attempt to close an already closed port!" << std::endl;
 }
 
-
+/*
 void MIDIOutDriver::SetThruChannel(char chan) {
     if (chan >= -1 && chan <= 15) {
         if (thru_channel != -1)
@@ -150,7 +150,7 @@ void MIDIOutDriver::SetThruChannel(char chan) {
         thru_channel = chan;
     }
 }
-
+*/
 
 void MIDIOutDriver::AllNotesOff( int chan ) {
     MIDIMessage msg;
@@ -287,7 +287,7 @@ MIDIInDriver::~MIDIInDriver() {
 
 
 void MIDIInDriver::Reset() {
-    SetThruEnable(false);
+    //SetThruEnable(false);
     port->closePort();
     num_open = 0;
     in_queue.Reset();
@@ -340,6 +340,7 @@ void MIDIInDriver::SetProcessor(MIDIProcessor* proc) {
 }
 
 
+/*
 bool MIDIInDriver::SetThruEnable(bool f, MIDIOutDriver* driver) {
     bool ret = true;
     in_mutex.lock();
@@ -374,6 +375,7 @@ void MIDIInDriver::SetThruChannel(char chan) {
         in_mutex.unlock();
     }
 }
+*/
 
 
 bool MIDIInDriver::InputMessage(MIDIRawMessage &msg) {

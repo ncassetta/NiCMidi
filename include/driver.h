@@ -165,16 +165,6 @@ class MIDIOutDriver {
         /// pointer to 0! The driver doesn't own its processor).
         virtual void            SetOutProcessor(MIDIProcessor* proc)
                                                                 { processor = proc; }
-        /// Sets the channel for outgoing thru messages.
-        /// \param chan 0 ... 15: the driver will redirect messages to a specific channel; -1: the driver will leave
-        /// channel messages unchanged (this is the default).
-        /// \note for MIDI thru you need to join a MIDIInDriver (which catches incoming messages from a in port)
-        /// with a MIDIOutDriver (which sends them to a out port). You can do this with driver methods,
-        /// but it's better to use the MIDIManager class which has specific methods.
-        virtual void            SetThruChannel(char chan);
-        /// Returns the thru channel (see SetThruChannel())
-        int                     GetThruChannel() const          { return (int)thru_channel; }
-
         /// Turns off all the sounding notes on the given MIDI channel. This is normally done by
         /// sending an All Notes Off message, but you can change this behavior
         /// \see DRIVER_USES_MIDIMATRIX.
@@ -278,27 +268,6 @@ class MIDIInDriver {
         /// want to eliminate a processor already set, call it with 0 as parameter (this only sets the
         /// processor pointer to 0! The driver doesn't own its processor).
         virtual void            SetProcessor(MIDIProcessor* proc);
-        /// Sets the thru enable on/off and the MIDIOutDriver to which incoming messages are sent.
-        /// \param f true or false
-        /// \param driver the first time you set the thru on the out driver is undefined, so you
-        /// *must* specify a driver (otherwise the thru isn't enabled and the function returns *false*).
-        /// In the subsequent calls, if you leave the default parameter, the already set driver is kept,
-        /// otherwise a new driver is set.
-        /// \return *false* only if you failed to set the MIDI thru on, *true* otherwise.
-        /// \note The MIDI thru can be managed more easily by the class MIDIManager, which has methods
-        /// involving both the in and out driver.
-        virtual bool            SetThruEnable(bool f, MIDIOutDriver* driver = 0);
-        /// Gets the thru status.
-        bool                    GetThruEnable() const           { return thru_enable; }
-        /// Sets the MIDI thru channel. You can specify -1 for omni mode (all incoming messages are sent
-        /// to the thru out driver), otherwise you can specify a number between 0 ... 15.
-        /// \note If you set a specific channel, all channel messages of other channels will not be sent.
-        /// If you want to rechannelize these messages to a specific out channel use the
-        /// MIDIOutDriver::SetThruChannel() method.
-        virtual void            SetThruChannel(char chan);
-        /// Returns the MIDI thru channel. If it is -1 the driver sends to the out all incoming messages,
-        /// otherwise it discards all channel messages with a different channel.
-        int                     GetThruChannel() const          { return (int)thru_channel; }
         /// Gets the next message in the queue, copying it into _msg_ (the message is deleted from
         /// the queue). Returns *true* if the queue was not empty (and _msg_ is valid), otherwise *false*.
         virtual bool            InputMessage(MIDIRawMessage& msg);

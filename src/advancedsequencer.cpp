@@ -77,11 +77,12 @@ void AdvancedSequencer::SetInputPort( int p)
 */
 
 
+/*
 void AdvancedSequencer::SetMIDIThruChannel (int chan) {
     thru_rechannelizer.SetAllRechan (chan);
     mgr->AllNotesOff();
 }
-
+*/
 
 void AdvancedSequencer::SetMIDIThruTranspose (int amt) {
     thru_transposer.SetAllTranspose (amt);

@@ -10,6 +10,7 @@
 
 #include "msg.h"
 #include "driver.h"
+#include "thru.h"
 #include "multitrack.h"
 #include "sequencer.h"
 #include "manager.h"
@@ -43,19 +44,17 @@ class AdvancedSequencer {
                             AdvancedSequencer(MIDIManager* mg);
         virtual             ~AdvancedSequencer();
 
-        void                SetMIDIThruPort(int port);
-        int                 GetMIDIThruPort() const         { return mgr->GetThruInPort(); }
-        void                SetMIDIThruEnable (bool f)      { mgr->SetThruEnable (f); };
-        bool                GetMIDIThruEnable() const       { return mgr->GetThruEnable(); };
-        void                SetMIDIThruChannel (int chan);
-        int                 GetMIDIThruChannel() const      { return thru_rechannelizer.GetRechanMap(0); };
+
+        MIDIThru*           GetMIDIThru()                   { return thru; }
+
+        int                 GetMIDIThruChannel() const      { return thru_rechannelizer.GetRechanMap(0); }
         void                SetMIDIThruTranspose (int amt);
-        int                 GetMIDIThruTranspose() const    { return thru_transposer.GetTransposeChannel(0); };
+        int                 GetMIDIThruTranspose() const    { return thru_transposer.GetTransposeChannel(0); }
 
         bool                Load(const char *fname);
         void                UnLoad();
         void                Reset();
-        bool                IsLoaded() const                { return file_loaded; };
+        bool                IsLoaded() const                { return file_loaded; }
 
         MIDIMultiTrack*     GetMultiTrack()                 { return multitrack; }
         const MIDIMultiTrack* GetMultiTrack() const         { return multitrack; }
@@ -73,7 +72,7 @@ class AdvancedSequencer {
         bool                GetRepeatPlay() const           { return mgr->GetRepeatPlay(); }
         int                 GetRepeatPlayStart() const      { return mgr->GetRepeatPlayStart(); }
         int                 GetRepeatPlayEnd() const        { return mgr->GetRepeatPlayEnd(); }
-        bool                IsPlaying() const               { return mgr->IsSeqPlay(); };
+        bool                IsPlaying() const               { return mgr->IsSeqPlay(); }
 
         void                SoloTrack(int trk);
         void                UnSoloTrack();
@@ -166,6 +165,7 @@ class AdvancedSequencer {
         MIDIMultiTrack*                     multitrack;     ///< The sequencer multitrack
         MIDISequencer*                      seq;            ///< The sequencer
         MIDIManager*                        mgr;            ///< The MIDIManager for playing
+        MIDIThru*                           thru;           ///> The MIDI thru
 
         MIDIMultiProcessor                  thru_processor; ///< Processes incoming MIDI messages for MIDI thru
         MIDIProcessorTransposer             thru_transposer;///< Transposes note messages while playing

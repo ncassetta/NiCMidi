@@ -126,28 +126,6 @@ public:
     /// Returns *true* if the sequencer is playing.
     bool                        IsSeqPlay() const       { return play_mode; }
 
-    /// Sets the MIDI thru enable on and off. For effective MIDI thru you must have already
-    /// set in and out thru ports (with SetThruPorts()) otherwise the method will fail and return
-    /// *false*.
-    bool                        SetThruEnable(bool f);
-    /// Returns the MIDI thru enable status.
-    bool                        GetThruEnable() const                   { return thru_enable; }
-    /// Sets the MIDI thru in and out ports. When MIDI thru is enabled (by SetThruEnable()) MIDI
-    /// messages incoming from the in port will be repeated on the out port. When the MIDIManager
-    /// is created, if at least one in and out MIDI ports exist on the system, these are set to 0, 0
-    /// ports, otherwise these are left undefined and you won't be able to enable MIDI thru.
-    bool                        SetThruPorts(unsigned int in_port, unsigned int out_port);
-    /// Sets the MIDI thru in and out channels (see MIDIInDriver::SetThruChannel() and
-    /// MIDIOutDriver::SetThruChannel()).
-    void                        SetThruChannels(char in_chan, char out_chan);
-    /// Returns the MIDI thru in port, that is the port from which thru messages are received.
-    int                         GetThruInPort() const                   { return thru_input; }
-    /// Returns the MIDI thru in channel (see MIDIInDriver::SetThruChannel()).
-    int                         GetThruInChannel() const                { return MIDI_ins[thru_input]->GetThruChannel(); }
-    /// Returns the MIDI thru out port, that is the port to whom thru messages are sent.
-    int                         GetThruOutPort() const                  { return thru_output; }
-    /// Returns the MIDI thru out channel (see MIDIOutDriver::SetThruChannel()).
-    int                         GetThruOutChannel() const               { return MIDI_outs[thru_output]->GetThruChannel(); }
     /// Turns on and off the repeat play (loop) mode of the sequencer
     void                        SetRepeatPlay( bool on_off, unsigned int start_measure, unsigned int end_measure );
     /// Returns the repeat play (loop) status.
@@ -189,10 +167,6 @@ protected:
     tMsecs                      seq_time_offset;    ///< The time between the sequencer start and the timer start
 
     std::atomic<bool>           play_mode;          ///< True if the sequencer is playing
-
-    bool                        thru_enable;        ///< Enables the MIDI thru
-    int                         thru_input;         ///< The id of the MIDI thru in port
-    int                         thru_output;        ///< The id of the MIDI thru out port
 
     std::atomic<bool>           repeat_play_mode;   ///< Enables the repeat play mode
     long                        repeat_start_measure;
