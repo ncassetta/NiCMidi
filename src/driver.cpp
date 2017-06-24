@@ -333,6 +333,13 @@ void MIDIInDriver::ClosePort() {
 }
 
 
+void MIDIInDriver::FlushQueue() {
+    in_mutex.lock();
+    in_queue.Flush();
+    in_mutex.unlock();
+}
+
+
 void MIDIInDriver::SetProcessor(MIDIProcessor* proc) {
     in_mutex.lock();
     processor = proc;
@@ -437,6 +444,8 @@ void MIDIInDriver::HardwareMsgIn(double time,
                                  void* p) {
 
     MIDIInDriver* drv = static_cast<MIDIInDriver*>(p);
+
+    std::cout << drv->GetPortName() << " callback executed\n";
 
     if (!drv->port->isPortOpen() || msg_bytes->size() == 0)
         return;

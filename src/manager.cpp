@@ -27,14 +27,22 @@
 #include "../include/manager.h"
 
 
-
+std::vector<MIDIOutDriver*> MIDIManager::MIDI_outs;
 std::vector<std::string> MIDIManager::MIDI_out_names;
+std::vector<MIDIInDriver*> MIDIManager::MIDI_ins;
 std::vector<std::string> MIDIManager::MIDI_in_names;
 
+MIDISequencer* MIDIManager::sequencer = 0;
+MIDITimer main_timer;
+MIDITimer* MIDIManager::timer = &main_timer;
+tMsecs MIDIManager::sys_time_offset = 0;
+tMsecs MIDIManager::seq_time_offset = 0;
+std::atomic<bool> MIDIManager::play_mode(false);
 
 
-MIDIManager::MIDIManager(MIDISequencer* seq, MIDISequencerGUINotifier *n) :
-    sequencer(seq), notifier(n), sys_time_offset(0), seq_time_offset(0), play_mode(false),
+
+
+MIDIManager::MIDIManager() :
     repeat_play_mode(false), repeat_start_measure(0), repeat_end_measure(0),
     auto_seq_open(true), auto_stop_proc(0), auto_stop_param(0)
 
@@ -87,8 +95,7 @@ void MIDIManager::Reset() {
     repeat_play_mode = false;
     repeat_start_measure = 0;
     repeat_end_measure = 0;
-    if( notifier )
-        notifier->Notify(MIDISequencerGUIEvent( MIDISequencerGUIEvent::GROUP_ALL));
+    Notify(MIDISequencerGUIEvent(MIDISequencerGUIEvent::GROUP_ALL));
     for(unsigned int i = 0; i < MIDI_outs.size(); i++)
         MIDI_outs[i]->Reset();
     for(unsigned int i = 0; i < MIDI_ins.size(); i++)
@@ -113,11 +120,14 @@ void MIDIManager::CloseOutPorts() {
 
 
 void MIDIManager::SetSequencer (MIDISequencer *seq) {
-    if (play_mode)
+    if (play_mode) {
         SeqStop();
+
+        }
     SetRepeatPlay(false, 0, 0);
-    if (notifier)
-        notifier->Notify (MIDISequencerGUIEvent (MIDISequencerGUIEvent::GROUP_ALL));
+    Notify (MIDISequencerGUIEvent (MIDISequencerGUIEvent::GROUP_ALL));
+
+    AddMIDITick(seq);
     sequencer = seq;
 }
 
@@ -130,23 +140,23 @@ void MIDIManager::SeqPlay() {
         std::cout << "The MIDIManager is starting the sequencer ..." << std::endl;
 
         if (auto_seq_open)
+
             OpenOutPorts();
 
-        if (notifier) {
-            notifier->Notify ( MIDISequencerGUIEvent (
-                                   MIDISequencerGUIEvent::GROUP_TRANSPORT,
-                                   0,
-                                   MIDISequencerGUIEvent::GROUP_TRANSPORT_START
-                               ) );
+        Notify (MIDISequencerGUIEvent (
+                    MIDISequencerGUIEvent::GROUP_TRANSPORT,
+                    0,
+                    MIDISequencerGUIEvent::GROUP_TRANSPORT_START
+                ));
         }
 
-        seq_time_offset = (unsigned long) sequencer->GetCurrentTimeMs();
-        sys_time_offset = timer->GetSysTimeMs();
-        sequencer->SetTimeShiftMode(true);
-        play_mode = true;
-        timer->Start();
-    }
+    seq_time_offset = (unsigned long) sequencer->GetCurrentTimeMs();
+    sys_time_offset = timer->GetSysTimeMs();
+    sequencer->SetTimeShiftMode(true);
+    play_mode = true;
+    timer->Start();
 }
+
 
 
 void MIDIManager::SeqStop() {
@@ -159,16 +169,14 @@ void MIDIManager::SeqStop() {
         if (auto_seq_open)
             CloseOutPorts();
 
-        if (notifier) {
-            notifier->Notify ( MIDISequencerGUIEvent (
-                                   MIDISequencerGUIEvent::GROUP_TRANSPORT,
-                                   0,
-                                   MIDISequencerGUIEvent::GROUP_TRANSPORT_STOP
-                               ) );
-        }
-
-        std::cout << "The MidiManager has stopped the sequencer" << std::endl;
+        Notify (MIDISequencerGUIEvent(
+                        MIDISequencerGUIEvent::GROUP_TRANSPORT,
+                        0,
+                        MIDISequencerGUIEvent::GROUP_TRANSPORT_STOP
+                ));
     }
+
+    std::cout << "The MidiManager has stopped the sequencer" << std::endl;
 }
 
 
@@ -188,16 +196,28 @@ void MIDIManager::AllNotesOff() {
 }
 
 
+void MIDIManager::AddMIDITick(MIDITICK* tick) { // TODO: stop the thread???
+    unsigned int i = 0;
+    while (i < MIDITicks.size() && MIDITicks[i]->GetPriority())
+        i++;
+    MIDITicks.insert(MIDITicks.begin() + i, tick);
+}
+
+
+
 void MIDIManager::TickProc(tMsecs sys_time_, void* p) {
-/*
-    MIDIManager* manager = static_cast<MIDIManager *>(p);
-    for (unsigned int i = 0; i < manager->tick_procedures.size(); i++)
-        manager->tick_procedures[i](MIDITimer::GetSysTimeMs(), p);
-*/
 
     MIDIManager* manager = static_cast<MIDIManager *>(p);
-    if( manager->play_mode )
-        manager->SequencerPlayProc(sys_time_);
+    for (unsigned int i = 0; i < manager->MIDITicks.size(); i++)
+        manager->MIDITicks[i]->GetFunc()(MIDITimer::GetSysTimeMs(), manager->MIDITicks[i]->GetPointer());
+
+    //MIDIManager* manager = static_cast<MIDIManager *>(p);
+    if( manager->play_mode );
+        //manager->SequencerPlayProc(sys_time_);
+
+    for (unsigned int i = 0; i < MIDI_ins.size(); i++)
+        if (MIDI_ins[i]->IsPortOpen())
+            MIDI_ins[i]->FlushQueue();
 
     //std::cout << "MIDIManager TickProc" << std::endl;
 }
@@ -379,3 +399,12 @@ void MIDIManager::AutoStopProc(void* p) {
     manager->SeqStop();
 }
 */
+
+
+
+void MIDIManager::Notify(const MIDISequencerGUIEvent& ev) {
+    if (sequencer && sequencer->GetState()->notifier)
+        sequencer->GetState()->notifier->Notify(ev);
+}
+
+

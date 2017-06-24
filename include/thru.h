@@ -64,12 +64,13 @@ class MIDIThru : public MIDITICK {
         virtual void            SetAll(MIDIInDriver* in_p, MIDIOutDriver* out_p, char in_c, char out_c);
 
         /// Sets the MIDI thru enable on and off. For effective MIDI thru you must have already
-    /// set in and out thru ports (with SetThruPorts()) otherwise the method will fail and return
-    /// *false*.
-    bool                        SetEnable(bool f);
-    /// Returns the MIDI thru enable status.
-    bool                        GetEnable() const                       { return enable; }
+        /// set in and out thru ports (with SetThruPorts()) otherwise the method will fail and return
+        /// *false*.
+        bool                    SetEnable(bool f);
+        /// Returns the MIDI thru enable status.
+        bool                    GetEnable() const                       { return enable; }
 
+        static void             StaticTickProc(tMsecs sys_time, void* pt);
 
     protected:
 

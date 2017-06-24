@@ -394,6 +394,7 @@ void MIDISequencerState::NotifyTrack(int item) const {
 
 
 MIDISequencer::MIDISequencer (MIDIMultiTrack *m, MIDISequencerGUINotifier *n) :
+    MIDITICK(PR_SEQ),
     solo_mode (false), tempo_scale (100),
     track_processors(m->GetNumTracks(), 0),
     time_shifts(m->GetNumTracks(), 0),
@@ -827,6 +828,76 @@ double MIDISequencer::MIDItoMs(MIDIClockTime t) {
     }
     return ms_time;
 }
+
+
+
+
+
+
+
+void MIDISequencer::StaticTickProc(tMsecs sys_time, void* pt) {
+    MIDISequencer* seq_pt = static_cast<MIDISequencer *>(pt);
+    seq_pt->TickProc(sys_time);
+}
+
+
+void MIDISequencer::TickProc(tMsecs sys_time_)
+{
+    double sys_time = (double)sys_time_ - (double)sys_time_offset;
+    double next_event_time = 0.0;
+    int msg_track;
+    MIDITimedMessage msg;
+
+    times++;
+
+    // if we are in repeat mode, repeat if we hit end of the repeat region
+    if(MIDIManager::repeat_play_mode && GetCurrentMeasure() >= MIDIManager::repeat_end_measure) {
+        // yes we hit the end of our repeat block
+        // shut off all notes on
+        MIDIManager::AllNotesOff();
+
+        // now move the sequencer to our start position
+        GoToMeasure(MIDIManager::repeat_start_measure);
+
+        // our current raw system time is now the new system time offset
+        sys_time_offset = sys_time;
+        sys_time = 0;
+
+        // the sequencer time offset now must be reset to the
+        // time in milliseconds of the sequence start point
+        seq_time_offset = (unsigned long)GetCurrentTimeMs();
+    }
+
+    // find all events that exist before or at this time,
+    // but only if we have space in the output queue to do so!
+    // also limit ourselves to 100 midi events max.
+    int output_count = 100;
+
+    while(
+        GetNextEventTimeMs(&next_event_time)
+        && (next_event_time - seq_time_offset) <= sys_time
+        && (--output_count) > 0 ) {
+
+        // found an event! get it!
+        if(GetNextEvent(&msg_track, &msg) && !msg.IsMetaEvent())
+
+            // tell the driver the send this message now
+            MIDI_outs[GetTrackPort(ev_track)]->OutputMessage(ev);
+    }
+
+    // auto stop at end of sequence
+    if( !(MIDIManager::repeat_play_mode && GetCurrentMeasure() >= MIDIManager::repeat_end_measure) &&
+            !GetNextEventTimeMs(&next_event_time))
+        // no events left
+        if (auto_stop_proc) {
+            std::thread(auto_stop_proc, auto_stop_param).detach();
+            std::string s = "\t\tExit from MIDIManager::SequencerPlayProc() times = " +
+                std::to_string(times) +"\n";
+            std::cout << s;
+        }
+    times--;
+}
+
 
 
 void MIDISequencer::ScanEventsAtThisTime() {

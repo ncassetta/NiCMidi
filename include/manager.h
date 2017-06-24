@@ -32,6 +32,7 @@
 #include "notifier.h"
 #include "sequencer.h"
 #include "timer.h"
+#include "tick.h"
 
 
 #include <vector>
@@ -63,13 +64,13 @@ public:
     /// is not possible until we have set it).
     /// Moreover you can set an optional MIDISequencerGUINotifier which will notify the GUI
     /// when sequencer starts and stops.
-                                MIDIManager(MIDISequencer *seq = 0, MIDISequencerGUINotifier *n = 0);
+                                MIDIManager();
     /// The dstructor deletes the drivers and the timer (the sequencer and the notifier are not owned
     /// by the class).
     virtual                     ~MIDIManager();
     /// Resets the class to its initial state (sequencer stopped, no MIDI thru, no repeated play).
     /// Doesn't reset the MIDISequencer pointer.
-    void                        Reset();
+    static void                 Reset();
 
     /// Returns the number of MIDI in ports in the system.
     static int                  GetNumMIDIOuts()                { return MIDI_out_names.size(); }
@@ -81,15 +82,15 @@ public:
     static const std::string&   GetMIDIInName(int n)            { return MIDI_in_names[n]; }
 
     /// Returns a pointer to the MIDIOutDriver with given port id.
-    MIDIOutDriver*              GetOutDriver(int n)             { return MIDI_outs[n]; }
+    static MIDIOutDriver*       GetOutDriver(int n)             { return MIDI_outs[n]; }
     /// Returns a pointer to the MIDIInDriver with given port id.
-    MIDIInDriver*               GetInDriver(int n)              { return MIDI_ins[n]; }
+    static MIDIInDriver*        GetInDriver(int n)              { return MIDI_ins[n]; }
 
     void                        OpenOutPorts();
     void                        CloseOutPorts();
 
     /// Returns the elapsed time in ms from the sequencer start (0 if the sequencer is not playing).
-    tMsecs                      GetCurrentTimeMs() const
+    static tMsecs               GetCurrentTimeMs()
                                                 { return play_mode ?
                                                          timer->GetSysTimeMs() + seq_time_offset - sys_time_offset : 0; }
 
@@ -105,12 +106,9 @@ public:
 
     /// Sets the pointer to the sequencer (if you hadn't already done it in the ctor, you must set it).
     /// It resets the repeat play and, if the sequencer was playing, stops it.
-    void                        SetSequencer(MIDISequencer *seq);
+    static void                 SetSequencer(MIDISequencer *seq);
     /// Returns the pointer to the current sequencer.
-    ///{
-    MIDISequencer*              GetSequencer()                  { return sequencer; }
-    const MIDISequencer*        GetSequencer() const            { return sequencer; }
-    ///}
+    static MIDISequencer*       GetSequencer()                  { return sequencer; }
 
     /// Sets the auto open state on and off. If auto open is on the manager will open all the
     /// MIDI out ports when the sequencer starts and will close them when it stops. Otherwise
@@ -120,11 +118,11 @@ public:
     bool                        GetAutoSeqOpen() const          { return auto_seq_open; }
 
     /// Starts the sequencer playback.
-    void                        SeqPlay();
+    static void                 SeqPlay();
     /// Stops the sequencer playback.
-    void                        SeqStop();
+    static void                 SeqStop();
     /// Returns *true* if the sequencer is playing.
-    bool                        IsSeqPlay() const       { return play_mode; }
+    static bool                 IsSeqPlay()                     { return play_mode; }
 
     /// Turns on and off the repeat play (loop) mode of the sequencer
     void                        SetRepeatPlay( bool on_off, unsigned int start_measure, unsigned int end_measure );
@@ -137,6 +135,15 @@ public:
 
     /// Sends a MIDI AllNotesOff message to all open ports.
     void                        AllNotesOff();
+
+
+
+
+
+
+
+    void                        AddMIDITick(MIDITICK *tick);
+    bool                        DeleteMIDITick(MIDITICK *tick);
 
 
 protected:
@@ -153,25 +160,26 @@ protected:
     /// procedure only calls SeqStop().
     //static void                 AutoStopProc(void* p);
 
-    std::vector<MIDIOutDriver*>     MIDI_outs;      ///< A vector of MIDIOutDriver classes (one for each hardware port)
-    static std::vector<std::string> MIDI_out_names; ///< The system names of hardware out ports
-    std::vector<MIDIInDriver*>      MIDI_ins;       ///< A vector of MIDIInDriver classes (one for each hardware port)
-    static std::vector<std::string> MIDI_in_names;  ///< The system names of hardware in ports
+    static void                 Notify(const MIDISequencerGUIEvent& ev);
 
-    MIDISequencer*              sequencer;          ///< The MIDISequencer
-    MIDISequencerGUINotifier*   notifier;           ///< The MIDISequencerGUINotifier
+    static std::vector<MIDIOutDriver*>  MIDI_outs;      ///< A vector of MIDIOutDriver classes (one for each hardware port)
+    static std::vector<std::string>     MIDI_out_names; ///< The system names of hardware out ports
+    static std::vector<MIDIInDriver*>   MIDI_ins;       ///< A vector of MIDIInDriver classes (one for each hardware port)
+    static std::vector<std::string>     MIDI_in_names;  ///< The system names of hardware in ports
 
-    MIDITimer*                  timer;              ///< The timer which temporizes MIDI playback
+    static MIDISequencer*       sequencer;          ///< The MIDISequencer
 
-    tMsecs                      sys_time_offset;    ///< The time between now and timer start
-    tMsecs                      seq_time_offset;    ///< The time between the sequencer start and the timer start
+    static MIDITimer*           timer;              ///< The timer which temporizes MIDI playback
 
-    std::atomic<bool>           play_mode;          ///< True if the sequencer is playing
+    static tMsecs               sys_time_offset;    ///< The time between now and timer start
+    static tMsecs               seq_time_offset;    ///< The time between the sequencer start and the timer start
 
-    std::atomic<bool>           repeat_play_mode;   ///< Enables the repeat play mode
-    long                        repeat_start_measure;
+    static std::atomic<bool>    play_mode;          ///< True if the sequencer is playing
+
+    static std::atomic<bool>    repeat_play_mode;   ///< Enables the repeat play mode
+    static unsigned int         repeat_start_measure;
                                                     ///< The loop start measure
-    long                        repeat_end_measure; ///< The loop end measure
+    static unsigned int         repeat_end_measure; ///< The loop end measure
 
     bool                        auto_seq_open;
 
@@ -180,6 +188,12 @@ protected:
     void*                       auto_stop_param;    ///< The parameter given to the auto stop procedure
 
     std::atomic<int>            times;
+
+
+
+
+    std::vector<MIDITICK *>     MIDITicks;
+
 };
 
 

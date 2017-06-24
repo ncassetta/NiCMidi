@@ -1,6 +1,6 @@
 /*
 
-  AdvancedSequencer class example for libJDKSmidi C++ MIDI Library
+  MIDIThru class example for libJDKSmidi C++ MIDI Library
   (console app, no GUI!)
 
   Copyright (C) 2013 N.Cassetta
@@ -23,13 +23,14 @@
 
 */
 //
-// Copyright (C) 2016 N. Cassetta
+// Copyright (C) 2016 - 2017 N. Cassetta
 // ncassetta@tiscali.it
 //
 
 #include "../include/driver.h"
 #include "../include/manager.h"
 #include "../include/process.h"
+#include "../include/thru.h"
 
 #include <iostream>
 #include <string>
@@ -62,6 +63,7 @@ const char helpstring[] =
 
 
 MIDIManager manager;
+MIDIThru thru;
 MIDIProcessorPrinter printer;
 
 
@@ -110,7 +112,8 @@ int main( int argc, char **argv ) {
         cin.get();
         return EXIT_SUCCESS;
     }
-    CoInitializeEx(NULL, COINIT_MULTITHREADED);
+    manager.AddMIDITick(&thru);
+    manager.SeqPlay();
     cout << "TYPE help TO GET A LIST OF AVAILABLE COMMANDS" << endl << endl;
     while ( command != "quit" )                     // main loop
     {
@@ -137,10 +140,10 @@ int main( int argc, char **argv ) {
                 cout << "Invalid port number\n";
             else
             {
-                manager.SetThruPorts( manager.GetThruInPort(), port );
-                manager.SetThruChannels( manager.GetThruInChannel(), chan );
-                cout << "Out port for MIDI thru\n" << manager.GetMIDIOutName(port) <<
-                        "\tChan: " << chan << endl;;
+                thru.SetOutPort(MIDIManager::GetOutDriver(port));
+                thru.SetOutChannel(chan);
+                cout << "Out port for MIDI thru\n" << thru.GetOutPort() <<
+                        "\tChan: " << thru.GetOutChannel() << endl;;
             }
         }
         else if ( command == "inport" )                 // changes the midi in port
@@ -153,23 +156,23 @@ int main( int argc, char **argv ) {
                 cout << "Invalid port number\n";
             else
             {
-                manager.SetThruPorts( port, manager.GetThruOutPort() );
-                manager.SetThruChannels( chan, manager.GetThruOutChannel() );
-                cout << "In port for MIDI thru\n" << manager.GetMIDIInName(port)
-                     << "\tChan: " << chan << endl;
+                thru.SetInPort(MIDIManager::GetInDriver(port));
+                thru.SetInChannel(chan);
+                cout << "In port for MIDI thru\n" << thru.GetInPort()
+                     << "\tChan: " << thru.GetInChannel() << endl;
             }
         }
         else if ( command == "thru")                    // sets theMIDI thru on and off
         {
             if (par1 == "on") {
-                if (manager.SetThruEnable(true))        // could fail if we haven't MIDI outs
-                    cout << "MIDIthru on, from  in port " << manager.GetThruInPort() <<
-                            " to out port " << manager.GetThruOutPort();
+                if (thru.SetEnable(true))               // could fail if we haven't MIDI outs
+                    cout << "MIDIthru on, from  in port " << thru.GetInPort() <<
+                            " to out port " << thru.GetOutPort();
                 else
                     cout << "MIDIthru on failed" << endl;
             }
             else if (par1 == "off") {
-                manager.SetThruEnable(false);
+                thru.SetEnable(false);
                 cout << "MIDI thru off" << endl;
             }
         }
@@ -177,30 +180,32 @@ int main( int argc, char **argv ) {
         {
             MIDITimedMessage msg;
             unsigned char prog = atoi( par1.c_str() ) % 0x7f;
-            unsigned char chan = (manager.GetThruOutChannel() == -1 ? 0 : manager.GetThruOutChannel());
+            unsigned char chan = (thru.GetOutChannel() == -1 ? 0 : thru.GetOutChannel());
             msg.SetProgramChange(chan, prog);
 
-            if (manager.GetThruOutPort() != -1) {       // a MIDI thru out exists
-                manager.GetOutDriver(manager.GetThruOutPort())->OutputMessage(msg);
-                cout << "Sent program change " << prog << "on port " << manager.GetThruOutPort()
+            if (thru.GetOutPort()) {       // a MIDI thru out exists
+                thru.GetOutPort()->OutputMessage(msg);
+                cout << "Sent program change " << prog << "on port " << thru.GetOutPort()
                      << " channel " << chan << endl;
             }
         }
         else if ( command == "print") {
             if (par1 == "on") {
-                manager.GetInDriver(manager.GetThruInPort())->SetProcessor(&printer);
-                cout << "Print on (port " << manager.GetThruInPort() << ")" << endl;
+                thru.GetInPort()->SetProcessor(&printer);
+                cout << "Print on (port " << thru.GetInPort() << ")" << endl;
             }
             else if (par1 == "off") {
-                manager.GetInDriver(manager.GetThruInPort())->SetProcessor(0);
-                cout << "Print off (port " << manager.GetThruInPort() << ")" << endl;
+                thru.GetInPort()->SetProcessor(0);
+                cout << "Print off (port " << thru.GetInPort() << ")" << endl;
             }
         }
         else if ( command == "status" ) {
+            std::cout << "TO DO ... \n";
+        /*
             int thru_in = manager.GetThruInPort();
             int thru_out = manager.GetThruOutPort();
             cout << "\nPROGRAM STATUS:\n";
-            cout << "MIDI in port:             " << manager.GetMIDIInName(thru_in) << "\n";
+            cout << "MIDI in port:             " << thru.GetMIDIInName(thru_in) << "\n";
             cout << "MIDI in channel:          ";
             if (manager.GetThruInChannel() == -1)
                 cout << "all\n";
@@ -217,6 +222,9 @@ int main( int argc, char **argv ) {
             cout << (manager.GetThruEnable() ? "ON\n" : "OFF\n");
             cout << "Print incoming messages : ";
             cout << ((manager.GetInDriver(manager.GetThruInPort())->GetProcessor() != 0) ? "ON\n" : "OFF\n");
+
+
+*/
         }
         else if ( command == "help")                    // prints help screen
             cout << helpstring;

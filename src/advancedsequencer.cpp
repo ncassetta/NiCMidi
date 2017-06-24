@@ -7,14 +7,13 @@
 AdvancedSequencer::AdvancedSequencer(MIDISequencerGUINotifier *n) :
     multitrack (new MIDIMultiTrack (17)),
     seq (new MIDISequencer (multitrack, n)),
-    mgr (new MIDIManager (seq, n)),
-
     num_measures(0),
     file_loaded (false),
 
-    ctor_type (CTOR_1)              // remembers what objects are owned
+    ctor_type (CTOR_1)                          // remembers what objects are owned
 {
-    mgr->SetAutoSeqOpen(false);     // takes the control on out ports
+    MIDIManager::SetSequencer (seq),
+    MIDIManager::SetAutoSeqOpen(false);         // takes the control on out ports
     mgr->SetAutoStopProc(AutoStopProc, this);
 }
 

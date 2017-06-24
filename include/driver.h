@@ -262,6 +262,7 @@ class MIDIInDriver {
         /// Unlocks the queue.
         void                    UnlockQueue()                   { in_mutex.unlock(); }
         /// Gets the in processor.
+        void                    FlushQueue();
         MIDIProcessor*          GetProcessor()                  { return processor; }
         const MIDIProcessor*    GetProcessor() const            { return processor; }
         /// Sets the in processor, which can manipulate all incoming messages (see MIDIProcessor). If you

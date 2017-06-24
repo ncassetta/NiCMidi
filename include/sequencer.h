@@ -26,6 +26,7 @@
 #include "matrix.h"
 #include "processor.h"
 #include "notifier.h"
+#include "tick.h"
 
 #include <string>
 
@@ -192,7 +193,7 @@ class MIDISequencerState : public MIDIProcessor {
 /// MIDIManager. See the example files for effective using. AdvancedSequencer is an all-in-one class for
 /// sequencing and playing
 ///
-class MIDISequencer {
+class MIDISequencer : public MIDITICK {
     public:
         /// The constructor.
         /// \param m a pointer to a MIDIMultitrack that will hold MIDI messages
@@ -353,6 +354,9 @@ class MIDISequencer {
                                                         { MIDISequencerState::metronome_mode = mode; }
 
     protected:
+        /// Inherited by MIDITICK
+        static void                 StaticTickProc(tMsecs sys_time, void* pt);
+        virtual void                TickProc(tMsecs sys_time);
 
         /// Internal use: scans events at 'now' time upgrading the sequencer state
         void                            ScanEventsAtThisTime();
