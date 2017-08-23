@@ -31,10 +31,6 @@ class MIDITICK {
         void*                       p;
         void                        (*static_func)(tMsecs, void*);
         tPriority                   priority;
-
-
-
-
 };
 
 #endif // TICK_H_INCLUDED

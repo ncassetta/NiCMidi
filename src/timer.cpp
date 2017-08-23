@@ -4,44 +4,66 @@ const MIDITimer::timepoint MIDITimer::sys_clock_base = std::chrono::steady_clock
 
 
 MIDITimer::MIDITimer(unsigned int res) : resolution(res), tick(0), tick_param(0),
-                                         timer_on(false) {}
+                                         num_open(0) {}
+
+MIDITimer main_timer;
 
 
 void MIDITimer::SetResolution(unsigned int res) {
-    Stop();
+    int was_open = num_open
+    HardStop();
     resolution = res;
+    if (was_open > 0) {
+        Start();
+        num_open = was_open;
+    }
 }
 
 
 void MIDITimer::SetMIDITick(MIDITick t, void* tp) {
-    Stop();
+    int was_open = num_open;
+    HardStop();
     tick = t;
     tick_param = tp;
+    if (was_open > 0) {
+        Start();
+        num_open = was_open;
+    }
 }
 
 
 bool MIDITimer::Start () {
-    if(bg_thread.joinable() || tick == 0)    // Already running or callback not set
-        return false;
+    if (tick == 0)
+        return false;                           // Callback not set
 
-    timer_on = true;
-    bg_thread = std::thread(ThreadProc, this);
-
-    std::cout << "Timer open with " << resolution << " msecs resolution" << std::endl;
-
+    num_open++;
+    if (num_open == 1) {                         // Must create thread
+        bg_thread = std::thread(ThreadProc, this);
+        std::cout << "Timer open with " << resolution << " msecs resolution" << std::endl;
+    }
     return true;
 }
 
 
 void MIDITimer::Stop() {
-    if (timer_on) {
-        timer_on = false;
-        bg_thread.join();
+    if (num_open > 0) {
+        num_open--;
+        if (num_open == 0) {
+            bg_thread.join();
 
-        std:: cout << "Timer stopped" << std::endl;
+            std:: cout << "Timer stopped" << std::endl;
+        }
     }
 }
 
+
+void MIDITimer::HardStop() {
+    if (num_open > 0) {
+        num_open = 0;
+        bg_thread.join();
+        std:: cout << "Timer stopped" << std::endl;
+    }
+}
 
     // This is the background thread procedure
 void MIDITimer::ThreadProc(MIDITimer* timer) {

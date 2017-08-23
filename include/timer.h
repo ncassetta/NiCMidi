@@ -40,29 +40,30 @@ class MIDITimer {
                                     MIDITimer(unsigned int res = DEFAULT_RESOLUTION);
 
         /// Returns the timer resolution, i.e. the time interval (in milliseconds) between two ticks.
-        int                         GetResolution() const           { return resolution; }
+        static unsigned int         GetResolution()                 { return resolution; }
         /// Sets the timer resolution to the given value in milliseconds. This method stops the timer
         /// if it is running.
-        void                        SetResolution(unsigned int res);
+        static void                 SetResolution(unsigned int res);
 
         /// Returns the pointer to the callback function.
-        MIDITick                    GetMIDITick() const             { return tick; }
+        static MIDITick             GetMIDITick()                   { return tick; }
 
         /// Sets the callback function to be called at every timer tick and its parameter.
         /// The function must be of MIDITick type (i.e. void Funct(tMsecs, void*) ) and it's called
         /// with the system time as first parameter and the given void pointer as second. This
         /// method stops the timer if it is running.
-        void                        SetMIDITick(MIDITick t, void* tp = 0);
+        static void                 SetMIDITick(MIDITick t, void* tp = 0);
 
         /// Returns *true* if the timer is running
-        bool                        IsOpen() const                  { return timer_on;  }
+        static bool                 IsOpen()                        { return (num_open > 0);  }
 
         /// Starts the background thread procedure which calls the callback function at every
         /// timer tick.
-        bool                        Start();
+        static bool                 Start();
         /// Stops the timer, joining the background thread procedure.
-        void                        Stop();
+        static void                 Stop();
 
+        static void                 HardStop();
         /// Returns the elapsed time in milliseconds since the start of application. The 0 time is
         /// a chrono::steady_clock::timepoint static variable.
         static tMsecs               GetSysTimeMs()
@@ -82,13 +83,14 @@ class MIDITimer {
         /// The background thread procedure which calls the callback function
         static void                 ThreadProc( MIDITimer* timer );
 
-        unsigned int                resolution;         ///< The timer resolution
-        MIDITick                    tick;               ///< The callback function
-        void*                       tick_param;         ///< The callback second parameter
-        std::thread                 bg_thread;          ///< The background thread
-        std::atomic<bool>           timer_on;           ///< True if the timer is running
+        static unsigned int         resolution;         ///< The timer resolution
+        static MIDITick             tick;               ///< The callback function
+        static void*                tick_param;         ///< The callback second parameter
+        static std::thread          bg_thread;          ///< The background thread
+        static std::atomic<int>     num_open;           ///< True if the timer is running
         static const timepoint      sys_clock_base;     ///< The base timepoint for calculating system time
 };
 
+extern MIDITimer main_timer;
 
 #endif // TIMER_H_INCLUDED

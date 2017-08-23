@@ -66,7 +66,8 @@ class MIDIThru : public MIDITICK {
         /// Sets the MIDI thru enable on and off. For effective MIDI thru you must have already
         /// set in and out thru ports (with SetThruPorts()) otherwise the method will fail and return
         /// *false*.
-        bool                    SetEnable(bool f);
+        virtual bool            SetEnable(bool on_off);
+
         /// Returns the MIDI thru enable status.
         bool                    GetEnable() const                       { return enable; }
 

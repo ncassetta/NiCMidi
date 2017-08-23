@@ -86,8 +86,12 @@ public:
     /// Returns a pointer to the MIDIInDriver with given port id.
     static MIDIInDriver*        GetInDriver(int n)              { return MIDI_ins[n]; }
 
-    void                        OpenOutPorts();
-    void                        CloseOutPorts();
+    static bool                 StartTimer()                    { return timer->Start(); }
+
+    static void                 StopTimer()                     { timer->Stop(); }
+
+    static void                 OpenOutPorts();
+    static void                 CloseOutPorts();
 
     /// Returns the elapsed time in ms from the sequencer start (0 if the sequencer is not playing).
     static tMsecs               GetCurrentTimeMs()
@@ -125,7 +129,7 @@ public:
     static bool                 IsSeqPlay()                     { return play_mode; }
 
     /// Turns on and off the repeat play (loop) mode of the sequencer
-    void                        SetRepeatPlay( bool on_off, unsigned int start_measure, unsigned int end_measure );
+    static void                 SetRepeatPlay( bool on_off, unsigned int start_measure, unsigned int end_measure );
     /// Returns the repeat play (loop) status.
     bool                        GetRepeatPlay() const           { return repeat_play_mode; }
     /// Returns the repeat play (loop) start measure.
@@ -142,8 +146,8 @@ public:
 
 
 
-    void                        AddMIDITick(MIDITICK *tick);
-    bool                        DeleteMIDITick(MIDITICK *tick);
+    static void                 AddMIDITick(MIDITICK *tick);
+    static bool                 DeleteMIDITick(MIDITICK *tick);
 
 
 protected:
@@ -192,7 +196,7 @@ protected:
 
 
 
-    std::vector<MIDITICK *>     MIDITicks;
+    static std::vector<MIDITICK *>     MIDITicks;
 
 };
 

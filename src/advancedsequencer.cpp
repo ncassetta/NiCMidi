@@ -13,7 +13,7 @@ AdvancedSequencer::AdvancedSequencer(MIDISequencerGUINotifier *n) :
     ctor_type (CTOR_1)                          // remembers what objects are owned
 {
     MIDIManager::SetSequencer (seq),
-    MIDIManager::SetAutoSeqOpen(false);         // takes the control on out ports
+    mgr->SetAutoSeqOpen(false);                 // takes the control on out ports
     mgr->SetAutoStopProc(AutoStopProc, this);
 }
 
@@ -21,7 +21,6 @@ AdvancedSequencer::AdvancedSequencer(MIDISequencerGUINotifier *n) :
 AdvancedSequencer::AdvancedSequencer(MIDIMultiTrack* mlt, MIDISequencerGUINotifier *n) :
     multitrack (mlt),
     seq (new MIDISequencer (multitrack, n)),
-    mgr (new MIDIManager (seq, n)),
 
     ctor_type (CTOR_2)              // remembers what objects are owned
 
@@ -191,9 +190,7 @@ void AdvancedSequencer::GoToMeasure (int measure, int beat) {
         warp_to_item = warp_positions.size() - 1;
 
     if (mgr->IsSeqPlay()) {
-        std::cout << "Calling MIDIManager::SeqStop() from AdvancedSequencer::GoToMeasure()...\n";
         mgr->SeqStop();
-        std::cout << "... done (SeqStop)\n";
         seq->SetState (&warp_positions[warp_to_item]);
         seq->GoToMeasure (measure, beat);
         mgr->SeqPlay();
@@ -293,7 +290,7 @@ void AdvancedSequencer::SoloTrack (int trk) {
     }
     seq->SetSoloMode (true, trk);
     if (mgr->IsSeqPlay())
-    // track could be muted before soloing: this set appropriate CC, PC, etc
+    // track could be muted before soloing: this sets appropriate CC, PC, etc
     // not previously sent
         CatchEventsBefore(trk);     // MUST be here! We must previously unmute the track!
 }
@@ -303,7 +300,7 @@ void AdvancedSequencer::UnSoloTrack()  {
     if (!file_loaded)
         return;
     if (mgr->IsSeqPlay())
-        // this set appropriate CC, PC, etc for previously muted tracks
+        // this sets appropriate CC, PC, etc for previously muted tracks
         CatchEventsBefore();
     seq->SetSoloMode (false);
 }

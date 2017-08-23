@@ -33,17 +33,21 @@ std::vector<MIDIInDriver*> MIDIManager::MIDI_ins;
 std::vector<std::string> MIDIManager::MIDI_in_names;
 
 MIDISequencer* MIDIManager::sequencer = 0;
-MIDITimer main_timer;
-MIDITimer* MIDIManager::timer = &main_timer;
 tMsecs MIDIManager::sys_time_offset = 0;
 tMsecs MIDIManager::seq_time_offset = 0;
 std::atomic<bool> MIDIManager::play_mode(false);
+std::atomic<bool> MIDIManager::repeat_play_mode(false);
+unsigned int MIDIManager::repeat_start_measure = 0;
+unsigned int MIDIManager::repeat_end_measure = 0;
+
+
+
+MIDIManager main_manager;
 
 
 
 
 MIDIManager::MIDIManager() :
-    repeat_play_mode(false), repeat_start_measure(0), repeat_end_measure(0),
     auto_seq_open(true), auto_stop_proc(0), auto_stop_param(0)
 
 {
@@ -66,7 +70,7 @@ MIDIManager::MIDIManager() :
         error.printMessage();
         exit(EXIT_FAILURE);
     }
-    timer = new MIDITimer();
+    timer = &main_timer;
     timer->SetMIDITick(TickProc, this);
     if (MIDI_ins.size() > 0 && MIDI_outs.size() > 0)    // set MIDI thru on ports 0 (if they exists)
         //SetThruPorts(0, 0)
