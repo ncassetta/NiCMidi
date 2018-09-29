@@ -14,7 +14,7 @@
 /// The type of a variable which can hold the elapsed time in milliseconds.
 typedef unsigned long long tMsecs;
 /// This is the typedef of the callback function which is called at every timer tick.
-typedef  void (*MIDITick)(tMsecs, void*);
+typedef  void (MIDITick)(tMsecs, void*);
 
 ///
 /// Provides the timing required for MIDI playback, using the C++11 &lt;chrono&gt; methods. It
@@ -37,7 +37,7 @@ class MIDITimer {
         /// The constructor creates a timer with the given resolution (time interval between
         /// two ticks). The timer is initially off and you must set the callback function before
         /// starting it (otherwise the timer will do nothing).
-                                    MIDITimer(unsigned int res = DEFAULT_RESOLUTION);
+                                    MIDITimer() = delete;
 
         /// Returns the timer resolution, i.e. the time interval (in milliseconds) between two ticks.
         static unsigned int         GetResolution()                 { return resolution; }
@@ -46,13 +46,13 @@ class MIDITimer {
         static void                 SetResolution(unsigned int res);
 
         /// Returns the pointer to the callback function.
-        static MIDITick             GetMIDITick()                   { return tick; }
+        static MIDITick*            GetMIDITick()                   { return tick; }
 
         /// Sets the callback function to be called at every timer tick and its parameter.
         /// The function must be of MIDITick type (i.e. void Funct(tMsecs, void*) ) and it's called
         /// with the system time as first parameter and the given void pointer as second. This
         /// method stops the timer if it is running.
-        static void                 SetMIDITick(MIDITick t, void* tp = 0);
+        static void                 SetMIDITick(MIDITick* t, void* tp = 0);
 
         /// Returns *true* if the timer is running
         static bool                 IsOpen()                        { return (num_open > 0);  }
@@ -81,10 +81,10 @@ class MIDITimer {
         static const unsigned int   DEFAULT_RESOLUTION = 10;
                                                         ///< The default timer resolution
         /// The background thread procedure which calls the callback function
-        static void                 ThreadProc( MIDITimer* timer );
+        static void                 ThreadProc();
 
         static unsigned int         resolution;         ///< The timer resolution
-        static MIDITick             tick;               ///< The callback function
+        static MIDITick*            tick;               ///< The callback function
         static void*                tick_param;         ///< The callback second parameter
         static std::thread          bg_thread;          ///< The background thread
         static std::atomic<int>     num_open;           ///< True if the timer is running

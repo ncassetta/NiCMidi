@@ -4,7 +4,7 @@
 #include "driver.h"
 #include "tick.h"
 
-class MIDIThru : public MIDITICK {
+class MIDIThru : public MIDITickComponent {
     public:
                                                 MIDIThru();
         virtual                                 ~MIDIThru() {}
@@ -66,27 +66,25 @@ class MIDIThru : public MIDITICK {
         /// Sets the MIDI thru enable on and off. For effective MIDI thru you must have already
         /// set in and out thru ports (with SetThruPorts()) otherwise the method will fail and return
         /// *false*.
-        virtual bool            SetEnable(bool on_off);
+        virtual void            Start();
+        virtual void            Stop();
 
-        /// Returns the MIDI thru enable status.
-        bool                    GetEnable() const                       { return enable; }
 
-        static void             StaticTickProc(tMsecs sys_time, void* pt);
+
+
 
     protected:
 
+        static void             StaticTickProc(tMsecs sys_time, void* pt);
         void                    TickProc(tMsecs sys_time);
 
 
         MIDIInDriver*           in_port;
         MIDIOutDriver*          out_port;
-
-        MIDIProcessor*          processor;
-
         char                    in_channel;
         char                    out_channel;
 
-        bool                    enable;
+        MIDIProcessor*          processor;
 
     private:
 

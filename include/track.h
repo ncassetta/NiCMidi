@@ -235,7 +235,7 @@ class  MIDITrack {
 
         /// Analyzes events in the track upgrading the track status. When a track is created or loaded by
         /// the AdvancedSequencer class this is automatically called. If you edit the track, changing its
-        /// events, you should call this for upgrading its status.
+        /// events, you should call this for updating its status.
         void Analyze();
 
     protected :

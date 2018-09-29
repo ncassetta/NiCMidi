@@ -31,15 +31,21 @@ std::vector<MIDIOutDriver*> MIDIManager::MIDI_outs;
 std::vector<std::string> MIDIManager::MIDI_out_names;
 std::vector<MIDIInDriver*> MIDIManager::MIDI_ins;
 std::vector<std::string> MIDIManager::MIDI_in_names;
+std::vector<MIDITickComponent*> MIDIManager::MIDITicks;
 
 MIDISequencer* MIDIManager::sequencer = 0;
+
+/* OLD!!!! Delete if all OK!
 tMsecs MIDIManager::sys_time_offset = 0;
 tMsecs MIDIManager::seq_time_offset = 0;
 std::atomic<bool> MIDIManager::play_mode(false);
 std::atomic<bool> MIDIManager::repeat_play_mode(false);
 unsigned int MIDIManager::repeat_start_measure = 0;
 unsigned int MIDIManager::repeat_end_measure = 0;
-
+bool MIDIManager::auto_seq_open = true;
+void (*MIDIManager::auto_stop_proc)(void *) = 0;
+void* MIDIManager::auto_stop_param = 0;
+*/
 
 
 MIDIManager main_manager;
@@ -47,10 +53,7 @@ MIDIManager main_manager;
 
 
 
-MIDIManager::MIDIManager() :
-    auto_seq_open(true), auto_stop_proc(0), auto_stop_param(0)
-
-{
+MIDIManager::MIDIManager() {
 #ifdef WIN32    //TODO: this is temporary, needed by WINDOWS10
      CoInitializeEx(NULL, COINIT_MULTITHREADED);
 #endif // WIN32
@@ -70,8 +73,7 @@ MIDIManager::MIDIManager() :
         error.printMessage();
         exit(EXIT_FAILURE);
     }
-    timer = &main_timer;
-    timer->SetMIDITick(TickProc, this);
+    MIDITimer::SetMIDITick(TickProc, this);
     if (MIDI_ins.size() > 0 && MIDI_outs.size() > 0)    // set MIDI thru on ports 0 (if they exists)
         //SetThruPorts(0, 0)
         ;
@@ -80,7 +82,6 @@ MIDIManager::MIDIManager() :
 
 MIDIManager::~MIDIManager() {
     SeqStop();
-    delete timer;
     for (unsigned int i = 0; i < MIDI_outs.size(); i++)
         delete MIDI_outs[i];
     for (unsigned int i = 0; i < MIDI_ins.size(); i++)
@@ -93,13 +94,13 @@ MIDIManager::~MIDIManager() {
 
 
 void MIDIManager::Reset() {
-    SeqStop();
-    sys_time_offset = 0;
-    seq_time_offset = 0;
-    repeat_play_mode = false;
-    repeat_start_measure = 0;
-    repeat_end_measure = 0;
-    Notify(MIDISequencerGUIEvent(MIDISequencerGUIEvent::GROUP_ALL));
+    SeqStop();          // sends a GUI notify if needed
+    //sys_time_offset = 0;
+    //seq_time_offset = 0;
+    //repeat_play_mode = false;
+    //repeat_start_measure = 0;
+    //repeat_end_measure = 0;
+    //Notify(MIDISequencerGUIEvent(MIDISequencerGUIEvent::GROUP_ALL));
     for(unsigned int i = 0; i < MIDI_outs.size(); i++)
         MIDI_outs[i]->Reset();
     for(unsigned int i = 0; i < MIDI_ins.size(); i++)
@@ -124,18 +125,17 @@ void MIDIManager::CloseOutPorts() {
 
 
 void MIDIManager::SetSequencer (MIDISequencer *seq) {
-    if (play_mode) {
-        SeqStop();
+    if (sequencer && sequencer->IsPlaying())
+        sequencer->Stop();
 
-        }
-    SetRepeatPlay(false, 0, 0);
-    Notify (MIDISequencerGUIEvent (MIDISequencerGUIEvent::GROUP_ALL));
+    seq->SetRepeatPlayMeas(0, 0);   // auto switches repeat play to false
+    seq->GetState()->Notify(MIDISequencerGUIEvent::GROUP_ALL);
 
     AddMIDITick(seq);
     sequencer = seq;
 }
 
-
+/* OLD FUNCTIONS SeqPlay() and SeqStop()
 // You can call this even if sequencer is already playing: it will adjust
 // seq_time_offset and sys_time_offset (it is done by AdvancedSequencer::SetTempoScale())
 void MIDIManager::SeqPlay() {
@@ -155,18 +155,17 @@ void MIDIManager::SeqPlay() {
         }
 
     seq_time_offset = (unsigned long) sequencer->GetCurrentTimeMs();
-    sys_time_offset = timer->GetSysTimeMs();
+    sys_time_offset = MIDITimer::GetSysTimeMs();
     sequencer->SetTimeShiftMode(true);
     play_mode = true;
-    timer->Start();
+    MIDITimer::Start();
 }
-
 
 
 void MIDIManager::SeqStop() {
     if (sequencer && play_mode == true) {
         std::cout << "Entered MIDIManager::SeqStop()\n";
-        timer->Stop();
+        MIDITimer::Stop();
         play_mode = false;
         sequencer->SetTimeShiftMode(false);
         AllNotesOff();
@@ -182,16 +181,19 @@ void MIDIManager::SeqStop() {
 
     std::cout << "The MidiManager has stopped the sequencer" << std::endl;
 }
+*/
 
 
-void MIDIManager::SetRepeatPlay ( bool on_off, unsigned int start_measure, unsigned int end_measure ) {
-        // shut off repeat play while we deal with values
-    repeat_play_mode = false;
-    repeat_start_measure = start_measure;
-    repeat_end_measure = end_measure;
-        // set repeat mode flag to how we want it.
-    repeat_play_mode = on_off;
+void MIDIManager::SeqPlay() {
+    if (sequencer)
+        sequencer->Start();
 }
+
+void MIDIManager::SeqStop() {
+    if (sequencer)
+        sequencer->Stop();
+}
+
 
 
 void MIDIManager::AllNotesOff() {
@@ -200,7 +202,7 @@ void MIDIManager::AllNotesOff() {
 }
 
 
-void MIDIManager::AddMIDITick(MIDITICK* tick) { // TODO: stop the thread???
+void MIDIManager::AddMIDITick(MIDITickComponent* tick) { // TODO: stop the thread???
     unsigned int i = 0;
     while (i < MIDITicks.size() && MIDITicks[i]->GetPriority())
         i++;
@@ -209,21 +211,19 @@ void MIDIManager::AddMIDITick(MIDITICK* tick) { // TODO: stop the thread???
 
 
 
-void MIDIManager::TickProc(tMsecs sys_time_, void* p) {
-
-    MIDIManager* manager = static_cast<MIDIManager *>(p);
-    for (unsigned int i = 0; i < manager->MIDITicks.size(); i++)
-        manager->MIDITicks[i]->GetFunc()(MIDITimer::GetSysTimeMs(), manager->MIDITicks[i]->GetPointer());
-
-    //MIDIManager* manager = static_cast<MIDIManager *>(p);
-    if( manager->play_mode );
-        //manager->SequencerPlayProc(sys_time_);
+void MIDIManager::TickProc(tMsecs sys_time, void* p) {
+    for (unsigned int i = 0; i < MIDITicks.size(); i++) {
+        MIDITickComponent* p = MIDITicks[i];
+        if (p->IsPlaying())
+            p->GetFunc()(sys_time, p->GetPointer());
+    }
 
     for (unsigned int i = 0; i < MIDI_ins.size(); i++)
         if (MIDI_ins[i]->IsPortOpen())
             MIDI_ins[i]->FlushQueue();
 
-    //std::cout << "MIDIManager TickProc" << std::endl;
+
+    //std::cout << "MIDIManager::TickProc" << std::endl;
 }
 
 /*  OLD WORKING FUNCTION WITH QUEUE
@@ -339,6 +339,7 @@ void MIDIManager::TimeTickPlayMode( unsigned long sys_time_ )
 
 
 // NEW FUNCTION WITH DIRECT SEND WITH HardwareMsgOut
+/* Now in MIDISequencer
 void MIDIManager::SequencerPlayProc( tMsecs sys_time_ )
 {
     double sys_time = (double)sys_time_ - (double)sys_time_offset;
@@ -396,19 +397,19 @@ void MIDIManager::SequencerPlayProc( tMsecs sys_time_ )
         }
     times--;
 }
+*/
+
 
 /*
 void MIDIManager::AutoStopProc(void* p) {
     MIDIManager* manager = static_cast<MIDIManager *>(p);
     manager->SeqStop();
 }
-*/
-
 
 
 void MIDIManager::Notify(const MIDISequencerGUIEvent& ev) {
     if (sequencer && sequencer->GetState()->notifier)
         sequencer->GetState()->notifier->Notify(ev);
 }
-
+*/
 

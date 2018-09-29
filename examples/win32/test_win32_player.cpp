@@ -414,8 +414,8 @@ VOID SetControls() {
         SetWindowText (hMarker, sequencer->GetCurrentMarker().c_str());
 
     // for every track, update the name, channel, program, volume boxes
-    int i = 1;
-    for (; i < std::min (sequencer->GetNumTracks(), 17); i++) {
+    unsigned int i = 1;
+    for (; i < std::min (sequencer->GetNumTracks(), 17u); i++) {
 
         if (sequencer->GetTrackName(i).length())
             SetWindowText (hTrackNames[i - 1], sequencer->GetTrackName (i).c_str());
@@ -435,9 +435,9 @@ VOID SetControls() {
             SetWindowText(hTrackPrgrs[i - 1], "---");
         else {
             if (sequencer->GetTrackChannel(i) == 9)     // channel 10
-                SetWindowText(hTrackPrgrs[i - 1], GMDrumKits[sequencer->GetTrackProgram(i)]);
+                SetWindowText(hTrackPrgrs[i - 1], GMDrumKits[(int)sequencer->GetTrackProgram(i)]);
             else
-                SetWindowText(hTrackPrgrs[i - 1], GMpatches[sequencer->GetTrackProgram(i)]);
+                SetWindowText(hTrackPrgrs[i - 1], GMpatches[(int)sequencer->GetTrackProgram(i)]);
 
         }
         if (sequencer->GetTrackVolume(i) == -1)
@@ -534,9 +534,9 @@ const char* GetSmpteString() {
             if (ev.GetItem() == MIDISequencerGUIEvent::GROUP_TRACK_PROGRAM) {
                 if (track > 0 && track < 17) {
                     if (sequencer->GetTrackChannel(track) == 9)     // channel 10
-                        SetWindowText(hTrackPrgrs[track - 1], GMDrumKits[sequencer->GetTrackProgram(track)] );
+                        SetWindowText(hTrackPrgrs[track - 1], GMDrumKits[(int)sequencer->GetTrackProgram(track)] );
                     else
-                        SetWindowText ( hTrackPrgrs[track - 1], GMpatches[sequencer->GetTrackProgram(track)] );
+                        SetWindowText ( hTrackPrgrs[track - 1], GMpatches[(int)sequencer->GetTrackProgram(track)] );
                 }
             }
 
@@ -556,7 +556,7 @@ const char* GetSmpteString() {
 
 VOID SetMIDIActivity() {
     char s[10];
-    for (int i = 1; i < sequencer->GetNumTracks(); i++) {
+    for (unsigned int i = 1; i < sequencer->GetNumTracks(); i++) {
         if (sequencer->GetTrackNoteCount(i))
             MIDIActDelays[i - 1] = ACT_DELAY;
         else if (MIDIActDelays[i - 1] > 0)

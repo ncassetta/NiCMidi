@@ -394,8 +394,10 @@ void MIDISequencerState::NotifyTrack(int item) const {
 
 
 MIDISequencer::MIDISequencer (MIDIMultiTrack *m, MIDISequencerGUINotifier *n) :
-    MIDITICK(PR_SEQ),
-    solo_mode (false), tempo_scale (100),
+    MIDITickComponent(PR_SEQ, StaticTickProc),
+    tempo_scale (100), repeat_play_mode(false),
+    repeat_start_meas(0), repeat_end_meas(0),
+    solo_mode (false),
     track_processors(m->GetNumTracks(), 0),
     time_shifts(m->GetNumTracks(), 0),
     track_ports(m->GetNumTracks(), 0),
@@ -416,7 +418,7 @@ MIDISequencer::~MIDISequencer() {
 
 
 void MIDISequencer::Reset() {
-    state.Reset();
+    GoToZero();
     if (track_processors.size() != GetNumTracks()) {
         track_processors.resize(GetNumTracks(), new MIDISequencerTrackProcessor);
         time_shifts.resize(GetNumTracks());
@@ -433,10 +435,36 @@ void MIDISequencer::Reset() {
 }
 
 
+void MIDISequencer::SetRepeatPlayMode(bool on_off) {
+    if (repeat_start_meas == repeat_end_meas)
+        repeat_play_mode = false;
+    else
+        repeat_play_mode = on_off;
+}
+
+
+void MIDISequencer::SetRepeatPlayMeas (int start_meas, int end_meas) {
+    // shut off repeat play while we deal with values
+    bool old_repeat = repeat_play_mode;
+    repeat_play_mode = false;
+        // change start and end measures if needed
+    if (start_meas != -1)
+        repeat_start_meas = (unsigned)start_meas;
+    if (end_meas != 1)
+        repeat_end_meas = (unsigned)end_meas;
+        // set repeat mode flag
+    if (repeat_start_meas != repeat_end_meas)
+        repeat_play_mode = old_repeat;
+}
+
+
 void MIDISequencer::SetTempoScale(double scale) {
     tempo_scale = (int)(scale * 100);
     state.cur_time_ms = MIDItoMs(state.cur_clock);
 }
+
+
+
 
 
 void MIDISequencer::SetSoloMode(bool m, int trk)  {
@@ -645,7 +673,7 @@ bool MIDISequencer::GoToTimeMs(double time_ms) {
 
 
 // This is simpler because every measure has as first event a beat event!
-bool MIDISequencer::GoToMeasure (int measure, int beat) {
+bool MIDISequencer::GoToMeasure (unsigned int measure, unsigned int beat) {
     bool ret = true;
 
         // temporarily disable the gui notifier
@@ -830,6 +858,38 @@ double MIDISequencer::MIDItoMs(MIDIClockTime t) {
 }
 
 
+// Inherited from MIDITICK
+
+void MIDISequencer::Start() {
+    if (!IsPlaying()) {
+        std::cout << "\t\tEntered in MIDISequencer::Start() ..." << std::endl;
+        MIDIManager::OpenOutPorts();
+        state.Notify (MIDISequencerGUIEvent::GROUP_TRANSPORT,
+                      MIDISequencerGUIEvent::GROUP_TRANSPORT_START);
+        seq_time_offset = (tMsecs)GetCurrentTimeMs();
+        sys_time_offset = MIDITimer::GetSysTimeMs();
+        SetTimeShiftMode(true);
+        MIDITickComponent::Start();
+        std::cout << "\t\t ... Exiting from MIDISequencer::Start()" << std::endl;
+    }
+}
+
+
+void MIDISequencer::Stop() {
+    if (IsPlaying()) {
+        std::cout << "\t\tEntered in MIDISequencer::Stop() ..." << std::endl;
+        MIDITickComponent::Stop();
+        SetTimeShiftMode(false);
+        MIDIManager::AllNotesOff();
+        MIDIManager::CloseOutPorts();
+
+        state.Notify (MIDISequencerGUIEvent::GROUP_TRANSPORT,
+                      MIDISequencerGUIEvent::GROUP_TRANSPORT_STOP);
+        std::cout << "\t\t ... Exiting from MIDISequencer::Stop()" << std::endl;
+    }
+}
+
+
 
 
 
@@ -840,7 +900,7 @@ void MIDISequencer::StaticTickProc(tMsecs sys_time, void* pt) {
     seq_pt->TickProc(sys_time);
 }
 
-
+/* BEFORE CHANGES !!!!
 void MIDISequencer::TickProc(tMsecs sys_time_)
 {
     double sys_time = (double)sys_time_ - (double)sys_time_offset;
@@ -848,16 +908,16 @@ void MIDISequencer::TickProc(tMsecs sys_time_)
     int msg_track;
     MIDITimedMessage msg;
 
-    times++;
+    //times++;
 
     // if we are in repeat mode, repeat if we hit end of the repeat region
-    if(MIDIManager::repeat_play_mode && GetCurrentMeasure() >= MIDIManager::repeat_end_measure) {
+    if(repeat_play_mode && GetCurrentMeasure() >= repeat_end_meas) {
         // yes we hit the end of our repeat block
         // shut off all notes on
         MIDIManager::AllNotesOff();
 
         // now move the sequencer to our start position
-        GoToMeasure(MIDIManager::repeat_start_measure);
+        GoToMeasure(repeat_start_meas);
 
         // our current raw system time is now the new system time offset
         sys_time_offset = sys_time;
@@ -882,11 +942,69 @@ void MIDISequencer::TickProc(tMsecs sys_time_)
         if(GetNextEvent(&msg_track, &msg) && !msg.IsMetaEvent())
 
             // tell the driver the send this message now
-            MIDI_outs[GetTrackPort(ev_track)]->OutputMessage(ev);
+            MIDIManager::GetOutDriver(GetTrackPort(msg_track))->OutputMessage(msg);
+    }
+*/
+
+
+
+
+void MIDISequencer::TickProc(tMsecs sys_time)
+{
+    //double sys_time = (double)sys_time_ - (double)sys_time_offset;
+    double next_event_time = 0.0;
+    int msg_track;
+    MIDITimedMessage msg;
+
+    static unsigned int times;
+    times++;
+    if (!(times % 100))
+        std::cout << "MIDISequencer::TickProc() " << times << " times" << std::endl;
+
+    // if we are in repeat mode, repeat if we hit end of the repeat region
+    if(repeat_play_mode && GetCurrentMeasure() >= repeat_end_meas) {
+        // yes we hit the end of our repeat block
+        // shut off all notes on
+        MIDIManager::AllNotesOff();
+
+        // now move the sequencer to our start position
+        GoToMeasure(repeat_start_meas);
+
+        // our current raw system time is now the new system time offset
+        sys_time_offset = sys_time;
+        // sys_time = 0;
+
+        // the sequencer time offset now must be reset to the
+        // time in milliseconds of the sequence start point
+         seq_time_offset = (unsigned long)GetCurrentTimeMs();
     }
 
+    // find all events that exist before or at this time,
+    // but only if we have space in the output queue to do so!
+    // also limit ourselves to 100 midi events max.
+    int output_count = 100;
+    tMsecs cur_time = sys_time - sys_time_offset + seq_time_offset;
+
+    while(
+        GetNextEventTimeMs(&next_event_time)
+        && next_event_time <= cur_time
+        && (--output_count) > 0 ) {
+
+        // found an event! get it!
+        if(GetNextEvent(&msg_track, &msg) && !msg.IsMetaEvent())
+
+            // tell the driver the send this message now
+            MIDIManager::GetOutDriver(GetTrackPort(msg_track))->OutputMessage(msg);
+    }
+
+
+
+
+
+
+/* OLD
     // auto stop at end of sequence
-    if( !(MIDIManager::repeat_play_mode && GetCurrentMeasure() >= MIDIManager::repeat_end_measure) &&
+    if( !(repeat_play_mode && GetCurrentMeasure() >= repeat_end_meas) &&
             !GetNextEventTimeMs(&next_event_time))
         // no events left
         if (auto_stop_proc) {
@@ -895,7 +1013,16 @@ void MIDISequencer::TickProc(tMsecs sys_time_)
                 std::to_string(times) +"\n";
             std::cout << s;
         }
-    times--;
+    //times--;
+*/
+// NEW
+    // auto stop at end of sequence
+    if( !(repeat_play_mode && GetCurrentMeasure() >= repeat_end_meas) &&
+            !GetNextEventTimeMs(&next_event_time))
+        // no events left
+
+        std::thread(StaticStopProc, this).detach();
+
 }
 
 

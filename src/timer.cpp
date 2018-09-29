@@ -3,14 +3,22 @@
 const MIDITimer::timepoint MIDITimer::sys_clock_base = std::chrono::steady_clock::now();
 
 
-MIDITimer::MIDITimer(unsigned int res) : resolution(res), tick(0), tick_param(0),
-                                         num_open(0) {}
 
-MIDITimer main_timer;
+unsigned int MIDITimer::resolution = MIDITimer::DEFAULT_RESOLUTION;
 
+void* MIDITimer::tick_param = 0;
+MIDITick* MIDITimer::tick = 0;
+std::atomic<int> MIDITimer::num_open(0);
+std::thread MIDITimer::bg_thread;
+
+/*
+MIDITimer::MIDITimer(unsigned int res = DEFAULT_RESOLUTION) {
+    resolution(res);
+}
+*/
 
 void MIDITimer::SetResolution(unsigned int res) {
-    int was_open = num_open
+    int was_open = num_open;
     HardStop();
     resolution = res;
     if (was_open > 0) {
@@ -38,7 +46,7 @@ bool MIDITimer::Start () {
 
     num_open++;
     if (num_open == 1) {                         // Must create thread
-        bg_thread = std::thread(ThreadProc, this);
+        bg_thread = std::thread(ThreadProc);
         std::cout << "Timer open with " << resolution << " msecs resolution" << std::endl;
     }
     return true;
@@ -66,14 +74,14 @@ void MIDITimer::HardStop() {
 }
 
     // This is the background thread procedure
-void MIDITimer::ThreadProc(MIDITimer* timer) {
+void MIDITimer::ThreadProc() {
     timepoint current, next;
-    duration tick(timer->resolution);
+    duration tick(MIDITimer::resolution);
 
-    while(timer->timer_on) {
+    while(MIDITimer::num_open) {
         current = std::chrono::steady_clock::now();
                 // execute the supplied function
-        timer->tick(timer->GetSysTimeMs(), timer->tick_param);
+        MIDITimer::tick(MIDITimer::GetSysTimeMs(), MIDITimer::tick_param);
                 // find the next timepoint and sleep until it
         next = current + tick;
         std::this_thread::sleep_until(next);

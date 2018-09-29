@@ -80,6 +80,8 @@ class MIDIMultiTrack {
                                                                     { return (0 <= trk && (unsigned)trk < tracks.size()); }
         /// Returns the end time of the longest track.
         MIDIClockTime               GetEndTime() const;
+        /// Returns *true* if there are no events and the end time is 0.
+        bool                        IsEmpty() const                 { return (GetNumEvents() == 0 && GetEndTime() == 0); }
         /// Sets the time of the data end event to _end_time_. If there are events of other type after
         /// _end_time_ the function fails and returns *false*.
         bool                        SetEndTime(MIDIClockTime end_time);

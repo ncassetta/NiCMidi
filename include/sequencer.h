@@ -160,8 +160,8 @@ class MIDISequencerState : public MIDIProcessor {
 
         MIDIClockTime           cur_clock;          ///< The current MIDI clock in MIDI ticks
         double                  cur_time_ms;        ///< The current clock in milliseconds
-        int                     cur_beat;           ///< The current beat in the measure (1st beat is 0)
-        int                     cur_measure;        ///< The current measure (1st measure is 0)
+        unsigned int            cur_beat;           ///< The current beat in the measure (1st beat is 0)
+        unsigned int            cur_measure;        ///< The current measure (1st measure is 0)
         MIDIClockTime           beat_length;        ///< The duration of a beat
         MIDIClockTime           next_beat_time;     ///< The MIDI time of the next beat (for internal use)
 
@@ -193,7 +193,7 @@ class MIDISequencerState : public MIDIProcessor {
 /// MIDIManager. See the example files for effective using. AdvancedSequencer is an all-in-one class for
 /// sequencing and playing
 ///
-class MIDISequencer : public MIDITICK {
+class MIDISequencer : public MIDITickComponent {
     public:
         /// The constructor.
         /// \param m a pointer to a MIDIMultitrack that will hold MIDI messages
@@ -202,7 +202,7 @@ class MIDISequencer : public MIDITICK {
                                         MIDISequencer(MIDIMultiTrack* m, MIDISequencerGUINotifier* n = 0);
         /// The destructor. The MIDIMultitrack and the MIDISequencerGUINotifier are not owned by the MIDISequencer.
         virtual                         ~MIDISequencer();
-        /// Resets the state of the sequencer (see MIDISequencerState:Reset()) and all the processors,
+        /// Resets the state of the sequencer (see MIDISequencerState:Reset()) and all the processors to their default,
         /// sets all the tracks to MIDI out 0 and no time offset.
         void                            Reset();
         /// Returns current MIDIClockTime in MIDI ticks.
@@ -210,21 +210,38 @@ class MIDISequencer : public MIDITICK {
                                                                 { return state.cur_clock; }
         /// Returns current time in milliseconds.
         double                          GetCurrentTimeMs() const
-                                                                { return state.cur_time_ms; }
+                                                                { return IsPlaying() ?
+                                                                  MIDITimer::GetSysTimeMs() - sys_time_offset + seq_time_offset :
+                                                                  state.cur_time_ms; }
         /// Returns current measure (1st measure is 0).
-        int                             GetCurrentMeasure() const
+        unsigned int                    GetCurrentMeasure() const
                                                                 { return state.cur_measure; }
         /// Returns current beat in the measure (1st beat is 0).
-        int                             GetCurrentBeat() const  { return state.cur_beat; }
+        unsigned int                    GetCurrentBeat() const  { return state.cur_beat; }
         /// Returns the current MIDI time offset respect to current beat
-        int                             GetCurrentBeatOffset() const
+        MIDIClockTime                   GetCurrentBeatOffset() const
                                                                 { return state.cur_clock - state.last_beat_time; }
+        /// Returns a pointer to the internal MIDIMultiTrack
+        MIDIMultiTrack*                 GetMultiTrack()         { return state.multitrack; }
+        const MIDIMultiTrack*           GetMultiTrack() const   { return state.multitrack; }
+        /// Returns the number of tracks of the multitrack.
+        unsigned int                    GetNumTracks() const	{ return state.GetNumTracks(); }
         /// Returns current tempo scale (1.00 = no scaling, 2.00 = twice faster, etc.).
-        double                          GetTempoScale() const
-                                                                { return ((double)tempo_scale) * 0.01; }
-
-        /// Returns current tempo (BPM) without scaling ( actual tempo is GetCurrentTempo() * GetCurrentTempoScale() ).
-        double                          GetTempo() const        { return state.tempobpm; }
+        double                          GetTempoScale() const   { return tempo_scale; }
+        /// Returns current tempo (BPM) without scaling.
+        double                          GetTempoWithoutScale() const
+                                                                { return state.tempobpm; }
+        /// Returns current tempo (BPM) taking into account scaling (this is the true actual tempo).
+        double                          GetTempoWithScale() const
+                                                                { return state.tempobpm * tempo_scale; }
+        /// Returns the repeat play (loop) status on/off.
+        bool                            GetRepeatPlay() const   { return repeat_play_mode; }
+        /// Returns the repeat play (loop) start measure.
+        unsigned int                    GetRepeatPlayStart() const
+                                                                { return repeat_start_meas; }
+        /// Returns the repeat play (loop) end measure.
+        unsigned int                    GetRepeatPlayEnd() const
+                                                                { return repeat_end_meas; }
 
         /// Returns current MIDISequencerState (i\.e. the global sequencer state at current time). You can easily
         /// jump from a time to another saving and retrieving sequencer states.
@@ -245,8 +262,7 @@ class MIDISequencer : public MIDITICK {
         const MIDISequencerTrackProcessor* GetTrackProcessor(int trk) const
                                                                 { return track_processors[trk]; }
         //@}
-        /// Returns the number of tracks of the multitrack.
-        unsigned int                    GetNumTracks() const	{ return state.GetNumTracks(); }
+
         /// Returns **true** if any track is soloed.
         bool                            GetSoloMode() const     { return solo_mode; }
         /// Returns the time offset (in MIDI ticks) assigned to track _trk_. See SetTimeOffset(),
@@ -257,12 +273,14 @@ class MIDISequencer : public MIDITICK {
         unsigned int                    GetTrackPort(int trk) const
                                                                 { return track_ports[trk]; }
 
-        /// Copies the MIDISequencerState _s_ into the internal sequencer state. You can easily
-        /// jump from a time to another saving and retrieving sequencer states.
-        void                            SetState(MIDISequencerState* s)
-                                                                { state = *s; }
+
+        void                            SetRepeatPlayMode(bool on_off);
+
+        void                            SetRepeatPlayMeas(int start_meas, int end_meas);
+
         /// Sets the global tempo scale (1.00 = no scaling, 2.00 = twice faster, etc.).
         void                            SetTempoScale(double scale);
+        \
         /// Soloes/unsoloes a track
         /// \param m on/off
         /// \param trk the nunber of the track if m is true, otherwhise you can leave default value
@@ -282,6 +300,11 @@ class MIDISequencer : public MIDITICK {
         /// MIDIOutDriver::AllNotesOff() on the old MIDI out port before this or, better, use the
         /// corresponding AdvancedSequencer method which does all for you.
         void                            SetTrackPort(int trk, unsigned int port);
+        // Copies the MIDISequencerState _s_ into the internal sequencer state. You can easily
+        /// jump from a time to another saving and retrieving sequencer states.
+        void                            SetState(MIDISequencerState* s)
+                                                                { state = *s; }
+
         /// Inserts a new empty track with default track parameters (transpose, time offset, etc. ) at
         /// position _trk_ (_trk_ must be in the range 0 ... GetNumTracks() - 1). If _trk_ == -1 (default)
         /// appends the track at the end.
@@ -314,7 +337,7 @@ class MIDISequencer : public MIDITICK {
         /// Sets the current time to the given measure and beat, updating the internal status.
         /// Notifies the GUI a GROUP_ALL event to signify a GUI reset
         /// \return see GoToTime()
-        bool                            GoToMeasure (int measure, int beat = 0);
+        bool                            GoToMeasure (unsigned int measure, unsigned int beat = 0);
         /// Gets the next event (respect current position). This queries the state for the next event in the
         /// multitrack, then processes it with the corresponding track processor (eventually changing the
         /// original event, for example if transposing) and updates the state. Moreover it sends appropriate
@@ -345,6 +368,15 @@ class MIDISequencer : public MIDITICK {
         /// automatically on and off this, so you have no need to use this function
         void                            SetTimeShiftMode(bool f)
                                                         { state.iterator.GetState().SetTimeShiftMode(f); }
+        // Inherited from MIDITICK
+
+        virtual void Start();
+        virtual void Stop();
+
+        virtual void Play()         { Start(); }
+
+
+
         enum {
             FOLLOW_MIDI_TIMESIG_MESSAGE,
             FOLLOW_TIMESIG_DENOMINATOR,
@@ -355,20 +387,30 @@ class MIDISequencer : public MIDITICK {
 
     protected:
         /// Inherited by MIDITICK
-        static void                 StaticTickProc(tMsecs sys_time, void* pt);
-        virtual void                TickProc(tMsecs sys_time);
+        static void                     StaticTickProc(tMsecs sys_time, void* pt);
+        virtual void                    TickProc(tMsecs sys_time);
+
+        static void                     StaticStopProc(MIDISequencer* p)    { p->Stop();}
 
         /// Internal use: scans events at 'now' time upgrading the sequencer state
         void                            ScanEventsAtThisTime();
 
         MIDITimedMessage                beat_marker_msg;    ///< Used by the sequencer to send beat marker messages
+
+        double                          tempo_scale;        ///< The tempo scale (1.0 = true time)
+        std::atomic<bool>               repeat_play_mode;   ///< Enables the repeat play mode
+        unsigned int                    repeat_start_meas;  ///< The loop start measure
+        unsigned int                    repeat_end_meas;    ///< The loop end measure
         bool                            solo_mode;          ///< *true* if any track is soloed
-        int                             tempo_scale;        ///< The global tempo scale in percent (100 = true time)
+
         std::vector<MIDISequencerTrackProcessor*>
                                         track_processors;   ///< A MIDISequencerTrackProcessor for every track
         std::vector<int>                time_shifts;        ///< A time shift (in MIDI ticks) for every track
         std::vector<unsigned int>       track_ports;        ///< The port id for every track
         MIDISequencerState              state;              ///< The sequencer state
+
+        tMsecs                          seq_time_offset;    ///< The time between time 0 and sequencer start
+        tMsecs                          sys_time_offset;    ///< The time between the timer start and the sequencer start
 };
 
 

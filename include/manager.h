@@ -44,6 +44,7 @@
 /// Contains the definition of the class MIDIManager.
 
 
+// TODO: rewrite doc
 ///
 /// This class manages MIDI playback, picking MIDI messages from a MIDISequencer and sending them to the
 /// hardware MIDI ports.
@@ -86,27 +87,30 @@ public:
     /// Returns a pointer to the MIDIInDriver with given port id.
     static MIDIInDriver*        GetInDriver(int n)              { return MIDI_ins[n]; }
 
-    static bool                 StartTimer()                    { return timer->Start(); }
+    static bool                 StartTimer()                    { return MIDITimer::Start(); }
 
-    static void                 StopTimer()                     { timer->Stop(); }
+    static void                 StopTimer()                     { MIDITimer::Stop(); }
 
     static void                 OpenOutPorts();
     static void                 CloseOutPorts();
 
+    /* Now in MIDISequencer
     /// Returns the elapsed time in ms from the sequencer start (0 if the sequencer is not playing).
     static tMsecs               GetCurrentTimeMs()
                                                 { return play_mode ?
-                                                         timer->GetSysTimeMs() + seq_time_offset - sys_time_offset : 0; }
 
+                                                         MIDITimer::GetSysTimeMs() + seq_time_offset - sys_time_offset : 0; }
+    */
     /*
     void                        AddTickProc(MIDITick proc, unsigned int n);
     void                        RemoveTickProc(unsigned int n);
     void                        RemoveTickProc(MIDITick proc);
-    */
+
     /// Sets the procedure executed when the sequencer reaches the end of MIDI data. This actually
     /// stops the playback.
-    void                        SetAutoStopProc(void(proc)(void*), void* param)
+    static void                 SetAutoStopProc(void(proc)(void*), void* param)
                                                                 { auto_stop_proc = proc; auto_stop_param = param; }
+*/
 
     /// Sets the pointer to the sequencer (if you hadn't already done it in the ctor, you must set it).
     /// It resets the repeat play and, if the sequencer was playing, stops it.
@@ -114,89 +118,75 @@ public:
     /// Returns the pointer to the current sequencer.
     static MIDISequencer*       GetSequencer()                  { return sequencer; }
 
+    /* OLD!!!! Delete if all is OK
     /// Sets the auto open state on and off. If auto open is on the manager will open all the
     /// MIDI out ports when the sequencer starts and will close them when it stops. Otherwise
     /// tou must manually open and close them.
-    void                        SetAutoSeqOpen(bool f)          { auto_seq_open = f;}
+    static void                 SetAutoSeqOpen(bool f)          { auto_seq_open = f;}
     /// Gets the auto open status (see SetAutoSeqOpen()).
-    bool                        GetAutoSeqOpen() const          { return auto_seq_open; }
+    static bool                 GetAutoSeqOpen()                { return auto_seq_open; }
+    */
 
     /// Starts the sequencer playback.
     static void                 SeqPlay();
     /// Stops the sequencer playback.
     static void                 SeqStop();
     /// Returns *true* if the sequencer is playing.
-    static bool                 IsSeqPlay()                     { return play_mode; }
+    static bool                 IsSeqPlay()                    { return sequencer->IsPlaying(); }
 
-    /// Turns on and off the repeat play (loop) mode of the sequencer
-    static void                 SetRepeatPlay( bool on_off, unsigned int start_measure, unsigned int end_measure );
-    /// Returns the repeat play (loop) status.
-    bool                        GetRepeatPlay() const           { return repeat_play_mode; }
-    /// Returns the repeat play (loop) start measure.
-    int                         GetRepeatPlayStart() const      { return repeat_start_measure; }
-    /// Returns the repeat play (loop) end measure.
-    int                         GetRepeatPlayEnd() const        { return repeat_end_measure; }
+
 
     /// Sends a MIDI AllNotesOff message to all open ports.
-    void                        AllNotesOff();
+    static void                 AllNotesOff();
 
 
 
 
 
-
-
-    static void                 AddMIDITick(MIDITICK *tick);
-    static bool                 DeleteMIDITick(MIDITICK *tick);
+    static void                 AddMIDITick(MIDITickComponent *tick);
+    static bool                 DeleteMIDITick(MIDITickComponent *tick);
 
 
 protected:
 
-    /// This is the main tick procedure. This actually only calls the (non-static) SequencerPlayProc()
+    /// This is the main tick procedure. This calls the TickProc() method of every MIDITICK object with status
+    /// running.
     static void                 TickProc(tMsecs sys_time_, void* p);
 
-    // void                        MIDIThruProc(tMsecs sys_time_); TODO: unneeded????
+/*
+    // void
+                          MIDIThruProc(tMsecs sys_time_); TODO: unneeded????
     /// This is the sequencer play procedure. It examines events at current time and sends them to the
     /// MIDI out ports, manages repeat play (loop) and calls AutoStopProc() when the sequencer reaches
     /// the end of MIDI events.
     void                        SequencerPlayProc(tMsecs sys_time_);
-    /// This is called by SequencerPlayProc() when the sequencer reaches the end of MIDI events. The default
-    /// procedure only calls SeqStop().
-    //static void                 AutoStopProc(void* p);
+*/
 
-    static void                 Notify(const MIDISequencerGUIEvent& ev);
 
     static std::vector<MIDIOutDriver*>  MIDI_outs;      ///< A vector of MIDIOutDriver classes (one for each hardware port)
     static std::vector<std::string>     MIDI_out_names; ///< The system names of hardware out ports
     static std::vector<MIDIInDriver*>   MIDI_ins;       ///< A vector of MIDIInDriver classes (one for each hardware port)
     static std::vector<std::string>     MIDI_in_names;  ///< The system names of hardware in ports
 
-    static MIDISequencer*       sequencer;          ///< The MIDISequencer
+    static std::vector<MIDITickComponent*>
+                                        MIDITicks;      ///< The array of MIDITICK objects, everyone of them has his MIDITick callback
 
+    static MIDISequencer*               sequencer;      ///< The MIDISequencer
+
+
+/* OLD!!!! Delete if all OK
+    /// This is called by SequencerPlayProc() when the sequencer reaches the end of MIDI events. The default
+    /// procedure only calls SeqStop().
+    //static void                 AutoStopProc(void* p);
+    //static void                 Notify(const MIDISequencerGUIEvent& ev);
     static MIDITimer*           timer;              ///< The timer which temporizes MIDI playback
-
-    static tMsecs               sys_time_offset;    ///< The time between now and timer start
-    static tMsecs               seq_time_offset;    ///< The time between the sequencer start and the timer start
-
     static std::atomic<bool>    play_mode;          ///< True if the sequencer is playing
-
-    static std::atomic<bool>    repeat_play_mode;   ///< Enables the repeat play mode
-    static unsigned int         repeat_start_measure;
-                                                    ///< The loop start measure
-    static unsigned int         repeat_end_measure; ///< The loop end measure
-
-    bool                        auto_seq_open;
-
-    void                        (*auto_stop_proc)(void *);
+    static bool                 auto_seq_open;
+    static void                 (*auto_stop_proc)(void *);
                                                     ///< The auto stop procedure
-    void*                       auto_stop_param;    ///< The parameter given to the auto stop procedure
-
+    static void*                auto_stop_param;    ///< The parameter given to the auto stop procedure
     std::atomic<int>            times;
-
-
-
-
-    static std::vector<MIDITICK *>     MIDITicks;
+*/
 
 };
 

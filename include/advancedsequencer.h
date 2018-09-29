@@ -20,6 +20,144 @@
 /// \file
 /// Contains the definition of the class AdvancedSequencer.
 
+
+
+class AdvancedSequencer : public MIDISequencer {
+    public:
+
+
+                            AdvancedSequencer(MIDISequencerGUINotifier *n = 0);
+                            AdvancedSequencer(MIDIMultiTrack* mlt, MIDISequencerGUINotifier *n = 0);
+//                            AdvancedSequencer(MIDIManager* mg);
+        virtual             ~AdvancedSequencer();
+
+        void                Reset();
+
+        bool                Load(const char *fname);
+        void                UnLoad();
+        bool                IsLoaded() const                { return file_loaded; }
+
+
+        MIDIThru*           GetMIDIThru()                   { return thru; }
+
+        int                 GetMIDIThruChannel() const      { return thru_rechannelizer.GetRechanMap(0); }
+        void                SetMIDIThruTranspose (int amt);
+        int                 GetMIDIThruTranspose() const    { return thru_transposer.GetTransposeChannel(0); }
+
+
+
+        void                GoToZero()                      { GoToTime(0); }
+        void                GoToMeasure(int measure, int beat = 0);
+        void                GoToTime(MIDIClockTime t);
+
+        void                Start();
+        void                Stop();
+        void                OutputMessage(MIDITimedMessage& msg, unsigned int port);
+
+        void                SetRepeatPlay(bool f, int start_measure, int end_measure);
+
+        void                SoloTrack(int trk);
+        void                UnSoloTrack();
+        bool                GetTrackSolo(int trk) const     { return track_processors[trk]->solo; }
+        void                SetTrackMute(int trk, bool f);
+        bool                GetTrackMute (int trk) const    { return track_processors[trk]->mute; }
+        void                UnmuteAllTracks(void);
+        void                SetTempoScale(double scale);
+
+        /// Returns 'now' MIDI clock time.
+        /// It is effective even during playback
+        MIDIClockTime       GetCurrentMIDIClockTime() const;
+
+        /// Returns 'now' time in milliseconds.
+        /// When playing or jumping from one time to another, you can use this to feed a SMPTE
+        tMsecs              GetCurrentTimeMs() const;
+
+        /// Set MIDI ticks per beat (quarter note).
+        /// \return **true** if clocks per beat are effectively changed
+        /// \note  Currently the user is allowed to change this only when the sequencer is empty; default value is
+        /// 120 clocks per quarter beat. However, LoadFile() can change this according to the file clock, and Unload()
+        /// resets it to 120
+        //bool                SetClksPerBeat ( unsigned int cpb );
+
+        /// Returns the base MIDI ticks per beat of the internal MIDIMultiTrack. Default value is 120 clocks per
+        /// quarter beat. However, LoadFile() can change this according to the file clock, and Unload()
+        /// resets it to 120.
+        int                 GetClksPerBeat() const              { return state.multitrack->GetClksPerBeat(); }
+
+        /// Returns the number of measures of the sequencer.
+        int                 GetNumMeasures() const              { return num_measures; }
+        /// Returns the current measure number (first is 0).
+        unsigned int        GetCurrentMeasure() const;
+        /// Returns the number of current beat (first is 0).
+        unsigned int        GetCurrentBeat() const;
+        /// Returns the current MIDI time offset respect current beat.
+        MIDIClockTime       GetCurrentBeatOffset() const;
+        /// Returns the numerator of current time signature.
+        int                 GetTimeSigNumerator() const;
+        /// Returns the denominator of current time signature.
+        int                 GetTimeSigDenominator() const;
+
+        int                 GetKeySigSharpFlat() const;
+        int                 GetKeySigMode() const;
+
+        /// Sets the output MIDI port for the given track.
+        void                SetTrackOutPort(int trk, unsigned int port);
+
+        int                 GetTrackNoteCount(int trk) const;
+        /// Returns the name of the given track.
+        std::string         GetTrackName(int trk) const;
+        /// Returns the current MIDI volume for the given track (-1 if volume wasn't set).
+        char                GetTrackVolume(int trk) const;          // MIDI value or -1
+        /// Returns the current MIDI program (patch) for the given track (-1 if the program wasn't set).
+        char                GetTrackProgram ( int trk ) const;      // MIDI value or -1
+        void                SetTrackVelocityScale(int trk, double scale);
+        double              GetTrackVelocityScale(int trk) const;
+        void                SetTrackRechannelize(int trk, int chan);
+        int                 GetTrackRechannelize(int trk) const;
+        int                 GetTrackChannel(int trk);   // NOT const!!!
+        void                SetTrackTranspose(int trk, int trans);
+        int                 GetTrackTranspose(int trk) const;
+        void                SetTrackTimeShift(int trk, int time);
+        int                 GetTrackTimeShift(int trk) const;
+        std::string         GetCurrentMarker() const;
+
+        void                SetSMPTE(SMPTE* s);
+
+        void                SetChanged();
+
+    protected:
+
+        static const int                    MEASURES_PER_WARP = 4;
+
+        void                                ExtractWarpPositions();
+        void                                CatchEventsBefore();
+        void                                CatchEventsBefore(int trk);
+        static void                         AutoStopProc(void* p);
+
+        //MIDIMultiTrack*                     multitrack;     ///< The sequencer multitrack
+        //MIDISequencer*                      seq;            ///< The sequencer
+        //MIDIManager*                        mgr;            ///< The MIDIManager for playing
+        MIDIThru*                           thru;           ///> The MIDI thru
+
+        MIDIMultiProcessor                  thru_processor; ///< Processes incoming MIDI messages for MIDI thru
+        MIDIProcessorTransposer             thru_transposer;///< Transposes note messages while playing
+        MIDIProcessorRechannelizer          thru_rechannelizer;
+                                                            ///< Rechannelize messages while playing
+
+        int                                 num_measures;   ///< Number of measures
+        bool                                file_loaded;    ///< True if the multitrack is not empty
+
+        std::vector<MIDISequencerState>     warp_positions; ///< Vector of MIDISequencerState objects for fast time moving
+
+private:
+
+        enum { CTOR_1, CTOR_2, CTOR_3 };
+        int ctor_type;
+};
+
+
+
+/*    O L D
 ///
 /// A high level, all-in-one object capable to load an play MIDI files.
 /// Its features include:
@@ -69,10 +207,10 @@ class AdvancedSequencer {
         void                OutputMessage(MIDITimedMessage& msg, unsigned int port);
 
         void                SetRepeatPlay(bool f, int start_measure, int end_measure);
-        bool                GetRepeatPlay() const           { return mgr->GetRepeatPlay(); }
-        int                 GetRepeatPlayStart() const      { return mgr->GetRepeatPlayStart(); }
-        int                 GetRepeatPlayEnd() const        { return mgr->GetRepeatPlayEnd(); }
-        bool                IsPlaying() const               { return mgr->IsSeqPlay(); }
+        bool                GetRepeatPlay() const           { return seq->GetRepeatPlay(); }
+        int                 GetRepeatPlayStart() const      { return seq->GetRepeatPlayStart(); }
+        int                 GetRepeatPlayEnd() const        { return seq->GetRepeatPlayEnd(); }
+        bool                IsPlaying() const               { return MIDIManager::IsSeqPlay(); }
 
         void                SoloTrack(int trk);
         void                UnSoloTrack();
@@ -164,7 +302,7 @@ class AdvancedSequencer {
 
         MIDIMultiTrack*                     multitrack;     ///< The sequencer multitrack
         MIDISequencer*                      seq;            ///< The sequencer
-        MIDIManager*                        mgr;            ///< The MIDIManager for playing
+        //MIDIManager*                        mgr;            ///< The MIDIManager for playing
         MIDIThru*                           thru;           ///> The MIDI thru
 
         MIDIMultiProcessor                  thru_processor; ///< Processes incoming MIDI messages for MIDI thru
@@ -182,6 +320,7 @@ private:
         enum { CTOR_1, CTOR_2, CTOR_3 };
         int ctor_type;
 };
+*/
 
 #endif // JDKSMIDI_ADVANCEDSEQUENCER_H
 
