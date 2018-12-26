@@ -100,7 +100,7 @@ class MIDIRawMessageQueue {
         /// direct reference to the message (and it's so faster than GetMessage(), which copies it)
         /// which is valid until an operation on the queue is done. If the queue has an actual
         /// size lesser than _n_, returns a NoOp message.
-        MIDIRawMessage&                 PeekMessage(unsigned int n);
+        MIDIRawMessage&                 ReadMessage(unsigned int n);
         /// Returns *true* is the queue is empty.
         bool                            IsEmpty() const             { return next_in == next_out; }
         /// Returns *true* if the queue has reached its max size (you can however add other messages,
@@ -118,11 +118,8 @@ class MIDIRawMessageQueue {
 
 ///
 /// Sends MIDI messages to an hardware MIDI out port.
-/// Every MIDI out port is denoted by a specific id number, enumerated by the RtMidi class.
-/// You can set a MIDIProcessor for processing outgoing MIDI messages; moreover, the class
-/// can directly receive MIDI thru messages from a MIDIInDriver and send them to the port (and
-/// you can redirect thru messages to a specific channel). MIDI thru is better managed by the
-/// MIDIManager class, which has specific methods.
+/// Every MIDI out port is denoted by a specific id number, enumerated by the RtMidi class,
+/// and by a name, given by the OS. You can set a MIDIProcessor for processing outgoing MIDI messages.
 ///
 class MIDIOutDriver {
     public:
@@ -138,7 +135,6 @@ class MIDIOutDriver {
         /// - Hardware MIDI port closed (resets the open count)
         /// - No extra processor (warning: this only sets the processor pointer to 0! The driver
         ///   doesn't own its processor).
-        /// - Thru output channel: all
         virtual void            Reset();
 
         /// Opens the hardware out port denoted by the id number given in the ctor. This usually
@@ -176,9 +172,6 @@ class MIDIOutDriver {
         /// is reached.
             // TODO: actually it writes to cerr, Should we raise an exception?
         virtual void            OutputMessage(const MIDITimedMessage& msg);
-        /// This function is called internally during the MIDI thru process. The user shouldn't
-        /// call it directly.
-        virtual void            MIDIThru(MIDITimedMessage msg);
 
     protected:
         /// Sends the message to the hardware MIDI port
@@ -188,10 +181,6 @@ class MIDIOutDriver {
         RtMidiOut*              port;       ///< The hardware port
         const int               port_id;    ///< The id of the port
         int                     num_open;   ///< Counts the number of OpenPort() calls
-        char                    thru_channel;
-                                            ///< The channel of the MIDI thru messages
-        MIDIProcessorRechannelizer  rechannelizer;
-                                            ///< Used internally for rechannelizing thru messagess
 
         std::recursive_mutex    out_mutex;  ///< Used internally
 
@@ -209,18 +198,15 @@ class MIDIOutDriver {
 
 ///
 /// Receives MIDI messages from an hardware MIDI in port.
-/// Every MIDI in port is denoted by a specific id number, enumerated by the RtMidi class.
-/// You can set a MIDIProcessor for processing incoming MIDI messages; moreover, the class
-/// can directly send MIDI received messages to a MIDIOutDriver performing MIDI thru (and
-/// you can separately process thru messages).  MIDI thru is better managed by the
-/// MIDIManager class, which has specific methods.
+/// Every MIDI in port is denoted by a specific id number, enumerated by the RtMidi class,
+/// and by a name, given by the OS. You can set a MIDIProcessor for processing incoming MIDI messages.
 ///
 class MIDIInDriver {
     public:
         /// Creates a MIDIInDriver object which can receive MIDI messages from the given hardware in port.
         /// The incoming MIDI messages are queued into a MIDIRawMessageQueue (the messages are stamped with
         /// the system time in milliseconds and the port number), and you can get them with the methods
-        /// GetMessage() and PeekMessage().
+        /// GetMessage() and ReadMessage().
         /// \param id The id of the hardware port. Numbers of the ports and their names can be retrieved
         /// by the MIDIManager::GetNumMIDIOutPorts() and MIDIManager::GetMIDIOutName() static methods.
         /// \param queue_size The size of the queue; you could try to change this if you have trouble in
@@ -234,8 +220,6 @@ class MIDIInDriver {
         /// - In queue empty
         /// - No extra processor (this only sets the processor pointer to 0! The driver
         ///   doesn't own its processor).
-        /// - Thru off (and undefined thru out driver)
-        /// - Thru output channel: all
         virtual void            Reset();
         /// Opens the hardware in port denoted by the id number given in the ctor. This usually requires
         /// a noticeable amount of time, so it's better not to immediately start to get messages.
@@ -261,8 +245,9 @@ class MIDIInDriver {
         void                    LockQueue()                     { in_mutex.lock(); }
         /// Unlocks the queue.
         void                    UnlockQueue()                   { in_mutex.unlock(); }
-        /// Gets the in processor.
+        /// Empties the queue in a thread-safe way.
         void                    FlushQueue();
+        /// Gets the in processor.
         MIDIProcessor*          GetProcessor()                  { return processor; }
         const MIDIProcessor*    GetProcessor() const            { return processor; }
         /// Sets the in processor, which can manipulate all incoming messages (see MIDIProcessor). If you
@@ -276,7 +261,7 @@ class MIDIInDriver {
         /// available for other purposes); _msg_ is a direct reference to the queued message, so it's your
         /// responsability not to alter it. Returns *true* if such a message really exists in the queue
         /// (and _msg_ is valid), otherwise *false*.
-        virtual bool            PeekMessage(MIDIRawMessage& msg, unsigned int n);
+        virtual bool            ReadMessage(MIDIRawMessage& msg, unsigned int n);
 
         /// This is the default queue size.
         static const unsigned int       DEFAULT_QUEUE_SIZE = 256;
@@ -289,10 +274,6 @@ protected:
                                               void* p);
 
         MIDIProcessor*          processor;      ///< The in processor
-
-        bool                    thru_enable;    ///< Sets the MIDI thru on/off
-        char                    thru_channel;   ///< The receiving channel (-1 for omni)
-        MIDIOutDriver*          thru_driver;    ///< The driver to which thru messages are sent
 
         RtMidiIn*               port;           ///< The hardware port
         const int               port_id;        ///< The id of the port

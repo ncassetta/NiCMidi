@@ -34,9 +34,7 @@ class MIDITimer {
         typedef std::chrono::steady_clock::time_point timepoint;
 		typedef std::chrono::milliseconds duration;
 
-        /// The constructor creates a timer with the given resolution (time interval between
-        /// two ticks). The timer is initially off and you must set the callback function before
-        /// starting it (otherwise the timer will do nothing).
+        /// The class is static so the constructor is deleted.
                                     MIDITimer() = delete;
 
         /// Returns the timer resolution, i.e. the time interval (in milliseconds) between two ticks.
@@ -58,11 +56,14 @@ class MIDITimer {
         static bool                 IsOpen()                        { return (num_open > 0);  }
 
         /// Starts the background thread procedure which calls the callback function at every
-        /// timer tick.
+        /// timer tick. If you call this more than once you must call Stop() an equal number of times
+        /// (or call HardStop()) to interrupt the background thread.
         static bool                 Start();
-        /// Stops the timer, joining the background thread procedure.
+        /// Stops the timer, joining the background thread procedure; if Start() was called more than once
+        /// it only decrements the count of calls.
         static void                 Stop();
-
+        /// Stops the timer, joining the background thread procedure, regardless the number of times
+        /// Start() was called.
         static void                 HardStop();
         /// Returns the elapsed time in milliseconds since the start of application. The 0 time is
         /// a chrono::steady_clock::timepoint static variable.
@@ -91,6 +92,6 @@ class MIDITimer {
         static const timepoint      sys_clock_base;     ///< The base timepoint for calculating system time
 };
 
-extern MIDITimer main_timer;
+//extern MIDITimer main_timer;
 
 #endif // TIMER_H_INCLUDED

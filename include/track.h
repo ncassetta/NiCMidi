@@ -57,13 +57,13 @@ enum
 
 
 ///
-/// A container that manages a std::vector of MIDITimedMessage objects keeping MIDI events,
-/// with methods for editing them. Events are ordered by time and a MIDITrack has at least the MIDI
-/// data end event (which cannot be deleted) at its end.
+/// This class manages a std::vector of MIDITimedMessage objects keeping MIDI events, with methods for
+/// editing them. Events are ordered by time and a MIDITrack has at least the MIDI data end event (which
+/// cannot be deleted) at its end.
 ///
 class  MIDITrack {
     public:
-        /// The constructor creates an empty track with only the data end event
+        /// The constructor creates an empty track with only the data end event.
                                     MIDITrack(MIDIClockTime end_time = 0);
         /// The copy constructor.
                                     MIDITrack(const MIDITrack &trk);
@@ -75,29 +75,29 @@ class  MIDITrack {
         /// If _mantain_end_ is **true** doesn't change the time of the data end event, otherwise
         /// sets it to 0.
         void	                    Clear(bool mantain_end = false);
-        /// Gets the number of events in the track (if the track is empty this returns
-        /// 1, for the data end event)
+        /// Returns the number of events in the track (if the track is empty this returns
+        /// 1, for the data end event).
         unsigned int	            GetNumEvents() const                { return events.size(); }
         /// Returns **true** if the track has only the data end event.
         bool                        IsEmpty() const                     { return events.size() == 1; }
-        /// Gets the track channel (-1 if invalid)
+        /// Returns the track channel (-1 if the track has not type TYPE_CHAN or TYPE_IRREG_CHAN).
         char                        GetChannel();
-        /// Gets the type
+        /// Returns the track type (one of TYPE_MAIN, TYPE_TEXT, TYPE_CHAN, TYPE_IRREG_CHAN, TYPE_MIXED_CHAN,
+        /// TYPE_UNKNOWN, TYPE_SYSEX, TYPE_RESET_SYSEX, TYPE_BOTH_SYSEXù).
         char                        GetType();
+        /// Returns **true** if the track contains MIDI SysEx messages.
         char                        HasSysex();
-        /// These return the address of the _ev_num_ event in the track (_ev_num_ must be
+        /// Returns the address of the _ev_num_ event in the track (_ev_num_ must be
         /// in the range 0 ... GetNumEvents() - 1).
-        ///<{
         MIDITimedMessage*           GetEventAddress(int ev_num)         { return &events[ev_num]; }
+        /// As above.
         const MIDITimedMessage*     GetEventAddress(int ev_num) const   { return &events[ev_num]; }
-        ///<}
-        /// These return a reference to the _ev_num_ event in the track (_ev_num_ must be
+        /// Returns a reference to the _ev_num_ event in the track (_ev_num_ must be
         /// in the range 0 ... GetNumEvents() - 1).
-        ///<{
         MIDITimedMessage&           GetEvent(int ev_num)               { return events[ev_num]; }
+        /// As above.
         const MIDITimedMessage&     GetEvent(int ev_num) const         { return events[ev_num]; }
-        ///<}
-        ///  Gets the time of the data end event.
+        /// Returns the time of the data end event.
         MIDIClockTime               GetEndTime() const                 { return events.back().GetTime(); }
         /// Sets the time of the data end event to _end_time_. If there are events of other type after
         /// _end_time_ the function fails and returns **false**.
@@ -157,7 +157,7 @@ class  MIDITrack {
         /// corresponding Note Off or viceversa).
         bool                        InsertNote( const MIDITimedMessage& msg, MIDIClockTime len,
                                                 int mode = INSMODE_DEFAULT );
-        /// Deletes an event from the track. Use DeleteNote() for safe deleting both Note On and Note Off. You cannot
+        /// Deletes an event from the track. Use DeleteNote() for safely deleting both Note On and Note Off. You cannot
         /// delete the data end event.
         /// \param msg a copy of the event to delete.
         /// \return **false** if an exact copy of the event was not found, or if a memory error occurred, otherwise **true**.

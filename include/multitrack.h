@@ -35,7 +35,7 @@
 class MIDIEditMultiTrack;       // forward declaration
 
 ///
-/// This class holds an array of pointers to MIDITrack objects to be played simultaneously. Every track contains
+/// Holds an array of pointers to MIDITrack objects to be played simultaneously. Every track contains
 /// MIDITimedMessage objects representing MIDI events, and all tracks share the same timing (i.e. the events are
 /// temporized according to the same MIDI clock per beat). Tipically track 0 is the master track and contains only
 /// non-channel MIDI events (time, tempo, markers ...) while  other tracks contain the channel events. The
@@ -96,11 +96,11 @@ class MIDIMultiTrack {
         void                        ClearTracks(bool mantain_end = false);
 
         /// This function is useful in dealing with MIDI format 0 files (with all events in an unique track).
-        /// It remakes the MIDIMultiTrack object with 17 tracks (_src_ track can be a member of multitrack obiect
+        /// It remakes the MIDIMultiTrack object with 17 tracks (_src_ track can be a member of multitrack object
         /// himself), moves _src_ track channel events to tracks 1-16 according their channel, and all other types
         /// of events to track 0. This is automatically done when loading a MIDI format 0 file.
         void                        AssignEventsToTracks (const MIDITrack *src);
-        /// The same as previous, but argument is track number of multitrack object himself
+        /// The same as previous, but argument is the track number of multitrack object himself
         void                        AssignEventsToTracks (int trk = 0)
                                             { return AssignEventsToTracks(GetTrack(trk)); }
         /// Finds the channel of the first MIDIchannel event in the track. This is probably the channel of all
@@ -160,7 +160,7 @@ class MIDIMultiTrack {
 
 
 ///
-/// This class is used by the MIDIMultiTrackIterator to keep track of the current state of the iterator. It
+/// Used by the MIDIMultiTrackIterator to keep track of the current state of the iterator. It
 /// remembers the current time and keep track of the next event in every track. You usually don't need to
 /// deal with it, and the only useful thing is getting and restoring a state for faster processing (see
 /// MIDIMultiTrack::SetStatus()).
@@ -219,7 +219,7 @@ class MIDIMultiTrackIteratorState {
 
 
 ///
-/// This class is a forward iterator for moving along a MIDIMultiTrack. It defines a current time (initially 0)
+/// A forward iterator for moving along a MIDIMultiTrack. It defines a current time (initially 0)
 /// and a current event. You can skip to any time in the MultiTrack and get its events in temporal order, beginning
 /// with the first event with time greater or equal current time, regardless their track.
 /// When the iterator reaches the end of the multitrack the current event become undefined, and the get methods

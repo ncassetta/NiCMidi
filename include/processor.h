@@ -44,7 +44,7 @@
 
 ///
 /// A pure virtual class implementing a MIDI processor, i.e.\ a device that can manipulate
-/// a MIDI message, eventually changing its content. Many objects, such as MIDIDriver,
+/// a MIDI message, inspecting or changing its content. Many objects, such as MIDIDriver,
 /// MIDIManager and MIDISequencer, allow you to insert a MIDIProcessor into the flow of outgoing
 /// messages.
 ///
@@ -136,7 +136,7 @@ class MIDIProcessorTransposer : public MIDIProcessor {
 };
 
 ///
-/// Changes the channel of all MIDI channel messages.
+/// Changes the channel of all processed MIDI channel messages.
 /// You can set a one-to-one correspondence between channels, or send all channel messages
 /// to a single channel.
 ///

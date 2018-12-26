@@ -84,7 +84,7 @@ class MIDIFileReadStream {
 
 ///
 /// An abstract class for objects that can manipulate MIDI events sent by a MIDIFile Reader.
-/// Actually it's only implemented in the MIDIFileReadMultiTrack, which creates a MIDIultitrack
+/// Actually it's only implemented in the MIDIFileReadMultiTrack, which creates a MIDIMultiTrack
 /// from these events. This has no interest for the user.
 ///
 class MIDIFileEventHandler {

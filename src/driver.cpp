@@ -59,7 +59,7 @@ MIDIRawMessage& MIDIRawMessageQueue::GetMessage() {
 }
 
 
-MIDIRawMessage& MIDIRawMessageQueue::PeekMessage(unsigned int n) {
+MIDIRawMessage& MIDIRawMessageQueue::ReadMessage(unsigned int n) {
     static MIDIRawMessage msg;      // needed if we want to return a reference
     if (n >= GetLength())
         return msg;
@@ -74,7 +74,7 @@ MIDIRawMessage& MIDIRawMessageQueue::PeekMessage(unsigned int n) {
 
 
 MIDIOutDriver::MIDIOutDriver(int id) :
-    processor(0), port_id(id), num_open(0), thru_channel(-1) {
+    processor(0), port_id(id), num_open(0) {
     try {
         port = new RtMidiOut();
     }
@@ -95,8 +95,6 @@ void MIDIOutDriver::Reset() {
     port->closePort();
     processor = 0;
     num_open = 0;
-    thru_channel = -1;
-    rechannelizer.Reset();
 }
 
 
@@ -211,13 +209,6 @@ void MIDIOutDriver::OutputMessage(const MIDITimedMessage& msg) {    // MIDITimed
 }
 
 
-void MIDIOutDriver::MIDIThru(MIDITimedMessage msg) {
-    rechannelizer.Process(&msg);
-    std::cout << "Called MIDIThru" << std::endl;
-    OutputMessage(msg);
-}
-
-
 void MIDIOutDriver::HardwareMsgOut(const MIDIMessage &msg) {
     if (!port->isPortOpen())
         return;
@@ -254,6 +245,7 @@ void MIDIOutDriver::HardwareMsgOut(const MIDIMessage &msg) {
         catch (RtMidiError& error) {
             error.printMessage();
         }
+        //std::cout << "Driver sent nonSysex message" << std::endl;
     }
     if (msg.IsSysEx()) // || msg.IsReset())
         MIDITimer::Wait(DRIVER_WAIT_AFTER_SYSEX);
@@ -266,8 +258,7 @@ void MIDIOutDriver::HardwareMsgOut(const MIDIMessage &msg) {
 
 
 MIDIInDriver::MIDIInDriver(int id, unsigned int queue_size) :
-    processor(0), thru_enable(false), thru_channel(-1), thru_driver(0),
-    port_id(id), num_open(0), in_queue(queue_size) {
+    processor(0), port_id(id), num_open(0), in_queue(queue_size) {
     try {
         port = new RtMidiIn();
         port->setCallback(HardwareMsgIn, this);
@@ -287,14 +278,11 @@ MIDIInDriver::~MIDIInDriver() {
 
 
 void MIDIInDriver::Reset() {
-    //SetThruEnable(false);
     port->closePort();
     num_open = 0;
     in_queue.Reset();
 
     processor = 0;
-    thru_channel = -1;
-    thru_driver = 0;
 }
 
 
@@ -347,44 +335,6 @@ void MIDIInDriver::SetProcessor(MIDIProcessor* proc) {
 }
 
 
-/*
-bool MIDIInDriver::SetThruEnable(bool f, MIDIOutDriver* driver) {
-    bool ret = true;
-    in_mutex.lock();
-    if (driver != 0) {                      // we want to set or change the out driver
-        if (thru_driver != 0)               // if it was already set, mute it
-            thru_driver->AllNotesOff();
-        thru_driver = driver;               // and change
-    }
-
-    if (f == false) {                       // thru off
-        if (thru_driver != 0 && driver == 0)
-            thru_driver->AllNotesOff();     // mute the out driver if not already done
-        thru_enable = false;
-    }
-    else {                                  // thru on
-        if (thru_driver != 0)               // the out driver is set
-            thru_enable = true;             // turn thru on
-        else {
-            thru_enable = false;            // the out driver isn't set yet
-            ret = false;                    // the function failed
-        }
-    }
-    in_mutex.unlock();
-    return ret;
-}
-
-
-void MIDIInDriver::SetThruChannel(char chan) {
-    if (chan >= -1 && chan <= 15) {
-        in_mutex.lock();
-        thru_channel = chan;
-        in_mutex.unlock();
-    }
-}
-*/
-
-
 bool MIDIInDriver::InputMessage(MIDIRawMessage &msg) {
     if (!in_queue.IsEmpty()) {
         msg = in_queue.GetMessage();
@@ -394,50 +344,13 @@ bool MIDIInDriver::InputMessage(MIDIRawMessage &msg) {
 }
 
 
-bool MIDIInDriver::PeekMessage(MIDIRawMessage& msg, unsigned int n) {
+bool MIDIInDriver::ReadMessage(MIDIRawMessage& msg, unsigned int n) {
     if (in_queue.GetLength() > 0) {
-        msg = in_queue.PeekMessage(n);
+        msg = in_queue.ReadMessage(n);
         return true;
     }
     return false;
 }
-
-/* OLD
-bool MIDIInDriver::HardwareMsgIn(MIDIMessage &msg) {
-    if (!port->isPortOpen())
-        return false;
-    //out_mutex.lock();
-    busy++;
-    msg_bytes.clear();
-    try {
-        port->getMessage(&msg_bytes);    // try to get a message from the RtMidi in queue
-    }                                    // (we don't use RtMidi timestamp)
-    catch (RtMidiError& error) {
-        error.printMessage();
-        return false;
-    }
-    if (msg_bytes.size() == 0)          // no message in the queue
-        return false;
-    msg.Clear();
-    msg.SetStatus(msg_bytes[0]);        // in msg_bytes[0] there is the status byte
-    if (msg.IsSysEx()) {
-        msg.AllocateSysEx(msg_bytes.size());
-        for (unsigned int i = 0; i < msg_bytes.size(); i++)
-            msg.GetSysEx()->PutSysByte(msg_bytes[i]);   // puts the 0xf0 also in the buffer
-        return true;
-    }
-    else if (msg.GetStatus() == 0xff)   // this is a reset message, NOT a meta
-        return true;
-    else {
-        if (msg.GetLength() > 1)
-            msg.SetByte1(msg_bytes[1]);
-        if (msg.GetLength() > 2)
-            msg.SetByte2(msg_bytes[2]); // byte3 surely 0 in non-meta messages
-    }
-    return false;                       // doesn't happen, only for avoiding a warning
-}
-*/
-
 
 void MIDIInDriver::HardwareMsgIn(double time,
                                  std::vector<unsigned char>* msg_bytes,
@@ -471,10 +384,6 @@ void MIDIInDriver::HardwareMsgIn(double time,
 
         if (drv->processor)
             drv->processor->Process(&msg);          // process it with the in processor
-        if (drv->thru_enable &&                     // if the thru is enabled ...
-            (!msg.IsChannelMsg() || drv->thru_channel == -1 ||
-             (msg.IsChannelMsg() && msg.GetChannel() == drv->thru_channel)))
-            drv->thru_driver->MIDIThru(msg);        // sends the messages to the thru out driver
                                                     // adds the message to the queue
         drv->in_queue.PutMessage(MIDIRawMessage(msg,
                                                 MIDITimer::GetSysTimeMs(),

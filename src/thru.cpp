@@ -1,16 +1,24 @@
+#include "../include/manager.h"
 #include "../include/thru.h"
 
 
 MIDIThru::MIDIThru() : MIDITickComponent(PR_PRE_SEQ, StaticTickProc), in_port(0), out_port(0), in_channel(-1),
                                          out_channel(-1), processor(0)
-{}
+{
+    if (MIDIManager::GetNumMIDIIns() > 0)
+        in_port = MIDIManager::GetInDriver(0);
+    if (MIDIManager::GetNumMIDIOuts() > 0)
+        out_port = MIDIManager::GetOutDriver(0);
+}
 
 
 void MIDIThru::Reset() {
     Stop();
     SilentOut();
-    in_port = 0;
-    out_port = 0;
+    if (MIDIManager::GetNumMIDIIns() > 0)
+        in_port = MIDIManager::GetInDriver(0);
+    if (MIDIManager::GetNumMIDIOuts() > 0)
+        out_port = MIDIManager::GetOutDriver(0);
     processor = 0;
     in_channel = -1;
     out_channel = -1;
@@ -22,11 +30,15 @@ void MIDIThru::SetInPort(MIDIInDriver* const port) {
         return;                                     // trying to assign same ports: nothing to do
 
     if (IsPlaying()) {
+        proc_lock.lock();
         in_port->ClosePort();
         SilentOut();
         port->OpenPort();
+        in_port = port;
+        proc_lock.unlock();
     }
-    in_port = port;
+    else
+        in_port = port;
 }
 
 
@@ -35,18 +47,26 @@ void MIDIThru::SetOutPort(MIDIOutDriver* const port) {
         return;                                     // trying to assign same ports: nothing to do
 
     if (IsPlaying()) {
+        proc_lock.lock();
         SilentOut();
         out_port->ClosePort();
         port->OpenPort();
+        proc_lock.unlock();
     }
-    out_port = port;
+    else
+        out_port = port;
 }
 
 
 void MIDIThru::SetProcessor(MIDIProcessor* proc) {
-    if (IsPlaying())
+    if (IsPlaying()) {
+        proc_lock.lock();
         SilentOut();
-    processor = proc;
+        processor = proc;
+        proc_lock.unlock();
+    }
+    else
+        processor = proc;
 }
 
 
@@ -81,24 +101,26 @@ bool MIDIManager::SetThruPorts(unsigned int in_port, unsigned int out_port) {
 */
 
 void MIDIThru::SetInChannel(char chan) {
-    if (IsPlaying())
+    if (IsPlaying()) {
+        proc_lock.lock();
         SilentOut();
-    in_channel = chan;
+        in_channel = chan;
+        proc_lock.unlock();
+    }
+    else
+        in_channel = chan;
 }
 
 
 void MIDIThru::SetOutChannel(char chan) {
-    if (IsPlaying())
+    if (IsPlaying()) {
+        proc_lock.lock();
         SilentOut();
-    out_channel = chan;
-}
-
-
-void MIDIThru::SetAll(MIDIInDriver* in_p, MIDIOutDriver* out_p, char in_c, char out_c) {
-    SetInPort(in_p);
-    SetOutPort(out_p);
-    SetInChannel(in_c);
-    SetOutChannel(out_c);
+        out_channel = chan;
+        proc_lock.unlock();
+    }
+    else
+        out_channel = chan;
 }
 
 
@@ -123,29 +145,6 @@ void MIDIThru::Stop() {
 }
 
 
-/* OLD!!!!!
-bool MIDIThru::SetEnable(bool on_off) {
-    if (in_port == 0 || out_port == 0)              // we have not set the thru ports yet
-        return false;
-    if (on_off == enable)
-        return true;                                // trying to set the same
-
-    if (on_off) {
-        in_port->OpenPort();
-        out_port->OpenPort();
-        MIDITimer::Start();
-    }
-    else {
-        in_port->ClosePort();
-        SilentOut();
-        out_port->ClosePort();
-        MIDITimer::Stop();
-    }
-    enable = on_off;
-    return true;
-}
-*/
-
 void MIDIThru::SilentOut() {
     if (out_port) {
         if (out_channel != -1)
@@ -167,6 +166,7 @@ void MIDIThru::StaticTickProc(tMsecs sys_time, void* pt) {
 // NEW FUNCTION WITH DIRECT SEND WITH HardwareMsgOut
 void MIDIThru::TickProc(tMsecs sys_time_)
 {
+    proc_lock.lock();
     static unsigned int times = 0;
 
     if (times % 1000 == 0)
@@ -179,7 +179,7 @@ void MIDIThru::TickProc(tMsecs sys_time_)
     in_port->LockQueue();
     for (unsigned int i = 0; i < in_port->GetQueueSize(); i++) {
         std::cout << "Message found\n";
-        in_port->PeekMessage(rmsg, i);
+        in_port->ReadMessage(rmsg, i);
         msg = rmsg.msg;
         if (msg.IsChannelMsg()) {
             if (in_channel == msg.GetChannel() || in_channel == -1) {
@@ -192,4 +192,5 @@ void MIDIThru::TickProc(tMsecs sys_time_)
         }
     }
     in_port->UnlockQueue();
+    proc_lock.unlock();
 }

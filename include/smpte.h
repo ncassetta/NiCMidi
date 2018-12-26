@@ -84,32 +84,32 @@ class  SMPTE {
 
         /// The constructor sets the SMPTE rate to SMPTE_30, the sample rate to SAMPLE_48000
         /// and the offsey to 0.
-        /// \note Tere's no need for explicit copy ctor and operator=
+        /// \note There's no need for explicit copy ctor and operator=
                             SMPTE (SMPTE_RATE smpte_rate = SMPTE_RATE_30,
                                    SAMPLE_RATE sample_rate = SAMPLE_48000);
 
         /// Sets the smpte rate. See \ref rates "SMPTE and sample rates" for avalaible smpte rates
         void                SetSMPTERate (SMPTE_RATE r)     { smpte_rate = r; sample_number_dirty = true; }
 
-        /// Returns the smpte rate
+        /// Returns the smpte rate.
         SMPTE_RATE          GetSMPTERate() const            { return smpte_rate; }
 
         /// Sets the sample rate. See \ref rates "SMPTE and sample rates" for avalaible sample rates
         void                SetSampleRate (SAMPLE_RATE r)   { sample_rate = r; sample_number_dirty = true; }
 
-        /// Returns the sample rate
+        /// Returns the sample rate.
         SAMPLE_RATE         GetSampleRate() const           { return sample_rate; }
 
         /// To perform a samples-to-smpte or samples-to-milliseconds conversion.
         /// You must first load the SMPTE with the number of samples to convert using this;
-        /// then you can call GetMilliseconds(), GetHours(), GetMinutes() etc. to get the
+        /// then you can call GetMilliSeconds(), GetHours(), GetMinutes() etc. to get the
         /// converted values.
         void                SetSampleNumber (unsigned long n)
                                                             { sample_number = n; sample_number_dirty = true; }
 
         /// To perform a smpte-to-samples or milliseconds-to-samples conversion.
         /// You must first load the SMPTE with the smpte values (using SetTime() or SetHours() ...)
-        /// or the number of milliseconds (using SetMilliseconds()) to convert; then you can call
+        /// or the number of milliseconds (using SetMilliSeconds()) to convert; then you can call
         /// this to get the converted value.
         /// \note This is NOT const! May perform an internal conversion.
         unsigned long       GetSampleNumber();
@@ -117,16 +117,19 @@ class  SMPTE {
         /// To perform a smpte-to-samples or smpte-to-milliseconds conversion.
         /// You must first load the SMPTE with the number of of hours, minutes, seconds, frames and
         /// subframes to convert using this (or other functions setting individual items); then you
-        /// can call GetSampleNumber() or GetMilliseconds() to get the converted values.
-        //@{
+        /// can call GetSampleNumber() or GetMilliSeconds() to get the converted values.
         void                SetTime (unsigned char h, unsigned char m, unsigned char s,
                                      unsigned char f = 0, unsigned char sf = 0);
+        /// See SetTime(). This only affect the  smpte hours, leaving unchanged other parameters.
         void                SetHours (unsigned char h)      { hours = h; sample_number_dirty = true; }
+        /// See SetTime(). This only affect the  smpte minutes, leaving unchanged other parameters.
         void                SetMinutes (unsigned char m)    { minutes = m; sample_number_dirty = true; }
+        /// See SetTime(). This only affect the  smpte seconds, leaving unchanged other parameters.
         void                SetSeconds (unsigned char s)    { seconds = s; sample_number_dirty = true; }
+        /// See SetTime(). This only affect the  smpte frames, leaving unchanged other parameters.
         void                SetFrames (unsigned char f)     { frames = f; sample_number_dirty = true; }
+        /// See SetTime(). This only affect the  smpte subframes, leaving unchanged other parameters.
         void                SetSubFrames (unsigned char sf) { sub_frames = sf; sample_number_dirty = true; }
-        //@}
 
         /// To perform a samples-to-smpte or milliseconds-to-smpte conversion.
         /// You must first load the SMPTE with the number of samples (using SetSampleNumber())
@@ -155,16 +158,16 @@ class  SMPTE {
         unsigned long       GetMilliSeconds ();
 
         /// \name To add, increment and decrement samples.
-        /// These functions add, increment or decrement the current sample number./ You can use them
-        /// instead of SetSampleNunber() to perform a samples-to-smpte conversion
         //@{
+        /// These functions add, increment or decrement the current sample number. You can use them
+        /// instead of SetSampleNunber() to perform a samples-to-smpte conversion
         void                AddSamples (long n);
         void                IncSamples()                    { AddSamples (1); }
         void                DecSamples()                    { AddSamples (-1); }
         //@}
 
         /// \name To add, increment and decrement smpte
-        /// These functions add, increment or decrement smpte time parameters./ You can use them instead of
+        /// These functions add, increment or decrement smpte time parameters. You can use them instead of
         /// SetTime() to perform a smpte-to-samples conversion
         //@{
         void                AddHours (char h);

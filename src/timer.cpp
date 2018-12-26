@@ -11,11 +11,7 @@ MIDITick* MIDITimer::tick = 0;
 std::atomic<int> MIDITimer::num_open(0);
 std::thread MIDITimer::bg_thread;
 
-/*
-MIDITimer::MIDITimer(unsigned int res = DEFAULT_RESOLUTION) {
-    resolution(res);
-}
-*/
+
 
 void MIDITimer::SetResolution(unsigned int res) {
     int was_open = num_open;

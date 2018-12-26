@@ -34,6 +34,7 @@ std::vector<std::string> MIDIManager::MIDI_in_names;
 std::vector<MIDITickComponent*> MIDIManager::MIDITicks;
 
 MIDISequencer* MIDIManager::sequencer = 0;
+std::mutex MIDIManager::proc_lock;
 
 /* OLD!!!! Delete if all OK!
 tMsecs MIDIManager::sys_time_offset = 0;
@@ -81,7 +82,7 @@ MIDIManager::MIDIManager() {
 
 
 MIDIManager::~MIDIManager() {
-    SeqStop();
+    MIDITimer::HardStop();
     for (unsigned int i = 0; i < MIDI_outs.size(); i++)
         delete MIDI_outs[i];
     for (unsigned int i = 0; i < MIDI_ins.size(); i++)
@@ -94,7 +95,8 @@ MIDIManager::~MIDIManager() {
 
 
 void MIDIManager::Reset() {
-    SeqStop();          // sends a GUI notify if needed
+    MIDITimer::HardStop();
+    //SeqStop();          // sends a GUI notify if needed
     //sys_time_offset = 0;
     //seq_time_offset = 0;
     //repeat_play_mode = false;
@@ -112,6 +114,17 @@ void MIDIManager::Reset() {
 }
 
 
+void MIDIManager::OpenInPorts() {
+    for (unsigned int i = 0; i < MIDI_ins.size(); i++)
+        MIDI_ins[i]->OpenPort();
+}
+
+
+void MIDIManager::CloseInPorts() {
+    for (unsigned int i = 0; i < MIDI_ins.size(); i++)
+        MIDI_ins[i]->ClosePort();
+}
+
 void MIDIManager::OpenOutPorts() {
     for (unsigned int i = 0; i < MIDI_outs.size(); i++)
         MIDI_outs[i]->OpenPort();
@@ -128,7 +141,7 @@ void MIDIManager::SetSequencer (MIDISequencer *seq) {
     if (sequencer && sequencer->IsPlaying())
         sequencer->Stop();
 
-    seq->SetRepeatPlayMeas(0, 0);   // auto switches repeat play to false
+    //seq->SetRepeatPlay(false, 0, 0);   // auto switches repeat play to off
     seq->GetState()->Notify(MIDISequencerGUIEvent::GROUP_ALL);
 
     AddMIDITick(seq);
@@ -183,7 +196,7 @@ void MIDIManager::SeqStop() {
 }
 */
 
-
+/*
 void MIDIManager::SeqPlay() {
     if (sequencer)
         sequencer->Start();
@@ -193,7 +206,7 @@ void MIDIManager::SeqStop() {
     if (sequencer)
         sequencer->Stop();
 }
-
+*/
 
 
 void MIDIManager::AllNotesOff() {
@@ -202,26 +215,61 @@ void MIDIManager::AllNotesOff() {
 }
 
 
-void MIDIManager::AddMIDITick(MIDITickComponent* tick) { // TODO: stop the thread???
-    unsigned int i = 0;
-    while (i < MIDITicks.size() && MIDITicks[i]->GetPriority())
-        i++;
+void MIDIManager::AddMIDITick(MIDITickComponent* tick) {
+    unsigned int i;
+    // if tick has PR_FIRST priority it goes at first place in the vector
+    if (tick->GetPriority() == PR_FIRST)
+        i = 0;
+    // if has PR_LAST goes to the last place
+    else if (tick->GetPriority() == PR_LAST)
+        i = MIDITicks.size();
+    // finds the correct position for tick
+    else {
+        i = 0;
+        while (i < MIDITicks.size() && MIDITicks[i]->GetPriority() <= tick->GetPriority())
+            i++;
+    }
+    // prevents the TickProc from reading from the MIDITicks vector while we are messing about it
+    proc_lock.lock();
+    // we can have only one sequencer! If found a previous delete it
+    if (i < MIDITicks.size() && tick->GetPriority() == PR_SEQ && MIDITicks[i]->GetPriority() == PR_SEQ)
+        MIDITicks.erase(MIDITicks.begin() + i);
+    // add the MIDITickComponent
     MIDITicks.insert(MIDITicks.begin() + i, tick);
+    proc_lock.unlock();
 }
 
 
+bool MIDIManager::RemoveMIDITick(MIDITickComponent* tick) {
+    unsigned int i = 0;
+    for ( ; i < MIDITicks.size(); i++)
+        if (MIDITicks[i] == tick)
+            break;
+    // item not found
+    if (i == MIDITicks.size())
+        return false;
+    // prevents the TickProc from reading from the MIDITicks vector while we are messing about it
+    proc_lock.lock();
+    if (MIDITicks[i]->IsPlaying())
+        MIDITicks[i]->Stop();
+    MIDITicks.erase(MIDITicks.begin() + i);
+    proc_lock.unlock();
+    return true;
+}
+
 
 void MIDIManager::TickProc(tMsecs sys_time, void* p) {
+    proc_lock.lock();
     for (unsigned int i = 0; i < MIDITicks.size(); i++) {
-        MIDITickComponent* p = MIDITicks[i];
-        if (p->IsPlaying())
-            p->GetFunc()(sys_time, p->GetPointer());
+        MIDITickComponent* tp = MIDITicks[i];
+        if (tp->IsPlaying())
+            tp->GetFunc()(sys_time, tp);
     }
 
     for (unsigned int i = 0; i < MIDI_ins.size(); i++)
         if (MIDI_ins[i]->IsPortOpen())
             MIDI_ins[i]->FlushQueue();
-
+    proc_lock.unlock();
 
     //std::cout << "MIDIManager::TickProc" << std::endl;
 }

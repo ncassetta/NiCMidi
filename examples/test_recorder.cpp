@@ -27,10 +27,12 @@
 //
 
 #include "../include/advancedsequencer.h"
+#include "../include/recorder.h"
 #include "../include/dump_tracks.h"
 
 #include <iostream>
 #include <string>
+
 using namespace std;
 
 
@@ -40,33 +42,23 @@ using namespace std;
 
 string command_buf, command, par1, par2;    // used by GetCommand() for parsing the user input
 AdvancedSequencer sequencer;                // an AdvancedSequencer (without GUI notifier)
+MIDIRecorder recorder;                      // a MIDIRecorder
 
 const char helpstring[] =
 "\nAvailable commands:\n\
    load filename       : Loads the file into the sequencer\n\
+   save filename       : Save the current multitrack into a file\n\
    ports               : Enumerates MIDI In and OUT ports\n\
    play                : Starts playback from current time\n\
-   loop meas1 meas2    : Sets loop play (doesn't start it!) from\n\
-                         meas1 to meas2. Give 0 0 for non loop play\n\
    stop                : Stops playback\n\
+   rec on/off          : Enable/disable recording\n\
    rew                 : Goes to the beginning (stops the playback)\n\
    goto meas [beat]    : Moves current time to given meas and beat\n\
                          (numbered from 0)\n\
    dump [trk]          : Prints a dump of all midi events in the file\n\
                          (or in the track trk)\n\
    outport track port  : Sets the MIDI port for the given track\n\
-   solo track          : Soloes the given track. All other tracks are muted\n\
-   unsolo              : Unsoloes all tracks\n\
-   mute track          : Toggles on and off the muting of given track.\n\
-   unmute              : Unmutes all tracks\n\
-   tscale scale        : Sets global tempo scale. scale is in percent\n\
-                         (ex. 200 = twice faster, 50 = twice slower)\n\
-   vscale track scale  : Sets velocity scale for given track (scale as above)\n\
-   trans track amount  : Sets transpose for given track.\n\
-                         amount is in semitones (positive or negative)\n\
    thru on/off         : Sets the MIDI thru on and off.\n\
-   tshift track amt    : Sets the time shift for given track. The amount can\n\
-                         be positive or negative.\n\
    trackinfo           : Shows info about all tracks of the file\n\
    b                   : (backward) Moves current time to the previous measure\n\
    f                   : (forward) Moves current time to the next measure\n\
@@ -169,6 +161,7 @@ void DumpMIDITrackWithPauses (MIDITrack *trk, int trk_num) {
 
 int main( int argc, char **argv ) {
     //CoInitializeEx(NULL, COINIT_MULTITHREADED);
+    MIDIManager::AddMIDITick(&recorder);
     cout << "TYPE help TO GET A LIST OF AVAILABLE COMMANDS" << endl << endl;
     while ( command != "quit" ) {                   // main loop
         GetCommand();                               // gets user input and parse it
@@ -178,6 +171,14 @@ int main( int argc, char **argv ) {
                 cout << "Loaded file " << par1 << endl;
             else
                 cout << "Error loading file" << endl;
+        }
+        else if( command == "load" ) {              // save the multitrack contents
+            /*
+            if (sequencer.Load(par1.c_str()))
+                cout << "Loaded file " << par1 << endl;
+            else
+                cout << "Error loading file" << endl;
+            */
         }
         else if (command == "ports") {              // enumerates the midi ports
             if (MIDIManager::GetNumMIDIIns()) {
@@ -200,23 +201,18 @@ int main( int argc, char **argv ) {
             cout << "Sequencer started at measure: " << sequencer.GetCurrentMeasure() << ":"
                  << sequencer.GetCurrentBeat() << endl;
         }
-        else if (command == "loop") {               // sets repeates play
-            int beg = atoi(par1.c_str());
-            int end = atoi(par2.c_str());
-            if (!(beg == 0 && end == 0)) {
-
-                sequencer.SetRepeatPlay( true, beg, end );
-                cout << "Repeat play set from measure " << beg << " to measure " << end << endl;
-            }
-            else {
-                sequencer.SetRepeatPlay(false, 0, 0);
-                cout << "Repeat play cleared" << endl;
-            }
-        }
         else if (command == "stop") {               // stops playback
             sequencer.Stop();
             cout << "Sequencer stopped at measure: " << sequencer.GetCurrentMeasure() << ":"
                  << sequencer.GetCurrentBeat() << endl;
+        }
+        else if( command == "rec" ) {               // enable/disable recording
+            /*
+            if (sequencer.Load(par1.c_str()))
+                cout << "Loaded file " << par1 << endl;
+            else
+                cout << "Error loading file" << endl;
+            */
         }
         else if (command == "rew") {                // stops and rewind to time 0
             sequencer.GoToZero();
@@ -246,11 +242,6 @@ int main( int argc, char **argv ) {
                     cout << "Invalid track number" << endl;
             }
         }
-        else if (command == "solo") {               // soloes a track
-            int track = atoi(par1.c_str());
-            sequencer.SoloTrack(track);
-            cout << "Soloed track " << track << endl;
-        }
         else if (command == "outport") {            // changes the midi out port
             int track = atoi(par1.c_str());
             int port = atoi(par2.c_str());
@@ -270,46 +261,6 @@ int main( int argc, char **argv ) {
             cout << "Assigned in port n. " << sequencer.GetInputPort();
         }
         */
-        else if (command == "unsolo") {             // unsoloes all tracks
-            sequencer.UnSoloTrack();
-            cout << "Unsoloed all tracks" << endl;
-        }
-        else if (command == "mute") {               // mutes a track
-            int track = atoi(par1.c_str());
-            sequencer.SetTrackMute(track, !sequencer.GetTrackMute(track));
-            if (sequencer.GetTrackMute(track))
-                cout << "Muted track " << track << endl;
-            else
-                cout << "Unmuted track " << track << endl;
-        }
-        else if (command == "unmute") {             // unmutes a track
-            sequencer.UnmuteAllTracks();
-            cout << "Unmuted all tracks" << endl;
-        }
-        else if (command == "tscale") {             // scales playback tempo
-            int scale = atoi(par1.c_str());
-            sequencer.SetTempoScale(scale);
-            cout << "Tempo scale : " << scale << "%  " <<
-                    " Effective tempo: " << sequencer.GetTempoWithScale() << " bpm" << endl;
-        }
-        else if (command == "vscale") {             // scales velocity for a track
-            int track = atoi(par1.c_str());
-            int scale = atoi(par2.c_str());
-            sequencer.SetTrackVelocityScale(track, (double)scale / 100.0);
-            cout << "Track " << track << " velocity scale set to " << scale << "%" << endl;
-        }
-        else if (command == "trans") {              // transposes a track
-            int track = atoi(par1.c_str());
-            int amount = atoi(par2.c_str());
-            sequencer.SetTrackTranspose(track, amount);
-            cout << "Track " << track << " transposed by " << amount << " semitones " << endl;
-        }
-        else if (command == "tshift") {             // sets the time shift (in ticks) of a track
-            int track = atoi(par1.c_str());
-            int amount = atoi(par2.c_str());
-            sequencer.SetTrackTimeShift(track, amount);
-            cout << "Track " << track << " time shifted by " << amount << " MIDI ticks" << endl;
-        }
         else if (command == "thru") {               // toggles MIDI thru on and off
             if (par1 == "on") {
                 sequencer.SetMIDIThruEnable(true);

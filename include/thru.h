@@ -3,70 +3,61 @@
 
 #include "driver.h"
 #include "tick.h"
+#include <mutex>
 
+
+/// This class is a MIDITickComponent which immediately echoes to an out MIDI port all messages incoming
+/// from an in MIDI port.
+/// You can choose the in and out ports, select an unique channel for receiving and sending messages
+/// (or leave them unchanged) and insert a MIDiProcessor between in and out ports for messages elaboration.
+/// \note Remember that you must call the MIDIManager::AddTick() to make effective the StaticTickProc(), then
+/// you can call Start() and Stop() methods to enable or disable the thru.
 class MIDIThru : public MIDITickComponent {
     public:
                                                 MIDIThru();
         virtual                                 ~MIDIThru() {}
         /// Resets the class to initial status:
-        /// - In and out ports undefined
+        /// - In and out ports set to the OS id 0
         /// - No extra processor (warning: this only sets the processor pointer to 0! The driver
         ///   doesn't own its processor).
-        /// - Thru output channel: all
+        /// - Thru input and output channel: all
         /// - Thru disabled;
         virtual void            Reset();
 
-        /// Opens the hardware out port denoted by the id number given in the ctor. This usually
-        /// requires a noticeable amount of time, so it's better not to immediately start to send
-        /// messages. If the port is already open the object remembers how many times it was
-        /// open, so a corresponding number of ClosePort() must be called to effectively close the port.
+        /// Returns a pointer to the MIDIInDriver from which messages are actually being received.
         MIDIInDriver*           GetInPort() const               { return in_port; }
-        /// Closes the hardware out port, or decrements the count (leaving it open) if it was open
-        /// more than once. The function does nothing if the port is already close. If you want to force
-        /// the closure call Reset().
+        /// Selects the hardware in port from which messages will be received.
+        /// This can be done even if thru is already enabled.
         virtual void            SetInPort(MIDIInDriver* port);
-
+        /// Returns a pointer to the MIDIOutDriver to whom messages are actually being sent.
         MIDIOutDriver*          GetOutPort() const              { return out_port; }
-
+        /// Selects the hardware out port to whom messages will be sent.
+        /// This can be done even if thru is already enabled.
         virtual void            SetOutPort(MIDIOutDriver* port);
-
-
         /// Gets the out processor.
         MIDIProcessor*          GetProcessor()                  { return processor; }
         const MIDIProcessor*    GetProcessor() const            { return processor; }
-        /// Sets the out processor, which can manipulate all outgoing messages (see MIDIProcessor). If you
-        /// want to eliminate a processor already set, call it with 0 as parameter (this only sets the processor
-        /// pointer to 0! The driver doesn't own its processor).
+        /// Sets the out processor, which can manipulate messages arrived to the in port before they are sent
+        /// to the out port (see MIDIProcessor).
+        /// If you want to eliminate a processor already set, call it with 0 as parameter (this only sets the processor
+        /// pointer to 0! The class doesn't own its processor).
         virtual void            SetProcessor(MIDIProcessor* proc);
-        /// Returns the thru channel (see SetThruChannel())
+        /// Returns the thru in channel (see SetInChannel())
         int                     GetInChannel() const            { return (int)in_channel; }
-
-        /// Sets the channel for outgoing thru messages.
-        /// \param chan 0 ... 15: the driver will redirect messages to a specific channel; -1: the driver will leave
-        /// channel messages unchanged (this is the default).
-        /// \note for MIDI thru you need to join a MIDIInDriver (which catches incoming messages from a in port)
-        /// with a MIDIOutDriver (which sends them to a out port). You can do this with driver methods,
-        /// but it's better to use the MIDIManager class which has specific methods.
+        /// Sets the channel for incoming thru messages.
+        /// \param chan 0 ... 15: the thru will accept only messages with a specific channel; -1: the thru will
+        /// accept all messages coming from the in port (this is the default). Non channel messages are always received.
         virtual void            SetInChannel(char chan);
 
-        /// Returns the thru channel (see SetThruChannel())
+        /// Returns the thru out channel (see SetOutChannel())
         int                     GetOutChannel() const            { return (int)out_channel; }
-
         /// Sets the channel for outgoing thru messages.
-        /// \param chan 0 ... 15: the driver will redirect messages to a specific channel; -1: the driver will leave
+        /// \param chan 0 ... 15: the driver will redirect all messages to a specific channel; -1: the driver will leave
         /// channel messages unchanged (this is the default).
-        /// \note for MIDI thru you need to join a MIDIInDriver (which catches incoming messages from a in port)
-        /// with a MIDIOutDriver (which sends them to a out port). You can do this with driver methods,
-        /// but it's better to use the MIDIManager class which has specific methods.
         virtual void            SetOutChannel(char chan);
-
-
-        virtual void            SetAll(MIDIInDriver* in_p, MIDIOutDriver* out_p, char in_c, char out_c);
-
-        /// Sets the MIDI thru enable on and off. For effective MIDI thru you must have already
-        /// set in and out thru ports (with SetThruPorts()) otherwise the method will fail and return
-        /// *false*.
+        /// Starts the MIDI thru.
         virtual void            Start();
+        /// Stops the MIDI thru.
         virtual void            Stop();
 
 
@@ -85,11 +76,11 @@ class MIDIThru : public MIDITickComponent {
         char                    out_channel;
 
         MIDIProcessor*          processor;
+        std::mutex              proc_lock;
 
     private:
 
         void                    SilentOut();
-
 
 };
 

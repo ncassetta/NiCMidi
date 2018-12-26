@@ -40,7 +40,9 @@
 //@{
 
 ///
-/// MIDI Status bytes
+/// \name Channel_status
+/// These are the type values for a MIDI channel message, affecting the upper four bits of its status byte (lower four
+/// bits represent the channel).
 ///
 enum {
     NOTE_OFF	        =0x80,
