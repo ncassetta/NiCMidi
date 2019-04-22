@@ -35,12 +35,15 @@
 #ifndef _JDKMIDI_MIDI_H
 #define _JDKMIDI_MIDI_H
 
-/// \defgroup midienum "MIDI Enumerations"
-/// Enumerations for MIDI hexadecimal values
-//@{
+/// \file
+/// Contains the MIDI values enumerations (to have readable values instead of hexadecimal values) and some utility function.
+
+// \page MIDIENUM MIDI Enumerations for MIDI hexadecimal values
+// Here are the enumerations
+// \subpage CHAN_STATUS
 
 ///
-/// \name Channel_status
+/// \name CHAN_STATUS Channel_status
 /// These are the type values for a MIDI channel message, affecting the upper four bits of its status byte (lower four
 /// bits represent the channel).
 ///
@@ -74,7 +77,7 @@ enum {
     RT_STOP		        =0xfc,
     RT_ACTIVE_SENSE	    =0xfe
 };
-
+//@}
 
 ///
 /// Controller Numbers
@@ -216,42 +219,50 @@ enum {
     META_SEQUENCER_SPECIFIC = 0x7F
 };
 
+/// \endpage
 
-/// Readable names of MIDI messages
+/// \name READABLE_MESSAGES Readable names of MIDI messages
 //<{
+/// Returns a readable name for the given channel message status.
 const char*                 get_chan_msg_name(unsigned char status);
+/// Returns a readable name for the given channel message status.
 const char*                 get_chan_mode_msg_name(unsigned char status);
+/// Returns a readable name for the given meta message status
 const char*                 get_meta_msg_name(unsigned char type);
 const char*                 get_sys_msg_name(unsigned char status);
 //<}
 
 
-/// Length in bytes of MIDI messages
+/// \name MESSAGES_LENGTH Length in bytes of MIDI messages (internal use)
 //<{
 extern const signed char	chan_msg_len[16];
 extern const signed char	sys_msg_len[16];
 //<}
 
 
-/// Piano key color methods
+/// \name PIANO_KEY_COLOR Piano key color methods
 //<{
 extern const bool note_is_white[12];
 
+/// Returns **true** if the MIDI number of the note denotes a white key.
 inline bool	IsNoteWhite(unsigned char note) {
     return note_is_white[note % 12];
 }
 
+/// Returns **true** if the MIDI number of the note denotes a black key.
 inline bool	IsNoteBlack(unsigned char note) {
     return !note_is_white[note % 12];
 }
 //<}
 
-/// Default constants for timesig, tempo, keysig.
-const int MIDI_DEFAULT_TIMESIG_NUMERATOR = 4;
-const int MIDI_DEFAULT_TIMESIG_DENOMINATOR = 4;
-const double MIDI_DEFAULT_TEMPO = 120.0;
-const int MIDI_DEFAULT_KEYSIG_KEY = 0;
-const int MIDI_DEFAULT_KEYSIG_MODE = 0;
+/// \name DEFAULT_MIDI_CONST Default constants when initializing messages and classes
+//<{
+const int MIDI_DEFAULT_TIMESIG_NUMERATOR = 4;       ///< Timesig numerator
+const int MIDI_DEFAULT_TIMESIG_DENOMINATOR = 4;     ///< Timesig denominator
+const double MIDI_DEFAULT_TEMPO = 120.0;            ///< Musical tempo
+const int MIDI_DEFAULT_KEYSIG_KEY = 0;              ///< Keysig key (C)
+const int MIDI_DEFAULT_KEYSIG_MODE = 0;             ///< Keysig mode (major)
+//<}
 
 
 /// MIDI note number to standard octave conversion

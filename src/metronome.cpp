@@ -19,26 +19,25 @@ Metronome::Metronome (MIDISequencerGUINotifier* n) :
 void Metronome::Reset() {
     Stop();
     if (MIDIManager::GetNumMIDIOuts() > 0)
-        port = 0;
+        port = new_port = 0;
     else
-        port = -1;
-    chan = 9;
-    meas_note = 60;
-    beat_note = 58;
-    subd_note = 56;
-    meas_on = false;
-    subd_on = false;
-    subd_type = 2;
+        port = new_port = -1;
+    chan = new_chan = DEFAULT_CHAN;
+    meas_note = new_meas_note = DEFAULT_MEAS_NOTE;
+    beat_note = new_beat_note = DEFAULT_BEAT_NOTE;
+    subd_note = new_subd_note = DEFAULT_SUBD_NOTE;
+    subd_type = new_subd_type = 0;
+    timesig_numerator = new_timesig_numerator = MIDI_DEFAULT_TIMESIG_NUMERATOR;
+    timesig_denominator = new_timesig_denominator = MIDI_DEFAULT_TIMESIG_DENOMINATOR;
+    tempobpm = new_tempobpm = (float)MIDI_DEFAULT_TEMPO;
+    tempo_scale = new_tempo_scale = 100;
+
     cur_clock = 0;
     cur_time_ms = 0.0;
     cur_beat = 0;
     cur_measure = 0;
     beat_length = QUARTER_LENGTH;
-    tempo_scale = 100;
-    tempobpm = (float)MIDI_DEFAULT_TEMPO;
-    timesig_numerator = MIDI_DEFAULT_TIMESIG_NUMERATOR;
-    timesig_denominator = MIDI_DEFAULT_TIMESIG_DENOMINATOR;
-    SetTempo(tempobpm);
+    msecs_per_beat = 60000.0 / tempobpm;
 }
 
 
@@ -50,30 +49,18 @@ float Metronome::GetCurrentTimeMs() const {
 
 
 void Metronome::SetTempo(float t) {
-    bool was_playing = false;
-    if (t > 0.0 && t <= 300.0) {
-        if (IsPlaying()) {
-            was_playing = true;
-            proc_lock.lock();
-        }
-        tempobpm = t;
-        msecs_per_beat = 60000.0 / t;
-        onoff_time = std::max((float)MIN_NOTE_LEN, msecs_per_beat / 4);
-        if (was_playing)
-            proc_lock.unlock();
+    if (t >= 1.0 && t <= 300.0) {
+        new_tempobpm = t;
+        if (!IsPlaying())
+            UpdateValues();
     }
 }
 
 
 void Metronome::SetTempoScale(unsigned int scale) {
-    if (IsPlaying()) {
-        proc_lock.lock();
-        tempo_scale = scale;
-        proc_lock.unlock();
-    }
-    else
-        tempo_scale = scale;
-    //cur_time_ms = MIDItoMs(cur_clock);
+    new_tempo_scale = scale;
+    if (!IsPlaying())
+        UpdateValues();
 }
 
 
@@ -95,111 +82,54 @@ void Metronome::SetOutPort(unsigned int p) {
 
 
 void Metronome::SetOutChannel(unsigned char ch) {
-    if (IsPlaying()) {
-        proc_lock.lock();
-        MIDIManager::GetOutDriver(port)->AllNotesOff(chan);
-        chan = ch;
-        proc_lock.unlock();
-    }
-    else
-        chan = ch;
+    new_chan = ch;
+    if (!IsPlaying())
+        UpdateValues();
 }
 
 
 void Metronome::SetMeasNote(unsigned char note) {
-    if (IsPlaying()) {
-        proc_lock.lock();
-        msg_beat.SetNoteOff(chan, meas_note, 0);
-        MIDIManager::GetOutDriver(port)->OutputMessage(msg_beat);
-        meas_note = note;
-        proc_lock.unlock();
-    }
-    else
-        meas_note = note;
+    new_meas_note = note;
+    if (!IsPlaying())
+        UpdateValues();
 }
 
 
 void Metronome::SetBeatNote(unsigned char note) {
-    if (IsPlaying()) {
-        proc_lock.lock();
-        msg_beat.SetNoteOff(chan, beat_note, 0);
-        MIDIManager::GetOutDriver(port)->OutputMessage(msg_beat);
-        beat_note = note;
-        proc_lock.unlock();
-    }
-    else
-        beat_note = note;
+    new_beat_note = note;
+    if (!IsPlaying())
+        UpdateValues();
 }
 
 
 void Metronome::SetSubdNote(unsigned char note) {
-    if (IsPlaying()) {
-        proc_lock.lock();
-        msg_beat.SetNoteOff(chan, subd_note, 0);
-        MIDIManager::GetOutDriver(port)->OutputMessage(msg_beat);
-        subd_note = note;
-        proc_lock.unlock();
-    }
-    else
-        subd_note = note;
-}
-
-
-void Metronome::SetMeasEnable(bool on_off) {
-    if (IsPlaying() && meas_on != on_off) {
-        proc_lock.lock();
-        msg_beat.SetNoteOff(chan, meas_note, 0);
-        MIDIManager::GetOutDriver(port)->OutputMessage(msg_beat);
-        meas_on = on_off;
-        proc_lock.unlock();
-    }
+    new_subd_note = note;
     if (!IsPlaying())
-        meas_on = on_off;
-}
-
-
-void Metronome::SetSubdEnable(bool on_off) {
-    bool was_playing = false;
-    if (IsPlaying()) {
-        was_playing = true;
-        proc_lock.lock();
-    }
-    msg_beat.SetNoteOff(chan, subd_note, 0);
-    MIDIManager::GetOutDriver(port)->OutputMessage(msg_beat);
-    subd_on = on_off;
-    beat_length = subd_on ? QUARTER_LENGTH / subd_type : QUARTER_LENGTH;
-    msecs_per_beat = 60000.0 / (tempobpm * (subd_on ? subd_type : 1));
-    onoff_time = std::max((float)MIN_NOTE_LEN, msecs_per_beat / 4);
-    if (was_playing)
-        proc_lock.unlock();
+        UpdateValues();
 }
 
 
 void Metronome::SetSubdType(unsigned char type) {
-    if (type < 2 || type > 6)
+    if (type == 1 || type > 6)
         return;
-    bool was_playing = false;
-    if (IsPlaying()) {
-        was_playing = true;
-        proc_lock.lock();
-    }
-    subd_type = type;
+    new_subd_type = type;
+    if (!IsPlaying())
+        UpdateValues();
+    /*
     beat_length = subd_on ? QUARTER_LENGTH / subd_type : QUARTER_LENGTH;
     msecs_per_beat = 60000.0 / (tempobpm * (subd_on ? subd_type : 1));
     onoff_time = std::max((float)MIN_NOTE_LEN, msecs_per_beat / 4);
     if (was_playing)
         proc_lock.unlock();
+    */
 }
 
 
+
 void Metronome::SetTimeSigNumerator(unsigned char n) {
-    if (IsPlaying()) {
-        proc_lock.lock();
-        timesig_numerator = n;
-        proc_lock.unlock();
-    }
-    else
-        timesig_numerator = n;
+    new_timesig_numerator = n;
+    if (!IsPlaying())
+        UpdateValues();
 }
 
 
@@ -216,6 +146,13 @@ void Metronome::SetTimeSigNumerator(unsigned char n) {
                 base_t = now_t;
 
 */
+
+void Metronome::SetTimeSigDenominator(unsigned char d) {
+    new_timesig_denominator = d;
+    if (!IsPlaying())
+        UpdateValues();
+}
+
 
 // Inherited from MIDITICK
 
@@ -244,7 +181,7 @@ void Metronome::Stop() {
     if (IsPlaying()) {
         std::cout << "\t\tEntered in Metronome::Stop() ..." << std::endl;
         MIDITickComponent::Stop();
-        MIDIManager::AllNotesOff();
+        MIDIManager::GetOutDriver(port)->AllNotesOff(chan);
         MIDIManager::CloseOutPorts();
 
         if (notifier)
@@ -257,7 +194,46 @@ void Metronome::Stop() {
 
 
 
+void Metronome::UpdateValues() {
+    if (new_port != port) {
+        if (IsPlaying())
+            MIDIManager::GetOutDriver(port)->AllNotesOff(chan);
+        port = new_port;
+     }
+    if (new_chan != chan) {
+        if (IsPlaying())
+            MIDIManager::GetOutDriver(port)->AllNotesOff(chan);
+        chan = new_chan;
+    }
+    meas_note = new_meas_note;
+    beat_note = new_beat_note;
+    subd_note = new_subd_note;
 
+    if (new_subd_type != subd_type) {
+        subd_type = new_subd_type;
+        beat_length = (subd_type == 0 ? QUARTER_LENGTH : QUARTER_LENGTH / subd_type);
+        msecs_per_beat = 6000000.0 / (tempo_scale * tempobpm * (subd_type == 0 ? 1 : subd_type));
+        onoff_time = std::max((float)MIN_NOTE_LEN, msecs_per_beat / 4);
+    }
+
+    if (new_timesig_numerator != timesig_numerator) {
+        timesig_numerator = new_timesig_numerator;
+        cur_beat = 0;
+    }
+        unsigned char                   timesig_denominator;///< The denominator of current time signature (can be 2, 4, 8, 16)
+
+    if (new_tempobpm != tempobpm) {
+        tempobpm = new_tempobpm;
+        msecs_per_beat = 6000000.0 / (tempo_scale * tempobpm * (subd_type == 0 ? 1 : subd_type));
+        onoff_time = std::max((float)MIN_NOTE_LEN, msecs_per_beat / 4);
+    }
+
+    if (new_tempo_scale != tempo_scale) {
+        tempo_scale = new_tempo_scale;
+        msecs_per_beat = 6000000.0 / (tempo_scale * tempobpm * (subd_type == 0 ? 1 : subd_type));
+        onoff_time = std::max((float)MIN_NOTE_LEN, msecs_per_beat / 4);
+    }
+}
 
 
 
@@ -272,6 +248,7 @@ void Metronome::TickProc(tMsecs sys_time) {
     static unsigned char last_note = 0;
     unsigned char note, vel;
     MIDISequencerGUIEvent ev;
+    MIDIMessage msg_beat;
     //static unsigned int times;
     //times++;
     //if (!(times % 100))
@@ -285,40 +262,48 @@ void Metronome::TickProc(tMsecs sys_time) {
         if (cur_clock % QUARTER_LENGTH) {           // this is a subdivision beat
             note = subd_note;                       // send a subd note message
             vel = SUBD_NOTE_VEL;
-            std::cout << "SUBD on MIDI clock " << cur_clock << std::endl;
+            //std::cout << "SUBD on MIDI clock " << cur_clock << std::endl;
         }
         else {                                      // this is a quarter beat
-            if (cur_beat == 0) {                    // 1st beat of a measure
-                if (meas_on) {
+
+            UpdateValues();
+
+            if (timesig_numerator > 0) {            // measures count is on
+                if (cur_beat == 0) {                // 1st beat of a measure
                     note = meas_note;               // if meas beat is on we send a meas note message ...
                     vel = MEAS_NOTE_VEL;
-                    std::cout << "NOTE on MIDI clock " << cur_clock << std::endl;
+                    cur_beat++;
+                    //std::cout << "MEAS on MIDI clock " << cur_clock << std::endl;
+                    ev = MIDISequencerGUIEvent(MIDISequencerGUIEvent::GROUP_TRANSPORT,
+                                               0,
+                                               MIDISequencerGUIEvent::GROUP_TRANSPORT_MEASURE);
                 }
                 else {
                     note = beat_note;               // ... otherwise an ordinary beat message
                     vel = BEAT_NOTE_VEL;
-                    std::cout << "BEAT on MIDI clock " << cur_clock << std::endl;
+                    cur_beat++;
+                    if (cur_beat == timesig_numerator) {
+                        cur_measure++;
+                        cur_beat = 0;
+                    }
+                    //std::cout << "BEAT on MIDI clock " << cur_clock << std::endl;
+                    ev = MIDISequencerGUIEvent(MIDISequencerGUIEvent::GROUP_TRANSPORT,
+                                               0,
+                                               MIDISequencerGUIEvent::GROUP_TRANSPORT_BEAT);
                 }
-                ev = MIDISequencerGUIEvent(MIDISequencerGUIEvent::GROUP_TRANSPORT,
-                                           0,
-                                           MIDISequencerGUIEvent::GROUP_TRANSPORT_MEASURE);
             }
-            else {                                  // ordinary beat
+            else {                                  // ordinary beat, no measures count
                 note = beat_note;
                 vel = BEAT_NOTE_VEL;
-                std::cout << "BEAT on MIDI clock " << cur_clock << std::endl;
+                //std::cout << "BEAT on MIDI clock " << cur_clock << std::endl;
                 ev = MIDISequencerGUIEvent(MIDISequencerGUIEvent::GROUP_TRANSPORT,
                                            0,
                                            MIDISequencerGUIEvent::GROUP_TRANSPORT_BEAT);
             }
-            cur_beat++;
-            if (cur_beat == timesig_numerator) {
-                cur_beat = 0;
-                cur_measure++;
-            }
+
         }
 
-        // tell the driver the send the beat note on
+        // tell the driver the send the click note on
         msg_beat.SetNoteOn(chan, note, vel );
         MIDIManager::GetOutDriver(port)->OutputMessage(msg_beat);
         if (notifier)
@@ -339,16 +324,6 @@ void Metronome::TickProc(tMsecs sys_time) {
         next_time_off += msecs_per_beat;
         //std::cout << "Note off" << std::endl;
     }
-    /*
-    // auto stop at end of sequence
-    if( !(repeat_play_mode && GetCurrentMeasure() >= repeat_end_meas) &&
-        !GetNextEventTimeMs(&next_event_time)) {
-        // no events left
-
-        std::thread(StaticStopProc, this).detach();
-        std::cout << "Stopping the sequencer: StaticStopProc called" << std::endl;
-    }
-    */
 }
 
 

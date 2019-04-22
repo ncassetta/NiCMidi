@@ -44,13 +44,16 @@
 /// Contains the definition of the class MIDIManager.
 
 
-// TODO: rewrite doc
-/// This is a static class that manages computer hardware resources (in and out MIDI ports) and timing.
+///
+/// A static class that manages computer hardware resources (in and out MIDI ports) and timing.
 /// It embeds a MIDITimer object and a MIDIInDriver or MIDIOutDriver for every hardware port;
-/// moreover it manages a queue of MIDITick objects (objects with a callback procedure to be called at regular pace).
-/// When the timer is started the callbacks are called at every timer tick; typically one of the MIDITicks is a sequencer
-/// object, which can in this way pick the MIDI messages stored in its internal MIDIMultiTrack object and send them to the
-/// out ports. You can add and remove other MIDITick objects with the AddMIDITick() and RemoveMIDITick methods.
+/// moreover it manages a queue of MIDITickComponent (objects with a callback procedure to be called at regular
+/// pace). When the timer is started the MIDIManager begins to call its main tick procedure at every timer tick;
+/// this in turn calls the callback procedures of all the MIDITickComponent objects in the queue; typically
+/// one of the MIDITickComponent is a sequencer, which can in this way pick the MIDI messages stored in its
+/// internal MIDIMultiTrack object and send them to the out ports. You can add and remove other MIDITickComponent
+/// objects with the AddMIDITick() and RemoveMIDITick() methods (for example you could add a MIDIThru or a
+/// MIDIRecorder).
 ///
 class MIDIManager {
 public:
@@ -58,34 +61,29 @@ public:
     /// - a MIDIOutDriver for every hardware out port
     /// - a MIDIInDriver for every hardware in port.
     /// - a MIDITimer for playback timing.
-    /// You can set here the MIDISequencer or do it later with the SetSequencer() method (playback
-    /// is not possible until we have set it).
-    /// Moreover you can set an optional MIDISequencerGUINotifier which will notify the GUI
-    /// when sequencer starts and stops.
+    /// - an empty queue of MIDITickComponent objects.
                                 MIDIManager();
-    /// The destructor deletes the drivers and the timer (the sequencer and the notifier are not owned
-    /// by the class).
+    /// The destructor deletes the drivers and the timer.
     virtual                     ~MIDIManager();
-    /// Resets the class to its initial state (sequencer stopped, no MIDI thru, no repeated play).
+    /// Stops the timer if it is running and resets all the MIDI in and out ports. It doesn't em
     /// Doesn't reset the MIDISequencer pointer.
     static void                 Reset();
 
-    /// Returns the number of MIDI in ports in the system.
+    /// Returns the number of MIDI out ports in the system.
     static unsigned int         GetNumMIDIOuts()                { return MIDI_out_names.size(); }
     /// Returns the system name of the given MIDI out port.
     static const std::string&   GetMIDIOutName(unsigned int n)  { return MIDI_out_names[n]; }
-    /// Returns the number of MIDI out ports in the system.
+    /// Returns the number of MIDI in ports in the system.
     static unsigned int         GetNumMIDIIns()                 { return MIDI_in_names.size(); }
     /// Returns the system name of the given MIDI in port.
     static const std::string&   GetMIDIInName(unsigned int n)   { return MIDI_in_names[n]; }
-
     /// Returns a pointer to the MIDIOutDriver with given port id.
     static MIDIOutDriver*       GetOutDriver(unsigned int n)    { return MIDI_outs[n]; }
     /// Returns a pointer to the MIDIInDriver with given port id.
     static MIDIInDriver*        GetInDriver(unsigned int n)     { return MIDI_ins[n]; }
     /// Starts the MIDITimer thread procedure.
-    /// It calls, at every timer tick, the TickProc() which in turn calls all the MIDITickComponent
-    /// StaticTickProc added to the vector via the AddMIDITick() method.
+    /// It calls, at every timer tick, the TickProc() which in turn calls all the MIDITickComponent::StaticTickProc()
+    /// added to the queue via the AddMIDITick() method.
     static bool                 StartTimer()                    { return MIDITimer::Start(); }
     /// Stops the MIDITimer thread procedure.
     /// This causes all the MIDITickComponent callbacks to halt.
@@ -121,7 +119,7 @@ public:
                                                                 { auto_stop_proc = proc; auto_stop_param = param; }
 */
 
-    /// Sets the pointer to the sequencer (if you hadn't already done it in the ctor, you must set it).
+    /// Sets the sequencer pointer (if you hadn't already done it in the ctor, you must set it).
     /// It resets the repeat play and, if the sequencer was playing, stops it.
     static void                 SetSequencer(MIDISequencer *seq);
     /// Returns the pointer to the current sequencer.
@@ -138,21 +136,21 @@ public:
 */
 
 
-    /// Sends a MIDI AllNotesOff message to all open ports.
+    /// Sends a MIDI AllNotesOff message to all open out ports.
     static void                 AllNotesOff();
 
 
 
-
-
+    /// Inserts a MIDITickComponent object into the queue.
     static void                 AddMIDITick(MIDITickComponent *tick);
+    /// Removes a MIDITickComponent from the queue.
     static bool                 RemoveMIDITick(MIDITickComponent *tick);
 
 
 protected:
 
-    /// This is the main tick procedure. This calls the TickProc() method of every MIDITICK object with status
-    /// running. The user must not call it directly.
+    /// This is the main tick procedure. This calls the TickProc() method of every MIDITickComponent object
+    /// with running status. The user must not call it directly.
     static void                 TickProc(tMsecs sys_time_, void* p);
 
 /*
@@ -173,9 +171,10 @@ protected:
     static std::vector<MIDITickComponent*>
                                         MIDITicks;      ///< The array of MIDITICK objects, everyone of them has his MIDITick callback
 
+    // TODO: remove this
     static MIDISequencer*               sequencer;      ///< The MIDISequencer
 
-    static std::mutex                   proc_lock;
+    static std::mutex                   proc_lock;      ///< A mutex for thread safe
 
 /* OLD!!!! Delete if all OK
     /// This is called by SequencerPlayProc() when the sequencer reaches the end of MIDI events. The default

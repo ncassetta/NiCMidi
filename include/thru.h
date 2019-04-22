@@ -6,7 +6,7 @@
 #include <mutex>
 
 
-/// This class is a MIDITickComponent which immediately echoes to an out MIDI port all messages incoming
+/// A MIDITickComponent which immediately echoes to an out MIDI port all messages incoming
 /// from an in MIDI port.
 /// You can choose the in and out ports, select an unique channel for receiving and sending messages
 /// (or leave them unchanged) and insert a MIDiProcessor between in and out ports for messages elaboration.
@@ -76,10 +76,8 @@ class MIDIThru : public MIDITickComponent {
         char                    out_channel;
 
         MIDIProcessor*          processor;
-        std::mutex              proc_lock;
 
-    private:
-
+    protected:
         void                    SilentOut();
 
 };

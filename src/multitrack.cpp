@@ -96,6 +96,14 @@ void MIDIMultiTrack::SetClksPerBeat(unsigned int cl_p_b) {
 }
 
 
+int MIDIMultiTrack::GetTrackNum(MIDITrack* trk) const {
+    for (unsigned int i = 0; i < tracks.size(); i ++)
+        if (tracks[i] == trk)
+            return i;
+    return -1;
+}
+
+
 unsigned int MIDIMultiTrack::GetNumTracksWithEvents() const {
     unsigned int num_tracks = 0;
     for (unsigned int i = 0; i < tracks.size(); i++ )

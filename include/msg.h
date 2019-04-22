@@ -130,10 +130,10 @@ class 	MIDIMessage {
         unsigned char           GetTimeSigDenominator() const { return byte3; }
         /// If the message is a key signature meta-message, returns the key in SMF format.
         /// Negative values mean that many flats, positive values mean that many sharps.
-        signed char             GetKeySigSharpFlats() const { return (signed char)byte2; }
+        signed char             GetKeySigSharpsFlats() const { return (signed char)byte2; }
         /// If the message is a key signature meta-message, returns major/minor SMF flag.
         /// 0 means a major key, 1 means a minor key.
-        unsigned char           GetKeySigMajorMinor() const { return byte3; }
+        unsigned char           GetKeySigMode() const { return byte3; }
         /// If the message is a tempo change meta-message, returns the tempo value in bpm.
         double	                GetTempo() const;
         /// If the message is a tempo change meta-message, returns the tempo in SMF format.

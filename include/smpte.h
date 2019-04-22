@@ -158,9 +158,9 @@ class  SMPTE {
         unsigned long       GetMilliSeconds ();
 
         /// \name To add, increment and decrement samples.
-        //@{
         /// These functions add, increment or decrement the current sample number. You can use them
         /// instead of SetSampleNunber() to perform a samples-to-smpte conversion
+        //@{
         void                AddSamples (long n);
         void                IncSamples()                    { AddSamples (1); }
         void                DecSamples()                    { AddSamples (-1); }
@@ -206,8 +206,9 @@ class  SMPTE {
         //@}
 
     /* NEW */
-        /// These set an offset to be added to the current time.
+        /// Sets an offset to be added to the current time.
         void                SetOffset (unsigned long n)     { sample_offset = n; }
+        /// Sets an offset to be added to the current time.
         void                SetOffset (unsigned char h, unsigned char m, unsigned char s,
                                        unsigned char f = 0, unsigned char sf = 0);
 

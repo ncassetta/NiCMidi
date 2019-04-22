@@ -50,6 +50,10 @@
 #include "msg.h"
 #include "sysex.h"
 
+/// \file
+/// Contains the definition of the classes MIDIFileWiter, a low level object used for saving MIDI files.
+
+
 /*   ELIMINATE THIS!
 ///
 /// This class is used internally for writing MIDI files. It writes a stream of *char* to a C++ ostream object,
@@ -82,11 +86,11 @@ private:
 
 
 
-///
-/// Implements a low level set of methods for writing MIDI events to a std::ostream in MIDI file format.
-/// Used by the MIDIFileWriteMultiTrack class and higher level functions, and you don't need to deal with
-/// this (unless you want to implement your custom routines for writing MIDI files).
-///
+// EXCLUDED FROM DOCUMENTATION
+// Implements a low level set of methods for writing MIDI events to a std::ostream in MIDI file format.
+// Used by the MIDIFileWriteMultiTrack class and higher level functions, and you don't need to deal with
+// this (unless you want to implement your custom routines for writing MIDI files), so it is not
+// documented.
 class MIDIFileWriter {
     public:
                         MIDIFileWriter(std::ostream *out_stream_);

@@ -52,6 +52,10 @@
 #include "msg.h"
 #include "sysex.h"
 
+/// \file
+/// Contains the definition of the classes MIDIFileEventHandler and MIDIFileReader and of the struct MIDIFileHeader,
+/// (internal classes used for loading MIDI files).
+
 /*
 ///
 /// This class is used internally for reading MIDI files. It reads a stream of *char* from a C++ istream object.
@@ -82,11 +86,11 @@ class MIDIFileReadStream {
 
 
 
-///
-/// An abstract class for objects that can manipulate MIDI events sent by a MIDIFile Reader.
-/// Actually it's only implemented in the MIDIFileReadMultiTrack, which creates a MIDIMultiTrack
-/// from these events. This has no interest for the user.
-///
+// EXCLUDED FROM DOCUMENTATION
+// An abstract class for objects that can manipulate MIDI events sent by a MIDIFileReader.
+// Actually it's only implemented in the MIDIFileReadMultiTrack, which creates a MIDIMultiTrack
+// from these events. This has no interest for the user and it is not documented.
+// \see LoadMidiFile() for a fast way to load a MIDI file into a MIDIMultiTrack.
 class MIDIFileEventHandler {
     public:
                                         MIDIFileEventHandler() {}
@@ -137,28 +141,26 @@ class MIDIFileEventHandler {
 
 
 
-///
-/// A structure holding data which represent the header of a MIDI file.
-///
+// EXCLUDED FROM DOCUMENTATION
+// A structure holding data which represent the header of a MIDI file.
 struct MIDIFileHeader {
     MIDIFileHeader() : format(0), ntrks(0), division(0) {}
-    short format;               ///< the file format (currently only 0 and 1 are allowed).
-    short ntrks;                ///< the number of tracks.
-    short division;             ///< the number of MIDI ticks for a quarter note.
+    short format;               // the file format (currently only 0 and 1 are allowed).
+    short ntrks;                // the number of tracks.
+    short division;             // the number of MIDI ticks for a quarter note.
 };
 
 
 
-///
-/// Converts a stream of *char* read from a std::istream into MIDI data and sends them to a
-/// MIDIFileEventHandler.
-/// Used in conjunction with the MIDIFileReadMultiTrack class for reading MIDI files, and you don't need
-/// to deal with this (unless you want to implement your custom routines for reading MIDI files).
-///
+// EXCLUDED FROM DOCUMENTATION
+// Converts a stream of *char* read from a std::istream into MIDI data and sends them to a
+// MIDIFileEventHandler.
+// Used in conjunction with the MIDIFileReadMultiTrack class for reading MIDI files, and you don't need
+// to deal with this (unless you want to implement your custom routines for reading MIDI files).
 class MIDIFileReader {
     public:
 
-        /// In the constructor you must specify the MIDIFileReadStream.\ The stream must be already open.
+        // In the constructor you must specify the MIDIFileReadStream.\ The stream must be already open.
                                         MIDIFileReader (std::istream* ist,
                                                         MIDIFileEventHandler *ev_h,
                                                         unsigned long max_msg_len = 8192);

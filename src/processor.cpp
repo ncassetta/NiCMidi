@@ -34,6 +34,10 @@
 //                    class MIDIMultiProcessor                 //
 /////////////////////////////////////////////////////////////////
 
+void MIDIMultiProcessor::Reset() {
+    processors.clear();
+}
+
 
  void MIDIMultiProcessor::SetProcessor(MIDIProcessor* proc, int pos) {
     if (pos >= 0 && (unsigned)pos < processors.size())
@@ -76,6 +80,11 @@ bool MIDIMultiProcessor::Process(MIDITimedMessage *msg) {
 /////////////////////////////////////////////////////////////////
 
 MIDIProcessorTransposer::MIDIProcessorTransposer() {
+    Reset();
+}
+
+
+void MIDIProcessorTransposer::Reset() {
     for(int i = 0; i < 16; ++i)
         trans_amount[i] = 0;
 }
@@ -107,8 +116,7 @@ bool MIDIProcessorTransposer::Process (MIDITimedMessage *msg) {
 /////////////////////////////////////////////////////////////////
 
 MIDIProcessorRechannelizer::MIDIProcessorRechannelizer() {
-    for(int i = 0; i < 16; ++i)
-        rechan_map[i] = i;
+    Reset();
 }
 
 

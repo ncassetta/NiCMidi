@@ -248,7 +248,7 @@ int main( int argc, char **argv ) {
         }
         else if (command == "solo") {               // soloes a track
             int track = atoi(par1.c_str());
-            sequencer.SoloTrack(track);
+            sequencer.SetTrackSolo(track);
             cout << "Soloed track " << track << endl;
         }
         else if (command == "outport") {            // changes the midi out port
@@ -295,7 +295,7 @@ int main( int argc, char **argv ) {
         else if (command == "vscale") {             // scales velocity for a track
             int track = atoi(par1.c_str());
             int scale = atoi(par2.c_str());
-            sequencer.SetTrackVelocityScale(track, (double)scale / 100.0);
+            sequencer.SetTrackVelocityScale(track, scale);
             cout << "Track " << track << " velocity scale set to " << scale << "%" << endl;
         }
         else if (command == "trans") {              // transposes a track
@@ -313,7 +313,7 @@ int main( int argc, char **argv ) {
         else if (command == "thru") {               // toggles MIDI thru on and off
             if (par1 == "on") {
                 sequencer.SetMIDIThruEnable(true);
-                if (sequencer.GetMIDIThru()->IsPlaying()) {
+                if (sequencer.GetMIDIThruEnable()) {
                     cout << "Set MIDI thru on" << endl;
                     cout << "In port " << sequencer.GetMIDIThru()->GetInPort()->GetPortName() << endl;
                     cout << "Out port" << sequencer.GetMIDIThru()->GetOutPort()->GetPortName() << endl;

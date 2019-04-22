@@ -71,7 +71,7 @@ char MIDITrack::GetChannel() {
 
 char MIDITrack::GetType() {
     if (IsEmpty())
-        return 0;
+        return TYPE_EMPTY;
     if (status & STATUS_DIRTY)
         Analyze();
     if ((status & HAS_MAIN_META) &&

@@ -39,7 +39,7 @@
 /// this can be overriden giving them one of the other values as last parameter
 enum TInsmode
 {
-    INSMODE_DEFAULT,    ///< follow the default behavior (only used as default argument in methods MIDITrack::InsertEvent() and MIDITrack::InsertNote()
+    INSMODE_DEFAULT,    ///< follow the default behaviour (only used as default argument in methods MIDITrack::InsertEvent() and MIDITrack::InsertNote()
     INSMODE_INSERT,     ///< always insert events, if a same kind event was found  duplicate it.
     INSMODE_REPLACE,    ///< replace if a same kind event was found, otherwise do nothing.
     INSMODE_INSERT_OR_REPLACE,          ///< replace if a same kind event was found, otherwise insert.
@@ -47,7 +47,7 @@ enum TInsmode
 };
 
 
-/// Defines the behavior of the method MIDITrack::FindEventNunber() when searching events.
+/// Defines the behaviour of the method MIDITrack::FindEventNunber() when searching events.
 enum
 {
     COMPMODE_EQUAL,     ///< the method searches for an event matching equal operator.
@@ -57,13 +57,16 @@ enum
 
 
 ///
-/// This class manages a std::vector of MIDITimedMessage objects keeping MIDI events, with methods for
-/// editing them. Events are ordered by time and a MIDITrack has at least the MIDI data end event (which
-/// cannot be deleted) at its end.
+/// Manages a std::vector of MIDITimedMessage objects storing MIDI events, with methods for editing them.
+/// Events are ordered by time and a MIDITrack has at least the MIDI data end meta-event (EOT)
+/// at its end (it cannot be deleted). Moreover, the Analyze() method examines the events in a track,
+/// classifying it into various types (for example, a master track contains only MIDI meta events, a single
+/// channel track contains events with the same MIDI channel, etc.) useful for editing purposes.
 ///
 class  MIDITrack {
     public:
-        /// The constructor creates an empty track with only the data end event.
+        /// The constructor creates an empty track with only the EOT event.
+        /// \param end_time the MIDI clock time of the EOT; this become the "time length" of the track
                                     MIDITrack(MIDIClockTime end_time = 0);
         /// The copy constructor.
                                     MIDITrack(const MIDITrack &trk);
@@ -71,38 +74,41 @@ class  MIDITrack {
         virtual                     ~MIDITrack()                {}
         /// The assignment operator.
         MIDITrack&                  operator=(const MIDITrack &trk);
-        /// Deletes all events leaving the track empty (i.e.\ with only the data end event).
-        /// If _mantain_end_ is **true** doesn't change the time of the data end event, otherwise
-        /// sets it to 0.
+        /// Deletes all events leaving the track empty (i.e.\ with only the EOT event).
+        /// \param mantain_end If it is **true** the method doesn't change the time of the EOT,
+        /// otherwise sets it to 0.
         void	                    Clear(bool mantain_end = false);
         /// Returns the number of events in the track (if the track is empty this returns
-        /// 1, for the data end event).
+        /// 1, for the EOT event).
         unsigned int	            GetNumEvents() const                { return events.size(); }
-        /// Returns **true** if the track has only the data end event.
+        /// Returns **true** if the track has only the EOT event.
         bool                        IsEmpty() const                     { return events.size() == 1; }
         /// Returns the track channel (-1 if the track has not type TYPE_CHAN or TYPE_IRREG_CHAN).
         char                        GetChannel();
         /// Returns the track type (one of TYPE_MAIN, TYPE_TEXT, TYPE_CHAN, TYPE_IRREG_CHAN, TYPE_MIXED_CHAN,
-        /// TYPE_UNKNOWN, TYPE_SYSEX, TYPE_RESET_SYSEX, TYPE_BOTH_SYSEXù).
+        /// TYPE_UNKNOWN, TYPE_SYSEX, TYPE_RESET_SYSEX, TYPE_BOTH_SYSEX).
         char                        GetType();
         /// Returns **true** if the track contains MIDI SysEx messages.
         char                        HasSysex();
-        /// Returns the address of the _ev_num_ event in the track (_ev_num_ must be
-        /// in the range 0 ... GetNumEvents() - 1).
+        /// Returns the address of an event in the track.
+        /// \param ev_num the index of the event in the track (must be in the range 0 ... GetNumEvents() - 1).
         MIDITimedMessage*           GetEventAddress(int ev_num)         { return &events[ev_num]; }
-        /// As above.
+        /// Returns the address of an event in the track.
+        /// \param ev_num the index of the event in the track (must be in the range 0 ... GetNumEvents() - 1).
         const MIDITimedMessage*     GetEventAddress(int ev_num) const   { return &events[ev_num]; }
-        /// Returns a reference to the _ev_num_ event in the track (_ev_num_ must be
-        /// in the range 0 ... GetNumEvents() - 1).
+        /// Returns a reference to an event in the track.
+        /// \param ev_num the index of the event in the track (must be in the range 0 ... GetNumEvents() - 1).
         MIDITimedMessage&           GetEvent(int ev_num)               { return events[ev_num]; }
-        /// As above.
+        /// Returns a reference to an event in the track.
+        /// \param ev_num the index of the event in the track (must be in the range 0 ... GetNumEvents() - 1).
         const MIDITimedMessage&     GetEvent(int ev_num) const         { return events[ev_num]; }
-        /// Returns the time of the data end event.
+        /// Returns the time of the EOT event (i.e.\ the time length of the track).
         MIDIClockTime               GetEndTime() const                 { return events.back().GetTime(); }
-        /// Sets the time of the data end event to _end_time_. If there are events of other type after
-        /// _end_time_ the function fails and returns **false**.
+        /// Sets the time of the EOT event.
+        /// \param end_time the new EOT time. If there are events of other type after it the method fails and returns
+        /// **false**.
         bool                        SetEndTime(MIDIClockTime end_time);
-        /// Sets the time of the data end event equal to the time of the last (non data end) event
+        /// Sets the time of the EOT event equal to the time of the last (non data end) event
         /// of the track.
         void                        ShrinkEndTime();
         /// Sets the channel of all MIDI channel events to _ch_ (_ch_ must be in the range 0 ... 15).
@@ -114,7 +120,7 @@ class  MIDITrack {
         /// (otherwise the function will return 0). It returns TIME_INFINITE if doesn't find the corresponding
         /// Note Off event in the track.
         MIDIClockTime               GetNoteLength (const MIDITimedMessage& msg) const;
-        /// Sets the default behavior for the methods InsertEvent() and InsertNote(). This can be overriden
+        /// Sets the default behaviour for the methods InsertEvent() and InsertNote(). This can be overriden
         /// by them by mean of the last (default) parameter.
         /// \param mode one of \ref ::INSMODE_INSERT, \ref ::INSMODE_REPLACE, #INSMODE_INSERT_OR_REPLACE,
         /// #INSMODE_INSERT_OR_REPLACE_BUT_NOTE; default is #INSMODE_INSERT_OR_REPLACE.
@@ -127,9 +133,9 @@ class  MIDITrack {
         /// It also determines the correct position of events with same MIDI time,
         /// using the MIDITimedMessage::CompareEventsForInsert() method for comparison.
         /// \param msg the event to insert.
-        /// \param mode this determines the behavior of the method if it finds an equal or similar event with
+        /// \param mode this determines the behaviour of the method if it finds an equal or similar event with
         /// same MIDI time in the track: it may replace the event or insert a new event anyway. If you leave the
-        /// default parameter (INSMODE_DEFAULT) the method will follow the behavior set by the static
+        /// default parameter (INSMODE_DEFAULT) the method will follow the behaviour set by the static
         /// method SetInsertMode(), otherwise you may override it giving the last parameter. For details see
         /// INSMODE_DEFAULT (default), INSMODE_REPLACE, INSMODE_INSERT_OR_REPLACE, INSMODE_INSERT_OR_REPLACE_BUT_NOTE.
         /// \return **false** in some situations in which the method cannot insert:
@@ -188,7 +194,7 @@ class  MIDITrack {
         void                        ReplaceInterval(MIDIClockTime start, MIDIClockTime length,
                                                    bool sysex, const MIDITrack* src);
         /// Cuts note and pedal events at the time _t_. All sounding notes and held pedals are truncated (the
-        /// corresponding off events are properly managed) and the pitch bend is reset. This function is
+        /// corresponding off events after the time are deleted) and the pitch bend is reset. This function is
         /// intended for "slicing" a track in cut, copy and paste editing.
         // TODO: restored old version: test this (involves even interval methods)
         void                        CloseOpenEvents(MIDIClockTime t);
@@ -201,7 +207,7 @@ class  MIDITrack {
         /// + COMPMODE_EQUAL : the event must be equal to *msg*.
         /// + COMPMODE_SAMEKIND : the event is a same kind event (see MIDITimedMessage::IsSameKind()).
         /// + COMPMODE_TIME : the behaviour is the same of FindEventNumber(time, event_num).
-        /// \return **true** if an event matching _msg_ was found, *false* otherwise.
+        /// \return **true** if an event matching _msg_ was found, **false** otherwise.
         bool                        FindEventNumber( const MIDITimedMessage& msg, int *event_num,
                                                      int mode = COMPMODE_EQUAL) const;
 
@@ -214,6 +220,7 @@ class  MIDITrack {
 
         /// Used in the status request
         enum {
+            TYPE_EMPTY = 0,         ///< Track is empty
             TYPE_MAIN = 1,          ///< Track has Main meta events (time, tempo, key ...) and no channel events
             TYPE_TEXT = 2,          ///< Track has only text meta events (probably lyrics)
             TYPE_CHAN = 3,          ///< Track is a normal channel track. You can find the channel with GetChannel()
@@ -233,15 +240,15 @@ class  MIDITrack {
             STATUS_DIRTY = 0x4000   ///< Internal use
         };
 
-        /// Analyzes events in the track upgrading the track status. When a track is created or loaded by
+        /// Analyses events in the track upgrading the track status. When a track is created or loaded by
         /// the AdvancedSequencer class this is automatically called. If you edit the track, changing its
         /// events, you should call this for updating its status.
-        void Analyze();
+        void                        Analyze();
 
     protected :
         std::vector<MIDITimedMessage>
                                     events;     ///< The buffer of events
-        int                         status;     ///< The track status
+        int                         status;     ///< A bitfield used to determine the track type
         static int                  ins_mode;   ///< See SetInsertMode()
 };
 

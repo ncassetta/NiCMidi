@@ -5,55 +5,81 @@
 #include <mutex>
 #include "timer.h"
 
+/// \file
+/// Contains the definition of the pure virtual class MIDITickComponent.
 
+
+/// These are the available priorities for a MIDITickComponent. When you add a component to the MIDIManager queue with
+/// the MIDIManager::SetComponent() method the order in the queue reflects the priority of the components.
+/// \see MIDIManager::AddComponent().
 typedef enum {
-    PR_FIRST,
-    PR_PRE_SEQ,
-    PR_SEQ,
-    PR_POST_SEQ,
-    PR_LAST
+    PR_FIRST,           /// The component is inserted as first element in the queue
+    PR_PRE_SEQ,         /// The component is inserted before the sequencer
+    PR_SEQ,             /// The component is the sequencer (you can insert only one in the queue)
+    PR_POST_SEQ,        /// The component is inserted after the sequencer
+    PR_LAST             /// The component is inserted as last element in the queue
 } tPriority;
 
-/// This is the abstract base class for all objects which have a callback procedure called at every MIDITimer tick.
+/// A pure virtual class implementing an object which has a callback procedure to be called at every tick
+/// of a MIDITimer.
 /// You can use this feature to send, receive or manipulate MIDI messages with accurate timing: the MIDISequencer,
 /// MIDIThru and MIDIRecorder classes inherit by this.
-/// To use a MIDITickComponent object you must add it to the MIDIManager queue with the MIDIManager::AddTick() method;
-/// then you can call the Start() and Stop() methods to start and stop the callback.
+/// To use a MIDITickComponent object you must add it to the MIDIManager queue with the MIDIManager::AddMIDITick()
+/// method; then you can call the Start() and Stop() methods of the object to start and stop the callback. A priority
+/// parameter is supplied to determine the position of the MIDITickComponent in the MIDIManager queue.
 class MIDITickComponent {
     public:
-        ///
+        /// The constructor.
+        /// \param pr the priority (see)
+        /// \param func a pointer to the static callback: this should be the address of the StaticTickProc() you
+        /// have implemented in your subclass
                                     MIDITickComponent(tPriority pr, MIDITick func) : tickp(func),
                                                       dev_time_offset(0), sys_time_offset(0),
                                                       priority(pr), running(false) {}
 
-        /// Returns the address of the StaticTickProc method, which will be called by the MIDIManager at every
+        /// Returns the address of the StaticTickProc() method, which will be called by the MIDIManager at every
         /// clock tick.
         MIDITick*                   GetFunc() const                 { return tickp; }
         /// Returns the priority.
         tPriority                   GetPriority() const             { return priority; }
 
-        /// Sets the running status as *true* and starts the MIDIManager timer.
-        /// You must call this in
+        /// Sets the running status as **true** and starts to call the callback.
+        /// You must call this **after** inserting the object into the MIDIManager queue with the
+        /// MIDIManager::AddMIDITick() method, or you will have no effect.
+        /// \param dev_offs a time offset you can use for your calculations (for example, in the MIDISequencer
+        /// it is used as the start time of the sequencer)
         virtual void                Start(tMsecs dev_offs = 0);
+        /// Sets the running status as **false** and stops the callback.
+        /// \see Start()
         virtual void                Stop();
 
-        /// Returns *true* if the callback procedure is active.
+        /// Returns **true** if the callback procedure is active.
         bool                        IsPlaying() const               { return running.load(); }
 
 
     protected:
-        /// This is the static procedure which you must implement.
-        /// The first parameter is the system time from the start of the timer, the second is tipically the
-        /// _this_ pointer of the object instance. This should only cast the void pointer to an object pointer and
-        /// then call the pt->TickProc(sys_time)
+        /// This is the static callback procedure which the MIDIManager will call at every MIDITimer tick. The parameters
+        /// are automatically set by the %MIDIManager at every function call.
+        /// \param sys_time the system time
+        /// \param pt the _this_ pointer of the object instance.
+        ///
+        /// You must implement it in your subclass and give the function address in the constructor. Tipically this should
+        /// only cast the void pointer *pt* to a pointer to your object and then call the pt->TickProc(sys_time), i.e.\ your
+        /// non static procedure.
         static void                 StaticTickProc(tMsecs sys_time, void* pt)   {}
+        /// This is the pure virtual function you must implement in your subclass.
         virtual void                TickProc(tMsecs sys_time) = 0;
 
+        /// The pointer to the static callback (probably set by the constructor to StaticTickProc()).
         const MIDITick*             tickp;
 
-        std::atomic<tMsecs>         dev_time_offset;    ///<
-        std::atomic<tMsecs>         sys_time_offset;    ///< The system time of the
-        std::mutex                  proc_lock;
+        /// A time offset set by the Start() method and which you can use for your calculations.
+        std::atomic<tMsecs>         dev_time_offset;
+        /// The system time of the last call of Start(). You can use this for calculating the time elapsed between the
+        /// start of the callback and the actual call of TickProc().
+        std::atomic<tMsecs>         sys_time_offset;
+        /// A mutex you can use for implementing thread safe methods (it is not used by the base class).
+        std::recursive_mutex        proc_lock;
 
     private:
         const tPriority             priority;

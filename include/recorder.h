@@ -6,11 +6,32 @@
 #include "multitrack.h"
 
 #include <atomic>
+#include <vector>
+
+
+class MIDIMultiTrackCopier {
+    public:
+                                        MIDIMultiTrackCopier();
+        virtual                         ~MIDIMultiTrackCopier();
+
+        void                            Reset();
+        MIDITrack*                      GetTrackDest(unsigned int n) const;
+
+        void                            SetTrackDest(unsigned int n, MIDITrack* trk);
+        void                            ResetTrackDest(unsigned int n);
+
+        void                            Copy();
+
+    private:
+        MIDIMultiTrack* source;
+        std::vector<MIDITrack*> dest;
+};
 
 
 class MIDIRecorder : public MIDITickComponent {
     public:
-                                        MIDIRecorder(MIDIMultiTrack* mlt = 0);
+                                        MIDIRecorder();
+        virtual                         ~MIDIRecorder();
 
         MIDIMultiTrack*                 GetMultiTrack() const           { return multitrack; }
         float                           GetTempo() const                { return tempobpm; }
@@ -19,9 +40,8 @@ class MIDIRecorder : public MIDITickComponent {
         void                            SetStartTime(MIDIClockTime t)   { start_time = t; }
         MIDIClockTime                   GetStartTime() const            { return start_time; }
 
-        void                            EnablePort(unsigned int port);
-        void                            EnableChannel(unsigned int port, unsigned int ch, unsigned int trk);
-        void                            EnableAllChannels(unsigned int port);
+        void                            EnablePort(unsigned int port, bool en_chans = true);
+        void                            EnableChannel(unsigned int port, unsigned int ch);
         void                            DisablePort(unsigned int port);
         void                            DisableChannel(unsigned int port, unsigned int ch);
 
@@ -30,22 +50,18 @@ class MIDIRecorder : public MIDITickComponent {
 
     protected:
 
-        static void             StaticTickProc(tMsecs sys_time, void* pt);
-        void                    TickProc(tMsecs sys_time);
+        static void                     StaticTickProc(tMsecs sys_time, void* pt);
+        void                            TickProc(tMsecs sys_time);
 
-        MIDIMultiTrack*         multitrack;
-
-        tMsecs                  rec_time_offset;    ///< The time between time 0 and sequencer start
-        tMsecs                  sys_time_offset;    ///< The time between the timer start and the sequencer start
-        float                   tempobpm;           ///< The recording tempo
-        MIDIClockTime           start_time;         ///< The MIDIClockTime of the beginning of recording
-
+        MIDIMultiTrack*                 multitrack;
         std::vector<std::vector<MIDITrack*>*> en_ports;
 
-        std::atomic<bool>       rec_on;
+        tMsecs                          rec_time_offset;    ///< The time between time 0 and sequencer start
+        tMsecs                          sys_time_offset;    ///< The time between the timer start and the sequencer start
+        float                           tempobpm;           ///< The recording tempo
+        MIDIClockTime                   start_time;         ///< The MIDIClockTime of the beginning of recording
 
-    private:
-        const bool              OWNS_MULTI;
+        std::atomic<bool>               rec_on;
 };
 
 

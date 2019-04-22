@@ -48,14 +48,21 @@
 
 #include <string>
 
+/// \file
+/// Contains the definition of the class MIDIFileReadMultiTrack, used for loading MIDI files, plus some related function,
+/// (internal classes used for loading MIDI files).
+
+
 
 ///
 /// Receives MIDI data from a MIDIFileReader class and writes them to a MIDIMultiTrack.
 /// Used for reading MIDI files; actually it ignores these kind of messages:
 /// - META Sequencer Specific
 /// - other not identified meta data
+///
 /// You have no need to deal with this unless you want to implement your own routines
-/// for reading MIDI files.
+/// for reading MIDI files, so it is not documented.
+/// \see LoadMidiFile() for a fast way to load a MIDI file into a MIDIMultiTrack.
 ///
 class MIDIFileReadMultiTrack : public MIDIFileEventHandler {
     public:
@@ -66,7 +73,7 @@ class MIDIFileReadMultiTrack : public MIDIFileEventHandler {
 //
 // The possible events in a MIDI Files
 //
-
+/// \cond INTERNAL
             // these are all unused because globally managed by ChanMessage()
         virtual void                    mf_system_mode(const MIDITimedMessage &msg)     {}
         virtual void                    mf_note_on(const MIDITimedMessage &msg)         {}
@@ -111,6 +118,7 @@ class MIDIFileReadMultiTrack : public MIDIFileEventHandler {
         MIDIMultiTrack*                 multitrack;
         int                             cur_track;
         MIDIFileHeader                  header;
+/// \endcond
 };
 
 
@@ -123,7 +131,9 @@ MIDIFileHeader                          GetMIDIFileHeader(const char* filename);
 /// way to get this, without worrying with intermediate reader objects. Returns *false* if the loading is
 /// failed.
 bool                                    LoadMIDIFile(const char* filename, MIDIMultiTrack* tracks);
-
+/// Loads the MIDI file specified by *filename* into the given MIDIMultiTrack object. This is the fastest
+/// way to get this, without worrying with intermediate reader objects. Returns *false* if the loading is
+/// failed.
 bool                                    LoadMIDIFile(const std::string& filename, MIDIMultiTrack* tracks);
 //                                            { return LoadMIDIFile (filename.c_str(), tracks); }
 #endif

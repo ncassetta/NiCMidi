@@ -28,7 +28,7 @@
 #include <vector>
 
 /// \file
-/// Contains the definition of the classes MIDIMultiTrack, MIDIMultiTrackIteratorState, MIDIMultiTrakIterator
+/// Contains the definition of the classes MIDIMultiTrack, MIDIMultiTrackIteratorState, MIDIMultiTrackIterator
 /// and MIDIEditMultiTrack.
 
 
@@ -37,7 +37,7 @@ class MIDIEditMultiTrack;       // forward declaration
 ///
 /// Holds an array of pointers to MIDITrack objects to be played simultaneously. Every track contains
 /// MIDITimedMessage objects representing MIDI events, and all tracks share the same timing (i.e. the events are
-/// temporized according to the same MIDI clock per beat). Tipically track 0 is the master track and contains only
+/// temporized according to the same MIDI clock per beat). Typically track 0 is the master track and contains only
 /// non-channel MIDI events (time, tempo, markers ...) while  other tracks contain the channel events. The
 /// MIDIMultiTrack object owns its tracks, so deleting it frees them also. You need to embed this into a MIDISequencer
 /// for playing the tracks. Moreover, a MIDIMultiTrackIterator class is supplied for moving along events in temporal
@@ -46,41 +46,51 @@ class MIDIEditMultiTrack;       // forward declaration
 class MIDIMultiTrack {
     public:
         /// The constructor creates an object with given number of tracks (default no track) and base MIDI clocks
-        /// per beat. Created tracks are initially empty (contain only the EOT message at time 0).
+        /// per beat.
+        /// \param num_tracks The number of tracks of the multitrack. The tracks are created by the constructor and they are
+        /// are initially empty (contain only the EOT message at time 0). The default is no track
+        /// \param cl_p_b The number of MIDI ticks per quarter note. All tracks share this to convert the raw
+        /// MIDIClockTime stored in their MIDITimedMessage objects into musical values.
                                     MIDIMultiTrack(unsigned int num_tracks = 0,
                                                    unsigned int cl_p_b = DEFAULT_CLKS_PER_BEAT);
 
         /// The copy constructor
                                     MIDIMultiTrack(const MIDIMultiTrack& mlt);
-        /// The destructor frees the track pointers.
+        /// The destructor: The MIDIMultiTrack owns its tracks, so they are destroyed by this.
         virtual	                    ~MIDIMultiTrack();
 
-        /// The assignment operator
+        /// The assignment operator.
         MIDIMultiTrack&             operator=(const MIDIMultiTrack& mlt);
 
         /// Changes the value of the clock per beat parameter for the tracks, updating the times of all MIDI
         /// events. This may lead to loss in precision or rounding error if the new clocks per beat
         /// is not a multiple of the old, so it's better to call this function before inserting any event in
         /// the multitrack.
+        /// \param cl_p_b see the constructor
         void                        SetClksPerBeat(unsigned int cl_p_b);
         /// Returns the MIDI clocks per beat of all tracks (i.e.\ the number of MIDI ticks in a quarter note).
         unsigned int                GetClksPerBeat() const          { return clks_per_beat; }
-        /// Returns a pointer to the track _track_num_.
+        /// Returns the pointer to the track
+        /// \param track_num The track number
         MIDITrack*                  GetTrack(int trk)               { return tracks[trk]; }
+        /// Returns the pointer to the track
+        /// \param track_num The track number
         const MIDITrack*            GetTrack(int trk) const         { return tracks[trk]; }
+        /// Returns the number of the pointed track, -1 if the track is not in the multitrack.
+        int                         GetTrackNum(MIDITrack* trk) const;
         /// Returns the number of allocated tracks.
         unsigned int	            GetNumTracks() const			{ return tracks.size(); }
         /// Returns the number of tracks with events (other than EOT).
         unsigned int                GetNumTracksWithEvents() const;
-        /// Gets the total number of MIDI events in the multitrack (for every track there is at least the EOT).
+        /// Returns the total number of MIDI events in the multitrack (for every track there is at least the EOT).
         /// If you want to know if the MIDIMultiTrack is empty, use GetNumTracksWithEvents() instead.
         unsigned int                GetNumEvents() const;
-        /// Returns *true* if _n_ is in thee range 0 ... GetNumTracks() - 1.
+        /// Returns *true* if _trk_ is in thee range 0 ... GetNumTracks() - 1.
         bool                        IsValidTrackNumber(int trk) const
                                                                     { return (0 <= trk && (unsigned)trk < tracks.size()); }
         /// Returns the end time of the longest track.
         MIDIClockTime               GetEndTime() const;
-        /// Returns *true* if there are no events and the end time is 0.
+        /// Returns *true* if there are no events in the tracks and the end time is 0.
         bool                        IsEmpty() const                 { return (GetNumEvents() == 0 && GetEndTime() == 0); }
         /// Sets the time of the data end event to _end_time_. If there are events of other type after
         /// _end_time_ the function fails and returns *false*.

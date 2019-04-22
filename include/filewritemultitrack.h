@@ -34,6 +34,10 @@
 #include "filewrite.h"
 #include "multitrack.h"
 
+/// \file
+/// Contains the definition of the classes MIDIFileWriteMultiTrack, used for saving MIDI files, plus some related function.
+
+
 ///
 /// Writes the contents of a MIDIMultiTrack to a std::ostream in the MIDI file format.
 /// The file will be in MIDI format 0 if the multitrack has only one track, otherwise  the format
@@ -63,6 +67,9 @@ class MIDIFileWriteMultiTrack {
 /// is the MIDI file format (only 0 and 1 are supported).
 /// Returns **true** if the writing was successful.
 bool WriteMIDIFile(const char* filename, int format, const MIDIMultiTrack* tracks, bool strip = false);
+/// Writes the given MIDIMultiTrack object into the MIDI file denoted by _filename_; _format_
+/// is the MIDI file format (only 0 and 1 are supported).
+/// Returns **true** if the writing was successful.
 bool WriteMIDIFile(const std::string& filename, int format, const MIDIMultiTrack* tracks, bool strip = false);
 
 #endif

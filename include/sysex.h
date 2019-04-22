@@ -57,13 +57,15 @@ class  MIDISystemExclusive {
                                     MIDISystemExclusive(unsigned int len = 0);
         /// The copy constructor.
                                     MIDISystemExclusive(const MIDISystemExclusive &e);
-        /// Creates a new object from the given buffer of bytes. You must specify the address of the
-        /// buffer and its length.
+        /// Creates a new object from the given buffer of bytes. It allocates the appropriate memory amount and
+        /// copies the buffer data, so every instance has its own buffer.
+        /// \param buf the address of our data buffer
+        /// \param len the length of the buffer
                                     MIDISystemExclusive(const unsigned char *buf, unsigned int len);
         /// The destructor.
         virtual	                    ~MIDISystemExclusive() {}
-
-        /// The assignment operator.
+        /// The assignment operator. It allocates the appropriate memory amount and copies the buffer data, so every
+        /// instance has its own buffer.
         MIDISystemExclusive&        operator= (const MIDISystemExclusive& se);
         /// The equal operator compares the data buffer and the checksum.
         bool                        operator== (const MIDISystemExclusive &se) const;
@@ -72,6 +74,21 @@ class  MIDISystemExclusive {
         void	                    Clear()				        { buffer.clear(); chk_sum = 0;	}
         /// Resets the checksum to 0.
         void	                    ClearChecksum()		        { chk_sum = 0; }
+        /// Returns the checksum.
+        unsigned char	            GetChecksum() const         { return (unsigned char)(chk_sum & 0x7f); }
+        /// Returns the number of data bytes stored in the buffer.
+        int		                    GetLength() const           { return buffer.size(); }
+        /// Returns the i-th byte in the buffer.
+        unsigned char	            GetData(int i) const        { return buffer[i]; }
+        /// Returns a pointer to the data buffer.
+        //unsigned char*          GetBuffer()                 { return buffer; }
+        const unsigned char*        GetBuffer() const           { return buffer.data(); }
+        /// Returns **true** if the buffer contains a GM Reset sysex message.
+        bool                        IsGMReset() const;
+        /// Returns **true** if the buffer contains a GS Reset sysex message.
+        bool                        IsGSReset() const;
+        /// Returns **true** if the buffer contains a XG Reset sysex message.
+        bool                        IsXGReset() const;
         /// Appends a byte to the buffer, without adding it to checksum.
         void	                    PutSysByte(unsigned char b) { buffer.push_back(b); }
         /// Appends a byte to the buffer, adding it to checksum.
@@ -88,21 +105,6 @@ class  MIDISystemExclusive {
                                     { PutByte((unsigned char)(b >> 4)); PutByte((unsigned char)(b & 0xf)); }
         /// Appends the checksum to the buffer.
         void	                    PutChecksum()               { PutByte((unsigned char)(chk_sum & 0x7f)); }
-        /// Returns the checksum.
-        unsigned char	            GetChecksum() const         { return (unsigned char)(chk_sum & 0x7f); }
-        /// Returns the number of data bytes stored in the buffer.
-        int		                    GetLength() const           { return buffer.size(); }
-        /// Returns the i-th byte in the buffer.
-        unsigned char	            GetData(int i) const        { return buffer[i]; }
-        /// Returns a pointer to the data buffer.
-        //unsigned char*          GetBuffer()                 { return buffer; }
-        const unsigned char*        GetBuffer() const           { return buffer.data(); }
-        /// Returns *true* if the buffer contains a GM Reset sysex message.
-        bool                        IsGMReset() const;
-        /// Returns *true* if the buffer contains a GS Reset sysex message.
-        bool                        IsGSReset() const;
-        /// Returns *true* if the buffer contains a XG Reset sysex message.
-        bool                        IsXGReset() const;
 
     private:
         std::vector<unsigned char>  buffer;
