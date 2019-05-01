@@ -36,12 +36,15 @@
 //
 
 
+/// \file
+/// Contains the definition of the class SMPTE, plus some related enum.
+
 #ifndef _JDKMIDI_SMPTE_H
 #define _JDKMIDI_SMPTE_H
 
 
-/// \defgroup rates "The smpte and sample rates"
-/// These are the allowed smpte rates and sample rates allowed for SMPTE class
+/// \defgroup S_RATES The smpte and sample rates
+/// These are the allowed smpte rates and sample rates allowed for SMPTE class.
 //@{
 /// The smpte rates
 enum SMPTE_RATE

@@ -54,7 +54,6 @@ note_data track3[] = {
 // globals
 //
 
-string command_buf, command, par1, par2;    // used by GetCommand() for parsing the user input
 AdvancedSequencer sequencer;                // an AdvancedSequencer (without GUI notifier)
 
 const char introstring[] =

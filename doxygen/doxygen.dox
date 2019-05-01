@@ -1,0 +1,333 @@
+/// \mainpage
+///myjdkmidi is a MIDI library written in C++ by Nicola Cassetta, which implements objects for playing, recording, editing and saving MIDI content. It was originally a fork of jdkmidi, an old similar library written by J. D. Koftinoff and no more updated. The author has rewritten the old code, adding many new features and using a more modern C++ style.
+///
+
+
+
+/// \page OVERVIEW Overview
+///
+/// Getting started with myjdkmidi.
+///
+/// + \subpage LOAD_PLAY
+/// + \subpage MESS_TRACK_MULTI
+/// + \subpage HOW_PLAYS
+/// + \subpage PROCESSORS
+///
+
+
+/// \page LOAD_PLAY Loading and playing MIDI files
+///
+/// If you only want to load and play MIDI files you can use the AdvancedSequencer class. It is an all-in-one object easy to use and with all the common features of a sequencer. These include:
+/// + Loading MIDI files
+/// + Playing and stopping the file at any time
+/// + Jumping from a time to another, even when playing
+/// + Muting, soloing, transposing, velocity scaling for individual tracks
+/// + MIDI out port assign and time shifting for individual tracks
+/// + Global tempo scaling
+/// + Embeds a MIDIThru object, so you can play along with the sequencer
+///
+/// Here is a simple example of its usage:
+/// \code
+///#include "advancedsequencer.h"
+///
+///int main() {
+///   AdvancedSequencer seq;          // creates the AdvancedSequencer
+///   seq.Load("twinlkle.mid");       // loads a MIDI file into it
+///   seq.Play();                     // plays the file
+///   while (seq.IsPlaying());        // waits until the end (the sequencer auto stops)
+///}
+/// \endcode
+///
+/// Here is a more complex example using some of the class features (in a real environment you could do these commands interactively) while the sequencer is playing:
+///
+/// \code
+///#include "advancedsequencer.h"
+///
+///int main() {
+///   AdvancedSequencer seq;               // creates the AdvancedSequencer
+///   seq.Load("twinlkle.mid");            // loads a MIDI file into it
+///   seq.Play();                          // plays the file
+///   while(seq.GetCurrentMeasure() < 4);  // waits until measure 4
+///   seq.SetTrackTranspose(1, 12);        // transposes track 1 by one octave up
+///   while(seq.GetCurrentMeasure() < 8);
+///   seq.SetTrackMute(1, true);	          // mutes track 1
+///   while(seq.GetCurrentMeasure() < 12);
+///   seq.SetTrackSolo(2);                 // soloes track 2 ...
+///   seq.SetTempoScale(200);              // ... and doubles the tempo
+///   while(seq.IsPlaying();               // waits until the end
+///}
+/// \endcode
+///
+/// You can see two elaborated examples: test_avancedsequencer.cpp and
+///
+
+
+/// \page MESS_TRACK_MULTI MIDI messages, tracks and multitracks
+///
+/// Let's examine how myjdkmidi stores and manipulates the MIDI content.
+///
+/// The %MIDIMessage and %MIDITimedMessage classes
+/// ----------------------------------------------
+///
+/// According to the MIDI standard, a MIDI message is a group of bytes containing musical data: the first is the **status byte**, giving information on what type of message it is, and the others are the data bytes (only real-time MIDI messages consists of an unique byte). Moreover, MIDI System Exclusive (SysEx) messages can be followed by an undefined number of bytes allowing, for example, the dumping of voice data from a machine to another. You should be familiar with the various types of messages and their codify in hexadecimal values.
+///
+/// The MIDIMessage class allows you to create, edit or inspect MIDI messages without worrying about hexadecimal values: it consists of a status byte, three data bytes for MIDI data, and a pointer to a MIDISystemExclusive object (a buffer that can store any amount of bytes), with lots of methods for setting and inspecting data.
+///
+/// Here is a simple example of its usage:
+/// \code
+///#include "msg.h"
+///
+///int main() {
+///   MIDIMessage msg1, msg2, msg3;    // creates three MIDIMessage
+///   msg1.SetNoteOn(0, 60, 100);      // msg1 becomes a Note On, channel 1, note 60, velocity 100
+///   msg2.SetVolumeChange(0, 127);    // msg2 becomes a Volume Change (CC 7), channel 1, volume 127
+///   msg3.SetTimeSig(4, 4);           // msg 3 becomes a system Time Signature, 4/4
+///   msg1.SetChannel(msg1.GetChannel() + 1);
+///                                     // increments the msg1 channel by one
+///   msg2.SetControllerValue(msg2.GetControllerValue() - 10);
+///                                     // decrements the msg2 volume by 10
+///   std::cout << msg1.MsgToText();   // prints a description of msg1
+///   std::cout << msg2.MsgToText();   // prints a description of msg2
+///   std::cout << msg3.MsgToText();   // prints a description of msg3
+///}
+/// \endcode
+///
+/// MIDIMessage objects can be sent to an hardware MIDI port by the MIDIOutDriver::OutputMessage() method.
+/// \code
+///#include "msg.h"
+///#include "manager.h"
+///
+///MIDIOutDriver* port = MIDIManager::GetOutPort(0);
+///                                     // gets a pointer to the driver of the 1st hardware out
+///                                     // port in the system
+///port->OpenPort();                   // you must open the port before sending MIDI messages
+///MIDIMessage msg;
+///msg.SetNoteOn(0, 60, 100);          // makes msg1 a Note On message
+///port->OutputMessage(&msg1);         // outputs the message (the note should sound)
+///MIDITimer::Wait(2000);              // waits two seconds
+///msg.SetNoteOff(0, 60);              // makes msg the corresponding Note Off
+///port->OutputMessage(&msg);          // outputs the message (the note should stop)
+///port->ClosePort();                  // closes the port
+/// \endcode
+///
+/// The MIDITimedMessage class inherits from MIDIMessage and adds the ability to associate a MIDIClockTime to the message, so MIDITimedMessage objects can be ordered by time and queued into a MIDI track. Time is counted in MIDI ticks (the MIDIClockTime type is a typedef for unsigned long) and the class has methods to set, inspect, increment and decrement it. A newly created MIDITimedMessage has its time set to 0.
+///
+/// The %MIDITrack class
+/// --------------------
+///
+/// The MIDITrack is basically a stl::vector of MIDITimedMessage objects, ordered by time. It has methods for editing the track adding, deleting and examining messages. Due to the SMF format a MIDITrack always contains almost a message, the system End of Data (or End of Track, EOT), as last message. This is automatically handled by the library, and the user cannot insert or delete it; every time you insert a MIDITimedMessage into the track the MIDIClockTime of the EOT is examined and eventually updated.
+///
+/// The constructor creates an empty track, with only the EOT; you can then edit it: the MIDITrack::InsertEvent(), MIDITrack::InsertNote(), MIDITrack::DeleteEvent() and MIDITrack::DeleteNote() insert and delete MIDITimedMessage objects, while other methods can insert ot delete entire time intervals.
+///
+/// If you want to know how exactly events are ordered in  the track see the MIDITimedMessage::CompareEventsForInsert() method. When you insert a message of the same type of an old message at the same time you can control if the new message will replace the old (see the static MIDITrack::SetInsertMode()).
+///
+/// Here is an example:
+/// \code
+/// #include "track.h"
+/// #include "dump_tracks.h"            // contains helper functions to print track content
+///
+/// int main() {
+///    MIDITrack track;
+///    MIDITimedMessage msg;            // a new MIDITimedMessage has time set to 0
+///    msg.SetProgramChange(0, 49);     // msg becomes a Program Change, channel 1, program 49, time 0
+///    track.InsertEvent(msg);          // inserts the event into the track
+///    msg.SetVolumeChange(0, 127);     // msg becomes a Volume Change (CC 7), channel 1, volume 127, time 0
+///    track.InsertEvent(msg);
+///    msg.SetNoteOn(0, 60, 100);       // msg becomes a Note On, channel 1, note 60, velocity 100
+///    msg3.SetTime(480);               // sets the time of msg to 480 MIDI ticks
+///    track.InsertNote(msg, 240);      // inserts the Note On and the corresponding Note Off after 240 ticks
+///    DumpMIDITrack(&track);           // prints the contents of the track
+/// }
+/// \endcode
+/// The SMF format has no prescriptions on the contents of a MIDI track (for example in the SMF 0 files all messages come in a single track), but usually the MIDI messages are grouped in tracks according to their kind (tracks with only system messages, or lyrics, or channel messages...); the MIDITrack::Analyze() method allows the user to inspect MIDITracks, classifying them according their content.
+///
+/// The %MIDIMultiTrack class
+/// -------------------------
+///
+/// The MIDIMultiTrack is an array of MIDITrack objects to be played simultaneously. Typically track 0 is the master track, containing meta events (time and key signature, tempo ...) and other system messages, while other tracks are channel tracks, every one containing events with the same channel number. The constructor creates an empty multitrack with no tracks: you can the add, delete or move tracks. Alternatively you can fill a MIDIMultitrack with the LoadMIDIFile() function (declared in filereadmultitrack.h), which loads the contents of a SMF into the multitrack creating the needed tracks. There is also a SaveMIDIFile() in filewritemultitrack.h which save the content of the multitrack in to a SMF.
+///
+/// The MIDIMultiTrack alone has no playing capacity, it must be embedded into a MIDITickComponent derived class (as MIDISequencer or AdvancedSequencer) which picks up its content and sends it to the MIDI ports with the appropriate timing.
+///
+///Here is an example:
+/// \code
+/// #include "multitrack.h"
+/// #include "dump_tracks.h"                // contains helper functions to print track content
+///
+/// int main() {
+///    MIDIMultiTrack multi;
+///    LoadMIDIFile("twinkle.mid", &multi); // loads a midifile into the multitrack
+///    DumpAllTracks(&multi);               // shows a dump of the content of multitrack
+///    MIDITrack track(*multi.GetTrack(1)); // creates a copy of track 1
+///    for (unsigned int i = 0; i < track.GetNumEvents(); i++) {
+///                                         // examines all track messages
+///       MIDITimedMessage msg = track.GetEvent(i);
+///       if (msg.IsNote())                 // if the message is a note ...
+///       msg.SetNote(msg.GetNote() + 12):  // ... transposes it up an octave
+///    }
+///    multi.InsertTrack(track);            // appends the new track to the multitrack
+///    DumpAllTracks(&multi);
+/// }
+/// \endcode
+///
+
+
+/// \page HOW_PLAYS How mjdkmidi plays MIDI
+///
+/// If we want to play the contents of a MIDIMultiTrack we must send them to an hardware MIDI port with accurate timing. This is done by mean of some library classes.
+///
+/// The %MIDITimer class
+/// --------------------
+///
+/// The MIDITimer is a static class which can start a background thread and call the callback MIDITimer::ThreadProc() at a regular pace. The timing is supplied by the <std::chrono> classes and so you must compile the library according (at least) to the c++ 0x11 standard. The default time resolution is 10 msecs but you can change it with the MIDITimer::SetResolution() method.
+///
+/// When playing MIDI the timer is usually managed by the MIDIManager class, so you seldom have to deal with it directly. You could find useful its MIDITimer::Wait() function (which waits for a given number of milliseconds) or the MIDITimer::GetSysTimeMs() function (which returns the number of milliseconds from the instantiation of the class).
+///
+/// The %MIDIOutDriver and %MIDIInDriver classes
+/// --------------------------------------------
+///
+/// The MIDIOutDriver and MIDIInDriver classes are objects which communicate between the library software and the hardware MIDI ports regardless the underlying OS; mjdkmidi uses the RTMidi library of Gary Scavone (see http://www.music.mcgill.ca/~gary/rtmidi/) to have a common interface for all OS. The OS enumerates the MIDI ports and gives them a readable name (see below).
+///
+///If you want to send (or receive) MIDI messages to (from) a port you must open it with the MIDIOutDriver::OpenPort() or MIDIInDriver::OpenPort() methods. The %MIDIOutDriver has a method MIDIOutDriver::OutputMessage() which sends a MIDITimedMessage to the port; the %MIDIInDriver is a bit more complicated, because it manages a queue for incoming messages, and you have various methods for inspecting them (see the class documentation for details).
+///
+/// However, usually all the work (opening ports, sending/receiving messages, closing them) is done by the MIDIManager, so you don't have to do this by yourself.
+///
+/// The %MIDIManager class
+/// ---------------------
+///
+/// The MIDIManager is a static class which handles the communications between the software and the MIDI hardware ports and the general timing. At the start of the program it enumerates all hardware ports, then creates a MIDIOutDriver for every out port, and a MIDIInDriver for every in port; you can get the id of the ports, their name and their (pointer to) drivers by static methods of the class.
+///
+/// Here is an example which enumerates the MIDI ports on your system.
+/// \code
+/// #include "manager.h"
+/// #include <iostream>
+///
+/// int main() {
+///    std::cout << "YOUR MIDI OUT PORTS" << std::endl;
+///    for(unsigned int i = 0, i < MIDIManager::GetNumMIDIOuts(), i++)
+///       std:cout << "Port " << i << ": " << MIDIManager::GetMIDIOutName(i) << std::endl;
+///    std::cout << "YOUR MIDI IN PORTS" << std::endl;
+///    for(unsigned int i = 0, i < MIDIManager::GetNumMIDIIns(), i++)
+///       std:cout << "Port " << i << ": " << MIDIManager::GetMIDIInName() << std::endl;
+/// }
+/// \endcode
+/// Moreover it takes care of the starting and stopping of the (also static) MIDITimer.
+///
+///
+/// The %MIDITickComponent abstract class
+/// -------------------------------------
+///
+/// This is the prototype for objects which have a callback procedure to be called at every tick of the MIDITimer. You can use this feature to send, receive or manipulate MIDI messages with accurate timing: the MIDISequencer, MIDIThru and MIDIRecorder classes inherit by this.
+///
+
+
+/// \page PROCESSORS MIDI Processors
+///
+/// MIDI Processors are objects which can manipulate the content of a MIDIMessage. The abstract class MIDIProcessor defines basically an object which has a bool MIDIProcessor::Process(MIDITimedMessage* msg) method, which takes as argument a pointer to a %MIDITimedMessage: it can change or inspect its argument and return an answer yes/no.
+/// Some subclasses are already builtin in the library:
+/// + The MIDIProcessorTransposer transposes all note and polyphonic pressure messages by a given amount of semitones
+/// + The MIDIProcessorRechannelizer remaps channel messages to a given channel map
+/// + The MIDIProcessorPrinter prints the contents of the message in a readable form
+/// + The MIDIMultiProcessor allows to queue many %MIDIProcessors giving each one the results of the previous
+/// + The MIDISequencerTrackProcessor is a special multipurpose processor used by the AdvancedSequencer class
+///
+/// Many classes (see MIDIInDriver, MIDIOutDriver, MIDIThru, MIDISequencer) allow the user to "plug in" a processor in their flow of incoming-outcoming messages. This is an example which could be useful for debugging purposes: plugging a %MIDIProcessorPrinter to a %MIDIOutDriver will print all outcoming messages.
+/// \code
+/// #include "manager.h"                    // includes driver.h and timer.h
+/// #include "processor.h"
+///
+/// int main() {
+///    MIDIInDriver* driver = MIDIManager::GetInDriver(0);
+///                 // this is the MIDI IN port 0 in your system: you can change the number
+///    MIDIProcessorPrinter printer;        // prints the processed messages
+///    driver->SetProcessor(&printer);      // plugs the printer into the driver
+///    driver->OpenPort();                  // starts receiving messages
+///    MIDITimer::Wait(20000);
+///                 // waits 20 secs: you can play with a MIDI device connected to the port
+///                 // and the incoming messages will be printed on stdout
+///    driver->ClosePort();                 // closes the port
+/// }
+/// \endcode
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/// \defgroup INTERNALS Internals
+/// Classes and functions used internally, the knowledge of which may be omitted by the end user.
+
+/// \defgroup GLOBALS   Globals
+/// Global functions, typedef or preprocessor labels.
+
+
+

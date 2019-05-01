@@ -76,7 +76,7 @@ bool MIDIMultiProcessor::Process(MIDITimedMessage *msg) {
 
 
 /////////////////////////////////////////////////////////////////
-//                  lass MIDIProcessorTransposer               //
+//                 class MIDIProcessorTransposer               //
 /////////////////////////////////////////////////////////////////
 
 MIDIProcessorTransposer::MIDIProcessorTransposer() {

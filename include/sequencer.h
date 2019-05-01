@@ -19,6 +19,9 @@
 */
 
 
+/// \file
+/// Contains the definitions of the classes MIDISequencerTrackState, MIDISequencerState and MIDISequencer.
+
 #ifndef _JDKMIDI_SEQUENCER_H
 #define _JDKMIDI_SEQUENCER_H
 
@@ -108,13 +111,12 @@ class MIDISequencerState : public MIDIProcessor {
         /// from the sequencer, it is processed by the state, which updates its parameters and
         /// notifies the GUI if required.
         bool                    Process( MIDITimedMessage* msg );
-
+        /// Notifies the GUI when something happens (a parameter was changed,
+        /// current time is moved, etc.)
+        void                    Notify(int group, int item = 0) const;
         /// These are used for notifying the GUI when something happens (a parameter was changed,
         /// current time is moved, etc.)
-        ///<{
-        void                    Notify(int group, int item = 0) const;
         void                    NotifyTrack(int item) const;
-        ///<}
 
         MIDISequencerGUINotifier* notifier;         ///< The notifier
         MIDIMultiTrack*         multitrack;         ///< The MIDIMultiTrack holding MIDI messages

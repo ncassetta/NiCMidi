@@ -43,6 +43,12 @@
 **  - revised doxygen comments
 */
 
+
+/// \file
+/// Contains the definition of the classes MIDIFileEventHandler and MIDIFileReader and of the struct MIDIFileHeader;
+/// the first two are low level objects used by the FILEReadMultiTrack for loading MIDI files, and are not documented.
+
+
 #ifndef _JDKMIDI_FILEREAD_H
 #define _JDKMIDI_FILEREAD_H
 
@@ -52,9 +58,6 @@
 #include "msg.h"
 #include "sysex.h"
 
-/// \file
-/// Contains the definition of the classes MIDIFileEventHandler and MIDIFileReader and of the struct MIDIFileHeader,
-/// (internal classes used for loading MIDI files).
 
 /*
 ///
@@ -141,13 +144,14 @@ class MIDIFileEventHandler {
 
 
 
-// EXCLUDED FROM DOCUMENTATION
-// A structure holding data which represent the header of a MIDI file.
+
+/// A structure holding data which represent the header of a MIDI file. You can get the header of MIDI file with
+/// the GetMIDIFileHeader() function.
 struct MIDIFileHeader {
     MIDIFileHeader() : format(0), ntrks(0), division(0) {}
-    short format;               // the file format (currently only 0 and 1 are allowed).
-    short ntrks;                // the number of tracks.
-    short division;             // the number of MIDI ticks for a quarter note.
+    short format;               ///< The file format (currently only 0 and 1 are allowed by the library).
+    short ntrks;                ///< The number of tracks.
+    short division;             ///< the number of MIDI ticks for a quarter note.
 };
 
 
@@ -169,9 +173,9 @@ class MIDIFileReader {
         virtual	int                     ReadHeader();
         virtual bool                    Parse();
 
-        int		                        GetFormat()			    { return header.format; }
-        int		                        GetNumberTracks()       { return header.ntrks; }
-        int		                        GetDivision()		    { return header.division; }
+        int		                        GetFormat()	const		{ return header.format; }
+        int		                        GetNumberTracks() const { return header.ntrks; }
+        int		                        GetDivision() const		{ return header.division; }
 
     protected:
 

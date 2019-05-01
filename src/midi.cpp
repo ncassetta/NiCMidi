@@ -59,7 +59,7 @@ const char* get_chan_msg_name(unsigned char status) {
     return chan_msg_names[status >> 4];
 }
 
-const char* get_chan_mode_msg_name(unsigned char status) {
+const char* get_chan_mode_msg_name(unsigned char number) {
     static const char* chan_mode_names[8] = {
         "ALL SOUND OFF ",       // 0x78
         "RESET ALL CONTROLLERS",// 0x79
@@ -69,7 +69,30 @@ const char* get_chan_mode_msg_name(unsigned char status) {
         "OMNI ON       ",       // 0x7d
         "MONO ON       ",       // 0x7e
         "POLY ON       "};      // 0x7f
-    return chan_mode_names[status - C_ALL_SOUND_OFF];
+    return chan_mode_names[number - C_ALL_SOUND_OFF];
+}
+
+
+const char* get_sys_msg_name(unsigned char status) {
+    static const char* sys_msg_names[16] = {
+        "SYSEX    ",		// 0xf0
+        "MTC      ",		// 0xf1
+        "SONG POS ",		// 0xf2
+        "SONG SEL ",		// 0xf3
+        "ERROR    ",		// 0xf4
+        "ERROR    ",		// 0xf5
+        "TUNE REQ ",		// 0xf6
+        "SYSEX END",		// 0xf7
+        "CLOCK    ",		// 0xf8
+        "MEAS END ",		// 0xf9
+        "START    ",		// 0xfa
+        "CONTINUE ",		// 0xfb
+        "STOP     ",        // 0xfc
+        "ERROR    ",        // 0xfd
+        "SENSE    ",		// 0xfe
+        "META EV  "		    // 0xff
+    };
+    return sys_msg_names[status - 0xf0];
 }
 
 
@@ -118,29 +141,6 @@ const char* get_meta_msg_name(unsigned char type) {
         default:
             return meta_msg_names[17];
     }
-}
-
-
-const char* get_sys_msg_name(unsigned char status) {
-    static const char* sys_msg_names[16] = {
-        "SYSEX    ",		// 0xf0
-        "MTC      ",		// 0xf1
-        "SONG POS ",		// 0xf2
-        "SONG SEL ",		// 0xf3
-        "ERROR    ",		// 0xf4
-        "ERROR    ",		// 0xf5
-        "TUNE REQ ",		// 0xf6
-        "SYSEX END",		// 0xf7
-        "CLOCK    ",		// 0xf8
-        "MEAS END ",		// 0xf9
-        "START    ",		// 0xfa
-        "CONTINUE ",		// 0xfb
-        "STOP     ",        // 0xfc
-        "ERROR    ",        // 0xfd
-        "SENSE    ",		// 0xfe
-        "META EV  "		    // 0xff
-    };
-    return sys_msg_names[status - 0xf0];
 }
 
 

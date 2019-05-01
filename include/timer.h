@@ -1,3 +1,8 @@
+
+/// \file
+/// Contains the definition of the MIDITimer class and some other typedef related to MIDI timing.
+
+
 #ifndef TIMER_H_INCLUDED
 #define TIMER_H_INCLUDED
 
@@ -7,8 +12,6 @@
 
 #include <iostream>     // for debug
 
-/// \file
-/// Contains the definition of the MIDITimer class and some other typedef related to MIDI timing.
 
 
 /// The type of a variable which can hold the elapsed time in milliseconds.
@@ -31,6 +34,7 @@ class MIDITimer {
     public:
 
         typedef std::chrono::steady_clock::time_point timepoint;
+        /// The time is counted in milliseconds.
 		typedef std::chrono::milliseconds duration;
 
         /// The class is static so the constructor is deleted.

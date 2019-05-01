@@ -29,16 +29,14 @@
 #include "../include/sequencer.h"
 #include "../include/manager.h"
 #include "../include/filereadmultitrack.h"
-#include "../include/dump_tracks.h"
+#include "functions.h"
 
-#include <iostream>
-#include <string>
 using namespace std;
 
 
-//
-// globals
-//
+//////////////////////////////////////////////////////////////////
+//                        G L O B A L S                         //
+//////////////////////////////////////////////////////////////////
 
 string command_buf, command, par1, par2;    // used by GetCommand() for parsing the user input
 MIDIMultiTrack tracks;                      // the sequencer MIDIMultiTrack
@@ -69,97 +67,11 @@ const char helpstring[] =
    quit                : Exits\n\
 All commands can be given during playback\n";
 
-const char TRACK_TYPES[6][12] = {
-    "MAIN TRACK",
-    "TEXT ONLY ",
-    "CHANNEL   ",
-    "IRREG CHAN",
-    "MIXED CHAN",
-    "IRREGULAR "
-
-};
 
 
-void GetCommand()
-// gets from the user the string command_buf, then parses it dividing it into command, par1 and par2 substrings
-{
-    size_t pos1, pos2;
-
-    cout << "\n=> ";
-    getline(cin, command_buf);
-
-    command = "";
-    par1 = "";
-    par2 = "";
-
-    for (size_t i = 0; i < command_buf.size(); ++i)
-        command_buf[i] = tolower( command_buf[i]);
-
-    pos1 = command_buf.find_first_not_of ( " ");
-    pos2 = command_buf.find_first_of (" ", pos1 + 1);
-    if (pos1 == string::npos)
-        return;
-
-    command = command_buf.substr (pos1, pos2 - pos1);
-
-    pos1 = command_buf.find_first_not_of (" ", pos2);
-    pos2 = command_buf.find_first_of (" ", pos1 + 1);
-    if (pos1 == string::npos)
-        return;
-
-    par1 = command_buf.substr (pos1, pos2 - pos1);
-    pos1 = command_buf.find_first_not_of (" ", pos2);
-    pos2 = command_buf.find_first_of (" ", pos1 + 1);
-    if (pos1 == string::npos)
-        return;
-
-    par2 = command_buf.substr (pos1, pos2 - pos1);
-}
-
-
-void DumpMIDIMultiTrackWithPauses (MIDIMultiTrack *mlt) {
-    MIDIMultiTrackIterator iter (mlt);
-    MIDITimedMessage *msg;
-    int trk_num;
-    int num_lines = 0;
-
-    printf ("DUMP OF MIDI MULTITRACK\n");
-    printf ("Clocks per beat: %d\n\n", mlt->GetClksPerBeat() );
-
-    iter.GoToTime (0);
-
-    while (iter.GetNextEvent (&trk_num, &msg)) {
-        printf ("Tr %2d - ", trk_num);
-        DumpMIDITimedMessage (msg);
-        num_lines++;
-        if (num_lines == 80) {
-            printf ("Press <ENTER> to continue or q + <ENTER> to exit ...\n");
-            char ch = std::cin.get();
-            if (tolower(ch) == 'q')
-                return;
-            num_lines = 0;
-        }
-    }
-}
-
-
-void DumpMIDITrackWithPauses (MIDITrack *trk, int trk_num) {
-    int num_lines = 0;
-
-    printf ("DUMP OF MIDI TRACK %d\n", trk_num);
-
-    for (unsigned int ev_num = 0; ev_num < trk->GetNumEvents(); ev_num++) {
-        DumpMIDITimedMessage (trk->GetEventAddress(ev_num));
-        num_lines++;
-        if (num_lines == 80) {
-            printf ("Press <ENTER> to continue or q + <ENTER> to exit ...\n");
-            char ch = std::cin.get();
-            if (tolower(ch) == 'q')
-                return;
-            num_lines = 0;
-        }
-    }
-}
+//////////////////////////////////////////////////////////////////
+//                              M A I N                         //
+//////////////////////////////////////////////////////////////////
 
 
 int main( int argc, char **argv ) {

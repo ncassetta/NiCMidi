@@ -16,6 +16,10 @@
 */
 
 
+/// \file
+/// Contains the definition of the classes MIDITrack and MIDITrackIterator.
+
+
 #ifndef MIDI_TRACK_H_INCLUDED
 #define MIDI_TRACK_H_INCLUDED
 
@@ -26,8 +30,6 @@
 
 #include <vector>
 
-/// \file
-/// Contains the definition of the classes MIDITrack and MIDITrackIterator.
 
 /// Defines the default behavior of the methods MIDITrack::InsertEvent() and MIDITrack::InsertNote()
 /// when inserting events.

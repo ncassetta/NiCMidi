@@ -19,6 +19,10 @@
 */
 
 
+/// \file
+/// Contains the definition of the classes MIDIMultiTrack, MIDIMultiTrackIteratorState, MIDIMultiTrackIterator
+/// and MIDIEditMultiTrack.
+
 
 #ifndef MIDI_MULTITRACK_H
 #define MIDI_MULTITRACK_H
@@ -26,10 +30,6 @@
 #include "track.h"
 
 #include <vector>
-
-/// \file
-/// Contains the definition of the classes MIDIMultiTrack, MIDIMultiTrackIteratorState, MIDIMultiTrackIterator
-/// and MIDIEditMultiTrack.
 
 
 class MIDIEditMultiTrack;       // forward declaration

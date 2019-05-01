@@ -278,13 +278,15 @@ void MIDIFileReadMultiTrack::ChanMessage( const MIDITimedMessage &msg ) {
     }
 }
 
-/*
-MIDIFileHeader GetMIDIFileHeader(const char* filename) {
-    MIDIFileHeader header;
-    MIDIFileReadStream mfreader_stream( filename );
-    MIDIFileEventHandler dummy_handler; // dummy handler that does nothing
-    MIDIFileReader reader (&mfreader_stream, &dummy_handler);
 
+MIDIFileHeader& GetMIDIFileHeader(const char* filename) {
+    MIDIFileHeader header;
+    std::ifstream read_stream (filename, std::ios::in | std::ios::binary);
+
+    if (read_stream.fail())
+        return header;
+
+    MIDIFileReader reader (&read_stream, 0);        // no need for a EventHandler
     if (reader.ReadHeader()) {
         header.format = reader.GetFormat();
         header.ntrks = reader.GetNumberTracks();
@@ -292,7 +294,12 @@ MIDIFileHeader GetMIDIFileHeader(const char* filename) {
     }
     return header;
 }
-*/
+
+
+MIDIFileHeader& GetMIDIFileHeader(const std::string& filename) {
+    return GetMIDIFileHeader(filename.c_str());
+}
+
 
 bool LoadMIDIFile(const char* filename, MIDIMultiTrack* tracks) {
     std::ifstream read_stream (filename, std::ios::in | std::ios::binary);

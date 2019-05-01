@@ -39,6 +39,10 @@
 */
 
 
+/// \file
+/// Contains the definition of the class MIDIMatrix.
+
+
 #ifndef _JDKMIDI_MATRIX_H
 #define _JDKMIDI_MATRIX_H
 
@@ -46,9 +50,6 @@
 #include "midi.h"
 #include "msg.h"
 
-
-/// \file
-/// Contains the definition of the class MIDIMatrix.
 
 ///
 /// Implements a matrix to keep track of notes on and hold pedal for every channel.

@@ -88,7 +88,7 @@ AdvancedSequencer::AdvancedSequencer(MIDISequencerGUINotifier *n) :
     file_loaded (false),
     owns_tracks (true)                           // remembers that the multitrack is owned
 {
-    MIDIManager::SetSequencer (this);
+    MIDIManager::AddMIDITick(this);
     thru.SetProcessor(&thru_processor);
     thru_processor.SetProcessor(&thru_rechannelizer);
     thru_processor.SetProcessor(&thru_transposer);
@@ -102,7 +102,7 @@ AdvancedSequencer::AdvancedSequencer(MIDIMultiTrack* mlt, MIDISequencerGUINotifi
     MIDISequencer (mlt, n),
     owns_tracks (false)                         // remembers that the multitrack is not owned
 {
-    MIDIManager::SetSequencer(this);
+    MIDIManager::AddMIDITick(this);
     file_loaded = !state.multitrack->IsEmpty();
     ExtractWarpPositions();                     // sets warp_positions and num_measures
     thru.SetProcessor(&thru_processor);
@@ -116,6 +116,7 @@ AdvancedSequencer::AdvancedSequencer(MIDIMultiTrack* mlt, MIDISequencerGUINotifi
 
 AdvancedSequencer::~AdvancedSequencer() {
     Stop();
+    MIDIManager::RemoveMIDITick(this);
     for (unsigned int i = 0; i < GetNumTracks(); ++i) {
         delete track_processors[i];
         track_processors[i] = 0;

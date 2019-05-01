@@ -43,7 +43,11 @@
 /// The file will be in MIDI format 0 if the multitrack has only one track, otherwise  the format
 /// will be 1.
 ///
+/// If you want to save a MIDIMultiTrack into a  MIDI file you probably will use the simple and fast WriteMidiFile()
+/// global function, so this is not documented.
+///
 class MIDIFileWriteMultiTrack {
+/// \cond INTERNAL
     public:
         /// The constructor creates an object which can write the multitrack events to the given C++ stream.
         /// The pointed objects are not owned by the class.
@@ -60,16 +64,22 @@ class MIDIFileWriteMultiTrack {
 
         const MIDIMultiTrack    *multitrack;
         MIDIFileWriter          writer;
+/// \endcond
 };
 
 
-/// Writes the given MIDIMultiTrack object into the MIDI file denoted by _filename_; _format_
-/// is the MIDI file format (only 0 and 1 are supported).
-/// Returns **true** if the writing was successful.
+/// \addtogroup GLOBALS
+//@{
+/// Writes the given MIDIMultiTrack object into a MIDI file.
+/// \param filename the file name
+/// \param format the MIDI file format (only 0 and 1 are supported)
+/// \param tracks the MIDIMultiTrack to be written
+/// \param strip if the format is 1 (many tracks) and this is *true*, empty tracks are skipped
+/// \return **true** if the writing was successful.
 bool WriteMIDIFile(const char* filename, int format, const MIDIMultiTrack* tracks, bool strip = false);
-/// Writes the given MIDIMultiTrack object into the MIDI file denoted by _filename_; _format_
-/// is the MIDI file format (only 0 and 1 are supported).
-/// Returns **true** if the writing was successful.
+/// Writes the given MIDIMultiTrack object into a MIDI file.
+/// \see WriteMIDIFile(const char* filename, format, tracks, strip)
 bool WriteMIDIFile(const std::string& filename, int format, const MIDIMultiTrack* tracks, bool strip = false);
+//@}
 
 #endif

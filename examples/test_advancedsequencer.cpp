@@ -27,21 +27,24 @@
 //
 
 #include "../include/advancedsequencer.h"
-#include "../include/dump_tracks.h"
+#include "functions.h"
 
-#include <iostream>
-#include <string>
+
+/// \file
+/// A command line example of the features of the AdvancedSequencer class. You can load MIDI files and ply them, changing
+/// a lot of parameters. Compile it together with functions.cpp, which contains I/O functions.
+
 using namespace std;
 
 
-//
-// globals
-//
+//////////////////////////////////////////////////////////////////
+//                        G L O B A L S                         //
+//////////////////////////////////////////////////////////////////
 
-string command_buf, command, par1, par2;    // used by GetCommand() for parsing the user input
+ extern string command_buf, command, par1, par2;    // used by GetCommand() for parsing the user input
 AdvancedSequencer sequencer;                // an AdvancedSequencer (without GUI notifier)
 
-const char helpstring[] =
+const char helpstring[] =                   // shown by the help command
 "\nAvailable commands:\n\
    load filename       : Loads the file into the sequencer\n\
    ports               : Enumerates MIDI In and OUT ports\n\
@@ -74,104 +77,18 @@ const char helpstring[] =
    quit                : Exits\n\
 All commands can be given during playback\n";
 
-const char TRACK_TYPES[6][12] = {
-    "MAIN TRACK",
-    "TEXT ONLY ",
-    "CHANNEL   ",
-    "IRREG CHAN",
-    "MIXED CHAN",
-    "IRREGULAR "
-
-};
 
 
-void GetCommand()
-// gets from the user the string command_buf, then parses it dividing it into command, par1 and par2 substrings
-{
-    size_t pos1, pos2;
-
-    cout << "\n=> ";
-    getline(cin, command_buf);
-
-    command = "";
-    par1 = "";
-    par2 = "";
-
-    for (size_t i = 0; i < command_buf.size(); ++i)
-        command_buf[i] = tolower( command_buf[i]);
-
-    pos1 = command_buf.find_first_not_of ( " ");
-    pos2 = command_buf.find_first_of (" ", pos1 + 1);
-    if (pos1 == string::npos)
-        return;
-
-    command = command_buf.substr (pos1, pos2 - pos1);
-
-    pos1 = command_buf.find_first_not_of (" ", pos2);
-    pos2 = command_buf.find_first_of (" ", pos1 + 1);
-    if (pos1 == string::npos)
-        return;
-
-    par1 = command_buf.substr (pos1, pos2 - pos1);
-    pos1 = command_buf.find_first_not_of (" ", pos2);
-    pos2 = command_buf.find_first_of (" ", pos1 + 1);
-    if (pos1 == string::npos)
-        return;
-
-    par2 = command_buf.substr (pos1, pos2 - pos1);
-}
-
-
-void DumpMIDIMultiTrackWithPauses (MIDIMultiTrack *mlt) {
-    MIDIMultiTrackIterator iter (mlt);
-    MIDITimedMessage *msg;
-    int trk_num;
-    int num_lines = 0;
-
-    printf ("DUMP OF MIDI MULTITRACK\n");
-    printf ("Clocks per beat: %d\n\n", mlt->GetClksPerBeat() );
-
-    iter.GoToTime (0);
-
-    while (iter.GetNextEvent (&trk_num, &msg)) {
-        printf ("Tr %2d - ", trk_num);
-        DumpMIDITimedMessage (msg);
-        num_lines++;
-        if (num_lines == 80) {
-            printf ("Press <ENTER> to continue or q + <ENTER> to exit ...\n");
-            char ch = std::cin.get();
-            if (tolower(ch) == 'q')
-                return;
-            num_lines = 0;
-        }
-    }
-}
-
-
-void DumpMIDITrackWithPauses (MIDITrack *trk, int trk_num) {
-    int num_lines = 0;
-
-    printf ("DUMP OF MIDI TRACK %d\n", trk_num);
-
-    for (unsigned int ev_num = 0; ev_num < trk->GetNumEvents(); ev_num++) {
-        DumpMIDITimedMessage (trk->GetEventAddress(ev_num));
-        num_lines++;
-        if (num_lines == 80) {
-            printf ("Press <ENTER> to continue or q + <ENTER> to exit ...\n");
-            char ch = std::cin.get();
-            if (tolower(ch) == 'q')
-                return;
-            num_lines = 0;
-        }
-    }
-}
+//////////////////////////////////////////////////////////////////
+//                              M A I N                         //
+//////////////////////////////////////////////////////////////////
 
 
 int main( int argc, char **argv ) {
     //CoInitializeEx(NULL, COINIT_MULTITHREADED);
     cout << "TYPE help TO GET A LIST OF AVAILABLE COMMANDS" << endl << endl;
     while ( command != "quit" ) {                   // main loop
-        GetCommand();                               // gets user input and parse it
+        GetCommand();                               // gets user input and parses it (see functions.cpp)
 
         if( command == "load" ) {                   // loads a file
             if (sequencer.Load(par1.c_str()))
@@ -200,7 +117,7 @@ int main( int argc, char **argv ) {
             cout << "Sequencer started at measure: " << sequencer.GetCurrentMeasure() << ":"
                  << sequencer.GetCurrentBeat() << endl;
         }
-        else if (command == "loop") {               // sets repeates play
+        else if (command == "loop") {               // sets repeated play
             int beg = atoi(par1.c_str());
             int end = atoi(par2.c_str());
             if (!(beg == 0 && end == 0)) {
@@ -218,7 +135,7 @@ int main( int argc, char **argv ) {
             cout << "Sequencer stopped at measure: " << sequencer.GetCurrentMeasure() << ":"
                  << sequencer.GetCurrentBeat() << endl;
         }
-        else if (command == "rew") {                // stops and rewind to time 0
+        else if (command == "rew") {                // stops and rewinds to time 0
             sequencer.GoToZero();
             cout << "Rewind to 0:0" << endl;
         }
@@ -262,14 +179,6 @@ int main( int argc, char **argv ) {
                      << " to track " << track << endl;
             }
         }
-        /* COULD BE USED FOR MIDI THRU
-        else if ( command == "inport" )                 // changes the midi in port
-        {
-            int port = atoi( par1.c_str() );
-            sequencer.SetInputPort( port );
-            cout << "Assigned in port n. " << sequencer.GetInputPort();
-        }
-        */
         else if (command == "unsolo") {             // unsoloes all tracks
             sequencer.UnSoloTrack();
             cout << "Unsoloed all tracks" << endl;

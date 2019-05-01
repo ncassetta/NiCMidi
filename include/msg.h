@@ -33,6 +33,8 @@
 */
 
 
+/// \file
+/// Contains the definition of the classes MIDIMessage and MIDITimedMessage.
 
 
 #ifndef _JDKMIDI_MSG_H
@@ -42,10 +44,6 @@
 #include "sysex.h"
 
 #include <string>
-
-
-/// \file
-/// Contains the definitions of classes MIDIMessage and MIDITimedMessage.
 
 
 ///
@@ -62,7 +60,6 @@ class 	MIDIMessage {
     public:
         ///@name The Constructors, Destructor and Initializing methods
         //@{
-
         /// Creates a a NoOp MIDIMessage (an undefined MIDI message, which will be ignored when playing).
                                 MIDIMessage();
         /// The copy constructor. If the target message has a MIDISystemExclusive object it is duplicated,
@@ -77,15 +74,11 @@ class 	MIDIMessage {
         /// The assignment operator. It primarily frees the old MIDISystemExclusive object if it was allocated,
         /// then duplicates the (eventual) new MIDISystemExclusive, so every MIDIBigMessage has its own object.
         const MIDIMessage&      operator= (const MIDIMessage &msg);
-
         //@}
 
-        /// Returns a human readable ascii string describing the message content.
-        std::string	            MsgToText() const;
 
         ///@name The 'Get' methods.
         //@{
-
         /// Returns the length in bytes of the entire message.
         char	                GetLength() const;
         /// Returns the status byte of the message. If the message is a channel message this contains the message
@@ -231,7 +224,6 @@ class 	MIDIMessage {
 
         ///@name The 'Set' methods
         //@{
-
         /// Sets all bits of the status byte of the message (i.e., for channel messages, the type and the channel).
         void	                SetStatus(unsigned char s)	        { status = s; }
         /// Sets just the lower 4 bits of the status byte without changing the upper 4 bits.
@@ -341,8 +333,14 @@ class 	MIDIMessage {
         void	                SetNoOp()                           { Clear(); }
         /// Makes the message a beat marker internal service message.
         void	                SetBeatMarker();
+        //@}
 
 
+        /// \name Other methods
+        //@{
+        /// Returns a human readable ascii string describing the message content.
+        std::string             MsgToText() const;
+        // TODO: virtual????
         /// Allocates a MIDISystemExclusive object, with a buffer of given max size.
         ///The buffer is initially empty and can be accessed with GetSysEx(). An eventual old object is freed.
         void                    AllocateSysEx(unsigned int len);
@@ -356,6 +354,7 @@ class 	MIDIMessage {
         /// message or a NOTE_ON with velocity 0.
         /// The default is **false** (NOTE_OFF messages). If you want to use the other form call this with **true**.
         static void             UseNoteOnv0ForOff(bool f)           { use_note_onv0 = f; }
+        //@}
 
         /// Status and byte1 for non MIDI messages (internal use).
         enum { STATUS_SERVICE = 0, NO_OP_VAL = 0, BEAT_MARKER_VAL = 1 };
@@ -376,9 +375,6 @@ class 	MIDIMessage {
 /*                   C L A S S   M I D I T i m e d M e s s a g e                              */
 /* ********************************************************************************************/
 
-typedef unsigned long MIDIClockTime;
-const MIDIClockTime TIME_INFINITE = 0xffffffff;
-
 
 ///
 /// The MIDITimedMessage class inherits from the MIDIMessage and represents a message associated with a
@@ -391,22 +387,26 @@ class 	MIDITimedMessage : public MIDIMessage {
       ///@name The Constructors, Destructor and Initializing methods
         //@{
 
-        /// Creates a a NoOp MIDITimedMessage. This is an undefined MIDI message), which will be ignored when playing.
+        /// Creates a a NoOp MIDITimedMessage with the time set to 0. This is an undefined MIDI message),
+        /// which will be ignored when playing.
                                 MIDITimedMessage();
-        /// Copy constructors. \see MIDIMessage::(MIDIMessage()
+        /// Copy constructor. \see MIDIMessage::(MIDIMessage()
                                 MIDITimedMessage(const MIDITimedMessage &msg);
+        /// Copy constructor (sets the time to 0). \see MIDIMessage::(MIDIMessage()
                                 MIDITimedMessage(const MIDIMessage &msg);
-        /// Destructor
+        /// Destructor.
                                 ~MIDITimedMessage();
         /// Resets the message, frees the MIDISystemExclusive pointer and sets the time to 0.
         /// The message becomes a NoOp.
         void	                Clear();
 
-        /// The assignment operators \see MIDIMessage::operator=()
+        /// Assignment operator. \see MIDIMessage::operator=()
         const MIDITimedMessage &operator= (const MIDITimedMessage &msg);
+        /// Assignment operator (sets the time to 0). \see MIDIMessage::operator=()
         const MIDITimedMessage &operator= (const MIDIMessage &msg);
+        //@}
 
-        /// Inherited from MIDIMessage.
+        /// Returns a human readable ascii string describing the message content.
         std::string             MsgToText() const;
 
         /// Returns the MIDIClockTime associated with the message.
@@ -421,8 +421,8 @@ class 	MIDITimedMessage : public MIDIMessage {
         /// The same of Clear(), makes the message an undefined message which will be ignored.
         void	                SetNoOp()                       { Clear(); }
 
-        /// This function is used by the MIDITrack::InsertEvent() and MIDITrack::InsertNote() methods for ordering
-        /// events when inserting.
+        /// Used by the MIDITrack::InsertEvent() and MIDITrack::InsertNote() methods for ordering events
+        /// when inserting them in a MIDITrack.
         /// It compares events _m1_ and _m2_; the following tests are done in sequence:
         /// - if m1 (or m2) is a NoOp it's larger
         /// - if m1 (or m2) has lesser MIDI time it's smaller (sorts for increasing time)
@@ -432,11 +432,12 @@ class 	MIDITimedMessage : public MIDIMessage {
         /// - if m1 and m2 are both channel messages sort for ascending channel
         /// - if m1 (or m2) is not a note message it's smaller (non note go before notes)
         /// - if m1 (or m2) is a Note Off it's smaller (Note Off go before Note On)
+        ///
         /// \return **1** if _a_ < _b_ , **2** if _a_ > _b_, **0** if none of these (their order is indifferent)
         friend int              CompareEventsForInsert (const MIDITimedMessage &m1, const MIDITimedMessage &m2);
 
-        /// This function is used by the methods that search and insert events in the tracks to find events
-        /// that are of the same kind and would normally be incompatible in the same track and at the same time.
+        /// Used by methods that search and insert events in a MIDITrack to find events that are of the same kind
+        /// and would normally be incompatible in the same track and at the same time.
         /// It compares the events _m1_ and _m2_ and returns **true** if they have <b>the same MIDI time</b> and they are:
         /// - both NoOp
         /// - both Note On or Note Off with the same channel and the same note number
@@ -444,6 +445,7 @@ class 	MIDITimedMessage : public MIDIMessage {
         /// - both channel messages (not notes or control) with the same channel and type
         /// - both MetaEvent with the same meta type
         /// - both non channel events (not Meta) with the same status
+        ///
         /// If the input mode is set to ::INSMODE_REPLACE or ::INSMODE_INSERT_OR_REPLACE the functions
         /// MIDITrack::InsertEvent and MIDITrack::InsertNote search if at same MIDI time of the event to insert exists
         /// such an event and, if they find it, they replace the event, rather than inserting it.

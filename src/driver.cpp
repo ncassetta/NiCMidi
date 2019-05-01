@@ -150,12 +150,17 @@ void MIDIOutDriver::SetThruChannel(char chan) {
 }
 */
 
-void MIDIOutDriver::AllNotesOff( int chan ) {
+void MIDIOutDriver::AllNotesOff(int chan) {
     MIDIMessage msg;
 
     if (!port->isPortOpen())
         return;
 
+    if (chan == -1) {
+        for (int i = 0; i < 16; i++)
+            AllNotesOff(i);
+        return;
+    }
     out_mutex.lock();
 
 #if DRIVER_USES_MIDIMATRIX                      // send a note off for every note on in the out_matrix
@@ -177,7 +182,7 @@ void MIDIOutDriver::AllNotesOff( int chan ) {
     out_mutex.unlock();
 }
 
-
+/*
 void MIDIOutDriver::AllNotesOff() {
     out_mutex.lock();
 
@@ -186,6 +191,7 @@ void MIDIOutDriver::AllNotesOff() {
 
     out_mutex.unlock();
 }
+*/
 
 
 void MIDIOutDriver::OutputMessage(const MIDITimedMessage& msg) {    // MIDITimedMessage is good also for MIDIMessage

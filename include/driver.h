@@ -23,6 +23,10 @@
 */
 
 
+/// \file
+/// Contains the definition of the classes MIDIOutDriver and MIDIInDriver, used by the library to
+/// communicate with hardware MIDI ports.
+
 
 #ifndef _JDKMIDI_DRIVER_H
 #define _JDKMIDI_DRIVER_H
@@ -42,10 +46,6 @@
 
 
 // TODO: implements RtMidi functions (error callback, selection of input, etc.)
-
-/// \file
-/// Contains the definition of the classes MIDIOutDriver and MIDIInDriver, used by the library to
-/// communicate with hardware MIDI ports.
 
 
 /// This item only affects AllNotesOff() function. All modern MIDI devices should respond to all notes off
@@ -178,12 +178,12 @@ class MIDIOutDriver {
         /// more than once. The function does nothing if the port is already close. If you want to force
         /// the closure call Reset().
         virtual void            ClosePort();
-        /// Turns off all the sounding notes on the given MIDI channel. This is normally done by
-        /// sending an All Notes Off message, but you can change this behavior
+        /// Turns off all the sounding notes on the port (or on the given MIDI channel). This is normally
+        /// done by sending an All Notes Off message, but you can change this behaviour
+        /// \param chan if you left the default silences all channels, otherwise you can give an unique channel
+        /// to turn off
         /// \see DRIVER_USES_MIDIMATRIX.
-        virtual void            AllNotesOff(int chan);
-        /// Turns off all sounding notes on the hardware port. (see  AllNotesOff(chan)).
-        virtual void            AllNotesOff();
+        virtual void            AllNotesOff(int chan = -1);
         /// Makes a copy of the message, processes it with the out processor and then sends it to
         /// the hardware port. If the port is busy waits 1 msec and retries until DRIVER_MAX_RETRIES
         /// is reached.
@@ -285,7 +285,8 @@ class MIDIInDriver {
         /// the closure call Reset().
         virtual void            ClosePort();
         /// Locks the queue so it cannot be written by other threads (such as the RtMidi callback). You
-        /// can then safely handle its data.
+        /// can then safely inspect and get its data, unlocking it when you have finished and want to get
+        /// new messages.
         void                    LockQueue()                     { in_mutex.lock(); }
         /// Unlocks the queue.
         void                    UnlockQueue()                   { in_mutex.unlock(); }

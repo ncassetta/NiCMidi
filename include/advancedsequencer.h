@@ -2,6 +2,11 @@
  *
 */
 
+
+/// \file
+/// Contains the definition of the classes MIDISequencerTrackProcessor and AdvancedSequencer.
+
+
 #ifndef _JDKMIDI_ADVANCEDSEQUENCER_H
 #define _JDKMIDI_ADVANCEDSEQUENCER_H
 
@@ -16,9 +21,6 @@
 #include "manager.h"
 #include "smpte.h"
 
-
-/// \file
-/// Contains the definition of the class AdvancedSequencer.
 
 ///
 /// A multipurpose MIDIProcessor implementing muting, soloing, rechannelizing, velocity scaling and transposing.
@@ -80,17 +82,19 @@ class AdvancedSequencer : public MIDISequencer {
         /// sequencer to the MIDIManager queue of tick components, so you can immediately start to edit the
         /// MIDIMultiTrack or load MIDI files and play.
         /// \note If you create the object with this constructor the Internal multitrack is owned by the
-        /// sequencer and will deleted when you destroy it.
+        /// sequencer and will be deleted when you destroy it.
                             AdvancedSequencer(MIDISequencerGUINotifier *n = 0);
         /// Creates an AdvancedSequencer from a given MIDIMultiTrack. Adds the sequencer to the MIDIManager queue
         /// of tick components, so you can immediately start to play.
         /// \note If you create the object with this constructor the Internal multitrack is **not** owned by the
-        /// sequencer and won't deleted when you destroy it.
+        /// sequencer and won't be deleted when you destroy it.
                             AdvancedSequencer(MIDIMultiTrack* mlt, MIDISequencerGUINotifier *n = 0);
         /// The destructor.
         virtual             ~AdvancedSequencer();
 
-
+        /// Resets the status of the sequencer (doesn't empty the MIDIMultiTrack).
+        /// Use this if you have modified the MIDIMultiTrack adding, moving or deleting tracks; this
+        /// moves the time to 0 and resets all the processors.
         void                Reset();
 
         /// Loads a MIDIFile into the internal MIDIMultiTrack. It can change the multitrack clks_per_beat parameter
@@ -112,14 +116,14 @@ class AdvancedSequencer : public MIDISequencer {
 
         /// Returns **true** if the internal MIDIMultiTrack is not empty.
         bool                IsLoaded() const                { return file_loaded; }
-        /// Returns the address of the MIDIThru tick component
+        /// Returns the address of the MIDIThru tick component.
         const MIDIThru*     GetMIDIThru() const             { return &thru; }
         /// Returns **true** if MIDI thru is enabled.
         bool                GetMIDIThruEnable() const       { return thru.IsPlaying(); }
         /// Returns the output channel of the MIDIThru tick component.
         int                 GetMIDIThruChannel() const      { return thru_rechannelizer.GetRechanMap(0); }
         /// Returns the transpose amount of the MIDIThru tick component.
-        int                 GetMIDIThruTranspose() const    { return thru_transposer.GetTransposeChannel(0); }
+        int                 GetMIDIThruTranspose() const    { return thru_transposer.GetChannelTranspose(0); }
         /// Returns **true** if any track is soloed.
         bool                GetSoloMode() const;
         /// Returns **true** if a specific track is soloed

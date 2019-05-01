@@ -35,6 +35,11 @@
 // www.vmgames.com vrm@vmgames.com
 //
 
+
+/// \file
+/// Contains the definition of the class MIDISystemExclusive.
+
+
 #ifndef JDKSMIDI_SYSEX_H
 #define JDKSMIDI_SYSEX_H
 
@@ -42,8 +47,6 @@
 #include <vector>
 #include <cstring>
 
-/// \file
-/// Contains the definition of the class MIDISystemExclusive.
 
 ///
 /// Stores a buffer of MIDI data bytes in a std::vector, plus a byte for the checksum.

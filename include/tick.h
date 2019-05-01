@@ -1,3 +1,8 @@
+
+/// \file
+/// Contains the definition of the pure virtual class MIDITickComponent.
+
+
 #ifndef TICK_H_INCLUDED
 #define TICK_H_INCLUDED
 
@@ -5,21 +10,22 @@
 #include <mutex>
 #include "timer.h"
 
-/// \file
-/// Contains the definition of the pure virtual class MIDITickComponent.
-
-
+/// \addtogroup GLOBALS
+//@{
 /// These are the available priorities for a MIDITickComponent. When you add a component to the MIDIManager queue with
 /// the MIDIManager::SetComponent() method the order in the queue reflects the priority of the components.
 /// \see MIDIManager::AddComponent().
 typedef enum {
-    PR_FIRST,           /// The component is inserted as first element in the queue
-    PR_PRE_SEQ,         /// The component is inserted before the sequencer
-    PR_SEQ,             /// The component is the sequencer (you can insert only one in the queue)
-    PR_POST_SEQ,        /// The component is inserted after the sequencer
-    PR_LAST             /// The component is inserted as last element in the queue
+    PR_FIRST,           ///< The component is inserted as first element in the queue
+    PR_PRE_SEQ,         ///< The component is inserted before the sequencer
+    PR_SEQ,             ///< The component is the sequencer (you can insert only one in the queue)
+    PR_POST_SEQ,        ///< The component is inserted after the sequencer
+    PR_LAST             ///< The component is inserted as last element in the queue
 } tPriority;
+//@}
 
+
+///
 /// A pure virtual class implementing an object which has a callback procedure to be called at every tick
 /// of a MIDITimer.
 /// You can use this feature to send, receive or manipulate MIDI messages with accurate timing: the MIDISequencer,
@@ -27,19 +33,26 @@ typedef enum {
 /// To use a MIDITickComponent object you must add it to the MIDIManager queue with the MIDIManager::AddMIDITick()
 /// method; then you can call the Start() and Stop() methods of the object to start and stop the callback. A priority
 /// parameter is supplied to determine the position of the MIDITickComponent in the MIDIManager queue.
+///
 class MIDITickComponent {
     public:
         /// The constructor.
-        /// \param pr the priority (see)
+        /// \param pr the priority (see \ref tPriority)
         /// \param func a pointer to the static callback: this should be the address of the StaticTickProc() you
         /// have implemented in your subclass
-                                    MIDITickComponent(tPriority pr, MIDITick func) : tickp(func),
+                                    MIDITickComponent(tPriority pr, MIDITick func) : tick_proc(func),
                                                       dev_time_offset(0), sys_time_offset(0),
                                                       priority(pr), running(false) {}
 
+        /// The destructor.
+        /// Before deleting the object it tries to remove its pointer from the MIDIManager queue to prevent the
+        /// manager from using an invalid pointer. If a derived class destructor needs to delete something it
+        /// should call Stop() as first statement, then do its work.
+        virtual                    ~MIDITickComponent();
+
         /// Returns the address of the StaticTickProc() method, which will be called by the MIDIManager at every
         /// clock tick.
-        MIDITick*                   GetFunc() const                 { return tickp; }
+        MIDITick*                   GetFunc() const                 { return tick_proc; }
         /// Returns the priority.
         tPriority                   GetPriority() const             { return priority; }
 
@@ -71,7 +84,7 @@ class MIDITickComponent {
         virtual void                TickProc(tMsecs sys_time) = 0;
 
         /// The pointer to the static callback (probably set by the constructor to StaticTickProc()).
-        const MIDITick*             tickp;
+        const MIDITick*             tick_proc;
 
         /// A time offset set by the Start() method and which you can use for your calculations.
         std::atomic<tMsecs>         dev_time_offset;

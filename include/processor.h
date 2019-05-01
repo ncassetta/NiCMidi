@@ -28,6 +28,13 @@
 ** CHECKED with jdksmidi. NO CHANGES
 */
 
+
+/// \file
+/// Contains the definition of the pure virtual MIDIProcessor class and its specializations
+/// MIDIMultiProcessor, MIDIProcessorTransposer, MIDIProcessorRechannelizer, MIDIProcessorPrinter.
+/// These are devices that can manipulate a MIDITimedMessage.
+
+
 #ifndef _JDKMIDI_PROCESS_H
 #define _JDKMIDI_PROCESS_H
 
@@ -35,11 +42,6 @@
 
 #include <iostream>
 #include <vector>
-
-/// \file
-/// Contains the definition of the pure virtual MIDIProcessor class and its specializations
-/// MIDIMultiProcessor, MIDIProcessorTransposer, MIDIProcessorRechannelizer, MIDIProcessorPrinter.
-/// These are devices that can manipulate a MIDITimedMessage.
 
 
 ///
@@ -72,17 +74,25 @@ class MIDIMultiProcessor : public MIDIProcessor {
                                         MIDIMultiProcessor() : process_mode(MODE_CONTINUE) {}
         /// Empties the processors queue.
         virtual void                    Reset();
-        /// Inserts a MIDIProcessor object into the queue.
-        /// \param proc the MIDIProcessor to be inserted (it is NOT owned by the MIDIMultiProcessor)
-        /// \param pos the position in the queue (no check is done). If you leave the default value the
-        /// processor will be appended to the queue.
-        void                            SetProcessor(MIDIProcessor* proc, int pos = -1);
         /// Returns a pointer to the MIDIProcessor at the given position.
         MIDIProcessor*                  GetProcessor(int pos)           { return processors[pos]; }
         /// Returns a pointer to the MIDIProcessor at the given position.
         const MIDIProcessor*            GetProcessor(int pos) const     { return processors[pos]; }
-
-        /// Determines the behavior of the MIDIMultiProcessor if any of the processors return
+        /// Returns the processing mode (see SetProcessMode()).
+        int                             GetProcessMode() const          { return process_mode; }
+        /// Inserts a MIDIProcessor object into the queue.
+        /// \param proc the MIDIProcessor to be inserted (it is **not** owned by the MIDIMultiProcessor)
+        /// \param pos the position in the queue. If you leave the default value the processor will be
+        /// appended to the queue, otherwise the new processor substitutes the old (the method does nothing
+        /// if _pos_ isn't in the appropriate range)
+        void                            SetProcessor(MIDIProcessor* proc, int pos = -1);
+        /// Removes the MIDIProcessor at the given position. It only removes the processor pointer from
+        /// the queue, and does nothing if _pos_ isn't in the appropriate range.
+        void                            RemoveProcessor(int pos);
+        /// Searches the given MIDIProcessor in the queue and removes it (it does nothing
+        /// if the processor isn't in the queue). It only removes the processor pointer from the queue.
+        void                            RemoveProcessor(const MIDIProcessor* proc);
+        /// Determines the behaviour of the MIDIMultiProcessor if any of the processors return
         /// **false**. You can set these three values:
         /// - MODE_IGNORE :   the MIDIMultiProcessor ignores return values and always returns **true**
         /// - MODE_CONTINUE : the MIDIMultiProcessor performs all the processing, and returns **false**
@@ -90,24 +100,18 @@ class MIDIMultiProcessor : public MIDIProcessor {
         /// - MODE_STOP :     the MIDIMultiProcessor stops processing when a processor returns **false**
         /// and returns **false**, **true** otherwise.
         void                            SetProcessMode(int mode)        { process_mode = mode; }
-        /// Gets the processing mode.
-        int                             GetProcessMode() const          { return process_mode; }
-        /// Removes the MIDIProcessor at the given position. It only deletes the processor pointer from the queue.
-        void                            RemoveProcessor(int pos);
-        /// Searches the given MIDIProcessor in the queue and removes it (it does nothing
-        /// if the processor isn't in the queue). It only removes the processor pointer from the queue.
-        void                            RemoveProcessor(const MIDIProcessor* proc);
-        /// The process method passes the MIDI message to the first processor and subsequently to
-        /// all other processors in the queue. If any of the processors returns *false* the behaviour
+        /// The Process method. It passes the MIDI message to the first processor and subsequently to
+        /// all other processors in the queue. If any of the processors returns **false** the behaviour
         /// and the returned value are defined by the SetProcessMode() method.
         virtual bool                    Process(MIDITimedMessage *msg);
         /// These are the values to be given as parameters to the SetProcessMode() method.
         enum { MODE_IGNORE, MODE_CONTINUE, MODE_STOP };
 
     private:
-        std::vector<MIDIProcessor*>     processors;
-        int                             process_mode;
+        std::vector<MIDIProcessor*>     processors;     ///< The array of processors
+        int                             process_mode;   ///< The process mode parameter
 };
+
 
 ///
 /// A MIDIProcessor which shifts the pitch of MIDI note and polyphonic pressure messages by a given amount of semitones.
@@ -119,12 +123,12 @@ class MIDIProcessorTransposer : public MIDIProcessor {
                                         MIDIProcessorTransposer();
         /// Resets the default status (no transposing on all channels).
         virtual void                    Reset();
+        /// Gets the transposing amount (in semitones) for the given channel
+        int                             GetChannelTranspose (int chan) const        { return trans_amount[chan]; }
         /// Sets the transposing amount.
         /// \param chan the channel to be transposed
         /// \param trans The amount of transposing in semitones
-        void                            SetTransposeChannel (int chan, int trans)   { trans_amount[chan] = trans; }
-        /// Gets the transposing amount (in semitones) for the given channel
-        int                             GetTransposeChannel (int chan) const        { return trans_amount[chan]; }
+        void                            SetChannelTranspose (int chan, int trans)   { trans_amount[chan] = trans; }
         /// Sets the same transposing amount (in semitones) for all the channels.
         void                            SetAllTranspose (int trans);
         /// The process() method. It affects only Note on, Note off and Poly pressure
@@ -149,17 +153,17 @@ class MIDIProcessorRechannelizer : public MIDIProcessor {
 
         /// Resets the default status (no rechannelizing).
         void                            Reset();
+        /// Gets the corresponding channel for the (source) _src_chan_.
+        int                             GetRechanMap (int src_chan) const           { return rechan_map[src_chan]; }
         /// Set the correspondence between two channels (will transform _src_chan_ into
         /// _dest_chan_). Channel range is 0 ... 15, however you can set _dest_chan_ to -1
         /// (see the Process() method).
         void                            SetRechanMap (int src_chan, int dest_chan)  { rechan_map[src_chan] = dest_chan; }
-        /// Gets the corresponding channel for _src_chan_.
-        int                             GetRechanMap (int src_chan) const           { return rechan_map[src_chan]; }
         /// Sends all channel messages to channel _dest_chan_.
         void                            SetAllRechan (int dest_chan);
         /// The Process() method. If _msg_ is not a channel message it is left unchanged
         /// and the function returns **true**. Otherwise its channel is changed according to the
-        /// rechannel map. If its destination channel is -1 the msg remains unchanged but
+        /// rechannel map. If its destination channel is -1 the message remains unchanged but
         /// the function returns **false** (you can use this for filtering messages by channel)
         /// otherwise returns **true**.
         virtual bool                    Process(MIDITimedMessage *msg);
@@ -171,8 +175,8 @@ class MIDIProcessorRechannelizer : public MIDIProcessor {
 
 ///
 /// A MIDIProcessor which prints a human-readable description of the processed messages to a std::ostream.
-/// Useful for debugging purposes (you could want to see, for example, all messages
-/// passing through a driver).
+/// Useful for debugging purposes (you could want to see, for example, all messages passing through a driver).
+/// You can turn the printing on/off.
 ///
 class MIDIProcessorPrinter : public MIDIProcessor {
     public:
@@ -181,11 +185,11 @@ class MIDIProcessorPrinter : public MIDIProcessor {
                                                              print_on(true), ost(stream) {}
         /// Same of SetPrint(false)
         virtual void                    Reset()                                     { print_on = false; }
-        /// Sets the printing on and off (default is on).
-        void                            SetPrint(bool on_off)                       { print_on = on_off; }
         /// Gets the printing status.
         bool                            GetPrint() const                            { return print_on; }
-        /// Processes the message, printing a human-readable description of it to the std::ostream given
+        /// Sets the printing on and off (default is on).
+        void                            SetPrint(bool on_off)                       { print_on = on_off; }
+        /// The Process method. It prints a human-readable description of the message to the std::ostream given
         /// in the constructor. The message is left unchanged and always returns **true**.
         virtual bool                    Process(MIDITimedMessage *msg);
 

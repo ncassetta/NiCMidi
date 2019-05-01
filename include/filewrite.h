@@ -41,6 +41,11 @@
 */
 
 
+/// \file
+/// Contains the definition of the class MIDIFileWiter; this is a low level object used by the MIDIFileWriteMultiTrack for
+/// saving MIDI files, and is not documented.
+
+
 #ifndef _JDKMIDI_FILEWRITE_H
 #define _JDKMIDI_FILEWRITE_H
 
@@ -49,9 +54,6 @@
 #include "midi.h"
 #include "msg.h"
 #include "sysex.h"
-
-/// \file
-/// Contains the definition of the classes MIDIFileWiter, a low level object used for saving MIDI files.
 
 
 /*   ELIMINATE THIS!

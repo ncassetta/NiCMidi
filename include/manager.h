@@ -24,6 +24,11 @@
 
 // updated to reflect changes in jdksmidi
 
+
+/// \file
+/// Contains the definition of the static class MIDIManager.
+
+
 #ifndef _JDKMIDI_MANAGER_H
 #define _JDKMIDI_MANAGER_H
 
@@ -40,16 +45,12 @@
 #include <mutex>
 
 
-/// \file
-/// Contains the definition of the class MIDIManager.
-
-
 ///
 /// A static class that manages computer hardware resources (in and out MIDI ports) and timing.
 /// It embeds a MIDITimer object and a MIDIInDriver or MIDIOutDriver for every hardware port;
 /// moreover it manages a queue of MIDITickComponent (objects with a callback procedure to be called at regular
 /// pace). When the timer is started the MIDIManager begins to call its main tick procedure at every timer tick;
-/// this in turn calls the callback procedures of all the MIDITickComponent objects in the queue; typically
+/// this in turn calls the callback procedure of all the MIDITickComponent objects in the queue; typically
 /// one of the MIDITickComponent is a sequencer, which can in this way pick the MIDI messages stored in its
 /// internal MIDIMultiTrack object and send them to the out ports. You can add and remove other MIDITickComponent
 /// objects with the AddMIDITick() and RemoveMIDITick() methods (for example you could add a MIDIThru or a
@@ -65,8 +66,8 @@ public:
                                 MIDIManager();
     /// The destructor deletes the drivers and the timer.
     virtual                     ~MIDIManager();
-    /// Stops the timer if it is running and resets all the MIDI in and out ports. It doesn't em
-    /// Doesn't reset the MIDISequencer pointer.
+    /// Stops the timer if it is running and resets all the MIDI in and out ports.
+    /// Doesn't reset the MIDITickComponent queue.
     static void                 Reset();
 
     /// Returns the number of MIDI out ports in the system.
@@ -81,6 +82,9 @@ public:
     static MIDIOutDriver*       GetOutDriver(unsigned int n)    { return MIDI_outs[n]; }
     /// Returns a pointer to the MIDIInDriver with given port id.
     static MIDIInDriver*        GetInDriver(unsigned int n)     { return MIDI_ins[n]; }
+    /// Returns the pointer to the (unique) MIDITickComponent in the queue with tPriority PR_SEQ
+    /// (0 if not found).
+    static MIDISequencer*       GetSequencer();
     /// Starts the MIDITimer thread procedure.
     /// It calls, at every timer tick, the TickProc() which in turn calls all the MIDITickComponent::StaticTickProc()
     /// added to the queue via the AddMIDITick() method.
@@ -89,16 +93,16 @@ public:
     /// This causes all the MIDITickComponent callbacks to halt.
     static void                 StopTimer()                     { MIDITimer::Stop(); }
     /// Opens all the system MIDI In ports.
-    /// It calls the MIDIDriver::OpenPort() method for every port.
+    /// It calls the MIDIInDriver::OpenPort() method for every port.
     static void                 OpenInPorts();
     /// Closes all the system MIDI In ports.
-    /// It calls the MIDIDriver::ClosePort() method for every port.
+    /// It calls the MIDIInDriver::ClosePort() method for every port.
     static void                 CloseInPorts();
     /// Opens all the system MIDI Out ports.
-    /// It calls the MIDIDriver::OpenPort() method for every port.
+    /// It calls the MIDIOutDriver::OpenPort() method for every port.
     static void                 OpenOutPorts();
     /// Closes all the system MIDI Out ports.
-    /// It calls the MIDIDriver::OpenPort() method for every port.
+    /// It calls the MIDIOutDriver::OpenPort() method for every port.
     static void                 CloseOutPorts();
 
     /* Now in MIDISequencer
@@ -118,13 +122,11 @@ public:
     static void                 SetAutoStopProc(void(proc)(void*), void* param)
                                                                 { auto_stop_proc = proc; auto_stop_param = param; }
 */
-
+/*
     /// Sets the sequencer pointer (if you hadn't already done it in the ctor, you must set it).
     /// It resets the repeat play and, if the sequencer was playing, stops it.
     static void                 SetSequencer(MIDISequencer *seq);
-    /// Returns the pointer to the current sequencer.
-    static MIDISequencer*       GetSequencer()                  { return sequencer; }
-
+*/
 
    /*
     /// Starts the sequencer playback.
@@ -138,19 +140,24 @@ public:
 
     /// Sends a MIDI AllNotesOff message to all open out ports.
     static void                 AllNotesOff();
-
-
-
-    /// Inserts a MIDITickComponent object into the queue.
+    /// Inserts a MIDITickComponent object into the queue. The objects are queued according to their
+    /// \ref tPriority parameter; you can add only one of them with \ref PR_SEQ priority (i.e.\ a
+    /// sequencer). Advanced classes (as AdvancedSequencer) auto add themselves to the manager queue
+    /// when they are created, so they are ready to play. For other MIDITickComponent derived classes
+    /// you must do this by this method if you want their callback become effective.
     static void                 AddMIDITick(MIDITickComponent *tick);
-    /// Removes a MIDITickComponent from the queue.
+    /// Removes the given MIDITickComponent pointer from the queue. It does nothing if the pointer is
+    /// not in the queue. The destructor of a MIDITickComponent call this before destroying the object,
+    /// preventing the manager from using an invalid pointer, so usually you don't need to call this.
     static bool                 RemoveMIDITick(MIDITickComponent *tick);
-
+    /// Removes all MIDITickComponent objects from the queue. Be careful with this, because some
+    /// advanced class (as AdvancedSequencer) auto adds itself to the queue: if you remove it
+    /// you must to re-add it manually with the AddMIDITick() if you want to continue to use it.
 
 protected:
 
-    /// This is the main tick procedure. This calls the TickProc() method of every MIDITickComponent object
-    /// with running status. The user must not call it directly.
+    /// This is the main tick procedure. This calls the TickProc() method of every queued MIDITickComponent
+    /// object with running status. The user must not call it directly.
     static void                 TickProc(tMsecs sys_time_, void* p);
 
 /*
@@ -171,8 +178,7 @@ protected:
     static std::vector<MIDITickComponent*>
                                         MIDITicks;      ///< The array of MIDITICK objects, everyone of them has his MIDITick callback
 
-    // TODO: remove this
-    static MIDISequencer*               sequencer;      ///< The MIDISequencer
+    //static MIDISequencer*               sequencer;      ///< The MIDISequencer
 
     static std::mutex                   proc_lock;      ///< A mutex for thread safe
 

@@ -1,3 +1,7 @@
+/// \file
+/// Contains the definition of the class MIDIThru.
+
+
 #ifndef THRU_H_INCLUDED
 #define THRU_H_INCLUDED
 
@@ -6,12 +10,14 @@
 #include <mutex>
 
 
+///
 /// A MIDITickComponent which immediately echoes to an out MIDI port all messages incoming
 /// from an in MIDI port.
 /// You can choose the in and out ports, select an unique channel for receiving and sending messages
 /// (or leave them unchanged) and insert a MIDiProcessor between in and out ports for messages elaboration.
 /// \note Remember that you must call the MIDIManager::AddTick() to make effective the StaticTickProc(), then
 /// you can call Start() and Stop() methods to enable or disable the thru.
+///
 class MIDIThru : public MIDITickComponent {
     public:
                                                 MIDIThru();
@@ -59,10 +65,6 @@ class MIDIThru : public MIDITickComponent {
         virtual void            Start();
         /// Stops the MIDI thru.
         virtual void            Stop();
-
-
-
-
 
     protected:
 

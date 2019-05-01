@@ -1,3 +1,8 @@
+/// \file
+/// Contains the definition of the classes MIDISequencerGUIEvent, MIDISequencerGUINotifier (abstract),
+/// MIDISequencerGUINotifierText and  MIDISequencerGUINotifierWin32.
+
+
 #ifndef _JDKMIDI_NOTIFIER_H
 #define _JDKMIDI_NOTIFIER_H
 

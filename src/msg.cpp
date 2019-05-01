@@ -100,150 +100,6 @@ const MIDIMessage& MIDIMessage::operator= (const MIDIMessage &msg) {
     return *this;
 }
 
-//
-// MsgToText()
-//
-
-std::string MIDIMessage::MsgToText () const {
-    char buf[256];
-    std::string txt;
-
-    // Meta Events
-    if (IsMetaEvent()) {
-        sprintf (buf, "%s ", get_sys_msg_name(status));
-        txt += buf;
-        txt += get_meta_msg_name(byte1);            // type of meta
-
-        switch (byte1) {
-
-            case META_SEQUENCE_NUMBER:          // 2 byte meta events
-                sprintf (buf, "Data %02X  ", ((int)byte2 >> 8) + byte3);
-                break;
-
-            case META_GENERIC_TEXT:             // text meta events
-            case META_COPYRIGHT:
-            case META_TRACK_NAME:
-            case META_INSTRUMENT_NAME:
-            case META_LYRIC_TEXT:
-            case META_MARKER_TEXT:
-            case META_CUE_TEXT:
-            case META_PROGRAM_NAME:
-            case META_DEVICE_NAME:
-            case META_GENERIC_TEXT_A:
-            case META_GENERIC_TEXT_B:
-            case META_GENERIC_TEXT_C:
-            case META_GENERIC_TEXT_D:
-            case META_GENERIC_TEXT_E:
-            case META_GENERIC_TEXT_F:
-                sprintf(buf, "\"%s\"", GetText().c_str());
-                if (strlen(buf) > 40)
-                    buf[40] = 0;
-                break;
-
-            case META_CHANNEL_PREFIX:       // 1 byte meta events
-            case META_OUTPUT_CABLE:
-                sprintf(buf, "Data %2d", byte2);
-                break;
-            //META_TRACK_LOOP         = 0x2E, I found no documentation for this
-
-            case META_END_OF_TRACK:         // 0 byte meta event
-                *buf = 0;
-                break;
-
-            case META_TEMPO:
-                sprintf(buf, "BpM  %3.2f", GetTempo());
-                break;
-
-            case META_SMPTE:
-                sprintf(buf, "Data %02d %02d %02d %02d %02d",
-                        sysex->GetData(0), sysex->GetData(1), sysex->GetData(2),
-                        sysex->GetData(3), sysex->GetData(4));
-                break;
-
-            case META_TIMESIG:
-                sprintf(buf, "Time %d/%d (Other data %02d %02d)",
-                        GetTimeSigNumerator(), GetTimeSigDenominator(),
-                        sysex->GetData(2), sysex->GetData(3));
-                break;
-
-            case META_KEYSIG:
-                sprintf(buf, "Key %s", KeyName(byte2, byte3));
-                break;
-
-            default:
-                *buf = 0;
-                break;
-        }
-        txt += buf;
-    }
-
-    // System Exclusive Events
-    else if (IsSysEx()) {
-        sprintf (buf, "%s ", get_sys_msg_name(status));
-        txt += buf;
-        if (GetSysEx()->IsGMReset())
-            sprintf(buf, "GM Reset");
-        else if (GetSysEx()->IsGSReset())
-            sprintf(buf, "GS Reset");
-        else if (GetSysEx()->IsXGReset())
-            sprintf(buf, "XG Reset");
-        else
-            sprintf (buf, "(length: %d)", GetSysEx()->GetLength());
-        txt += buf;
-    }
-
-    // Channel Events
-    else {
-
-        sprintf (buf, "Ch %2d     ", (int) GetChannel() + 1);
-        txt += buf;
-
-        if (IsChannelMode()) {
-            sprintf (buf, "%s ", get_chan_mode_msg_name(GetController()));
-            txt += buf;
-            if (GetType() == C_LOCAL)
-                txt += (byte1 ? " On" : " Off");
-        }
-        else {
-            sprintf (buf, "%s  ", get_chan_msg_name(GetType()));
-            txt += buf;
-            switch (status & 0xf0) {
-                case NOTE_ON:
-                    if (GetVelocity() == 0) // velocity = 0: Note off
-                        sprintf (buf, "Note %3d  Vel  %3d    (Note Off)  ", (int) byte1, (int) byte2);
-                    else
-                        sprintf (buf, "Note %3d  Vel  %3d  ", (int) byte1, (int) byte2);
-                    break;
-
-                case NOTE_OFF:
-                    sprintf (buf, "Note %3d  Vel  %3d  ", (int) byte1, (int) byte2 );
-                    break;
-
-                case POLY_PRESSURE:
-                    sprintf (buf, "Note %3d  Pres %3d  ", (int) byte1, (int) byte2 );
-                    break;
-
-                case CONTROL_CHANGE:
-                    sprintf (buf, "Ctrl %3d  Val  %3d  ", ( int ) byte1, ( int ) byte2 );
-                    break;
-
-                case PROGRAM_CHANGE:
-                    sprintf (buf, "Prog %3d  ", (int) byte1);
-                    break;
-
-                case CHANNEL_PRESSURE:
-                    sprintf (buf, "Pres %3d  ", (int) byte1 );
-                    break;
-
-                case PITCH_BEND:
-                    sprintf (buf, "Val %5d  ", (int) GetBenderValue() );
-                    break;
-            }
-            txt += buf;
-        }
-    }
-    return txt;
-}
 
 //
 // Query methods
@@ -485,6 +341,152 @@ void MIDIMessage::SetBeatMarker() {
     byte2 = 0;
     byte3 = 0;
     ClearSysEx();
+}
+
+
+//
+// MsgToText()
+//
+
+std::string MIDIMessage::MsgToText () const {
+    char buf[256];
+    std::string txt;
+
+    // Meta Events
+    if (IsMetaEvent()) {
+        sprintf (buf, "%s ", get_sys_msg_name(status));
+        txt += buf;
+        txt += get_meta_msg_name(byte1);            // type of meta
+
+        switch (byte1) {
+
+            case META_SEQUENCE_NUMBER:          // 2 byte meta events
+                sprintf (buf, "Data %02X  ", ((int)byte2 >> 8) + byte3);
+                break;
+
+            case META_GENERIC_TEXT:             // text meta events
+            case META_COPYRIGHT:
+            case META_TRACK_NAME:
+            case META_INSTRUMENT_NAME:
+            case META_LYRIC_TEXT:
+            case META_MARKER_TEXT:
+            case META_CUE_TEXT:
+            case META_PROGRAM_NAME:
+            case META_DEVICE_NAME:
+            case META_GENERIC_TEXT_A:
+            case META_GENERIC_TEXT_B:
+            case META_GENERIC_TEXT_C:
+            case META_GENERIC_TEXT_D:
+            case META_GENERIC_TEXT_E:
+            case META_GENERIC_TEXT_F:
+                sprintf(buf, "\"%s\"", GetText().c_str());
+                if (strlen(buf) > 40)
+                    buf[40] = 0;
+                break;
+
+            case META_CHANNEL_PREFIX:       // 1 byte meta events
+            case META_OUTPUT_CABLE:
+                sprintf(buf, "Data %2d", byte2);
+                break;
+            //META_TRACK_LOOP         = 0x2E, I found no documentation for this
+
+            case META_END_OF_TRACK:         // 0 byte meta event
+                *buf = 0;
+                break;
+
+            case META_TEMPO:
+                sprintf(buf, "BpM  %3.2f", GetTempo());
+                break;
+
+            case META_SMPTE:
+                sprintf(buf, "Data %02d %02d %02d %02d %02d",
+                        sysex->GetData(0), sysex->GetData(1), sysex->GetData(2),
+                        sysex->GetData(3), sysex->GetData(4));
+                break;
+
+            case META_TIMESIG:
+                sprintf(buf, "Time %d/%d (Other data %02d %02d)",
+                        GetTimeSigNumerator(), GetTimeSigDenominator(),
+                        sysex->GetData(2), sysex->GetData(3));
+                break;
+
+            case META_KEYSIG:
+                sprintf(buf, "Key %s", KeyName(byte2, byte3));
+                break;
+
+            default:
+                *buf = 0;
+                break;
+        }
+        txt += buf;
+    }
+
+    // System Exclusive Events
+    else if (IsSysEx()) {
+        sprintf (buf, "%s ", get_sys_msg_name(status));
+        txt += buf;
+        if (GetSysEx()->IsGMReset())
+            sprintf(buf, "GM Reset");
+        else if (GetSysEx()->IsGSReset())
+            sprintf(buf, "GS Reset");
+        else if (GetSysEx()->IsXGReset())
+            sprintf(buf, "XG Reset");
+        else
+            sprintf (buf, "(length: %d)", GetSysEx()->GetLength());
+        txt += buf;
+    }
+
+    // Channel Events
+    else {
+
+        sprintf (buf, "Ch %2d     ", (int) GetChannel() + 1);
+        txt += buf;
+
+        if (IsChannelMode()) {
+            sprintf (buf, "%s ", get_chan_mode_msg_name(GetController()));
+            txt += buf;
+            if (GetType() == C_LOCAL)
+                txt += (byte1 ? " On" : " Off");
+        }
+        else {
+            sprintf (buf, "%s  ", get_chan_msg_name(GetType()));
+            txt += buf;
+            switch (status & 0xf0) {
+                case NOTE_ON:
+                    if (GetVelocity() == 0) // velocity = 0: Note off
+                        sprintf (buf, "Note %3d  Vel  %3d    (Note Off)  ", (int) byte1, (int) byte2);
+                    else
+                        sprintf (buf, "Note %3d  Vel  %3d  ", (int) byte1, (int) byte2);
+                    break;
+
+                case NOTE_OFF:
+                    sprintf (buf, "Note %3d  Vel  %3d  ", (int) byte1, (int) byte2 );
+                    break;
+
+                case POLY_PRESSURE:
+                    sprintf (buf, "Note %3d  Pres %3d  ", (int) byte1, (int) byte2 );
+                    break;
+
+                case CONTROL_CHANGE:
+                    sprintf (buf, "Ctrl %3d  Val  %3d  ", ( int ) byte1, ( int ) byte2 );
+                    break;
+
+                case PROGRAM_CHANGE:
+                    sprintf (buf, "Prog %3d  ", (int) byte1);
+                    break;
+
+                case CHANNEL_PRESSURE:
+                    sprintf (buf, "Pres %3d  ", (int) byte1 );
+                    break;
+
+                case PITCH_BEND:
+                    sprintf (buf, "Val %5d  ", (int) GetBenderValue() );
+                    break;
+            }
+            txt += buf;
+        }
+    }
+    return txt;
 }
 
 

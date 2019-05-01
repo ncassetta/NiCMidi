@@ -1,3 +1,40 @@
+/*
+ *  libjdkmidi-2004 C++ Class Library for MIDI
+ *
+ *  Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
+ *  www.jdkoftinoff.com
+ *  jeffk@jdkoftinoff.com
+ *
+ *  *** RELEASED UNDER THE GNU GENERAL PUBLIC LICENSE (GPL) April 27, 2004 ***
+ *
+ *  MODIFIED BY NICOLA CASSETTA
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*/
+/*
+**	Copyright 2019 By N. Cassetta.
+**
+**	All rights reserved.
+**
+*/
+
+
+/// \file
+/// Contains the definitions of the class Metronome.
+
+
 #ifndef METRONOME_H_INCLUDED
 #define METRONOME_H_INCLUDED
 
@@ -5,10 +42,12 @@
 #include "manager.h"
 
 
-/// Implements a metronome as a subclass of MIDITickComponent. You can select the port, channel and MIDI notes of the
+///
+/// A MIDITickComponent implementing a metronome. You can select the port, channel and MIDI notes of the
 /// metronome clicks; moreover you can have three types of click: the ordinary (beat) click, the measure click (first beat
 /// of a measure) and a subdivision click. If you enable measure clicks the metronome can count the measures and the beats
 /// of a measure (so you can represent them in a graphical interface).
+///
 class Metronome : public MIDITickComponent {
     public:
         /// The constructor.
@@ -16,7 +55,7 @@ class Metronome : public MIDITickComponent {
         /// the GUI.
                                         Metronome(MIDISequencerGUINotifier* n = 0);
         /// The destructor. The MIDISequencerGUINotifier is not owned by the MIDISequencer.
-        virtual                         ~Metronome() {}
+        virtual                         ~Metronome() { Stop(); }
         /// Stops the metronome and resets it to its default values
         void                            Reset();
         /// Returns current MIDIClockTime in MIDI ticks from the start of the metronome.

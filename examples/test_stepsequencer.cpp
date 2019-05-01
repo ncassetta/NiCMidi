@@ -43,9 +43,9 @@
 using namespace std;
 
 
-//
-// globals
-//
+//////////////////////////////////////////////////////////////////
+//                        G L O B A L S                         //
+//////////////////////////////////////////////////////////////////
 
 string command_buf, command, par1, par2, par3;      // used by GetCommand() for parsing the user input
 MIDISequencerGUINotifierText notifier;              // a text notifier: send messages to std::cout (default)

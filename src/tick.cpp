@@ -1,8 +1,13 @@
 #include "../include/tick.h"
+#include "../include/manager.h"
 
 
-void MIDITickComponent::Start(tMsecs dev_offs)
-{
+MIDITickComponent::~MIDITickComponent() {
+    MIDIManager::RemoveMIDITick(this);
+}
+
+
+void MIDITickComponent::Start(tMsecs dev_offs) {
     if (!running.load()) {
         MIDITimer::Start();
         sys_time_offset = MIDITimer::GetSysTimeMs();
@@ -12,8 +17,7 @@ void MIDITickComponent::Start(tMsecs dev_offs)
 }
 
 
-void MIDITickComponent::Stop()
-{
+void MIDITickComponent::Stop() {
     if(running.load()) {
         running.store(false);
         MIDITimer::Stop();

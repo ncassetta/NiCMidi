@@ -33,7 +33,7 @@ std::vector<MIDIInDriver*> MIDIManager::MIDI_ins;
 std::vector<std::string> MIDIManager::MIDI_in_names;
 std::vector<MIDITickComponent*> MIDIManager::MIDITicks;
 
-MIDISequencer* MIDIManager::sequencer = 0;
+//MIDISequencer* MIDIManager::sequencer = 0;
 std::mutex MIDIManager::proc_lock;
 
 /* OLD!!!! Delete if all OK!
@@ -114,6 +114,14 @@ void MIDIManager::Reset() {
 }
 
 
+MIDISequencer* MIDIManager::GetSequencer() {
+    for (unsigned int i = 0; i < MIDITicks.size(); i++)
+        if (MIDITicks[i]->GetPriority() == PR_SEQ)
+            return (MIDISequencer *)MIDITicks[i];
+    return 0;
+}
+
+
 void MIDIManager::OpenInPorts() {
     for (unsigned int i = 0; i < MIDI_ins.size(); i++)
         MIDI_ins[i]->OpenPort();
@@ -136,7 +144,7 @@ void MIDIManager::CloseOutPorts() {
         MIDI_outs[i]->ClosePort();
 }
 
-
+/* OLD FUNCTiON SetSequencer()
 void MIDIManager::SetSequencer (MIDISequencer *seq) {
     if (sequencer && sequencer->IsPlaying())
         sequencer->Stop();
@@ -147,6 +155,7 @@ void MIDIManager::SetSequencer (MIDISequencer *seq) {
     AddMIDITick(seq);
     sequencer = seq;
 }
+*/
 
 /* OLD FUNCTIONS SeqPlay() and SeqStop()
 // You can call this even if sequencer is already playing: it will adjust
