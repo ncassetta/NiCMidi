@@ -32,7 +32,6 @@
 #define _JDKMIDI_DRIVER_H
 
 #include "msg.h"
-#include "matrix.h"
 #include "processor.h"
 #include "timer.h"
 
@@ -54,6 +53,9 @@
 /// called, will send a Note Off message for each one, plus a damper off message for every channel. This is
 /// quite expensive, so turn this on only if you experience notes sounding when you stop a sequencer.
 #define DRIVER_USES_MIDIMATRIX 0
+#if DRIVER_USES_MIDIMATRIX
+   #include "matrix.h"
+#endif // DRIVER_USES_MIDIMATRIX
 /// This is the maximum number of retries the method OutputMessage() will try before hanging (and skipping
 /// a message).
 #define DRIVER_MAX_RETRIES 100
@@ -61,17 +63,18 @@
 #define DRIVER_WAIT_AFTER_SYSEX 20
 
 
-// EXCLUDED FROM DOCUMENTATION
-// This structure is used by the MIDIInDriver to keep track of incoming messages. It holds
-// a MIDIMessage, a timestamp in milliseconds (from the start of the timer) and the id of
-// the MIDI in port from which the message comes. (not documented)
+/// Used by the MIDIInDriver to keep track of incoming messages. It holds
+/// a MIDIMessage, a timestamp in milliseconds (from the start of the timer) and the id of
+/// the MIDI in port from which the message comes.
 struct MIDIRawMessage {
+/// \cond INTERNAL
                                         MIDIRawMessage() : timestamp(0), port(0) {}
                                         MIDIRawMessage(const MIDIMessage& m, tMsecs t, int p) :
                                                         msg(m), timestamp(t), port(p) {}
-        MIDIMessage                     msg;
-        tMsecs                          timestamp;
-        int                             port;
+/// \endcond
+        MIDIMessage                     msg;        ///< The MIDI Message received from the port
+        tMsecs                          timestamp;  ///< The absolute time in msecs
+        int                             port;       ///< The id of the MIDI in port which received the message
 };
 
 
@@ -118,8 +121,9 @@ class MIDIRawMessageQueue {
 
 ///
 /// Sends MIDI messages to an hardware MIDI out port.
-/// Every MIDI out port is denoted by a specific id number, enumerated by the RtMidi class,
-/// and by a name, given by the OS. You can set a MIDIProcessor for processing outgoing MIDI messages.
+/// Every MIDI out port is denoted by a specific id number, enumerated by the RtMidi class, and by a
+/// name, given by the OS; this class communicates between the hardware ports and the other library
+/// classes. You can set a MIDIProcessor for processing outgoing MIDI messages.
 ///
 class MIDIOutDriver {
     public:
@@ -150,7 +154,7 @@ class MIDIOutDriver {
         std::string             GetPortName()                   { return port->getPortName(port_id); }
         /// Returns **true** is the hardware port is open.
         bool                    IsPortOpen() const              { return port->isPortOpen(); }
-        /// Returnss a pointer to the out processor.
+        /// Returns a pointer to the out processor.
         MIDIProcessor*          GetOutProcessor()               { return processor; }
         /// Returns a pointer to the out processor.
         const MIDIProcessor*    GetOutProcessor() const         { return processor; }
@@ -199,8 +203,7 @@ class MIDIOutDriver {
         RtMidiOut*              port;       ///< The hardware port
         const int               port_id;    ///< The id of the port
         int                     num_open;   ///< Counts the number of OpenPort() calls
-
-        std::recursive_mutex    out_mutex;  ///< Used internally
+        std::recursive_mutex    out_mutex;  ///< Used internally for thread safe operating
 
 #if DRIVER_USES_MIDIMATRIX
         MIDIMatrix              out_matrix; ///< To keep track of notes on going to MIDI out
@@ -216,11 +219,11 @@ class MIDIOutDriver {
 
 ///
 /// Receives MIDI messages from an hardware MIDI in port.
-/// Every MIDI in port is denoted by a specific id number, enumerated by the RtMidi class,
-/// and by a name, given by the OS. You can set a MIDIProcessor for processing incoming MIDI messages.
-/// The incoming MIDI messages are queued into a MIDIRawMessageQueue (the messages are stamped with
-/// the system time in milliseconds and the port number), and you can get them with the methods
-/// InputMessage() and ReadMessage().
+/// Every MIDI in port is denoted by a specific id number, enumerated by the RtMidi class, and by a
+/// name, given by the OS; this class communicates between the hardware ports and the other library
+/// classes. The incoming MIDI messages are stamped with the system time in milliseconds and the
+/// port number (see the MIDIRawMessage struct) and queued; you can get them with the
+/// InputMessage() and ReadMessage() methods. Moreover you can set a MIDIProcessor for processing them.
 ///
 class MIDIInDriver {
     public:

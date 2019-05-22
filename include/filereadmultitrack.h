@@ -45,9 +45,9 @@
 #ifndef _JDKMIDI_FILEREADMULTITRACK_H
 #define _JDKMIDI_FILEREADMULTITRACK_H
 
-#include "midi.h"
-#include "msg.h"
-#include "sysex.h"
+//#include "midi.h"
+//#include "msg.h"
+//#include "sysex.h"
 #include "fileread.h"
 #include "multitrack.h"
 
@@ -60,15 +60,15 @@
 /// - META Sequencer Specific
 /// - other not identified meta data
 ///
-/// If you want to load MIDI files into a MIDIMultiTrack you probably will use the simple and fast LoadMidiFile()
-/// global function, so this is not documented.
+/// If you want to load MIDI files into a MIDIMultiTrack you probably will use the simple and fast \ref LoadMIDIFile()
+/// global function (that creates and uses this class), so this is not documented.
 ///
 class MIDIFileReadMultiTrack : public MIDIFileEventHandler {
+/// \cond INTERNAL
     public:
                                         MIDIFileReadMultiTrack (MIDIMultiTrack *tracks);
         virtual                         ~MIDIFileReadMultiTrack()       {}
 
-/// \cond INTERNAL
 //
 // The possible events in a MIDI Files
 //
@@ -130,15 +130,20 @@ MIDIFileHeader&                         GetMIDIFileHeader(const char* filename);
 /// You can then inspect the format, (0, 1 or 2), the number of tracks and the division (MIDI ticks per
 /// quarter note) of the file. If the header cannot be read these are all 0.
 MIDIFileHeader&                         GetMIDIFileHeader(const std::string& filename);
-/// Loads the MIDI file specified by _filename_ into the given MIDIMultiTrack object.
-/// This is the fastest way to get this, without worrying with intermediate reader objects.
-/// Returns **false** if the loading is failed.
-bool                                    LoadMIDIFile(const char* filename, MIDIMultiTrack* tracks);
-/// Loads the MIDI file specified by _filename_ into the given MIDIMultiTrack object.
-/// This is the fastest way to get this, without worrying with intermediate reader objects.
-/// Returns **false** if the loading is failed.
-bool                                    LoadMIDIFile(const std::string& filename, MIDIMultiTrack* tracks);
-//                                            { return LoadMIDIFile (filename.c_str(), tracks); }
+/// Loads a MIDI file into a MIDIMultiTrack object. If the file is in SMF 0 (with only a track) splits it into
+/// a master track with only system messages and 16 channel tracks (if you want to remember the original file format
+/// you can set the default parameter _head_). This is the fastest way to put a file into a multitrack, without worrying
+/// with intermediate reader objects.
+/// \param filename the name of the file
+/// \param tracks the MIDIMultiTrack to be loaded
+/// \param head if you give the address of a MIDIFileHeader object this will be filled with the original file parameters
+/// (format, number of tracks, division, name) which you could reuse if you want to save the file.
+/// \return **true** if the loading is successful, otherwise **false**.
+bool                                    LoadMIDIFile(const char* filename, MIDIMultiTrack* tracks,
+                                                     MIDIFileHeader* const head = 0);
+/// Loads a MIDI file into a MIDIMultiTrack object. \see LoadMIDIFile(const char*, MIDIMultiTrack, MIDIFileHeader* const).
+bool                                    LoadMIDIFile(const std::string& filename, MIDIMultiTrack* tracks,
+                                                     MIDIFileHeader* const head = 0);
 //@}
 
 

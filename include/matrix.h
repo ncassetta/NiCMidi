@@ -46,17 +46,16 @@
 #ifndef _JDKMIDI_MATRIX_H
 #define _JDKMIDI_MATRIX_H
 
-#include "processor.h"
-#include "midi.h"
 #include "msg.h"
 
 
 ///
 /// Implements a matrix to keep track of notes on and hold pedal for every channel.
-/// The matrix is initially empty; every time you call Process() giving it a MIDIMessage it
-/// upates the count of notes on and pedal (does nothing if the message is not a note or
-/// pedal message). It is used by MIDIDriver and MIDISequencerTrackState.
+/// Every time you call Process() giving it a MIDIMessage it updates the count of notes on
+/// and pedal (does nothing if the message is not a note or pedal message). It is used by
+/// MIDIDriver and MIDISequencerTrackState.
 ///
+// TODO: is it a MIDIProcessor?
 class  MIDIMatrix {
     public:
         /// The constructor creates an empty matrix
@@ -74,7 +73,7 @@ class  MIDIMatrix {
         int             GetChannelCount(int channel) const              { return channel_count[channel]; }
         /// Returns the number of notes on given the channel and the note MIDI value
         int             GetNoteCount(int channel, int note) const       { return note_on_count[channel][note]; }
-        /// Returns *true* if pedal is holding on given channel
+        /// Returns **true** if pedal is holding on given channel
         bool            GetHoldPedal(int channel) const                 { return hold_pedal[channel]; }
 
     protected:
@@ -94,10 +93,10 @@ class  MIDIMatrix {
         void            SetChannelCount(unsigned char chan, int val)    { channel_count[chan] = val; }
 
     private:
-        unsigned        char note_on_count[16][128];
-        int             channel_count[16];
-        bool            hold_pedal[16];
-        int             total_count;
+        unsigned        char note_on_count[16][128];    ///< The note matrix
+        int             channel_count[16];              ///< The number of notes sounding for everu channel
+        bool            hold_pedal[16];                 ///< The pedal status for every channel
+        int             total_count;                    ///< The total number of sounding notes
 };
 
 

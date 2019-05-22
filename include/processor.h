@@ -199,6 +199,4 @@ class MIDIProcessorPrinter : public MIDIProcessor {
 };
 
 
-
-
 #endif

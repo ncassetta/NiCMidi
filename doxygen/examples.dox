@@ -1,0 +1,57 @@
+/// \defgroup EX_INTRO Example Files
+/// This is a list of all example files.
+
+
+/// \example test_advancedsequencer.cpp
+/// A command line example of the features of the AdvancedSequencer class. It creates an instance of the class and
+/// allows the user to interact with it. You can load MIDI files and play them changing a lot of parameters
+/// (muting, soloing, and transposing tracks; jumping from a time to another, changing the tempo, etc\.) even while the
+/// sequencer is playing.
+///
+/// Compile it together with functions.cpp, which contains command line I/O functions.
+
+
+/// \example test_sequencer.cpp
+/// A command line example of the features of the MIDISequencer class. It creates an instance of the class and allows
+/// the user to interact with it. You can load MIDI files and play them changing some parameters (it has limited features
+/// than the AdvancedSequencer).
+///
+/// Compile it together with functions.cpp, which contains command line I/O functions.
+
+
+/// \example test_win32_player.cpp
+/// A MS Windows GUI example of the usage of the AdvancedSequencer class together with a MIDISequencerGUINotifierWin32 and
+/// a SMPTE. It is a basic MIDI file player with a responsive GUI showing the file parameters while the song is playing.
+/// It uses standard Windows API for creating the GUI.
+
+
+/// \example test_metronome.cpp
+/// A command line example of the features of the Metronome class. It creates an instance of the class and
+/// allows the user to interact with it. You can start and stop the metronome, adjust tempo, measure counting,
+/// subdivide the metronome beats and adjust other parameters.
+///
+/// Compile it together with functions.cpp, which contains command line I/O functions.
+
+
+/// \example test_component.cpp
+/// Example of a basic custom MIDITickComponent which only plays a note every second. The file shows how to redefine the
+/// base class methods and how to add the component to the MIDIManager queue, making it effective.
+
+
+/// \example test_writefile.cpp
+/// A  nice little example demonstrating how to edit the %MIDIMultitrack embedded in an AdvancedSequencer, play its content
+/// and then save it in a MIDI file.
+
+
+/// \example test_stepsequencer.cpp
+/// A rather complex (and NOT comfortable!) command line step sequencer
+
+
+/// \example test_thru.cpp
+/// A command line example of the features of the MIDIThru class. It creates an instance of the class and allows the user
+/// to interact with it. You can set the in and out ports and channels and the program change in the out channel; moreover
+/// you can print the passing MIDI messages with a MIDIrocessorPrinter.
+///
+/// Compile it together with functions.cpp, which contains command line I/O functions.
+
+

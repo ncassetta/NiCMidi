@@ -10,8 +10,6 @@
 #include <thread>
 #include <atomic>
 
-#include <iostream>     // for debug
-
 
 
 /// The type of a variable which can hold the elapsed time in milliseconds.

@@ -45,7 +45,7 @@
 
 #include "midi.h"
 #include <vector>
-#include <cstring>
+#include <cstring>          // for memcmp()
 
 
 ///

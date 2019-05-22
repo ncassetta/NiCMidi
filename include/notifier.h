@@ -22,22 +22,22 @@ class MIDISequencer;
 /// - GROUP_CONDUCTOR: events as tempo, time, key change ...
 /// - GROUP_TRANSPORT: start, stop ...
 /// - GROUP_TRACK: note, program, control change ...
+///
 /// Every group has some items, denoting different events, for GROUP_TRACK is also used a subgroup parameter, i.e.
-/// the track of the event.
-/// Messages are sent by the MIDISequencerGUINotifier class.
+/// the track of the event. Messages are sent by the MIDISequencerGUINotifier class.
 ///
 class MIDISequencerGUIEvent {
     public:
         /// Default constructor: creates a generic event with all attributes set to 0
                     MIDISequencerGUIEvent()                     { bits = 0; }
-        /// This constructor creates the object directly from its parameters.
+        /// This constructor creates the object directly from its parameters, packed into an unsigned long.
                     MIDISequencerGUIEvent(unsigned long bits_) : bits(bits_) {}
-        /// Copy constructor.
-                    MIDISequencerGUIEvent(const MIDISequencerGUIEvent &ev) : bits(ev.bits) {}
         /// This constructor creates the object starting from its group, subgroup, item
                     MIDISequencerGUIEvent( int group, int subgroup, int item ) {
                         bits = ((group&0xff)<<24) | ((subgroup&0xfff)<<12) | (item&0xfff); }
                         // leave unchanged! overloading trouble, too many ctors
+        /// Copy constructor.
+                    MIDISequencerGUIEvent(const MIDISequencerGUIEvent &ev) : bits(ev.bits) {}
         /// Converts the object into an unsigned long
                     operator unsigned long () const             { return bits; }
         /// Returns the event group.
@@ -45,7 +45,7 @@ class MIDISequencerGUIEvent {
         /// Returns the event subgroup (only effective for GROUP_TRACK events, where it is
         /// the track of the event; it is 0 for other groups).
         int         GetSubGroup() const                     { return (int)((bits>>12)&0xfff); }
-        /// Returnss the event item (i.e. the kind of the event).
+        /// Returns the event item (i.e. the kind of the event).
         int         GetItem() const                         { return (int)((bits>>0)&0xfff); }
         /// Sets the event group, subgroup and item.
         void        SetEvent( int group, int subgroup = 0, int item = 0 ) {
@@ -62,8 +62,7 @@ class MIDISequencerGUIEvent {
 
         /// Items in conductor group
         enum {
-            GROUP_CONDUCTOR_ALL = 0,    ///< Generic event (not currently used)
-            GROUP_CONDUCTOR_TEMPO,      ///< Tempo change
+            GROUP_CONDUCTOR_TEMPO = 0,  ///< Tempo change
             GROUP_CONDUCTOR_TIMESIG,    ///< Timesig change
             GROUP_CONDUCTOR_KEYSIG,     ///< Keysig change
             GROUP_CONDUCTOR_MARKER,     ///< Marker
@@ -72,8 +71,7 @@ class MIDISequencerGUIEvent {
 
         /// Items in transport group
         enum {
-            GROUP_TRANSPORT_ALL = 0,    ///< Generic event (not currently used)
-            GROUP_TRANSPORT_START,      ///< Sequencer start
+            GROUP_TRANSPORT_START = 0,  ///< Sequencer start
             GROUP_TRANSPORT_STOP,       ///< Sequencer stop
             GROUP_TRANSPORT_MEASURE,    ///< Start of a measure
             GROUP_TRANSPORT_BEAT,       ///< Beat marker
@@ -82,8 +80,7 @@ class MIDISequencerGUIEvent {
 
         /// Items in track group (the track is in the subgroup)
         enum {
-            GROUP_TRACK_ALL = 0,        ///< Generic event (not currently used)
-            GROUP_TRACK_NAME,           ///< Track got its name
+            GROUP_TRACK_NAME = 0,       ///< Track got its name
             GROUP_TRACK_PROGRAM,        ///< Program change
             GROUP_TRACK_NOTE,           ///< Note
             GROUP_TRACK_VOLUME,         ///< Volume change
@@ -91,6 +88,11 @@ class MIDISequencerGUIEvent {
             GROUP_TRACK_CHR,            ///< Chorus change
             GROUP_TRACK_REV,            ///< Reverb change
             GROUP_TRACK_USER            ///< User defined item
+        };
+
+        /// Item in user group
+        enum {
+            GROUP_USER_USER =0          ///< User defined item
         };
 
         /// An array of strings with readable group names.
@@ -101,6 +103,8 @@ class MIDISequencerGUIEvent {
         static const char transport_items_names[][10];
         /// An array of strings with readable track group items names.
         static const char track_items_names[][10];
+        /// An array of strings with readable user group item names.
+        static const char user_items_names[][10];
 
     protected:
         unsigned long bits;         ///< Storage for group, subgroup and item
@@ -195,8 +199,5 @@ class MIDISequencerGUINotifierWin32 : public MIDISequencerGUINotifier {
 };
 
 #endif // _WIN32
-
-
-
 
 #endif // _JDKMIDI_NOTIFIER_H

@@ -35,6 +35,7 @@
 
 #include "../../include/advancedsequencer.h"
 #include "../../include/smpte.h"
+#include "../../include/midi.h"
 
 
 

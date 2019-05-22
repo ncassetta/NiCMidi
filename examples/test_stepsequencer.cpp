@@ -1,10 +1,4 @@
 /*
- * A simple step sequencer: you can
- * - Add, remove, edit MIDI events;
- * - Cut, copy and paste measures
- * - Play and save your file
- * (console app, no GUI!)
- *
  * Copyright (C) 2014 N.Cassetta
  * ncassetta@tiscali.it
  *
@@ -37,6 +31,7 @@
 
 
 #include "test_stepsequencer.h"
+#include "functions.h"
 
 #include <iostream>
 
@@ -47,7 +42,7 @@ using namespace std;
 //                        G L O B A L S                         //
 //////////////////////////////////////////////////////////////////
 
-string command_buf, command, par1, par2, par3;      // used by GetCommand() for parsing the user input
+extern string command_buf, command, par1, par2, par3;      // used by GetCommand() for parsing the user input
 MIDISequencerGUINotifierText notifier;              // a text notifier: send messages to std::cout (default)
 AdvancedSequencer sequencer(&notifier);             // an AdvancedSequencer
 MIDIMultiTrack* multitrack = sequencer.GetMultiTrack();
@@ -304,7 +299,7 @@ int main(int argc, char **argv) {
             MIDIClockTime cur_time = cur_pos.gettime();
             if (cur_time > multitrack->GetEndTime()) {
                 multitrack->SetEndTime(cur_time);
-                sequencer.SetChanged();
+                sequencer.UpdateStatus();
             }
             sequencer.GoToTime(cur_time);
         }
@@ -341,7 +336,7 @@ int main(int argc, char **argv) {
                     trk->DeleteNote(msg);
                 }
             }
-            sequencer.SetChanged();
+            sequencer.UpdateStatus();
         }
 
         else if (command == "volume") {                     // inserts a volume event
@@ -359,7 +354,7 @@ int main(int argc, char **argv) {
                     trk->DeleteEvent(msg);
                 }
             }
-            sequencer.SetChanged();
+            sequencer.UpdateStatus();
         }
 
         else if ( command == "pan") {                   // inserts a pan event
@@ -377,7 +372,7 @@ int main(int argc, char **argv) {
                     trk->DeleteEvent(msg);
                 }
             }
-            sequencer.SetChanged();
+            sequencer.UpdateStatus();
         }
 
         else if (command == "control") {                // inserts a generic control event
@@ -396,7 +391,7 @@ int main(int argc, char **argv) {
                     trk->DeleteEvent(msg);
                 }
             }
-            sequencer.SetChanged();
+            sequencer.UpdateStatus();
         }
 
         else if ( command == "patch") {                     // inserts a patch event
@@ -414,7 +409,7 @@ int main(int argc, char **argv) {
                     trk->DeleteEvent(msg);
                 }
             }
-            sequencer.SetChanged();
+            sequencer.UpdateStatus();
         }
 
         else if ( command == "tempo") {                     // inserts a tempo event in track 0
@@ -432,7 +427,7 @@ int main(int argc, char **argv) {
                     trk->DeleteEvent(msg);
                 }
             }
-            sequencer.SetChanged();
+            sequencer.UpdateStatus();
         }
 
         else if (command == "time") {
@@ -450,7 +445,7 @@ int main(int argc, char **argv) {
                     trk->DeleteEvent(msg);
                 }
             }
-            sequencer.SetChanged();
+            sequencer.UpdateStatus();
         }
 
         else if (command == "bb") {
@@ -483,7 +478,7 @@ int main(int argc, char **argv) {
         else if (command == "bclear") {
             multitrack->EditClear(cur_block.time_begin, cur_block.time_end,
                                   cur_block.track_begin, cur_block.track_end);
-            sequencer.SetChanged();
+            sequencer.UpdateStatus();
         }
 
         else if (command == "bcut") {
@@ -491,7 +486,7 @@ int main(int argc, char **argv) {
                 cout << "You can't cut a number of tracks lesser than actual number" << endl;
             else {
                 multitrack->EditCut(cur_block.time_begin, cur_block.time_end, 0);
-                sequencer.SetChanged();
+                sequencer.UpdateStatus();
             }
         }
 
@@ -499,11 +494,11 @@ int main(int argc, char **argv) {
             unsigned int tr_start = atoi(par1.c_str());
             if (par2.size() == 0) {
                 multitrack->EditInsert(cur_pos.gettime(), tr_start, 1, true, &edit_multitrack);
-                sequencer.SetChanged();
+                sequencer.UpdateStatus();
             }
             else if (par2 == "o") {
                 multitrack->EditReplace(cur_pos.gettime(), tr_start, 1, true, &edit_multitrack);
-                sequencer.SetChanged();
+                sequencer.UpdateStatus();
             }
             else
                 cout << "You must indicate initial track" << endl;

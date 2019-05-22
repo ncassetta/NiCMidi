@@ -47,7 +47,9 @@
 /// MIDITimedMessage objetìct has its time set in MIDI ticks.
 typedef unsigned long MIDIClockTime;
 /// An infinite time.
-const MIDIClockTime TIME_INFINITE = 0xffffffff;
+static const MIDIClockTime TIME_INFINITE = 0xffffffff;
+/// The default clocks per beat parameter when initializing a
+static const unsigned int DEFAULT_CLKS_PER_BEAT = 120;
 //@}
 
 
@@ -220,30 +222,27 @@ enum {
 
 extern const signed char	chan_msg_len[16];
 extern const signed char	sys_msg_len[16];
-extern const bool           note_is_white[12];
 
 
 /// \name Utility functions
 //<{
 /// Returns a readable name for the given channel message status.
-const char*                 get_chan_msg_name(unsigned char status);
+const char*                 GetChanMsgName(unsigned char status);
 /// Returns a readable name for the given channel mode (Control change with
 /// controller number between 0x78 ... 0x7f).
-const char*                 get_chan_mode_msg_name(unsigned char number);
+const char*                 GetChanModeMsgName(unsigned char number);
 /// Returns a readable name for the given sys message status.
-const char*                 get_sys_msg_name(unsigned char status);
+const char*                 GetSysMsgName(unsigned char status);
 /// Returns a readable name for the given meta message status.
-const char*                 get_meta_msg_name(unsigned char type);
-
+const char*                 GetMetaMsgName(unsigned char type);
+/// Returns a readable name for a GM program number
+const char*                 GetGMProgramName(unsigned char number, int format = 0);
+/// Returns a readable name for a GM program number on channel 10 (drumkit)
+const char*                 GetGMDrumkitName(unsigned char number, int format = 0);
 /// Returns **true** if the MIDI number of the note denotes a white key.
-inline bool IsNoteWhite(unsigned char note) {
-    return note_is_white[note % 12];
-}
-
+bool                        IsNoteWhite(unsigned char note);
 /// Returns **true** if the MIDI number of the note denotes a black key.
-inline bool IsNoteBlack(unsigned char note) {
-    return !note_is_white[note % 12];
-}
+bool                        IsNoteBlack(unsigned char note);
 
 /// MIDI note number to standard octave conversion.
 inline int GetNoteOctave(unsigned char note) {

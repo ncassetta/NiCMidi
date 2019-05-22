@@ -50,13 +50,22 @@ class MIDITickComponent {
         /// should call Stop() as first statement, then do its work.
         virtual                    ~MIDITickComponent();
 
+
+        /// A pure virtual method reinitializing the class parameters.
+        virtual void                Reset() = 0;
+
         /// Returns the address of the StaticTickProc() method, which will be called by the MIDIManager at every
         /// clock tick.
         MIDITick*                   GetFunc() const                 { return tick_proc; }
         /// Returns the priority.
         tPriority                   GetPriority() const             { return priority; }
 
-        /// Sets the running status as **true** and starts to call the callback.
+        /// Sets the running status as **true** and starts to call the callback. Moreover it set
+        /// \ref sys_time_offset to the now time so, at every subsequent call of the callback, you can calculate
+        /// the elapsed time. In your derived class you probably will want to redefine this for doing other
+        /// things before starting the callback: however in your derived method you must call the base class
+        /// method.
+        ///
         /// You must call this **after** inserting the object into the MIDIManager queue with the
         /// MIDIManager::AddMIDITick() method, or you will have no effect.
         /// \param dev_offs a time offset you can use for your calculations (for example, in the MIDISequencer
@@ -73,11 +82,11 @@ class MIDITickComponent {
     protected:
         /// This is the static callback procedure which the MIDIManager will call at every MIDITimer tick. The parameters
         /// are automatically set by the %MIDIManager at every function call.
-        /// \param sys_time the system time
+        /// \param sys_time the now system time
         /// \param pt the _this_ pointer of the object instance.
         ///
-        /// You must implement it in your subclass and give the function address in the constructor. Tipically this should
-        /// only cast the void pointer *pt* to a pointer to your object and then call the pt->TickProc(sys_time), i.e.\ your
+        /// You must implement it in your subclass and give the function address in the constructor. Typically this should
+        /// only cast the void pointer *pt* to a pointer to your object and then call the pt->TickProc(sys_time), i.e\. your
         /// non static procedure.
         static void                 StaticTickProc(tMsecs sys_time, void* pt)   {}
         /// This is the pure virtual function you must implement in your subclass.
@@ -87,10 +96,10 @@ class MIDITickComponent {
         const MIDITick*             tick_proc;
 
         /// A time offset set by the Start() method and which you can use for your calculations.
-        std::atomic<tMsecs>         dev_time_offset;
+        tMsecs                      dev_time_offset;
         /// The system time of the last call of Start(). You can use this for calculating the time elapsed between the
         /// start of the callback and the actual call of TickProc().
-        std::atomic<tMsecs>         sys_time_offset;
+        tMsecs                      sys_time_offset;
         /// A mutex you can use for implementing thread safe methods (it is not used by the base class).
         std::recursive_mutex        proc_lock;
 

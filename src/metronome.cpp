@@ -1,4 +1,5 @@
 #include "../include/metronome.h"
+#include "../include/manager.h"
 
 
 
@@ -8,7 +9,7 @@
 
 
 Metronome::Metronome (MIDISequencerGUINotifier* n) :
-    MIDITickComponent(PR_SEQ, StaticTickProc),
+    MIDITickComponent(PR_POST_SEQ, StaticTickProc),
     notifier(n)
 {
     Reset();
@@ -158,7 +159,7 @@ void Metronome::SetTimeSigDenominator(unsigned char d) {
 
 void Metronome::Start() {
     if (!IsPlaying()) {
-        std::cout << "\t\tEntered in MIDISequencer::Start() ..." << std::endl;
+        std::cout << "\t\tEntered in Metronome::Start() ..." << std::endl;
         MIDIManager::OpenOutPorts();
         if (notifier)
             notifier->Notify (MIDISequencerGUIEvent(MIDISequencerGUIEvent::GROUP_TRANSPORT,
@@ -172,7 +173,7 @@ void Metronome::Start() {
         cur_measure = 0;
         MIDITickComponent::Start();
 
-        std::cout << "\t\t ... Exiting from MIDISequencer::Start()" << std::endl;
+        std::cout << "\t\t ... Exiting from Metronome::Start()" << std::endl;
     }
 }
 

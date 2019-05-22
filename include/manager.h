@@ -35,7 +35,6 @@
 #include "msg.h"
 #include "driver.h"
 #include "notifier.h"
-#include "sequencer.h"
 #include "timer.h"
 #include "tick.h"
 
@@ -66,8 +65,8 @@ public:
                                 MIDIManager();
     /// The destructor deletes the drivers and the timer.
     virtual                     ~MIDIManager();
-    /// Stops the timer if it is running and resets all the MIDI in and out ports.
-    /// Doesn't reset the MIDITickComponent queue.
+    /// Stops the timer if it is running, resets all the MIDI in and out ports and flushes the
+    /// MIDITickComponent queue.
     static void                 Reset();
 
     /// Returns the number of MIDI out ports in the system.
@@ -104,40 +103,6 @@ public:
     /// Closes all the system MIDI Out ports.
     /// It calls the MIDIOutDriver::OpenPort() method for every port.
     static void                 CloseOutPorts();
-
-    /* Now in MIDISequencer
-    /// Returns the elapsed time in ms from the sequencer start (0 if the sequencer is not playing).
-    static tMsecs               GetCurrentTimeMs()
-                                                { return play_mode ?
-
-                                                         MIDITimer::GetSysTimeMs() + seq_time_offset - sys_time_offset : 0; }
-    */
-    /*
-    void                        AddTickProc(MIDITick proc, unsigned int n);
-    void                        RemoveTickProc(unsigned int n);
-    void                        RemoveTickProc(MIDITick proc);
-
-    /// Sets the procedure executed when the sequencer reaches the end of MIDI data. This actually
-    /// stops the playback.
-    static void                 SetAutoStopProc(void(proc)(void*), void* param)
-                                                                { auto_stop_proc = proc; auto_stop_param = param; }
-*/
-/*
-    /// Sets the sequencer pointer (if you hadn't already done it in the ctor, you must set it).
-    /// It resets the repeat play and, if the sequencer was playing, stops it.
-    static void                 SetSequencer(MIDISequencer *seq);
-*/
-
-   /*
-    /// Starts the sequencer playback.
-    static void                 SeqPlay();
-    /// Stops the sequencer playback.
-    static void                 SeqStop();
-    /// Returns *true* if the sequencer is playing.
-    static bool                 IsSeqPlay()                    { return sequencer->IsPlaying(); }
-*/
-
-
     /// Sends a MIDI AllNotesOff message to all open out ports.
     static void                 AllNotesOff();
     /// Inserts a MIDITickComponent object into the queue. The objects are queued according to their
@@ -150,52 +115,25 @@ public:
     /// not in the queue. The destructor of a MIDITickComponent call this before destroying the object,
     /// preventing the manager from using an invalid pointer, so usually you don't need to call this.
     static bool                 RemoveMIDITick(MIDITickComponent *tick);
-    /// Removes all MIDITickComponent objects from the queue. Be careful with this, because some
-    /// advanced class (as AdvancedSequencer) auto adds itself to the queue: if you remove it
-    /// you must to re-add it manually with the AddMIDITick() if you want to continue to use it.
 
 protected:
 
-    /// This is the main tick procedure. This calls the TickProc() method of every queued MIDITickComponent
-    /// object with running status. The user must not call it directly.
+    /// This is the main callback, called at every tick of the MIDITimer. It calls in turn the StaticTickProc()
+    /// method of every queued MIDITickComponent object with running status. The user must not call it directly.
     static void                 TickProc(tMsecs sys_time_, void* p);
 
-/*
-    // void
-                          MIDIThruProc(tMsecs sys_time_); TODO: unneeded????
-    /// This is the sequencer play procedure. It examines events at current time and sends them to the
-    /// MIDI out ports, manages repeat play (loop) and calls AutoStopProc() when the sequencer reaches
-    /// the end of MIDI events.
-    void                        SequencerPlayProc(tMsecs sys_time_);
-*/
-
-
-    static std::vector<MIDIOutDriver*>  MIDI_outs;      ///< A vector of MIDIOutDriver classes (one for each hardware port)
+    static std::vector<MIDIOutDriver*>  MIDI_outs;      ///< A vector of MIDIOutDriver objects (one for each
+                                                        /// hardware port)
     static std::vector<std::string>     MIDI_out_names; ///< The system names of hardware out ports
-    static std::vector<MIDIInDriver*>   MIDI_ins;       ///< A vector of MIDIInDriver classes (one for each hardware port)
+    static std::vector<MIDIInDriver*>   MIDI_ins;       ///< A vector of MIDIInDriver objects (one for each
+                                                        /// hardware port)
     static std::vector<std::string>     MIDI_in_names;  ///< The system names of hardware in ports
 
     static std::vector<MIDITickComponent*>
-                                        MIDITicks;      ///< The array of MIDITICK objects, everyone of them has his MIDITick callback
-
-    //static MIDISequencer*               sequencer;      ///< The MIDISequencer
+                                        MIDITicks;      ///< The array of MIDITickCompnent objects, everyone
+                                                        /// of them has his StaticTickProc() callback
 
     static std::mutex                   proc_lock;      ///< A mutex for thread safe
-
-/* OLD!!!! Delete if all OK
-    /// This is called by SequencerPlayProc() when the sequencer reaches the end of MIDI events. The default
-    /// procedure only calls SeqStop().
-    //static void                 AutoStopProc(void* p);
-    //static void                 Notify(const MIDISequencerGUIEvent& ev);
-    static MIDITimer*           timer;              ///< The timer which temporizes MIDI playback
-    static std::atomic<bool>    play_mode;          ///< True if the sequencer is playing
-    static bool                 auto_seq_open;
-    static void                 (*auto_stop_proc)(void *);
-                                                    ///< The auto stop procedure
-    static void*                auto_stop_param;    ///< The parameter given to the auto stop procedure
-    std::atomic<int>            times;
-*/
-
 };
 
 

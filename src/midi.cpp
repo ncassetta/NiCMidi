@@ -36,9 +36,11 @@
 
 #include <cstdio>           // for function KeyName()
 #include <cctype>
+#include <cstring>          // for strcat()
 
 
-const char* get_chan_msg_name(unsigned char status) {
+
+const char* GetChanMsgName(unsigned char status) {
     static const char* chan_msg_names[16] = {
         "ERROR 0x00    ",		// 0x00
         "ERROR 0x10    ",		// 0x10
@@ -59,7 +61,7 @@ const char* get_chan_msg_name(unsigned char status) {
     return chan_msg_names[status >> 4];
 }
 
-const char* get_chan_mode_msg_name(unsigned char number) {
+const char* GetChanModeMsgName(unsigned char number) {
     static const char* chan_mode_names[8] = {
         "ALL SOUND OFF ",       // 0x78
         "RESET ALL CONTROLLERS",// 0x79
@@ -73,7 +75,7 @@ const char* get_chan_mode_msg_name(unsigned char number) {
 }
 
 
-const char* get_sys_msg_name(unsigned char status) {
+const char* GetSysMsgName(unsigned char status) {
     static const char* sys_msg_names[16] = {
         "SYSEX    ",		// 0xf0
         "MTC      ",		// 0xf1
@@ -96,7 +98,7 @@ const char* get_sys_msg_name(unsigned char status) {
 }
 
 
-const char* get_meta_msg_name(unsigned char type) {
+const char* GetMetaMsgName(unsigned char type) {
     static const char* meta_msg_names[18] {
         "SEQUENCE NUMBER ",	    // 0x00,
         "GENERIC TEXT    ",     // 0x01,
@@ -144,8 +146,199 @@ const char* get_meta_msg_name(unsigned char type) {
 }
 
 
+const char* GetGMProgramName(unsigned char number, int format) {
+    static const char GMpatches[][128] = {
+        "Acoustic Grand Piano",
+        "Bright Acoustic Piano",
+        "Electric Grand Piano",
+        "Honky-tonk Piano",
+        "Rhodes Piano",
+        "Chorused Piano",
+        "Harpsichord",
+        "Clavinet",
+        "Celesta",
+        "Glockenspiel",
+        "Music Box",
+        "Vibraphone",
+        "Marimba",
+        "Xylophone",
+        "Tubular Bells",
+        "Dulcimer",
+        "Hammond Organ",
+        "Percussive Organ",
+        "Rock Organ",
+        "Church Organ",
+        "Reed Organ",
+        "Accordion",
+        "Harmonica",
+        "Tango Accordion",
+        "Acoustic Guitar (nylon)",
+        "Acoustic Guitar (steel)",
+        "Electric Guitar (jazz)",
+        "Electric Guitar (clean)",
+        "Electric Guitar (muted)",
+        "Overdriven Guitar",
+        "Distortion Guitar",
+        "Guitar Harmonics",
+        "Acoustic Bass",
+        "Electric Bass (finger)",
+        "Electric Bass (pick)",
+        "Fretless Bass",
+        "Slap Bass 1",
+        "Slap Bass 2",
+        "Synth Bass 1",
+        "Synth Bass 2",
+        "Violin",
+        "Viola",
+        "Cello",
+        "Contrabass",
+        "Tremolo Strings",
+        "Pizzicato Strings",
+        "Orchestral Harp",
+        "Timpani",
+        "String Ensemble 1",
+        "String Ensemble 2",
+        "SynthStrings 1",
+        "SynthStrings 2",
+        "Choir Aahs",
+        "Voice Oohs",
+        "Synth Voice",
+        "Orchestra Hit",
+        "Trumpet",
+        "Trombone",
+        "Tuba",
+        "Muted Trumpet",
+        "French Horn",
+        "Brass Section",
+        "Synth Brass 1",
+        "Synth Brass 2",
+        "Soprano Sax",
+        "Alto Sax",
+        "Tenor Sax",
+        "Baritone Sax",
+        "Oboe",
+        "English Horn",
+        "Bassoon",
+        "Clarinet",
+        "Piccolo",
+        "Flute",
+        "Recorder",
+        "Pan Flute",
+        "Bottle Blow",
+        "Shakuhachi",
+        "Whistle",
+        "Ocarina",
+        "Lead 1 (square)",
+        "Lead 2 (sawtooth)",
+        "Lead 3 (calliope lead)",
+        "Lead 4 (chiff lead)",
+        "Lead 5 (charang)",
+        "Lead 6 (voice)",
+        "Lead 7 (fifths)",
+        "Lead 8 (bass + lead)",
+        "Pad 1 (new age)",
+        "Pad 2 (warm)",
+        "Pad 3 (polysynth)",
+        "Pad 4 (choir)",
+        "Pad 5 (bowed)",
+        "Pad 6 (metallic)",
+        "Pad 7 (halo)",
+        "Pad 8 (sweep)",
+        "FX 1 (rain)",
+        "FX 2 (soundtrack)",
+        "FX 3 (crystal)",
+        "FX 4 (atmosphere)",
+        "FX 5 (brightness)",
+        "FX 6 (goblins)",
+        "FX 7 (echoes)",
+        "FX 8 (sci-fi)",
+        "Sitar",
+        "Banjo",
+        "Shamisen",
+        "Koto",
+        "Kalimba",
+        "Bagpipe",
+        "Fiddle",
+        "Shanai",
+        "Tinkle Bell",
+        "Agogo",
+        "Steel Drums",
+        "Woodblock",
+        "Taiko Drum",
+        "Melodic Tom",
+        "Synth Drum",
+        "Reverse Cymbal",
+        "Guitar Fret Noise",
+        "Breath Noise",
+        "Seashore",
+        "Bird Tweet",
+        "Telephone Ring",
+        "Helicopter",
+        "Applause",
+        "Gunshot"
+    };
+    static char s[40];
+    s[0] = 0;
+    if (format == 1)
+        sprintf(s, "%d-", number);
+    strcat(s, GMpatches[number]);
+    return s;
+}
+
+
+const char* GetGMDrumkitName(unsigned char number, int format) {
+const char GMDrumKits[][128] = {
+    "Standard Kit",
+    "Room Kit",
+    "Power Kit",
+    "Electric Kit",
+    "TR 808 Kit",
+    "Jazz Kit",
+    "Brush Kit",
+    "Orchestra Kit",
+    ""
+};
+    static char s[40];
+    s[0] = 0;
+    if (format == 1)
+        sprintf(s, "%d-", number);
+    const char* pt;
+    switch (number) {
+        case 0:
+            pt = GMDrumKits[0];
+            break;
+        case 9:
+            pt = GMDrumKits[1];
+            break;
+        case 17:
+            pt = GMDrumKits[2];
+            break;
+        case  25:
+            pt = GMDrumKits[3];
+            break;
+        case  26:
+            pt = GMDrumKits[4];
+            break;
+        case  33:
+            pt = GMDrumKits[5];
+            break;
+        case  41:
+            pt = GMDrumKits[6];
+            break;
+        case  49:
+            pt = GMDrumKits[7];
+            break;
+        default:
+            pt = GMDrumKits[8];
+            break;
+    }
+    strcat(s, pt);
+    return s;
+}
+
+
 const signed char chan_msg_len[16] = {
-    0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,
     3,	// 0x80=note off, 3 bytes
     3,	// 0x90=note on, 3 bytes
     3, 	// 0xa0=poly pressure, 3 bytes
@@ -177,14 +370,20 @@ const signed char sys_msg_len[16] = {
   };
 
 
-const bool note_is_white[12] =
-{
-//
-//	C C# D D# E F F# G G# A A# B
-//
-    1,0, 1,0, 1,1,0, 1,0, 1,0, 1
-};
+bool IsNoteWhite(unsigned char note) {
+    static const bool white_notes[12] {
+    //
+    //	C C# D D# E F F# G G# A A# B
+    //
+        1,0, 1,0, 1,1,0, 1,0, 1,0, 1
+    };
+    return white_notes[note % 12];
+}
 
+
+bool IsNoteBlack(unsigned char note) {
+    return !IsNoteWhite(note);
+}
 
 
 char* KeyName(signed char sharp_flats, unsigned char major_minor, bool uppercase,

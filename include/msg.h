@@ -68,7 +68,7 @@ class 	MIDIMessage {
         /// The destructor.
         virtual                 ~MIDIMessage();
         /// Resets the message and frees the MIDISystemExclusive pointer; the message becomes a NoOp.
-        void	                Clear();
+        virtual void            Clear();
         /// Frees the MIDISystemExclusive pointer without changing other bytes.
         void                    ClearSysEx();
         /// The assignment operator. It primarily frees the old MIDISystemExclusive object if it was allocated,
@@ -339,8 +339,7 @@ class 	MIDIMessage {
         /// \name Other methods
         //@{
         /// Returns a human readable ascii string describing the message content.
-        std::string             MsgToText() const;
-        // TODO: virtual????
+        virtual std::string     MsgToText() const;
         /// Allocates a MIDISystemExclusive object, with a buffer of given max size.
         ///The buffer is initially empty and can be accessed with GetSysEx(). An eventual old object is freed.
         void                    AllocateSysEx(unsigned int len);
@@ -348,13 +347,14 @@ class 	MIDIMessage {
         /// An eventual old object is freed.
         void                    CopySysEx(const MIDISystemExclusive* se);
         /// The compare operator execute a bitwise comparison.
+        //@}
+
         friend bool             operator== (const MIDIMessage &m1, const MIDIMessage &m2);
 
         /// This static method determines if the SetNoteOff() method will produce a MIDI NOTE_OFF
         /// message or a NOTE_ON with velocity 0.
         /// The default is **false** (NOTE_OFF messages). If you want to use the other form call this with **true**.
         static void             UseNoteOnv0ForOff(bool f)           { use_note_onv0 = f; }
-        //@}
 
         /// Status and byte1 for non MIDI messages (internal use).
         enum { STATUS_SERVICE = 0, NO_OP_VAL = 0, BEAT_MARKER_VAL = 1 };
@@ -398,7 +398,7 @@ class 	MIDITimedMessage : public MIDIMessage {
                                 ~MIDITimedMessage();
         /// Resets the message, frees the MIDISystemExclusive pointer and sets the time to 0.
         /// The message becomes a NoOp.
-        void	                Clear();
+        virtual void            Clear();
 
         /// Assignment operator. \see MIDIMessage::operator=()
         const MIDITimedMessage &operator= (const MIDITimedMessage &msg);
@@ -407,7 +407,7 @@ class 	MIDITimedMessage : public MIDIMessage {
         //@}
 
         /// Returns a human readable ascii string describing the message content.
-        std::string             MsgToText() const;
+        virtual std::string     MsgToText() const;
 
         /// Returns the MIDIClockTime associated with the message.
         MIDIClockTime	        GetTime() const                 { return time; }

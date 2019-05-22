@@ -224,21 +224,6 @@ class  SMPTE {
         /// Performs internal comparison between sample numbers.
         int                 Compare (SMPTE &s);
 
-
-        /*
-
-        double              GetSMPTERateFrequency()     { return smpte_rates[(int)smpte_rate]; }
-
-        long                GetSMPTERateFrequencyLong() { return smpte_rates_long[(int)smpte_rate]; }
-
-        double              GetSampleRateFrequency()    { return sample_rates[(int)sample_rate]; }
-
-        long                GetSampleRateFrequencyLong(){ return sample_rates_long[(int)sample_rate]; }
-
-        */
-
-
-
         /// Max frames for every SMPTE_RATE.
         static const unsigned char  smpte_max_frames[];
         /// Converts the SMPTE_RATE enum to a double frequency.
@@ -272,6 +257,3 @@ class  SMPTE {
 
 
 #endif
-
-
-

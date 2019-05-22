@@ -51,40 +51,7 @@
 
 #include <fstream>
 
-#include "midi.h"
-#include "msg.h"
-#include "sysex.h"
-
-
-/*   ELIMINATE THIS!
-///
-/// This class is used internally for writing MIDI files. It writes a stream of *char* to a C++ ostream object,
-///
-class MIDIFileWriteStream {
-public:
-    /// In this constructor you must specify the filename.\ The constructor tries to open the file, you
-    /// should call IsValid() for checking if it was successful.
-    MIDIFileWriteStream( const char *fname );
-    /// In this constructor you must specify and already open ostream object, so you can write to whatever
-    /// output stream.
-    MIDIFileWriteStream(std::ostream* ofs);
-    /// The destructor deletes the ostream if it was opened by the ctor.
-    virtual ~MIDIFileWriteStream();
-
-    /// Mves the stream position along the stream.
-    long Seek( long pos, int whence=SEEK_SET );
-    /// Writes a char to the stream.
-    int WriteChar( int c );
-    /// Returns *true* if the ostream is open
-    bool IsValid();
-
-private:
-    std::ostream* outfs;
-    std::streampos begin;
-    bool del;
-};
-
-*/
+#include "msg.h"        // includes "midi.h" and "sysex.h"
 
 
 
@@ -109,18 +76,7 @@ class MIDIFileWriter {
         void            WriteEvent(const MIDITimedMessage &msg);
         void            WriteChannelEvent(const MIDITimedMessage &msg);
         void            WriteSysExEvent(const MIDITimedMessage &msg);
-        //void            WriteTextEvent(unsigned long time, unsigned short text_type, const char *text);
         void            WriteMetaEvent( unsigned long time, unsigned char type, const unsigned char *data, long length );
-        //void            WriteTempo(unsigned long time, long tempo);
-        //void            WriteKeySignature(unsigned long time, char sharp_flat, char minor);
-        //void            WriteTimeSignature(
-        //                    unsigned long time,
-        //                    char numerator=4,
-        //                    char denominator_power=2,
-        //                    char midi_clocks_per_metronome=24,
-        //                    char num_32nd_per_midi_quarter_note=8
-        //                );
-
         void            WriteEndOfTrack(unsigned long time);
 
         virtual void    RewriteTrackLength();
@@ -151,10 +107,4 @@ class MIDIFileWriter {
 
 
 #endif
-
-
-
-
-
-
 

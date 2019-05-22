@@ -37,7 +37,7 @@
 
 #include "../include/sysex.h"
 
-#include <iostream>
+#include <iostream>     // for debug
 
 
 const unsigned char MIDISystemExclusive::GMReset_data[] = { 0xF0, 0x7E, 0x7F, 0x09, 0x01, 0xF7 };
@@ -66,6 +66,7 @@ MIDISystemExclusive& MIDISystemExclusive::operator= (const MIDISystemExclusive& 
     buffer = se.buffer;
     return *this;
 }
+
 
 bool MIDISystemExclusive::operator== (const MIDISystemExclusive &se) const {
     if (buffer != se.buffer)

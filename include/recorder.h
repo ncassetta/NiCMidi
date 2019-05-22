@@ -8,7 +8,6 @@
 #define RECORDER_H_INCLUDED
 
 #include "tick.h"
-#include "manager.h"
 #include "multitrack.h"
 
 #include <atomic>
@@ -51,7 +50,7 @@ class MIDIRecorder : public MIDITickComponent {
                                         MIDIRecorder();
         /// The destructor
         virtual                         ~MIDIRecorder();
-        void                            Reset();
+        virtual void                    Reset();
         ///@}
 
         /// \name The get methods
@@ -97,6 +96,17 @@ class MIDIRecorder : public MIDITickComponent {
         /// \param ch the MIDI channel (in the range 0...15).
         void                            DisableChannel(unsigned int port, unsigned int ch);
 
+        /// Sets the current time to the beginning of the song, updating the internal status. This method is
+        /// thread-safe and can be called during playback. Notifies the GUI a GROUP_ALL event to signify a
+        /// full GUI reset.
+        void                            GoToZero()                      { GoToTime(0); }
+        /// Sets the current time to the given MIDI time, updating the internal status. This is as
+        /// MIDISequencer::GoToTime() but uses a better algorithm and sends to the MIDI out ports all the
+        /// appropriate sysex, patch, pitch bend and control change messages.
+        bool                            GoToTime(MIDIClockTime time_clk);
+        /// Same as GoToTime(), but the time is given in milliseconds.
+        bool                            GoToTimeMs(float time_ms);
+
         /// Starts the recording from the enabled ports and channels.
         virtual void                    Start();
         /// Stops the recording from the enabled ports and channels.
@@ -112,7 +122,7 @@ class MIDIRecorder : public MIDITickComponent {
                                                             ///<channels and tracks in the multitrack
 
         tMsecs                          rec_time_offset;    ///< The time between time 0 and sequencer start
-        tMsecs                          sys_time_offset;    ///< The time between the timer start and the sequencer start
+        //tMsecs                          sys_time_offset;    ///< The time between the timer start and the sequencer start
         float                           tempobpm;           ///< The recording tempo
         MIDIClockTime                   start_time;         ///< The MIDIClockTime of the beginning of recording
 

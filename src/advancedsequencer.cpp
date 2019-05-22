@@ -1,5 +1,5 @@
 #include "../include/advancedsequencer.h"
-#include "../include/filereadmultitrack.h"          // for LoadMIDIFile()
+#include "../include/manager.h"
 
 #include <iostream>
 
@@ -140,13 +140,10 @@ void AdvancedSequencer::Reset() {
 
 
 bool AdvancedSequencer::Load (const char *fname) {
-    char realname[1024];
-    strcpy (realname, fname);
-
     Stop();
     state.multitrack->Clear();
 
-    file_loaded = LoadMIDIFile(realname, state.multitrack);
+    file_loaded = LoadMIDIFile(fname, state.multitrack, &header);
     Reset();                    // synchronizes the sequencer with the multitrack and goes to 0
     //seq->GoToZero();      now called by Reset()
     //ExtractWarpPositions();
@@ -166,7 +163,7 @@ bool AdvancedSequencer::Load (const MIDIMultiTrack* tracks) {
 void AdvancedSequencer::UnLoad() {
     Stop();
     state.multitrack->Clear();
-    state.multitrack->SetClksPerBeat(MIDIMultiTrack::DEFAULT_CLKS_PER_BEAT);
+    state.multitrack->SetClksPerBeat(DEFAULT_CLKS_PER_BEAT);
     file_loaded = false;
     Reset();
     //seq->GoToZero();      now called by Reset()
@@ -354,20 +351,6 @@ void AdvancedSequencer::SetTrackSolo (unsigned int trk) {   // unsoloing done by
     proc_lock.unlock();
 }
 
-/*
-void AdvancedSequencer::SetSoloMode(bool m, int trk)  {
-    proc_lock.lock();
-    solo_mode = m;
-    for(unsigned int i = 0; i < GetNumTracks(); ++i ) {
-        if(i == (unsigned)trk)
-            (MIDISequencerTrackProcessor *)track_processors[i]->solo = true;
-        else
-            (MIDISequencerTrackProcessor *)track_processors[i]->solo = false;
-    }
-    proc_lock.unlock();
-}
-*/
-
 
 void AdvancedSequencer::UnSoloTrack()  {
     if (!file_loaded)
@@ -451,35 +434,17 @@ void AdvancedSequencer::SetTrackTranspose (unsigned int trk, int trans) {
 }
 
 
-/*  NO! Inherited from MIDISequencer
-// must be rewritten, so it calls AdvancedSequencer::GoToTime()
-void AdvancedSequencer::SetTrackTimeShift (unsigned int trk, int offset) {
-    if (!file_loaded || !state.multitrack->IsValidTrackNumber(trk))
-        return;
-    char channel = state.multitrack->GetTrack(trk)->GetChannel();
-    proc_lock.lock();
-    if (IsPlaying() && channel != -1) {
-        MIDIManager::GetOutDriver(GetTrackPort(trk))->AllNotesOff(channel);
-        GetTrackState(trk)->note_matrix.Clear();
-    }
-    time_shifts[trk] = offset;
-    //GoToTime(GetCurrentMIDIClockTime());        // syncronize the iterator
-    proc_lock.unlock();
-}
-*/
-
-
-void AdvancedSequencer::GoToTime (MIDIClockTime t) {
+bool AdvancedSequencer::GoToTime (MIDIClockTime time_clk) {
     if (!file_loaded)
-        return;
+        return false;
+    bool ret;
 
     // figure out which warp item we use
     // try warp to the last warp point BEFORE the
     // requested measure
-
     unsigned int warp_to_item = 0;
     for (; warp_to_item < warp_positions.size(); warp_to_item++) {
-        if (warp_positions[warp_to_item].cur_clock > t)
+        if (warp_positions[warp_to_item].cur_clock > time_clk)
             break;
     }
     if (warp_to_item == warp_positions.size() && warp_to_item != 0)
@@ -488,22 +453,58 @@ void AdvancedSequencer::GoToTime (MIDIClockTime t) {
     if (IsPlaying()) {
         proc_lock.lock();
         SetState (&warp_positions[warp_to_item]);
-        MIDISequencer::GoToTime (t);
+        ret = MIDISequencer::GoToTime (time_clk);
         CatchEventsBefore();
         proc_lock.unlock();
     }
     else {
         SetState (&warp_positions[warp_to_item]);
-        MIDISequencer::GoToTime (t);
+        ret = MIDISequencer::GoToTime (time_clk);
         for (unsigned int i = 0; i < GetNumTracks(); ++i)
             GetTrackState(i)->note_matrix.Clear();
     }
+    return ret;
 }
 
 
-void AdvancedSequencer::GoToMeasure (int measure, int beat) {
+bool AdvancedSequencer::GoToTimeMs(float time_ms) {
     if (!file_loaded)
-        return;
+        return false;
+    bool ret;
+
+    // figure out which warp item we use
+    // try warp to the last warp point BEFORE the
+    // requested measure
+    unsigned int warp_to_item = 0;
+    for (; warp_to_item < warp_positions.size(); warp_to_item++) {
+        if (warp_positions[warp_to_item].cur_time_ms > time_ms)
+            break;
+    }
+    if (warp_to_item == warp_positions.size() && warp_to_item != 0)
+        warp_to_item--;
+
+    if (IsPlaying()) {
+        proc_lock.lock();
+        SetState (&warp_positions[warp_to_item]);
+        ret = MIDISequencer::GoToTimeMs (time_ms);
+        CatchEventsBefore();
+        proc_lock.unlock();
+    }
+    else {
+        SetState (&warp_positions[warp_to_item]);
+        ret = MIDISequencer::GoToTimeMs (time_ms);
+        for (unsigned int i = 0; i < GetNumTracks(); ++i)
+            GetTrackState(i)->note_matrix.Clear();
+    }
+    return ret;
+}
+
+
+
+bool AdvancedSequencer::GoToMeasure (int measure, int beat) {
+    if (!file_loaded)
+        return false;
+    bool ret;
 
     // figure out which warp item we use
     // try warp to the last warp point BEFORE the
@@ -516,20 +517,22 @@ void AdvancedSequencer::GoToMeasure (int measure, int beat) {
     if (IsPlaying()) {
         proc_lock.lock();
         SetState (&warp_positions[warp_to_item]);
-        MIDISequencer::GoToMeasure (measure, beat);
+        ret = MIDISequencer::GoToMeasure (measure, beat);
         CatchEventsBefore();
         proc_lock.unlock();
     }
     else {
         SetState (&warp_positions[warp_to_item]);
-        MIDISequencer::GoToMeasure (measure, beat);
+        ret = MIDISequencer::GoToMeasure (measure, beat);
         for (unsigned int i = 0; i < GetNumTracks(); ++i)
             GetTrackState (i)->note_matrix.Clear();
     }
+    return ret;
 }
 
 
 void AdvancedSequencer::Start () {
+    // TODO: if (IsPlaying() as in other MIDITicksComponent ???
     if (!file_loaded)
         return;
 
@@ -546,6 +549,7 @@ void AdvancedSequencer::Start () {
 
     MIDISequencer::Start();             // calls OpenOutPorts() again
     std::cout << "\t\t ... Exiting from AdvancedSequencer::Start()" << std::endl;
+    std::cout << "sys_time_offset = " << sys_time_offset << " dev_time_offset = " << dev_time_offset << std::endl;
 }
 
 
@@ -578,34 +582,6 @@ void AdvancedSequencer::OutputMessage(MIDITimedMessage& msg, unsigned int port) 
         driver->ClosePort();
     proc_lock.unlock();
 }
-
-/*
-void AdvancedSequencer::SetRepeatPlay (bool f, int start_measure, int end_measure) {
-    if (!file_loaded)
-        return;
-
-    if (start_measure < end_measure && start_measure >= 0 && end_measure <= num_measures)
-        seq->SetRepeatPlay (f, start_measure, end_measure);
-    else
-        mgr->SetRepeatPlay(false, 0, 0);
-
-    if (mgr->IsSeqPlay() && mgr->GetRepeatPlay()) {
-        mgr->SeqStop();
-        GoToMeasure (start_measure);
-        CatchEventsBefore();
-        mgr->SeqPlay();
-    }
-}
-*/
-
-
-
-
-
-
-
-
-
 
 
 void AdvancedSequencer::SetSMPTE(SMPTE* s) {
@@ -651,23 +627,8 @@ void AdvancedSequencer::SetSMPTE(SMPTE* s) {
     }
 }
 
-/*      OLD WITH InternalStop()
-void AdvancedSequencer::SetChanged() {
-        // IMPORTANT: REWRITTEN: WAS BUGGY!!!!!
-    bool was_playing = false;
-    if (IsPlaying()) {
-        was_playing = true;
-//        InternalStop();     // however you should avoid to edit the MIDIMultiTrack during playback!
-    }
-    file_loaded = !GetMultiTrack()->IsEmpty();
-    ExtractWarpPositions();
-    if (was_playing);
-//        InternalStart();
-}
-*/
 
-
-void AdvancedSequencer::SetChanged() {
+void AdvancedSequencer::UpdateStatus() {
     proc_lock.lock();
     file_loaded = !GetMultiTrack()->IsEmpty();
     ExtractWarpPositions();
@@ -735,64 +696,6 @@ void AdvancedSequencer::ExtractWarpPositions() {
     }
 }
 
-/*
-void AdvancedSequencer::CatchEventsBefore() {
-    MIDITimedMessage msg;
-    MIDITimedMessage *msgp;
-    MIDIMultiTrackIterator iter( seq->GetState()->multitrack );
-    int events_sent = 0;
-
-    if (GetCurrentMIDIClockTime() == 0)         // nothing to do
-        return;
-    std::cout << "Catch events before started ..." << std::endl;
-
-    //mgr->OpenOutPorts();
-
-    int trk;
-    iter.GoToTime(0);
-    // re-send all sysex, except real-time ones
-    while (iter.GetNextEvent( &trk, &msgp ) && msgp->GetTime() < seq->GetCurrentMIDIClockTime()) {
-        msg = *msgp;
-        unsigned int port = seq->GetTrackPort(trk);
-
-        if (msg.IsSysEx() &&
-            !(msg.GetSysEx()->IsGMReset() || msg.GetSysEx()->IsGSReset() || msg.GetSysEx()->IsXGReset())) {
-            OutputMessage(msg, port);
-            events_sent++;
-        }
-        //iter.GoToNextEvent();     not yet used
-    }
-
-    // now set program, controls and pitch bend
-    for (int i = 0; i < GetNumTracks(); i++) {
-        if (!GetTrackMute(i)) {
-            int channel = GetTrackChannel(i);
-            unsigned int port = seq->GetTrackPort(i);
-            if (channel == -1)
-                continue;
-            const MIDISequencerTrackState* state = seq->GetTrackState(i);
-            // set the current program
-            msg.SetProgramChange(channel, state->program);
-            OutputMessage(msg, port);
-            // set thecurrent pitch bend value
-            msg.SetPitchBend(channel, state->bender_value);
-            OutputMessage(msg, port);
-            events_sent += 2;
-            // set the controllers
-            for (unsigned int j = 0; j < C_ALL_NOTES_OFF; j++) {
-                if (state->control_values[j] != -1) {
-                    msg.SetControlChange(channel, j, state->control_values[j]);
-                    OutputMessage(msg, port);
-                    events_sent++;
-                }   // TODO: RPN and NRPN
-            }
-        }
-    }
-
-    //mgr->CloseOutPorts();
-    std::cout << "CatchEventsBefore finished: events sent: " << events_sent << std::endl;
-}
-*/
 
 void AdvancedSequencer::CatchEventsBefore() {
     MIDITimedMessage msg;
@@ -874,8 +777,6 @@ void AdvancedSequencer::CatchEventsBefore() {
 }
 
 
-
-
 void AdvancedSequencer::CatchEventsBefore(int trk) {
     MIDITimedMessage msg;
     MIDITrack* t = GetMultiTrack()->GetTrack(trk);
@@ -946,69 +847,3 @@ void AdvancedSequencer::CatchEventsBefore(int trk) {
 }
 
 
-/*
-        for (unsigned int i = 0; i < t->GetNumEvents(); ++i) {
-            msg = t->GetEvent(i);
-            if (msg.GetTime() >= GetCurrentMIDIClockTime())
-                break;
-
-            if (msg.IsSysEx() &&
-                !(msg.GetSysEx()->IsGMReset() || msg.GetSysEx()->IsGSReset() || msg.GetSysEx()->IsXGReset())) {
-                OutputMessage(msg, port);
-                events_sent++;
-            }
-        }
-
-        int channel = GetTrackChannel(trk);
-        if (channel != -1) {
-            // set the current program
-            msg.SetProgramChange(channel, state.program);
-            OutputMessage(msg, port);
-            // set the current pitch bend value
-            msg.SetPitchBend(channel, state.bender_value);
-            OutputMessage(msg, port);
-            events_sent += 2;
-            // set the controllers
-            for (unsigned int i = 0; i < C_ALL_NOTES_OFF; i++) {
-                if (state.control_values[i] != -1) {
-                    msg.SetControlChange(channel, i, state.control_values[i]);
-                    OutputMessage(msg, port);
-                    events_sent++;
-                }   // TODO: RPN and NRPN
-            }
-        }
-    }
-
-    MIDIManager::CloseOutPorts();
-    std::cout << "CatchEventsBefore finished: events sent: " << events_sent << std::endl;
-
-}
-*/
-
-/*
-void AdvancedSequencer::InternalStart() {
-    if (!IsPlaying()) {
-        std::cout << "\t\tExecuting AdvancedSequencer::InternalStart() ..." << std::endl;
-        SetTimeShiftMode(true);
-        MIDITickComponent::Start((tMsecs)GetCurrentTimeMs());
-    }
-}
-
-
-void AdvancedSequencer::InternalStop() {
-    if (IsPlaying()) {
-        std::cout << "\t\tExecuting AdvancedSequencer::InternalStop() ..." << std::endl;
-        MIDITickComponent::Stop();
-        SetTimeShiftMode(false);
-        MIDIManager::AllNotesOff();
-    }
-}
-*/
-/*
-void AdvancedSequencer::AutoStopProc(void* p) {
-    std::cout << "\t\tEntered in AdvancedSquencer::AutoStopProc ...\n";
-    AdvancedSequencer* seq = static_cast<AdvancedSequencer *>(p);
-    seq->Stop();
-    std::cout << "\t\tExiting from AdvancedSequencer::AutoStopProc()\n";
-}
-*/

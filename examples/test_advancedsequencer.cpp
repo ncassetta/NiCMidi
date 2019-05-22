@@ -1,8 +1,14 @@
 /*
-  AdvancedSequencer class example for libJDKSmidi C++ MIDI Library
-  (console app, no GUI!)
+  A command line example of the features of the AdvancedSequencer
+  class. It creates an instance of the class and allows the user
+  to interact with it. You can load MIDI files and play them
+  changing a lot of parameters (muting, soloing, and transposing
+  tracks; jumping from a time to another, changing the tempo, etc.)
+  even while the sequencer is playing.
+  Compile it together with functions.cpp, which contains command
+  line I/O functions.
 
-  Copyright (C) 2013 N.Cassetta
+  Copyright (C) 2013 - 2019 N.Cassetta
   ncassetta@tiscali.it
 
   This program is free software; you can redistribute it and/or
@@ -19,20 +25,11 @@
   along with this program;
   if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
 */
-//
-// Copyright (C) 2013 N. Cassetta
-// ncassetta@tiscali.it
-//
+
 
 #include "../include/advancedsequencer.h"
 #include "functions.h"
-
-
-/// \file
-/// A command line example of the features of the AdvancedSequencer class. You can load MIDI files and ply them, changing
-/// a lot of parameters. Compile it together with functions.cpp, which contains I/O functions.
 
 using namespace std;
 
@@ -41,10 +38,11 @@ using namespace std;
 //                        G L O B A L S                         //
 //////////////////////////////////////////////////////////////////
 
- extern string command_buf, command, par1, par2;    // used by GetCommand() for parsing the user input
-AdvancedSequencer sequencer;                // an AdvancedSequencer (without GUI notifier)
 
-const char helpstring[] =                   // shown by the help command
+AdvancedSequencer sequencer;                    // an AdvancedSequencer (without GUI notifier)
+
+extern string command, par1, par2;              // used by GetCommand() for parsing the user input
+const char helpstring[] =                       // shown by the help command
 "\nAvailable commands:\n\
    load filename       : Loads the file into the sequencer\n\
    ports               : Enumerates MIDI In and OUT ports\n\
@@ -85,7 +83,6 @@ All commands can be given during playback\n";
 
 
 int main( int argc, char **argv ) {
-    //CoInitializeEx(NULL, COINIT_MULTITHREADED);
     cout << "TYPE help TO GET A LIST OF AVAILABLE COMMANDS" << endl << endl;
     while ( command != "quit" ) {                   // main loop
         GetCommand();                               // gets user input and parses it (see functions.cpp)
@@ -121,7 +118,6 @@ int main( int argc, char **argv ) {
             int beg = atoi(par1.c_str());
             int end = atoi(par2.c_str());
             if (!(beg == 0 && end == 0)) {
-
                 sequencer.SetRepeatPlay( true, beg, end );
                 cout << "Repeat play set from measure " << beg << " to measure " << end << endl;
             }
@@ -146,7 +142,7 @@ int main( int argc, char **argv ) {
                 cout << "Invalid position" << endl;
             else {
                 sequencer.GoToMeasure(measure, beat);
-                cout << "Actual position: " << sequencer.GetCurrentMeasure() << ":"
+                cout << "Actual position moved to: " << sequencer.GetCurrentMeasure() << ":"
                      << sequencer.GetCurrentBeat() << endl;
             }
         }
@@ -245,7 +241,8 @@ int main( int argc, char **argv ) {
                         cout << "     ";
                     else
                         cout << " (" << (int)trk->GetChannel() << ") ";
-                    cout <<"Sysex: " << (trk->HasSysex() ? "Yes " : "No  ") << "Events: " << trk->GetNumEvents() << endl;
+                    cout <<"Sysex: " << (trk->HasSysex() ? "Yes " : "No  ") << "Events: "
+                         << trk->GetNumEvents() << endl;
                 }
             }
         }
@@ -268,7 +265,6 @@ int main( int argc, char **argv ) {
         else if (command != "quit")
             cout << "Unrecognized command" << endl;
     }
-    //CoUninitialize();
     return EXIT_SUCCESS;
 }
 

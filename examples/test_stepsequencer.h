@@ -125,7 +125,7 @@ public:
 
 private:
     MIDIClockTime time;
-    int track;
+    unsigned int track;
     MIDIClockTime step;
     MIDIMultiTrack* tracks;
 };

@@ -1,4 +1,5 @@
 #include "../include/recorder.h"
+#include "../include/manager.h"
 
 
 MIDIRecorder::MIDIRecorder() :
@@ -15,6 +16,9 @@ MIDIRecorder::~MIDIRecorder() {
     Stop();
     delete multitrack;
 }
+
+
+void MIDIRecorder::Reset() {}
 
 
 void MIDIRecorder::SetTempo(float t) {
@@ -80,8 +84,7 @@ void MIDIRecorder::Start() {
         std::cout << "\t\tEntered in MIDIRecorder::Start() ..." << std::endl;
         MIDIManager::OpenInPorts();
         multitrack->ClearTracks();
-        rec_time_offset = 0;
-        sys_time_offset = MIDITimer::GetSysTimeMs();
+        dev_time_offset = 0;
         rec_on.store(true);
         MIDITickComponent::Start();
         std::cout << "\t\t ... Exiting from MIDIRecorder::Start()" << std::endl;

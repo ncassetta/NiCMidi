@@ -28,14 +28,16 @@
 ** CHECKED with jdksmidi. NO CHANGES
 */
 
+
+/// \file
+/// Contains the definition of the classes MIDIFileWriteMultiTrack, used for saving MIDI files, plus some related function.
+
+
 #ifndef _JDKMIDI_FILEWRITEMULTITRACK_H
 #define _JDKMIDI_FILEWRITEMULTITRACK_H
 
 #include "filewrite.h"
 #include "multitrack.h"
-
-/// \file
-/// Contains the definition of the classes MIDIFileWriteMultiTrack, used for saving MIDI files, plus some related function.
 
 
 ///
@@ -43,8 +45,8 @@
 /// The file will be in MIDI format 0 if the multitrack has only one track, otherwise  the format
 /// will be 1.
 ///
-/// If you want to save a MIDIMultiTrack into a  MIDI file you probably will use the simple and fast WriteMidiFile()
-/// global function, so this is not documented.
+/// If you want to save a MIDIMultiTrack into a  MIDI file you probably will use the simple and fast WriteMIDIFile()
+/// global function (that creates and uses this class), so this is not documented.
 ///
 class MIDIFileWriteMultiTrack {
 /// \cond INTERNAL

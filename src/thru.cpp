@@ -15,10 +15,8 @@ MIDIThru::MIDIThru() : MIDITickComponent(PR_PRE_SEQ, StaticTickProc), in_port(0)
 void MIDIThru::Reset() {
     Stop();
     SilentOut();
-    if (MIDIManager::GetNumMIDIIns() > 0)
-        in_port = MIDIManager::GetInDriver(0);
-    if (MIDIManager::GetNumMIDIOuts() > 0)
-        out_port = MIDIManager::GetOutDriver(0);
+    in_port = (MIDIManager::GetNumMIDIIns() > 0 ? MIDIManager::GetInDriver(0) : 0);
+    out_port = (MIDIManager::GetNumMIDIOuts() > 0 ? MIDIManager::GetOutDriver(0) : 0);
     processor = 0;
     in_channel = -1;
     out_channel = -1;
@@ -70,36 +68,6 @@ void MIDIThru::SetProcessor(MIDIProcessor* proc) {
 }
 
 
-/* OLD WORKING FUNCTION
-bool MIDIManager::SetThruPorts(unsigned int in_port, unsigned int out_port) {
-    if (in_port >= MIDI_ins.size() || out_port >= MIDI_outs.size())
-        return false;
-
-    std::cout << "Step 1" << std::endl;
-    if (thru_input != -1) {                         // an old MIDI thru input was set
-        MIDI_ins[thru_input]->SetThruEnable(false); // turn off the MIDI thru
-        MIDI_ins[thru_input]->ClosePort();          // and close the port
-    }
-
-    std::cout << "Step 2" << std::endl;
-
-    if (thru_output != -1) {                        // an old MIDI thru output was set
-        MIDI_outs[thru_output]->AllNotesOff();      // cut off sounding notes
-// TODO: insert a wait?
-        MIDI_outs[thru_output]->ClosePort();        // and close it
-    }
-
-    MIDI_ins[in_port]->SetThruEnable(false, MIDI_outs[out_port]);
-                                                    // set the new MIDI thru
-    MIDI_ins[in_port]->OpenPort();
-    MIDI_outs[out_port]->OpenPort();
-    MIDI_ins[in_port]->SetThruEnable(thru_enable);
-    thru_input = in_port;
-    thru_output = out_port;
-    return true;
-}
-*/
-
 void MIDIThru::SetInChannel(char chan) {
     if (IsPlaying()) {
         proc_lock.lock();
@@ -125,7 +93,7 @@ void MIDIThru::SetOutChannel(char chan) {
 
 
 void MIDIThru::Start() {
-    if (in_port == 0 || out_port == 0 ||            // we have not set the thru ports yet
+    if (in_port == 0 || out_port == 0 ||            // thru ports not set
         IsPlaying())
         return;
     in_port->OpenPort();
@@ -135,7 +103,7 @@ void MIDIThru::Start() {
 
 
 void MIDIThru::Stop() {
-    if (in_port == 0 || out_port == 0 ||            // we have not set the thru ports yet
+    if (in_port == 0 || out_port == 0 ||            // thru ports not set
         !IsPlaying())
         return;
     MIDITickComponent::Stop();
@@ -155,8 +123,6 @@ void MIDIThru::SilentOut() {
 }
 
 
-
-
 void MIDIThru::StaticTickProc(tMsecs sys_time, void* pt) {
     MIDIThru* thru_pt = static_cast<MIDIThru *>(pt);
     thru_pt->TickProc(sys_time);
@@ -167,12 +133,13 @@ void MIDIThru::StaticTickProc(tMsecs sys_time, void* pt) {
 void MIDIThru::TickProc(tMsecs sys_time_)
 {
     proc_lock.lock();
+/*
     static unsigned int times = 0;
 
     if (times % 1000 == 0)
         std::cout << "MIDIThru::TickProc() called " << times * 1000 << " times\n";
     times++;
-
+*/
 
     MIDIRawMessage rmsg;
     MIDITimedMessage msg;

@@ -1,9 +1,11 @@
 /*
+  A MS Windows GUI example of the usage of the AdvancedSequencer
+  class together with a MIDISequencerGUINotifierWin32 and a SMPTE.
+  It is a basic MIDI file player with a responsive GUI showing the
+  file parameters while the song is playing. It uses standard Windows
+  API for creating the GUI.
 
-  AdvancedSequencer class example for libJDKSmidi C++ MIDI Library
-  (Win32 GUI App using MS Windows API)
-
-  Copyright (C) 2013 N.Cassetta
+  Copyright (C) 2013 - 2019 N.Cassetta
   ncassetta@tiscali.it
 
   This program is free software; you can redistribute it and/or
@@ -20,26 +22,30 @@
   along with this program;
   if not, write to the Free Software Foundation, Inc.,
   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
 */
-//
-// Copyright (C) 2013 - 2016 N. Cassetta
-// ncassetta@tiscali.it
-//
 
 
-/* A GUI based midifile player for Windows. It uses an AdvancedSequencer class, a SMPTE and a
- * MIDISequencerGUINotifierWin32 updating the GUI.
- */
-
-#include "test_win32_player.h"
+#include <windows.h>
 #include <cwchar>
+
+#include "../../include/advancedsequencer.h"
+#include "../../include/smpte.h"
+#include "../../include/midi.h"
+
+
+//  Declare functions
+LRESULT CALLBACK WindowProcedure (HWND, UINT, WPARAM, LPARAM);
+VOID ProcessNotifierMessage(MIDISequencerGUIEvent msg);
+VOID LoadFile();
+VOID SetControls();
+const char* GetSmpteString();
+VOID SetMIDIActivity();
+VOID ResetDelays();
 
 
 // Declare MIDI objects
-static UINT NotifierMessage = 0;                    // the Windows message id to communicate between notifier and GUI
-AdvancedSequencer *sequencer;                       // the sequencer
-SMPTE smpte;                                        // milliseconds to smpte converter
+AdvancedSequencer *sequencer;       // the sequencer
+SMPTE smpte;                        // milliseconds to smpte converter
 
 
 // Declare handles to the window controls (In a real application you may want to subclass your
@@ -48,6 +54,7 @@ SMPTE smpte;                                        // milliseconds to smpte con
 HWND hMainWin;                      // our main window
 HWND hFileName;                     // filename box
 HWND hTime;                         // time box
+HWND hKey;                          // keysig box
 HWND hTempo;                        // tempo box
 HWND hMeas;                         // meas/beat box
 HWND hSmpte;                        // smpte box
@@ -58,7 +65,9 @@ HWND hTrackPrgrs[16];               // array of boxes for track programs
 HWND hTrackVols[16];                // array of boxes for track volumAes
 HWND hTrackActs[16];                // array of boxes for track activity
 
-int MIDIActDelays[16];              // array of integers for temporizing MIDI activity
+// Declare other variables
+UINT NotifierMessage = 0;           // the Windows message id to communicate between notifier and GUI
+int MIDIActDelays[16];              // array of integers for temporizing MIDI activity boxes
 const int ACT_DELAY = 4;
 
 //
@@ -96,33 +105,30 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
 
     // The class is registered, let's create the window
     hMainWin = CreateWindowEx (
-           0,                           // Extended possibilites for variation
-           szClassName,                 // Classname
-           "test WIN32 (C) by N. Cassetta",        // Title Text
-           WS_OVERLAPPEDWINDOW,         // Default window
-           CW_USEDEFAULT,               // Windows decides the position
-           CW_USEDEFAULT,               // where the window ends up on the screen
-           800,                         // The window width
-           600,                         // and height in pixels
-           HWND_DESKTOP,                // The window is a child-window to desktop
-           NULL,                        // No menu
-           hThisInstance,               // Program Instance handler
-           NULL                         // No Window Creation data
+           0,                                   // Extended possibilites for variation
+           szClassName,                         // Class name
+           "test WIN32 (C) by N. Cassetta",     // Title Text
+           WS_OVERLAPPEDWINDOW,                 // Default window
+           CW_USEDEFAULT,                       // Windows decides the position
+           CW_USEDEFAULT,                       // where the window ends up on the screen
+           800,                                 // The window width
+           600,                                 // and height in pixels
+           HWND_DESKTOP,                        // The window is a child-window to desktop
+           NULL,                                // No menu
+           hThisInstance,                       // Program Instance handler
+           NULL                                 // No Window Creation data
            );
 
-    // Now create the jdksmidi objects: the GUI notifier and the sequencer (to send messages to the window
-    // the notifier needs its handle and the message id)
+    // Now create the MIDI objects: the GUI notifier and the sequencer (to send messages to the window
+    // the notifier needs to know its handle and the message id)
     MIDISequencerGUINotifierWin32 notifier (
         hMainWin                        // The window handle to which send messages
         );
-    NotifierMessage = notifier.GetMsgId();
+    NotifierMessage = notifier.GetMsgId();  // auto gets from Windows a safe message id number
     sequencer = new AdvancedSequencer( &notifier );
 
     // Make the window visible on the screen
     ShowWindow (hMainWin, nCmdShow);
-
-    // Requested by WIN 10 to run Wavetable synth
-    CoInitializeEx(NULL, COINIT_MULTITHREADED);
 
     // Run the message loop. It will run until GetMessage() returns 0
     while (GetMessage (&messages, NULL, 0, 0))
@@ -151,17 +157,19 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
         return 0;
     }
 
-    switch (message)                        // handle other messages (originated from Windows)
-    {
+    switch (message) {                      // handle other messages (originated from Windows)
 
         // The WM_CREATE message is sent by Windows at the creation of the main window.
         // Here it creates all its children widgets: this is only windows API stuff and you
         // probably may want to do it with a dedicated UI toolkit.
-        // However here we create some buttons and static (i.e. text boxes) controls
+        // However here we create some buttons and static (i.e. text boxes) controls. The buttons have
+        // a (HMENU) parameter that will be used in case WM_COMMAND for identifying the button which
+        // sent the command.
+        // No library related content in case WM_CREATE.
          case WM_CREATE:
 
             // "Load" button
-            CreateWindowW(L"button",        // Preregistered class (type) of winwow: in this case a button
+            CreateWindowW(L"button",        // Preregistered class (type) of window: in this case a button
                           L"Load",          // Button label
                 WS_VISIBLE | WS_CHILD ,     // Attributes
                 10, 10, 50, 25,             // x, y, w, h (in the parent window)
@@ -202,7 +210,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             // Filename text box
             hFileName = CreateWindowW(L"static", L"UNLOADED",
                 WS_VISIBLE | WS_CHILD | SS_LEFTNOWORDWRAP,
-                400, 10, 380, 25,
+                400, 10, 375, 25,
                 hwnd, (HMENU) 7, NULL, NULL);
 
             // Timesig text box
@@ -211,28 +219,34 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                 100, 45, 50, 25,
                 hwnd, (HMENU) 8, NULL, NULL);
 
+            // Keysig text box
+            hKey = CreateWindowW(L"static", NULL,
+                WS_VISIBLE | WS_CHILD | SS_CENTER,
+                155, 45, 50, 25,
+                hwnd, (HMENU) 7, NULL, NULL);
+
             // Tempo text box
             hTempo = CreateWindowW(L"static", NULL,
                 WS_VISIBLE | WS_CHILD | SS_CENTER,
-                155, 45, 50, 25,
+                210, 45, 50, 25,
                 hwnd, (HMENU) 8, NULL, NULL);
 
             // Meas - beat text box
             hMeas = CreateWindowW(L"static", NULL,
                 WS_VISIBLE | WS_CHILD | SS_CENTER,
-                210, 45, 50, 25,
+                265, 45, 50, 25,
                 hwnd, (HMENU) 7, NULL, NULL);
 
             // SMPTE text box
             hSmpte = CreateWindowW(L"static", NULL,
                 WS_VISIBLE | WS_CHILD | SS_CENTER,
-                265, 45, 105, 25,
+                400, 45, 105, 25,
                 hwnd, (HMENU) 7, NULL, NULL);
 
             // Marker text box
             hMarker = CreateWindowW(L"static", NULL,
                 WS_VISIBLE | WS_CHILD | SS_LEFT,
-                400, 45, 380, 25,
+                510, 45, 265, 25,
                 hwnd, (HMENU) 7, NULL, NULL);
 
             // For every track ...
@@ -270,7 +284,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                     490, 80+30*i, 70, 25,
                     hwnd, NULL, NULL, NULL);
 
-                // Track activity text box
+                // Track MIDI activity text box
                 hTrackActs[i] = CreateWindowW(L"static", NULL,
                     WS_VISIBLE | WS_CHILD | SS_LEFT,
                     565, 83+30*i, 19, 19,
@@ -284,11 +298,14 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
         case WM_COMMAND:
 
             if (LOWORD(wParam) == 1) {      // Load
+                // load a file into the sequencer and reinitialize the GUI
                 LoadFile();
             }
 
             if (LOWORD(wParam) == 2) {      // Rew
+                // reset the MIDI activity boxes delay parameter
                 ResetDelays();
+                // rewind the sequencer
                 sequencer->GoToZero();
             }
 
@@ -305,29 +322,36 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
             }
 
             if (LOWORD(wParam) == 4) {      // Stop
-                sequencer->Stop();          // stop playback
-                KillTimer(hMainWin, 1);     // stop the timer (1 is the timer id)
+                // stop playback
+                sequencer->Stop();
+                // stop the timer (1 is the timer id)
+                KillTimer(hMainWin, 1);
+                // reset the track activity boxes
                 ResetDelays();
-                SetMIDIActivity();          // reset the MIDI activity boxes
+                SetMIDIActivity();
             }
 
             if (LOWORD(wParam) == 5) {      // Step backward
                 ResetDelays();
+                // go to previous measure
                 sequencer->GoToMeasure(sequencer->GetCurrentMeasure() - 1);
             }
 
             if (LOWORD(wParam) == 6) {      // Step forward
                 ResetDelays();
+                // go to next measure
                 sequencer->GoToMeasure(sequencer->GetCurrentMeasure() + 1);
             }
             break;
 
         // The WM_TIMER message is sent by the timer for updating the SMPTE box
+        // and the track activity boxes
         case WM_TIMER:
 
             if (LOWORD(wParam) == 1) {      // timer id
                 // update the Smpte box with the current SMPTE string
                 SetWindowText( hSmpte, GetSmpteString());
+                // update the track activity boxes
                 SetMIDIActivity();
             }
             break;
@@ -343,6 +367,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
 
     return 0;
 }
+
 
 // This function loads a file into the sequencer
 VOID LoadFile() {
@@ -360,7 +385,7 @@ VOID LoadFile() {
     ofn.Flags = OFN_EXPLORER | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
     ofn.lpstrDefExt = "mid";
 
-    if(GetOpenFileName(&ofn)) {             // Shows the file choosing control and waits until it is closed
+    if(GetOpenFileName(&ofn)) {             // Shows the open file control and waits until it is closed
                                             // returning the filename in szFileName
         if (!sequencer->Load(szFileName)) { // Error: the sequencer could not load the file
             MessageBox(
@@ -373,7 +398,7 @@ VOID LoadFile() {
 
         else {                              // File loading OK
             if (sequencer->GetNumTracks() > 17) {
-                MessageBox(                 // Too many tracks! We have room only for 16 (1 - 17)
+                MessageBox(                 // Too many tracks! We have room only for 1 - 17
                     NULL,
                     (LPCSTR)"This file has more than 17 tracks!\nSome tracks won't be displayed",
                     (LPCSTR)"Warning!",
@@ -389,20 +414,20 @@ VOID LoadFile() {
 
             // update the timesig, tempo ... controls
             SetControls();
-
-
         }
     }
 }
 
-// This function upsdates all the sequencer related textboxes: it is called when a file is loaded and when
+
+// This function updates all the sequencer related textboxes: it is called when a file is loaded and when
 // the GUI receives from the notifier a GROUP_ALL (reset) message (for example rewind or step action)
 VOID SetControls() {
     char s[300];
 
-    // Update the timesig, tempo, meas-beat, smpte, marker boxes
+    // update the timesig, tempo, meas-beat, smpte, marker boxes
     sprintf (s, "%d/%d", sequencer->GetTimeSigNumerator(), sequencer->GetTimeSigDenominator());
     SetWindowText(hTime, s);
+    SetWindowText(hKey, KeyName(sequencer->GetKeySigSharpsFlats(), sequencer->GetKeySigMode()));
     sprintf (s, "%3.2f", sequencer->GetTempoWithoutScale());
     SetWindowText (hTempo, s);
     sprintf (s, "%d:%d", sequencer->GetCurrentMeasure() + 1, sequencer->GetCurrentBeat() + 1);
@@ -435,10 +460,9 @@ VOID SetControls() {
             SetWindowText(hTrackPrgrs[i - 1], "---");
         else {
             if (sequencer->GetTrackChannel(i) == 9)     // channel 10
-                SetWindowText(hTrackPrgrs[i - 1], GMDrumKits[(int)sequencer->GetTrackProgram(i)]);
+                SetWindowText(hTrackPrgrs[i - 1], GetGMDrumkitName((int)sequencer->GetTrackProgram(i), 1));
             else
-                SetWindowText(hTrackPrgrs[i - 1], GMpatches[(int)sequencer->GetTrackProgram(i)]);
-
+                SetWindowText(hTrackPrgrs[i - 1], GetGMProgramName((int)sequencer->GetTrackProgram(i), 1));
         }
         if (sequencer->GetTrackVolume(i) == -1)
             SetWindowText(hTrackVols[i - 1], "vol: ---");
@@ -448,17 +472,17 @@ VOID SetControls() {
         }
     }
 
-    for ( ; i < 17; i++) {      // blanks unused widgets
+    // make blank unused widgets
+    for ( ; i < 17; i++) {
         SetWindowText (hTrackNames[i - 1], "");
         SetWindowText (hTrackChans[i - 1], "");
         SetWindowText (hTrackPrgrs[i - 1], "");
         SetWindowText (hTrackVols[i - 1], "");
     }
-
 }
 
 // This function returns a text string in the SMPTE format h:mm:ss:ff corresponding to
-//the current time
+//the current sequencer time
 const char* GetSmpteString() {
     static char s[100];
 
@@ -479,100 +503,104 @@ const char* GetSmpteString() {
 // the same things that SetControls does, but updates only the appropriate control based on the param
 // ev (the notifier event)
  VOID ProcessNotifierMessage(MIDISequencerGUIEvent ev) {
-// the param ev is a GUIEvent object (see the file sequencer.h)
+// the param ev is a MIDISequencerGUIEvent object (see the file notifier.h)
     char s[300];
 
     // Get the group (general type) of the event
     switch (ev.GetGroup()) {
 
-        case MIDISequencerGUIEvent::GROUP_ALL:
         // This is a general GUI reset event: update all textboxes
-
+        case MIDISequencerGUIEvent::GROUP_ALL:
             SetControls();
             break;
 
-        case MIDISequencerGUIEvent::GROUP_CONDUCTOR:
         // This is an event regarding conductor track: find the type and update appropriate textbox
-
+        case MIDISequencerGUIEvent::GROUP_CONDUCTOR:
             switch (ev.GetItem()) {
-                case MIDISequencerGUIEvent::GROUP_CONDUCTOR_TEMPO:
                 // Tempo (bpm) is changed
+                case MIDISequencerGUIEvent::GROUP_CONDUCTOR_TEMPO:
                     sprintf (s, "%3.2f", sequencer->GetTempoWithoutScale());
                     SetWindowText ( hTempo, s );
                     break;
-                case MIDISequencerGUIEvent::GROUP_CONDUCTOR_TIMESIG:
                 // Timesig is changed
+                case MIDISequencerGUIEvent::GROUP_CONDUCTOR_TIMESIG:
                     sprintf (s, "%d/%d", sequencer->GetTimeSigNumerator(), sequencer->GetTimeSigDenominator());
                     SetWindowText( hTime, s );
                     break;
+                /* TODO: */
                 case MIDISequencerGUIEvent::GROUP_CONDUCTOR_KEYSIG:
-                    /* TODO: */
-                    //sprintf(s, "%s", KeyNames[seq->GetState()->keysig_sharpflat+ 7 +
-                    //                          15 * seq->GetState()->keysig_mode]);
+                    SetWindowText( hKey, KeyName(sequencer->GetState()->keysig_sharpflat,
+                                                 sequencer->GetState()->keysig_mode) );
                     break;
-                case MIDISequencerGUIEvent::GROUP_CONDUCTOR_MARKER:
                 // Marker is changed
+                case MIDISequencerGUIEvent::GROUP_CONDUCTOR_MARKER:
                     SetWindowText (hMarker, sequencer->GetCurrentMarker().c_str());
                     break;
             }
             break;
 
-        case MIDISequencerGUIEvent::GROUP_TRANSPORT:
         // This is an event regarding transport (start, stop, etc): we monitor only
         // beat events to update the meas - beat box
-
+        case MIDISequencerGUIEvent::GROUP_TRANSPORT:
             if (ev.GetItem() == MIDISequencerGUIEvent::GROUP_TRANSPORT_BEAT) {
                 sprintf (s, "%d:%d", sequencer->GetCurrentMeasure() + 1, sequencer->GetCurrentBeat() + 1);
                 SetWindowText ( hMeas, s );
             }
             break;
 
-        case MIDISequencerGUIEvent::GROUP_TRACK: {
         // This is a track event: find the track (GetEventSubGroup) and the type (GetEventItem) and proceed
-
+        case MIDISequencerGUIEvent::GROUP_TRACK: {
             int track = ev.GetSubGroup();
+            // do nothing if track is the master track or is not shown (we can show only 0 ... 17)
+            if (track == 0 || track >= 17)
+                break;
+            // Program (patch) is changed: we must distinguish between channel 10 (drums) and other channels
             if (ev.GetItem() == MIDISequencerGUIEvent::GROUP_TRACK_PROGRAM) {
-                if (track > 0 && track < 17) {
-                    if (sequencer->GetTrackChannel(track) == 9)     // channel 10
-                        SetWindowText(hTrackPrgrs[track - 1], GMDrumKits[(int)sequencer->GetTrackProgram(track)] );
-                    else
-                        SetWindowText ( hTrackPrgrs[track - 1], GMpatches[(int)sequencer->GetTrackProgram(track)] );
-                }
+                if (sequencer->GetTrackChannel(track) == 9)     // channel 10
+                    SetWindowText(hTrackPrgrs[track - 1], GetGMDrumkitName((int)sequencer->GetTrackProgram(track), 1) );
+                else
+                    SetWindowText ( hTrackPrgrs[track - 1], GetGMProgramName((int)sequencer->GetTrackProgram(track), 1) );
             }
-
+            // Volume is changed
             else if (ev.GetItem() == MIDISequencerGUIEvent::GROUP_TRACK_VOLUME) {
                 sprintf (s, "vol: %d", sequencer->GetTrackVolume(track) );
-                if (track > 0 && track < 17)
-                    SetWindowText (hTrackVols[track - 1], s);
+                SetWindowText (hTrackVols[track - 1], s);
+                // This is a MIDI activity: set the corresponding flag for this track
+                MIDIActDelays[track - 1] = ACT_DELAY;
+                break;
             }
-            MIDIActDelays[track - 1] = ACT_DELAY;
-            break;
         }
-
     }
-
 }
 
 
+// This function is called by the timer every 1/50 sec and controls the MIDI activity boxes.
 VOID SetMIDIActivity() {
     char s[10];
-    for (unsigned int i = 1; i < sequencer->GetNumTracks(); i++) {
+    // find the number of tracks which we must monitor
+    int active_tracks = (sequencer->GetNumTracks() <= 17 ? sequencer->GetNumTracks() : 17);
+    // for every sequencer track ...
+    for (int i = 1; i < active_tracks; i++) {
+        // if any note is sounding in the track ...
         if (sequencer->GetTrackNoteCount(i))
-            MIDIActDelays[i - 1] = ACT_DELAY;
+            // ... set the track MIDI activity flag to its initial value
+            MIDIActDelays[i - 1] = ACT_DELAY;       // ACT_DELAY currently 4 (200 msec delay after the activity)
+        // no actual MIDI activity but delay still active
         else if (MIDIActDelays[i - 1] > 0)
+            // decrement the delay flag
             MIDIActDelays[i - 1]--;
+        // set the MIDI activity box on/off according to the activity flag
         if (MIDIActDelays[i - 1] > 0)
             sprintf (s, "X");
         else
             sprintf (s, "  ");
         SetWindowText ( hTrackActs[i - 1], s );
-
     }
-
 }
 
 
+// Reset all the Midi activity flags to 0 (no MIDI activity)
 VOID ResetDelays() {
-    for (int i = 0; i < 16; i++)
+    for (int i = 0; i < 17; i++)
         MIDIActDelays[i] = 0;
 }

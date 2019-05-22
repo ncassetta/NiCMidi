@@ -38,8 +38,11 @@
 #ifndef METRONOME_H_INCLUDED
 #define METRONOME_H_INCLUDED
 
+
+#include "midi.h"
+#include "notifier.h"
 #include "tick.h"
-#include "manager.h"
+
 
 
 ///
@@ -57,7 +60,8 @@ class Metronome : public MIDITickComponent {
         /// The destructor. The MIDISequencerGUINotifier is not owned by the MIDISequencer.
         virtual                         ~Metronome() { Stop(); }
         /// Stops the metronome and resets it to its default values
-        void                            Reset();
+        virtual void                    Reset();
+        /// Returns the number of MIDIticks for a quarter note
         /// Returns current MIDIClockTime in MIDI ticks from the start of the metronome.
         MIDIClockTime                   GetCurrentMIDIClockTime() const     { return cur_clock; }
         /// Returns current time in milliseconds from the start of the metronome.

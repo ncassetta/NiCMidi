@@ -51,45 +51,6 @@
 // TODO: decide which way is right for this flag and fix it - The standard midi file format specs are (were?) unclear
 #define MIDIFRD_ALLOW_STATUS_ACROSS_META_EVENT 0 // correct value is 0 !
 
-/*
-MIDIFileReadStream::MIDIFileReadStream(const char *fname) : del(true) {
-    infs = new std::ifstream(fname, std::ios::in | std::ios::binary);
-    if (infs->fail()) {
-        delete infs;
-        infs = 0;
-    }
-}
-
-
-MIDIFileReadStream::MIDIFileReadStream(std::istream* ifs) : infs(ifs), del(false) {}
-
-
-MIDIFileReadStream::~MIDIFileReadStream() {
-    if (infs && del) {
-        delete infs;
-    }
-}
-
-
-void MIDIFileReadStream::Rewind() {
-    infs->seekg(0, infs->beg);
-}
-
-
-int MIDIFileReadStream::ReadChar() {
-    int r = -1;
-
-    if(infs && infs->good())
-        r = infs->get();
-    return r;
-}
-
-
-bool MIDIFileReadStream::IsValid() {
-    return infs != 0;
-}
-*/
-
 
 
 void MIDIFileEventHandler::ChanMessage(const MIDITimedMessage &msg) {

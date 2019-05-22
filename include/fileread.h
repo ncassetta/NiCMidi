@@ -53,39 +53,9 @@
 #define _JDKMIDI_FILEREAD_H
 
 #include <fstream>
+#include <string>
 
-#include "midi.h"
-#include "msg.h"
-#include "sysex.h"
-
-
-/*
-///
-/// This class is used internally for reading MIDI files. It reads a stream of *char* from a C++ istream object.
-///
-class MIDIFileReadStream {
-    public:
-        /// In this constructor you must specify the filename.\ The constructor tries to open the file, you
-        /// should call IsValid() for checking if it was successful.
-        explicit                        MIDIFileReadStream(const char *fname);
-        /// In this constructor you must specify and already open istream object, so you can read from whatever
-        /// input stream.
-        explicit                        MIDIFileReadStream(std::istream* ifs);
-        /// The destructor deletes the istream if it was opened by the ctor.
-        virtual                         ~MIDIFileReadStream();
-
-        /// Rewind the stream to the beginning.
-        virtual void                    Rewind();
-        /// Reads a char from the stream.
-        virtual int                     ReadChar();
-        /// Returns *true* if the istream is open.
-        virtual bool                    IsValid();
-
-    private:
-        std::istream*                   infs;
-        bool                            del;
-};
-*/
+#include "msg.h"            // includes "midi.h" and "sysex.h"
 
 
 
@@ -143,15 +113,15 @@ class MIDIFileEventHandler {
 
 
 
-
-
-/// A structure holding data which represent the header of a MIDI file. You can get the header of MIDI file with
-/// the GetMIDIFileHeader() function.
+/// A structure holding data which represent the header of a MIDI file. This is useful if you want to load a file, edit it
+/// and then save it with the same format and name. You can get the header of MIDI file with the GetMIDIFileHeader()
+/// global function; see also LoadMIDIFile().
 struct MIDIFileHeader {
-    MIDIFileHeader() : format(0), ntrks(0), division(0) {}
+    MIDIFileHeader() : format(0), ntrks(0), division(0), filename("") {}
     short format;               ///< The file format (currently only 0 and 1 are allowed by the library).
     short ntrks;                ///< The number of tracks.
-    short division;             ///< the number of MIDI ticks for a quarter note.
+    short division;             ///< The number of MIDI ticks for a quarter note.
+    std::string filename;       ///< The file name
 };
 
 

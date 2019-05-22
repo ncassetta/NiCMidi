@@ -45,6 +45,9 @@ class MIDIEditMultiTrack;       // forward declaration
 ///
 class MIDIMultiTrack {
     public:
+        ///@name The Constructors, Destructor and Initializing methods
+        //@{
+
         /// The constructor creates an object with given number of tracks (default no track) and base MIDI clocks
         /// per beat.
         /// \param num_tracks The number of tracks of the multitrack. The tracks are created by the constructor and they are
@@ -61,13 +64,17 @@ class MIDIMultiTrack {
 
         /// The assignment operator.
         MIDIMultiTrack&             operator=(const MIDIMultiTrack& mlt);
+        /// Deletes all the tracks in the Multitrack and resize it to the given number of tracks
+        void                        Clear(unsigned int num_tracks = 0);
+        /// Clears tracks events but mantains the tracks (leaves only the EOT). If _mantain_end_ is **true**
+        /// doesn't change the time of EOT events, otherwise sets them to 0.
+        void                        ClearTracks(bool mantain_end = false);
+        //@}
 
-        /// Changes the value of the clock per beat parameter for the tracks, updating the times of all MIDI
-        /// events. This may lead to loss in precision or rounding error if the new clocks per beat
-        /// is not a multiple of the old, so it's better to call this function before inserting any event in
-        /// the multitrack.
-        /// \param cl_p_b see the constructor
-        void                        SetClksPerBeat(unsigned int cl_p_b);
+
+        ///@name The 'Get' methods.
+        //@{
+
         /// Returns the MIDI clocks per beat of all tracks (i.e.\ the number of MIDI ticks in a quarter note).
         unsigned int                GetClksPerBeat() const          { return clks_per_beat; }
         /// Returns the pointer to the track
@@ -85,25 +92,32 @@ class MIDIMultiTrack {
         /// Returns the total number of MIDI events in the multitrack (for every track there is at least the EOT).
         /// If you want to know if the MIDIMultiTrack is empty, use GetNumTracksWithEvents() instead.
         unsigned int                GetNumEvents() const;
+        /// Returns the end time of the longest track.
+        MIDIClockTime               GetEndTime() const;
         /// Returns *true* if _trk_ is in thee range 0 ... GetNumTracks() - 1.
         bool                        IsValidTrackNumber(int trk) const
                                                                     { return (0 <= trk && (unsigned)trk < tracks.size()); }
-        /// Returns the end time of the longest track.
-        MIDIClockTime               GetEndTime() const;
         /// Returns *true* if there are no events in the tracks and the end time is 0.
         bool                        IsEmpty() const                 { return (GetNumEvents() == 0 && GetEndTime() == 0); }
+        //@}
+
+        ///@name The 'Set' methods
+        //@{
+        /// Changes the value of the clock per beat parameter for the tracks, updating the times of all MIDI
+        /// events. This may lead to loss in precision or rounding error if the new clocks per beat
+        /// is not a multiple of the old, so it's better to call this function before inserting any event in
+        /// the multitrack.
+        /// \param cl_p_b see the constructor
+        void                        SetClksPerBeat(unsigned int cl_p_b);
         /// Sets the time of the data end event to _end_time_. If there are events of other type after
         /// _end_time_ the function fails and returns *false*.
         bool                        SetEndTime(MIDIClockTime end_time);
+        //@}
+
+        ///@name The editing methods
+        //@{
         /// Sets the time of the data end event equal to the time of the last event of every track.
         void                        ShrinkEndTime();
-        /// Deletes all tracks leaving the multitrack empty.
-        void                        Clear();
-        /// Clears all content in the Multitrack and resize it to the given number of tracks
-        void                        ClearAndResize(unsigned int num_tracks);
-        /// Clears tracks events but mantains the tracks (leaves only the EOT). If _mantain_end_ is *true*
-        /// doesn't change the time of EOT events, otherwise sets them to 0.
-        void                        ClearTracks(bool mantain_end = false);
 
         /// This function is useful in dealing with MIDI format 0 files (with all events in an unique track).
         /// It remakes the MIDIMultiTrack object with 17 tracks (_src_ track can be a member of multitrack object
@@ -113,11 +127,6 @@ class MIDIMultiTrack {
         /// The same as previous, but argument is the track number of multitrack object himself
         void                        AssignEventsToTracks (int trk = 0)
                                             { return AssignEventsToTracks(GetTrack(trk)); }
-        /// Finds the channel of the first MIDIchannel event in the track. This is probably the channel of all
-        /// other channel events.
-        /// \return -1 if the track is empty or doesn't contain channel events (the main track, for example).
-        /// Otherwise the channel range is 0 ... 15.
-        //int                         FindFirstChannelOnTrack(int trk) const;
         /// Inserts a new empty track at position _trk_ (_trk_ must be in the range 0 ... GetNumTracks() - 1). If
         /// _trk_ == -1 appends the track at the end.
         /// \return *true* if the track was effectively inserted.
@@ -159,12 +168,12 @@ class MIDIMultiTrack {
                                         // (if <edit> == 0 insert a blank interval)
         void                        EditReplace(MIDIClockTime start, int tr_start, int times,
                                                 bool sysex, MIDIEditMultiTrack* edit);
+        //@}
 
-        /// The default clocks per beat parameter
-        static const int            DEFAULT_CLKS_PER_BEAT = 120;
-    private:
+    protected:
 
-        int 	                    clks_per_beat;      ///< The common clock per beat timing parameter
+        unsigned int 	            clks_per_beat;      ///< The common clock per beat timing parameter for all tracks
+                                                        ///< (this is the number of MIDI ticks for a quarter note)
         std::vector<MIDITrack*>     tracks;             ///< The array of pointers to the MIDITrack objects
 };
 
@@ -198,7 +207,7 @@ class MIDIMultiTrackIteratorState {
         /// Changes the number of tracks (this causes a reset of the state).
         void                        SetNumTracks(int n);
         /// Sets the time to 0 and an undefined first event and track.
-        /// \warning this is, in general, *not* a valid state. Don't call this but MIDIMultiTrackIterator::Reset().
+        /// \warning this is, in general, **not** a valid state. Don't call this but MIDIMultiTrackIterator::Reset().
         void                        Reset();
 
         /// Turns time shifting on and off. If time shifting is off events are sorted according to their
@@ -218,13 +227,13 @@ class MIDIMultiTrackIteratorState {
     private:
         int                         FindTrackOfFirstEvent();
 
-        int                         num_tracks;
-        MIDIClockTime               cur_time;
-        int                         cur_event_track;
-        std::vector<int>            next_event_number;
-        std::vector<MIDIClockTime>  next_event_time;
-        std::vector<int>*           time_shifts;
-        bool                        time_shift_mode;
+        int                         num_tracks;         ///< The number of tracks
+        MIDIClockTime               cur_time;           ///< The current time
+        int                         cur_event_track;    ///< The track of the next event
+        std::vector<int>            next_event_number;  ///< Array holding the next event for every track
+        std::vector<MIDIClockTime>  next_event_time;    ///< Array holding the next event time for every track
+        std::vector<int>*           time_shifts;        ///< Array holding the time shift for every track
+        bool                        time_shift_mode;    ///< Time shift on/off
 };
 
 
@@ -247,10 +256,9 @@ class MIDIMultiTrackIterator {
         /// Gets the current MIDIMultiTackIteratorState. You can save and then restore it for a
         /// faster processing in GoTo operations (admitting the contents of the multitrack are not
         /// changed).
-        ///<{
         MIDIMultiTrackIteratorState&        GetState()                  { return state; }
+        /// As above.
         const MIDIMultiTrackIteratorState&  GetState() const            { return state; }
-        ///<}
         /// Sets the given MIDIMultiTrackIteratorState as current state.
         void                        SetState(const MIDIMultiTrackIteratorState& s) { state = s; }
         /// Goes to the given time, which becomes the current time, and sets then the current event as the
@@ -268,11 +276,7 @@ class MIDIMultiTrackIterator {
         /// \return *true* if there is effectively a next event (we aren't at the end of the
         /// MIDIMultiTrack), *false* otherwise (*track and **msg don't contain undefined values).
         bool                        GetNextEvent(int *track, MIDITimedMessage **msg);
-        /// Discards the current event and set as current the subsequent. If the iterator state has time
-        /// shifting mode on events are sorted according to their shifted time.
-        /// @return *true* if there is effectively a next event (we aren't at the end of the
-        /// MIDIMultiTrack, *false* otherwise.
-        //bool                        GoToNextEvent() {}
+        //bool GoToNextEvent() unused: use GetNextEvent()
         /// Set as current the next event on track _track_.
         /// @return *true* if there is effectively a next event (we aren't at the end of the
         /// MIDIMultiTrack, *false* otherwise.

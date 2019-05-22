@@ -1,0 +1,205 @@
+/// \page RECORDING Recording MIDI events
+///
+/// TODO
+
+
+
+/// \page PROCESSORS MIDI Processors
+///
+/// MIDI Processors are objects which can manipulate the content of a MIDIMessage. The abstract class MIDIProcessor defines basically an object which has a bool MIDIProcessor::Process(MIDITimedMessage* msg) method, which takes a pointer to a %MIDITimedMessage as argument: it can change or inspect the message and return an answer yes/no.
+/// Some subclasses are already built in the library:
+/// + The MIDIProcessorTransposer transposes all note and polyphonic pressure messages by a given amount of semitones
+/// + The MIDIProcessorRechannelizer remaps channel messages to a given channel map
+/// + The MIDIProcessorPrinter prints the contents of the messages in a readable form
+/// + The MIDIMultiProcessor allows to queue many %MIDIProcessors giving each one the results of the previous
+/// + The MIDISequencerTrackProcessor is a special multipurpose processor used by the AdvancedSequencer class
+///
+/// Many classes (see MIDIInDriver, MIDIOutDriver, MIDIThru, MIDISequencer) have a SetProcessor() method that allows the user to "plug in" a processor in their flow of incoming-outcoming messages. This is an example which could be useful for debugging purposes: plugging a %MIDIProcessorPrinter to a %MIDIInDriver will print all incoming messages.
+/// \code
+/// #include "manager.h"                    // includes driver.h and timer.h
+/// #include "processor.h"
+///
+/// int main() {
+///    MIDIInDriver* driver = MIDIManager::GetInDriver(0);
+///                 // this is the MIDI IN port 0 in your system: you can change the number
+///    MIDIProcessorPrinter printer;        // prints the processed messages
+///    driver->SetProcessor(&printer);      // plugs the printer into the driver
+///    driver->OpenPort();                  // starts receiving messages
+///    MIDITimer::Wait(20000);
+///                 // waits 20 secs: you can play with a MIDI device connected to the port
+///                 // and the incoming messages will be printed on stdout
+///    driver->ClosePort();                 // closes the port
+/// }
+/// \endcode
+///
+/// A similar use of the same processor is done in the \ref test_thru.cpp example file.
+///
+
+
+/// \page NOTIFIERS GUI Notifiers
+///
+/// Notifiers are helper objects very useful in graphics interfaces.
+/// If you want to implement your GUI interacting with the library classes you will probably want it to be responsive: if, while playing a MIDI song, a parameter (tempo, time signature, a track program) changes the GUI should immediately show it. So the library implements notifiers, i.e. objects which communicates between the sequencer classes and the GUI,sending real time messages when something happens in the sequencer.
+///
+/// The %MIDISequencerGUIEvent class
+/// --------------------------------
+///
+/// The MIDISequencerGUIEvent packs into a single unsigned long data that represents a GUI event, i.e. "something that is happened in the sequencer". Events have three attributes: group, subgroup and item, according to the following table:
+/// <table>
+///    <tr>
+///       <th><b>Group</b></th>
+///       <th><b>Subgroup</b></th>
+///       <th><b>Item</b></th>
+///       <th><b>Meaning</b></th>
+///    </tr>
+///    <tr>
+///       <td><b>GROUP_ALL</b></td>
+///       <td>Not used</td>
+///       <td>GROUP_ALL_ALL</td>
+///       <td>General refresh of the GUI (for example when a file is loaded or when you jump from a time to another)</td>
+///    </tr>
+///    <tr>
+///       <td rowspan="6"><b>GROUP_CONDUCTOR</b></td>
+///       <td rowspan="6">Not used</td>
+///       <tr>
+///           <td>GROUP_CONDUCTOR_TEMPO</td>
+///           <td>A tempo change</td>
+///       </tr>
+///       <tr>
+///           <td>GROUP_CONDUCTOR_TIMESIG</td>
+///           <td>A time signature change</td>
+///       </tr>
+///       <tr>
+///           <td>GROUP_CONDUCTOR_KEYSIG</td>
+///           <td>A key signature change</td>
+///       </tr>
+///       <tr>
+///           <td>GROUP_CONDUCTOR_MARKER</td>
+///           <td>A text marker</td>
+///       </tr>
+///       <tr>
+///           <td>GROUP_CONDUCTOR_USER</td>
+///           <td>User defined conductor event</td>
+///       </tr>
+///       </td>
+///    </tr>
+///    <tr>
+///       <td rowspan="6"><b>GROUP_TRANSPORT</b></td>
+///       <td rowspan="6">Not used</td>
+///       <tr>
+///           <td>GROUP_TRANSPORT_START</td>
+///           <td>Start of the sequencer</td>
+///       </tr>
+///       <tr>
+///           <td>GROUP_TRANSPORT_STOP</td>
+///           <td>Stop of the sequencer</td>
+///       </tr>
+///       <tr>
+///           <td>GROUP_TRANSPORT_MEASURE</td>
+///           <td>New measure</td>
+///       </tr>
+///       <tr>
+///           <td>GROUP_TRANSPORT_BEAT</td>
+///           <td>New metronome beat</td>
+///       </tr>
+///       <tr>
+///           <td>GROUP_TRANSPORT_USER</td>
+///           <td>User defined transport event</td>
+///       </tr>
+///       </td>
+///    </tr>
+///    <tr>
+///       <td rowspan="9"><b>GROUP_TRACK</b></td>
+///       <td rowspan="9">The track number</td>
+///       <tr>
+///           <td>GROUP_TRACK_NAME</td>
+///           <td>Track name text event</td>
+///       </tr>
+///       <tr>
+///           <td>GROUP_TRACK_PROGRAM</td>
+///           <td>Program change</td>
+///       </tr>
+///       <tr>
+///           <td>GROUP_TRACK_NOTE</td>
+///           <td>Note</td>
+///       </tr>
+///       <tr>
+///           <td>GROUP_TRACK_VOLUME</td>
+///           <td>Volume control change</td>
+///       </tr>
+///       <tr>
+///           <td>GROUP_TRACK_PAN</td>
+///           <td>Pan control change</td>
+///       </tr>
+///       <tr>
+///           <td>GROUP_TRACK_CHR</td>
+///           <td>Chorus control change</td>
+///       </tr>
+///       <tr>
+///           <td>GROUP_TRACK_REV</td>
+///           <td>Reverb control change</td>
+///       </tr>
+///       <tr>
+///           <td>GROUP_TRACK_USER</td>
+///           <td>User defined track event</td>
+///       </tr>
+///       <tr>
+///       <td><b>GROUP_USER</b></td>
+///       <td>Not used</td>
+///       <td>GROUP_USER_USER</td>
+///       <td>User defined user event</td>
+///    </tr>
+/// </table>
+///
+/// The GROUP_TRACK has a subgroup which represents the track number in which the event is happened (while other groups don't use the subgroup). The various item attributes have USER values that you can use for your own purposes (and can be extended with, for example, GROUP_CONDUCTOR_USER + 1, GROUP_CONDUCTOR_USER + 2, etc.).
+///
+/// When the GUI receives a message, it can examine it and know what is happened; messages do not contain the values of the changed parameters, but these can be asked to the sequencer by its get methods, allowing therefore to refresh the GUI.
+///
+/// The %MIDISequencerGuINotifier class
+/// -----------------------------------
+///
+/// The MIDISequencerGUINotifier is an abstract class which has a pure virtual method MIDISequencerGUINotifier::Notify(): this takes as parameter a MIDISequencerGUIEvent and sends it to the GUI. The class is abstract because the effective sending depends by the OS (in a GUI it is typically a communication between separate processes or windows). The library implements two working subclasses of the base class: the MIDISequencerGUINotifierText which prints readable messages to a std::ostream and the MIDISequencerGUINotifierWin32 for MS Windows: this communicates with a window by mean of the Windows API PostMessage() function.
+///
+/// When you want to use a notifier together with a sequencer you must first create the notifier and then pass its pointer as a parameter in the sequencer constructor (see MIDISequencer::MIDISequencer and AdvancedSequencer::AdvancedSequencer). For example:
+///
+/// \code
+///#include "notifier.h"
+///#include "advancedsequencer.h"
+///#include "timer.h"
+///
+///int main() {
+///   MIDISequencerGUINotifierText notifier;
+///   AdvancedSequencer sequencer(&notifier);
+///   seq.Load("twinlkle.mid");
+///   seq.Play();
+///   while (seq.IsPlaying())
+///      MIDITimer::Wait(10);
+///}
+/// \endcode
+///
+/// In the following files you can see more elaborated examples of the typical usage of the notifier classes:
+/// + \ref test_stepsequencer.cpp (text notifier)
+/// + \ref test_win32_player.cpp (Windows notifier)
+///
+
+
+
+
+/// \page OTHER_MIDITICKS Other MIDITickComponent objects
+///
+/// The %MIDIThru class
+/// ------------------
+///
+/// The MIDIThru is an object which can receive messages from a MIDI in port and immediately send them to a MIDI out one. It therefore allows the user to play a MIDI instrument connected to the computer while listening to his performance.
+///
+/// The constructor selects as input and output port the respective port 0 on the computer, otherwise leaves them undefined (but in this case the %MIDIThru is useless). There are methods for changing ports, the MIDI input and output channel (you can select one or accept and send all channels) and you can plug a MIDIProcessor into the object for manipulating messages passing through.
+///
+/// As for other MIDITickComponent derived classes, once created the object you must add it to the MIDIManager queue with the MIDIManager::AddMIDITick() method, then you can call the MIDIThru::Start() and MIDIThru::Stop() methods for turning on and off the object. Events taken from the in port are however left into its queue for an eventual other MIDITickComponent which can use them (for example a MIDIRecorder), so the priority is usually not relevant. The AdvancedSequencer class embeds a MIDIThru  controlled from within the class.
+///
+/// An example of the use of the MIDIThru is in the file:
+/// + \ref test_thru.cpp
+///
+/// The %Metronome class
+/// --------------------
+///
+/// The Metronome

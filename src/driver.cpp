@@ -113,7 +113,7 @@ void MIDIOutDriver::OpenPort() {
     }
     num_open++;
 
-    std::cout << "Port " << port->getPortName(port_id) << " open";
+    std::cout << "OUT Port " << port->getPortName(port_id) << " open";
     if (num_open > 1)
         std::cout << " (" << num_open << " times)";
     std::cout<< std::endl;
@@ -125,30 +125,16 @@ void MIDIOutDriver::ClosePort() {
         port->closePort();
     if (num_open > 0) {
         num_open--;
-        std::cout << "Port " << port->getPortName(port_id) << " closed";
+        std::cout << "OUT Port " << port->getPortName(port_id) << " closed";
         if (num_open > 0)
             std::cout << " (open " << num_open << " times)";
         std::cout << std::endl;
     }
     else
-        std::cout << "Attempt to close an already closed port!" << std::endl;
+        std::cout << "OUT Port " << port->getPortName()
+        << "Attempt to close an already closed port!" << std::endl;
 }
 
-/*
-void MIDIOutDriver::SetThruChannel(char chan) {
-    if (chan >= -1 && chan <= 15) {
-        if (thru_channel != -1)
-            AllNotesOff(thru_channel);
-        else
-            AllNotesOff();
-        if (chan == -1)
-            rechannelizer.Reset();
-        else
-            rechannelizer.SetAllRechan(chan);
-        thru_channel = chan;
-    }
-}
-*/
 
 void MIDIOutDriver::AllNotesOff(int chan) {
     MIDIMessage msg;
@@ -181,17 +167,6 @@ void MIDIOutDriver::AllNotesOff(int chan) {
 
     out_mutex.unlock();
 }
-
-/*
-void MIDIOutDriver::AllNotesOff() {
-    out_mutex.lock();
-
-    for(int i = 0; i < 16; ++i)
-        AllNotesOff(i);
-
-    out_mutex.unlock();
-}
-*/
 
 
 void MIDIOutDriver::OutputMessage(const MIDITimedMessage& msg) {    // MIDITimedMessage is good also for MIDIMessage
@@ -304,7 +279,7 @@ void MIDIInDriver::OpenPort() {
     }
     num_open++;
 
-    std::cout << "Port " << port->getPortName() << " open";
+    std::cout << "IN Port " << port->getPortName() << " open";
     if (num_open > 1)
         std::cout << " (" << num_open << " times)";
     std::cout<< std::endl;
@@ -317,13 +292,14 @@ void MIDIInDriver::ClosePort() {
     if (num_open > 0) {
         num_open--;
 
-        std::cout << "Port " << port->getPortName() << " closed";
+        std::cout << "IN Port " << port->getPortName() << " closed";
         if (num_open > 0)
             std::cout << " (" << num_open << " times)";
         std::cout << std::endl;
     }
     else
-        std::cout << "Attempt to close an already closed port!" << std::endl;
+        std::cout << "IN Port " << port->getPortName()
+        << "Attempt to close an already closed port!" << std::endl;
 }
 
 

@@ -354,9 +354,9 @@ std::string MIDIMessage::MsgToText () const {
 
     // Meta Events
     if (IsMetaEvent()) {
-        sprintf (buf, "%s ", get_sys_msg_name(status));
+        sprintf (buf, "%s ", GetSysMsgName(status));
         txt += buf;
-        txt += get_meta_msg_name(byte1);            // type of meta
+        txt += GetMetaMsgName(byte1);            // type of meta
 
         switch (byte1) {
 
@@ -423,7 +423,7 @@ std::string MIDIMessage::MsgToText () const {
 
     // System Exclusive Events
     else if (IsSysEx()) {
-        sprintf (buf, "%s ", get_sys_msg_name(status));
+        sprintf (buf, "%s ", GetSysMsgName(status));
         txt += buf;
         if (GetSysEx()->IsGMReset())
             sprintf(buf, "GM Reset");
@@ -443,13 +443,13 @@ std::string MIDIMessage::MsgToText () const {
         txt += buf;
 
         if (IsChannelMode()) {
-            sprintf (buf, "%s ", get_chan_mode_msg_name(GetController()));
+            sprintf (buf, "%s ", GetChanModeMsgName(GetController()));
             txt += buf;
             if (GetType() == C_LOCAL)
                 txt += (byte1 ? " On" : " Off");
         }
         else {
-            sprintf (buf, "%s  ", get_chan_msg_name(GetType()));
+            sprintf (buf, "%s  ", GetChanMsgName(GetType()));
             txt += buf;
             switch (status & 0xf0) {
                 case NOTE_ON:

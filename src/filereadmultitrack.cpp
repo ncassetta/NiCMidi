@@ -54,25 +54,7 @@ void MIDIFileReadMultiTrack::mf_sysex(MIDIClockTime time, const MIDISystemExclus
     msg.SetTime(time);
 
     multitrack->InsertEvent(cur_track, msg, INSMODE_INSERT);
-    //AddEventToMultiTrack( msg, 0, cur_track );
 }
-
-
-
- /* OLD VERSION
-void    MIDIFileReadMultiTrack::mf_sysex( MIDIClockTime time, const MIDISystemExclusive &ex )
-  {
-    MIDITimedMessage msg;
-
-    msg.SetSysEx();
-    msg.SetTime(time);
-
-    MIDISystemExclusive *sysex = new MIDISystemExclusive( ex );
-
-    AddEventToMultiTrack( msg, sysex, cur_track );
-  }
-*/
-
 
 
 void MIDIFileReadMultiTrack::mf_arbitrary(MIDIClockTime time, int len, unsigned char *data) {
@@ -115,28 +97,11 @@ void MIDIFileReadMultiTrack::mf_timesig(MIDIClockTime time, int num, int denom_p
     msg.SetTimeSig((unsigned char)num, (unsigned char)denom,
                    (unsigned char)clks_per_metro, (unsigned char)notated_32nd_per_quarter);
     msg.SetTime(time);
-
-    /* now this is done by SetTimeSig()
-    MIDISystemExclusive *sysex = new MIDISystemExclusive( 4 );
-
-    sysex->PutByte( (unsigned char)num );
-    sysex->PutByte( (unsigned char)denom_power );
-    sysex->PutByte( (unsigned char)clks_per_metro );
-    sysex->PutByte( (unsigned char)notated_32nd_per_quarter );
-    */
     multitrack->InsertEvent(cur_track, msg, INSMODE_INSERT);
-    //AddEventToMultiTrack( msg, sysex, cur_track );
-  }
+}
 
 
 void MIDIFileReadMultiTrack::mf_tempo(MIDIClockTime time, int m1, int m2, int m3) {
-/*
-    float beats_per_second = static_cast<float>( 1e6 / (double)tempo );// 1 million microseconds per second
-
-    float beats_per_minute = beats_per_second * 60;
-
-    tempo_bpm_times_32 = static_cast<unsigned long>(beats_per_minute * 32.0);
-*/
     MIDITimedMessage msg;
     msg.SetMetaEvent(META_TEMPO, 0);
     msg.AllocateSysEx(3);
@@ -147,7 +112,6 @@ void MIDIFileReadMultiTrack::mf_tempo(MIDIClockTime time, int m1, int m2, int m3
     msg.SetTime(time);
 
     multitrack->InsertEvent(cur_track, msg, INSMODE_INSERT);
-    //AddEventToMultiTrack( msg, 0, cur_track );
   }
 
 
@@ -158,7 +122,6 @@ void MIDIFileReadMultiTrack::mf_keysig(MIDIClockTime time, int c, int v ) {
     msg.SetTime( time );
 
     multitrack->InsertEvent(cur_track, msg, INSMODE_INSERT);
-    //AddEventToMultiTrack( msg, 0, cur_track );
 }
 
 
@@ -179,7 +142,6 @@ void MIDIFileReadMultiTrack::mf_text( MIDIClockTime time, int type, int len, uns
         msg.GetSysEx()->PutSysByte( s[i] );
 
     multitrack->InsertEvent(cur_track, msg, INSMODE_INSERT);
-    //AddEventToMultiTrack( msg, sysex, cur_track );
 }
 
 
@@ -215,53 +177,10 @@ void MIDIFileReadMultiTrack::mf_header (int format_, int ntrks_, int division_) 
     multitrack->SetClksPerBeat( header.division );
     if (header.format == 0)                        // this is modified by me
         // split format 0 files into separate tracks, one for each channel,
-        multitrack->ClearAndResize(17);         //
+        multitrack->Clear(17);         //
     else
-        multitrack->ClearAndResize(header.ntrks); //
-  }
-
-/* NO MORE USED
-  // TODO: modified when I changed MIDI messages names: is it right?
-  void 	MIDIFileReadMultiTrack::AddEventToMultiTrack(
-    const MIDITimedMessage &msg,
-    MIDISystemExclusive *sysex,
-    int dest_track
-    )
-  {
-    if( dest_track!=-1 && dest_track<multitrack->GetNumTracks() )
-    {
-      MIDITrack *t = multitrack->GetTrack( dest_track );
-
-      if( t )
-      {
-        MIDITimedMessage bmsg(msg);                     // changed by me
-        bmsg.SetSysEx(sysex);                           //
-        t->InsertEvent( bmsg, INSMODE_INSERT );         //
-      }
-    }
-  }
-*/
-
-  /* OLD VERSION
-  void 	MIDIFileReadMultiTrack::AddEventToMultiTrack(
-    const MIDITimedMessage &msg,
-    MIDISystemExclusive *sysex,
-    int dest_track
-    )
-  {
-    if( dest_track!=-1 && dest_track<multitrack->GetNumTracks() )
-    {
-      MIDITrack *t = multitrack->GetTrack( dest_track );
-
-      if( t )
-      {
-        MIDITimedBigMessage bmsg(msg);                  // changed by me
-        bmsg.SetSysEx(sysex);                           //
-        t->InsertEvent( bmsg, INSMODE_INSERT );         //
-      }
-    }
-  }
-*/
+        multitrack->Clear(header.ntrks); //
+}
 
 
 void MIDIFileReadMultiTrack::ChanMessage( const MIDITimedMessage &msg ) {
@@ -270,19 +189,17 @@ void MIDIFileReadMultiTrack::ChanMessage( const MIDITimedMessage &msg ) {
         // keep track 0 for tempo and meta-events
 
         multitrack->InsertEvent(msg.GetChannel() + 1, msg, INSMODE_INSERT);
-        //AddEventToMultiTrack( msg, 0, msg.GetChannel()+1 );
     }
-    else {
+    else
         multitrack->InsertEvent(cur_track, msg, INSMODE_INSERT);
-        //AddEventToMultiTrack( msg, 0, cur_track );
-    }
 }
 
 
 MIDIFileHeader& GetMIDIFileHeader(const char* filename) {
-    MIDIFileHeader header;
+    static MIDIFileHeader header;
     std::ifstream read_stream (filename, std::ios::in | std::ios::binary);
 
+    header = MIDIFileHeader();
     if (read_stream.fail())
         return header;
 
@@ -291,6 +208,7 @@ MIDIFileHeader& GetMIDIFileHeader(const char* filename) {
         header.format = reader.GetFormat();
         header.ntrks = reader.GetNumberTracks();
         header.division = reader.GetDivision();
+        header.filename = filename;
     }
     return header;
 }
@@ -301,18 +219,26 @@ MIDIFileHeader& GetMIDIFileHeader(const std::string& filename) {
 }
 
 
-bool LoadMIDIFile(const char* filename, MIDIMultiTrack* tracks) {
+bool LoadMIDIFile(const char* filename, MIDIMultiTrack* tracks, MIDIFileHeader* const h) {
     std::ifstream read_stream (filename, std::ios::in | std::ios::binary);
     if (read_stream.fail())
         return false;
 
     MIDIFileReadMultiTrack track_loader (tracks);
     MIDIFileReader reader (&read_stream, &track_loader);
-    return reader.Parse();
+    bool ret = reader.Parse();
+    if (ret && h && reader.ReadHeader()) {
+        h->format = reader.GetFormat();
+        h->ntrks = reader.GetNumberTracks();
+        h->division = reader.GetDivision();
+        h->filename = filename;
+    }
+    return ret;
+
 }
 
 
-bool LoadMIDIFile(const std::string& filename, MIDIMultiTrack* tracks) {
-    return LoadMIDIFile(filename.c_str(), tracks);
+bool LoadMIDIFile(const std::string& filename, MIDIMultiTrack* tracks, MIDIFileHeader* const h) {
+    return LoadMIDIFile(filename.c_str(), tracks, h);
 }
 
