@@ -22,13 +22,14 @@
 
 */
 //
-// Copyright (C) 2013 N. Cassetta
+// Copyright (C) 2013 - 2020 N. Cassetta
 // ncassetta@tiscali.it
 //
 
 #include "../include/advancedsequencer.h"
 #include "../include/recorder.h"
-#include "functions.h"
+#include "../include/manager.h"
+#include "functions.h"                  // helper functions for input parsing and output
 
 
 /// \file
@@ -42,10 +43,10 @@ using namespace std;
 //                        G L O B A L S                         //
 //////////////////////////////////////////////////////////////////
 
-
-string command_buf, command, par1, par2;    // used by GetCommand() for parsing the user input
 AdvancedSequencer sequencer;                // an AdvancedSequencer (without GUI notifier)
 MIDIRecorder recorder;                      // a MIDIRecorder
+
+extern string command, par1, par2;          // used by GetCommand() for parsing the user input
 
 const char helpstring[] =                   // shown by the help command
 "\nAvailable commands:\n\
@@ -137,7 +138,7 @@ int main( int argc, char **argv ) {
         else if( command == "enable" ) {            // enables recording from a port
             int port = atoi(par1.c_str());
             int chan = (par2.size() ? atoi(par2.c_str()) : -1);
-            if (port < 0 || port >= MIDIManager::GetNumMIDIIns() || chan < -1 || chan > 15)
+            if (port < 0 || (unsigned)port >= MIDIManager::GetNumMIDIIns() || chan < -1 || chan > 15)
                 cout << "Invalid parameters" << endl;
             else {
                 recorder.EnablePort(port, chan);
@@ -150,7 +151,7 @@ int main( int argc, char **argv ) {
         else if( command == "disable" ) {           // disables recording from a port
             int port = atoi(par1.c_str());
             int chan = (par2.size() ? atoi(par2.c_str()) : -1);
-            if (port < 0 || port >= MIDIManager::GetNumMIDIIns() || chan < -1 || chan > 15)
+            if (port < 0 || (unsigned)port >= MIDIManager::GetNumMIDIIns() || chan < -1 || chan > 15)
                 cout << "Invalid parameters" << endl;
             else {
                 if (chan == -1) {
@@ -207,8 +208,8 @@ int main( int argc, char **argv ) {
                 sequencer.SetMIDIThruEnable(true);
                 if (sequencer.GetMIDIThru()->IsPlaying()) {
                     cout << "Set MIDI thru on" << endl;
-                    cout << "In port " << sequencer.GetMIDIThru()->GetInPort()->GetPortName() << endl;
-                    cout << "Out port" << sequencer.GetMIDIThru()->GetOutPort()->GetPortName() << endl;
+                    cout << "In port " << MIDIManager::GetMIDIInName(sequencer.GetMIDIThru()->GetInPort()) << endl;
+                    cout << "Out port" << MIDIManager::GetMIDIOutName(sequencer.GetMIDIThru()->GetOutPort()) << endl;
                 }
             }
             else if (par1 == "off") {

@@ -1,20 +1,26 @@
 /*
- * ADAPTED FROM
+ *   NiCMidi - A C++ Class Library for MIDI
  *
- * libjdkmidi-2004 C++ Class Library for MIDI
+ *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
+ *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
  *
- *  Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
- *  www.jdkoftinoff.com
- *  jeffk@jdkoftinoff.com
+ *   This file is part of NiCMidi.
  *
- *  BY NICOLA CASSETTA
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
  *
- *  *** RELEASED UNDER THE GNU GENERAL PUBLIC LICENSE (GPL) April 27, 2004 ***
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
 #include "../include/sequencer.h"
@@ -41,7 +47,7 @@ void MIDISequencerTrackState::Reset() {
     track_name = "";
     notes_are_on = false;
     bender_value = 0;
-    note_matrix.Clear();
+    note_matrix.Reset();
     got_good_track_name = false;
 }
 
@@ -54,8 +60,7 @@ void MIDISequencerTrackState::Reset() {
 int MIDISequencerState::metronome_mode = MIDISequencer::FOLLOW_MIDI_TIMESIG_MESSAGE;
 
 MIDISequencerState::MIDISequencerState(MIDIMultiTrack *m, MIDISequencerGUINotifier *n) :
-    notifier(n), multitrack(m), iterator(m)
-{
+    notifier(n), multitrack(m), iterator(m) {
     Reset();
 }
 
@@ -174,8 +179,8 @@ bool MIDISequencerState::Process( MIDITimedMessage *msg ) {
         if(cur_beat == 0)
             Notify(MIDISequencerGUIEvent::GROUP_TRANSPORT,
                    MIDISequencerGUIEvent::GROUP_TRANSPORT_MEASURE);
-            Notify(MIDISequencerGUIEvent::GROUP_TRANSPORT,
-               MIDISequencerGUIEvent::GROUP_TRANSPORT_BEAT);
+        Notify(MIDISequencerGUIEvent::GROUP_TRANSPORT,
+            MIDISequencerGUIEvent::GROUP_TRANSPORT_BEAT);
     }
 
     // is the event a MIDI channel message?
@@ -205,7 +210,7 @@ bool MIDISequencerState::Process( MIDITimedMessage *msg ) {
         }
         // pass the message to our note matrix to keep track of all notes on
         // on this track
-        if(t_state->note_matrix.Process(*msg)) {
+        if(t_state->note_matrix.Process(msg)) {
             // did the "any notes on" status change?
             if((t_state->notes_are_on && t_state->note_matrix.GetTotalCount() == 0) ||
                (!t_state->notes_are_on && t_state->note_matrix.GetTotalCount() > 0) ) {
@@ -309,10 +314,13 @@ MIDISequencer::MIDISequencer (MIDIMultiTrack *m, MIDISequencerGUINotifier *n) :
     time_shifts(m->GetNumTracks(), 0),
     track_ports(m->GetNumTracks(), 0),
     state (m, n) {
+    // checks if the system has almost a MIDI out
+    if (!MIDIManager::HasMIDIOut())
+        throw RtMidiError("MIDISequencer needs almost a MIDI out port in the system\n", RtMidiError::INVALID_DEVICE);
     if (n)
         n->SetSequencer(this);
     beat_marker_msg.SetBeatMarker();
-    state.iterator.GetState().SetTimeShiftMode(false, &time_shifts);  // surely returns true
+    state.iterator.SetTimeShiftVector(&time_shifts);
 }
 
 
@@ -412,7 +420,7 @@ void MIDISequencer::SetTrackTimeShift(unsigned int trk, int offset) {
 
     if (IsPlaying() && channel != -1) {
         MIDIManager::GetOutDriver(GetTrackPort(trk))->AllNotesOff(channel);
-        GetTrackState(trk)->note_matrix.Clear();
+        GetTrackState(trk)->note_matrix.Reset();
     }
     time_shifts[trk] = offset;
     //GoToTime(GetCurrentMIDIClockTime());      // TODO: this should sync the iterator, but provokes a AllNotesOff
@@ -428,7 +436,7 @@ void MIDISequencer::SetTrackOutPort(unsigned int trk, unsigned int port) {
     proc_lock.lock();
     if (IsPlaying() && port != GetTrackPort(trk) && channel != -1) {
         MIDIManager::GetOutDriver(GetTrackPort(trk))->AllNotesOff(channel);
-        GetTrackState(trk)->note_matrix.Clear();
+        GetTrackState(trk)->note_matrix.Reset();
     }
     port %= MIDIManager::GetNumMIDIOuts();
     track_ports[trk] = port;
@@ -481,7 +489,7 @@ bool MIDISequencer::DeleteTrack(int trk) {
     char channel = state.multitrack->GetTrack(trk)->GetChannel();
     if (IsPlaying() && channel != -1) {
         MIDIManager::GetOutDriver(GetTrackPort(trk))->AllNotesOff(channel);
-        GetTrackState(trk)->note_matrix.Clear();
+        GetTrackState(trk)->note_matrix.Reset();
     }
     if (state.multitrack->DeleteTrack(trk)) {
         if (track_processors[trk])
@@ -872,6 +880,14 @@ float MIDISequencer::MIDItoMs(MIDIClockTime t) {
 }
 
 
+void MIDISequencer::SetTimeShiftMode(bool f) {
+    time_shift_mode = f;
+    if (!IsPlaying())
+        state.iterator.SetTimeShiftMode(f);
+    UpdateStatus();
+}
+
+
 // Inherited from MIDITICK
 
 void MIDISequencer::Start() {
@@ -880,8 +896,9 @@ void MIDISequencer::Start() {
         MIDIManager::OpenOutPorts();
         state.Notify (MIDISequencerGUIEvent::GROUP_TRANSPORT,
                       MIDISequencerGUIEvent::GROUP_TRANSPORT_START);
-        SetTimeShiftMode(true);
-        MIDITickComponent::Start((tMsecs)GetCurrentTimeMs());
+        state.iterator.SetTimeShiftMode(true);
+        SetDevOffset((tMsecs)GetCurrentTimeMs());
+        MIDITickComponent::Start();
         std::cout << "\t\t ... Exiting from MIDISequencer::Start()" << std::endl;
     }
 }
@@ -891,7 +908,7 @@ void MIDISequencer::Stop() {
     if (IsPlaying()) {
         std::cout << "\t\tEntered in MIDISequencer::Stop() ..." << std::endl;
         MIDITickComponent::Stop();
-        SetTimeShiftMode(false);
+        state.iterator.SetTimeShiftMode(time_shift_mode);
         MIDIManager::AllNotesOff();
         MIDIManager::CloseOutPorts();
 
@@ -912,6 +929,9 @@ void MIDISequencer::TickProc(tMsecs sys_time) {
     float next_event_time = 0.0;
     int msg_track;
     MIDITimedMessage msg;
+
+    //std::cout << "MIDISequencer::TickProc; sys_time_offset " << sys_time_offset << " sys_time " << sys_time
+    //     << " dev_time_offset " << dev_time_offset << std::endl;
 
     proc_lock.lock();
     /*

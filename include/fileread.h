@@ -1,52 +1,33 @@
 /*
- *  libjdkmidi-2004 C++ Class Library for MIDI
+ *   NiCMidi - A C++ Class Library for MIDI
  *
- *  Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
- *  www.jdkoftinoff.com
- *  jeffk@jdkoftinoff.com
+ *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
+ *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
+ *   Copyright (C) 2010 V.R.Madgazin
+ *   www.vmgames.com vrm@vmgames.com
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
  *
- *  *** RELEASED UNDER THE GNU GENERAL PUBLIC LICENSE (GPL) April 27, 2004 ***
+ *   This file is part of NiCMidi.
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-/*
-**	Copyright 1986 to 1998 By J.D. Koftinoff Software, Ltd.
-**
-**	All rights reserved.
-**
-**	No one may duplicate this source code in any form for any reason
-**	without the written permission given by J.D. Koftinoff Software, Ltd.
-**
-*/
-//
-// Copyright (C) 2010 V.R.Madgazin
-// www.vmgames.com vrm@vmgames.com
-//
-/*
-** Copyright 2016 By N. Cassetta
-** myjdkmidi library
-**
-** CHECKED with jdksmidi. CHANGES:
-**  - used fstreams for reading - writing. Dropped old c FILE objects
-**  - revised doxygen comments
-*/
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
 /// \file
 /// Contains the definition of the classes MIDIFileEventHandler and MIDIFileReader and of the struct MIDIFileHeader;
-/// the first two are low level objects used by the FILEReadMultiTrack for loading MIDI files, and are not documented.
+/// the first two are low level objects used by the MIDIFileReadMultiTrack for loading MIDI files, and are not documented.
 
 
 #ifndef _JDKMIDI_FILEREAD_H
@@ -59,7 +40,7 @@
 
 
 
-// EXCLUDED FROM DOCUMENTATION
+// EXCLUDED FROM DOCUMENTATION BECAUSE UNDOCUMENTED
 // An abstract class for objects that can manipulate MIDI events sent by a MIDIFileReader.
 // Actually it's only implemented in the MIDIFileReadMultiTrack, which creates a MIDIMultiTrack
 // from these events. This has no interest for the user and it is not documented.
@@ -114,7 +95,7 @@ class MIDIFileEventHandler {
 
 
 /// A structure holding data which represent the header of a MIDI file. This is useful if you want to load a file, edit it
-/// and then save it with the same format and name. You can get the header of MIDI file with the GetMIDIFileHeader()
+/// and then save it with the same format and name. You can get the header of a MIDI file with the GetMIDIFileHeader()
 /// global function; see also LoadMIDIFile().
 struct MIDIFileHeader {
     MIDIFileHeader() : format(0), ntrks(0), division(0), filename("") {}
@@ -126,7 +107,7 @@ struct MIDIFileHeader {
 
 
 
-// EXCLUDED FROM DOCUMENTATION
+// EXCLUDED FROM DOCUMENTATION BECAUSE UNDOCUMENTED
 // Converts a stream of *char* read from a std::istream into MIDI data and sends them to a
 // MIDIFileEventHandler.
 // Used in conjunction with the MIDIFileReadMultiTrack class for reading MIDI files, and you don't need

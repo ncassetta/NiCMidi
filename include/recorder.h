@@ -1,3 +1,24 @@
+/*
+ *   NiCMidi - A C++ Class Library for MIDI
+ *
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
+ *
+ *   This file is part of NiCMidi.
+ *
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
 /// \file
@@ -36,25 +57,15 @@ class MIDIMultiTrackCopier {
 
 ///
 /// A MIDITickComponent which can record MIDI messages incoming from a MIDI in port, putting them into an internal
-/// MIDIMultiTrack. You can select the port, channel and MIDI notes of the
-/// metronome clicks; moreover you can have three types of click: the ordinary (beat) click, the measure click (first beat
-/// of a measure) and a subdivision click. If you enable measure clicks the metronome can count the measures and the beats
-/// of a measure (so you can represent them in a graphical interface).
+/// MIDIMultiTrack. You can enable and disable ports and channels for recording.
 ///
 class MIDIRecorder : public MIDITickComponent {
     public:
-        /// \name Constructors, destructor and reset
-        ///@{
-
         /// The constructor.
                                         MIDIRecorder();
         /// The destructor
         virtual                         ~MIDIRecorder();
         virtual void                    Reset();
-        ///@}
-
-        /// \name The get methods
-        ///@{
 
         /// Returns a pointer to the internal MIDIMultiTrack.
         MIDIMultiTrack*                 GetMultiTrack() const           { return multitrack; }
@@ -62,10 +73,6 @@ class MIDIRecorder : public MIDITickComponent {
         float                           GetTempo() const                { return tempobpm; }
         /// Returns the start MIDI time of the recording.
         MIDIClockTime                   GetStartTime() const            { return start_time; }
-        //@}
-
-        ///@name The 'Set' methods
-        //@{
 
         /// Sets the recording tempo.
         /// \param t the tempo in bpm
@@ -75,12 +82,11 @@ class MIDIRecorder : public MIDITickComponent {
         /// Sets the recording start time.
         /// \param t the MIDI clock time
         void                            SetStartTime(MIDIClockTime t)   { start_time = t; }
-        //@}
 
         /// Enables a MIDI in port in the system for recording.
         /// \param port the system port id (you can use MIDIManager::GetNumMIDIIns() and
         /// MIDIManager::GetMIDIInName() for inspecting them).
-        /// \param en_chans if étrueé (default) enables recording from all channels, creating a MIDITrack in
+        /// \param en_chans if **true** (default) enables recording from all channels, creating a MIDITrack in
         /// the multitrack for every one, otherwise you must set the recording channel with EnableChannel()
         void                            EnablePort(unsigned int port, bool en_chans = true);
         /// Enables a specific MIDI channel for recording, creating a track for it in the internal MIDIMultiTrack.
@@ -113,20 +119,24 @@ class MIDIRecorder : public MIDITickComponent {
         virtual void                    Stop();
 
     protected:
-
+        /// Implements the static method inherited by MIDITickComponent and called at every timer tick.
+        /// It only calls the member TickProc().
         static void                     StaticTickProc(tMsecs sys_time, void* pt);
-        void                            TickProc(tMsecs sys_time);
+        /// Implements the pure virtual method inherited from MIDITickComponent (you must not call it directly).
+        virtual void                    TickProc(tMsecs sys_time);
 
-        MIDIMultiTrack*                 multitrack;         ///< The internal MIDIMultiTrack
-        std::vector<std::vector<MIDITrack*>*> en_ports;     ///< A vector which keeps track of the corrispondence between
-                                                            ///<channels and tracks in the multitrack
+        /// \cond EXCLUDED
+        MIDIMultiTrack*                 multitrack;         // The internal MIDIMultiTrack
+        std::vector<std::vector<MIDITrack*>*> en_ports;     // A vector which keeps track of the corrispondence between
+                                                            // channels and tracks in the multitrack
 
-        tMsecs                          rec_time_offset;    ///< The time between time 0 and sequencer start
+        tMsecs                          rec_time_offset;    // The time between time 0 and sequencer start
         //tMsecs                          sys_time_offset;    ///< The time between the timer start and the sequencer start
-        float                           tempobpm;           ///< The recording tempo
-        MIDIClockTime                   start_time;         ///< The MIDIClockTime of the beginning of recording
+        float                           tempobpm;           // The recording tempo
+        MIDIClockTime                   start_time;         // The MIDIClockTime of the beginning of recording
 
         std::atomic<bool>               rec_on;
+        /// \endcond
 };
 
 

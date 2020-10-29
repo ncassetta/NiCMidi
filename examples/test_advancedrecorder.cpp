@@ -30,7 +30,8 @@
 
 #include "../include/advancedsequencer.h"
 #include "../include/advancedrecorder.h"
-#include "functions.h"
+#include "../include/manager.h"
+#include "functions.h"                  // helper functions for input parsing and output
 
 using namespace std;
 

@@ -1,35 +1,26 @@
 /*
- *  libjdkmidi-2004 C++ Class Library for MIDI
+ *   NiCMidi - A C++ Class Library for MIDI
  *
- *  Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
- *  www.jdkoftinoff.com
- *  jeffk@jdkoftinoff.com
+ *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
+ *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
  *
- *  *** RELEASED UNDER THE GNU GENERAL PUBLIC LICENSE (GPL) April 27, 2004 ***
+ *   This file is part of NiCMidi.
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-/*
-**	Copyright 1986 to 1998 By J.D. Koftinoff Software, Ltd.
-**
-**	All rights reserved.
-**
-**	No one may duplicate this source code in any form for any reason
-**	without the written permission given by J.D. Koftinoff Software, Ltd.
-**
-*/
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
 #include "../include/midi.h"
@@ -287,17 +278,17 @@ const char* GetGMProgramName(unsigned char number, int format) {
 
 
 const char* GetGMDrumkitName(unsigned char number, int format) {
-const char GMDrumKits[][128] = {
-    "Standard Kit",
-    "Room Kit",
-    "Power Kit",
-    "Electric Kit",
-    "TR 808 Kit",
-    "Jazz Kit",
-    "Brush Kit",
-    "Orchestra Kit",
-    ""
-};
+    static const char GMDrumKits[][128] = {
+        "Standard Kit",
+        "Room Kit",
+        "Power Kit",
+        "Electric Kit",
+        "TR 808 Kit",
+        "Jazz Kit",
+        "Brush Kit",
+        "Orchestra Kit",
+        ""
+    };
     static char s[40];
     s[0] = 0;
     if (format == 1)
@@ -371,7 +362,7 @@ const signed char sys_msg_len[16] = {
 
 
 bool IsNoteWhite(unsigned char note) {
-    static const bool white_notes[12] {
+    static const bool white_notes[12] = {
     //
     //	C C# D D# E F F# G G# A A# B
     //
@@ -386,8 +377,8 @@ bool IsNoteBlack(unsigned char note) {
 }
 
 
-char* KeyName(signed char sharp_flats, unsigned char major_minor, bool uppercase,
-              bool space, bool use_Mm) {
+const char* KeyName(signed char sharp_flats, unsigned char major_minor, bool uppercase,
+                    bool space, bool use_Mm) {
     static char s[8];
     static const char key_names[][4] =
     { "Cb", "Gb", "Db", "Ab", "Eb", "Bb", "F", "C", "G", "D", "A", "E", "B", "F#", "C#", "G#", "D#", "A#" };
@@ -403,3 +394,35 @@ char* KeyName(signed char sharp_flats, unsigned char major_minor, bool uppercase
         sprintf (s + p, "%s", (major_minor == 0 ? "Maj" : "min"));
     return s;
 }
+
+
+/*
+unsigned char KeyNumber(const char* name) {
+    static const unsigned char offsets[7] =
+    // a,  b, c, d, e, f, g
+    {  9, 11, 0, 2, 4, 5, 7 };
+    unsigned char number;
+    bool found_note = false, found_oct = false;
+    for (unsigned int i = 0; i < strlen(name); i++) {
+        unsigned char c = name[i];
+        if (c == ' ')
+            continue;
+        c = tolower(c);
+        if (!found_note && c >= 'a' && c <= 'g') {
+            number = offsets[(int)(c - 'a')];
+            found_note = true;
+        }
+        if (c == 'b' && found_note && !found_oct)
+            c -= 1;
+        else if (c == '#' && found_note && !found_oct)
+            c += 1;
+        else if (c >= '0' && c <= '9' ) {
+            number += ((c - '0') * 12);
+            found_oct = true;
+        }
+        else
+            number = 0xff;
+   }
+   return number;
+}
+*/

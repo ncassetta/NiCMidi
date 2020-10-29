@@ -1,3 +1,28 @@
+/*
+ *   NiCMidi - A C++ Class Library for MIDI
+ *
+ *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
+ *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
+ *
+ *   This file is part of NiCMidi.
+ *
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 #include "../include/timer.h"
 #include <iostream>     // for debug
 
@@ -8,8 +33,9 @@ const MIDITimer::timepoint MIDITimer::sys_clock_base = std::chrono::steady_clock
 unsigned int MIDITimer::resolution = MIDITimer::DEFAULT_RESOLUTION;
 
 void* MIDITimer::tick_param = 0;
-MIDITick* MIDITimer::tick = 0;
+MIDITick* MIDITimer::tick_proc = 0;
 std::atomic<int> MIDITimer::num_open(0);
+MIDITimer::timepoint MIDITimer::current;
 std::thread MIDITimer::bg_thread;
 
 
@@ -28,7 +54,7 @@ void MIDITimer::SetResolution(unsigned int res) {
 void MIDITimer::SetMIDITick(MIDITick t, void* tp) {
     int was_open = num_open;
     HardStop();
-    tick = t;
+    tick_proc = t;
     tick_param = tp;
     if (was_open > 0) {
         Start();
@@ -38,11 +64,12 @@ void MIDITimer::SetMIDITick(MIDITick t, void* tp) {
 
 
 bool MIDITimer::Start () {
-    if (tick == 0)
+    if (tick_proc == 0)
         return false;                           // Callback not set
 
     num_open++;
     if (num_open == 1) {                         // Must create thread
+        current = std::chrono::steady_clock::now();
         bg_thread = std::thread(ThreadProc);
         std::cout << "Timer open with " << resolution << " msecs resolution" << std::endl;
     }
@@ -72,16 +99,17 @@ void MIDITimer::HardStop() {
 
     // This is the background thread procedure
 void MIDITimer::ThreadProc() {
-    timepoint current, next;
-    duration tick(MIDITimer::resolution);
+    //timepoint current, next;
+    duration tick(resolution);
 
     while(MIDITimer::num_open) {
-        current = std::chrono::steady_clock::now();
+        //current = std::chrono::steady_clock::now();
                 // execute the supplied function
-        MIDITimer::tick(MIDITimer::GetSysTimeMs(), MIDITimer::tick_param);
+        MIDITimer::tick_proc(MIDITimer::GetSysTimeMs(), MIDITimer::tick_param);
                 // find the next timepoint and sleep until it
-        next = current + tick;
-        std::this_thread::sleep_until(next);
+        current += tick;
+        //next = current + tick;
+        std::this_thread::sleep_until(current);
     }
 }
 

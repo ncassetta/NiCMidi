@@ -1,36 +1,30 @@
 /*
- *  libjdkmidi-2004 C++ Class Library for MIDI
+ *   NiCMidi - A C++ Class Library for MIDI
  *
- *  Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
- *  www.jdkoftinoff.com
- *  jeffk@jdkoftinoff.com
+ *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
+ *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
  *
- *  *** RELEASED UNDER THE GNU GENERAL PUBLIC LICENSE (GPL) April 27, 2004 ***
+ *   This file is part of NiCMidi.
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-/*
-** Copyright 2016 By N. Cassetta
-** myjdkmidi library
-**
-** CHECKED with jdksmidi. NO CHANGES
-*/
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
 /// \file
-/// Contains the definition of the classes MIDIFileWriteMultiTrack, used for saving MIDI files, plus some related function.
+/// Contains the definition of the class MIDIFileWriteMultiTrack, used for saving MIDI files, plus some related function.
 
 
 #ifndef _JDKMIDI_FILEWRITEMULTITRACK_H
@@ -42,14 +36,14 @@
 
 ///
 /// Writes the contents of a MIDIMultiTrack to a std::ostream in the MIDI file format.
-/// The file will be in MIDI format 0 if the multitrack has only one track, otherwise  the format
-/// will be 1.
+/// Used by other classes and functions for reading MIDI files; the file will be in MIDI format 0 if the multitrack
+/// has only one track, otherwise  the format will be 1.
 ///
 /// If you want to save a MIDIMultiTrack into a  MIDI file you probably will use the simple and fast WriteMIDIFile()
 /// global function (that creates and uses this class), so this is not documented.
 ///
 class MIDIFileWriteMultiTrack {
-/// \cond INTERNAL
+/// \cond EXCLUDED
     public:
         /// The constructor creates an object which can write the multitrack events to the given C++ stream.
         /// The pointed objects are not owned by the class.
@@ -72,6 +66,8 @@ class MIDIFileWriteMultiTrack {
 
 /// \addtogroup GLOBALS
 //@{
+/// \name Functions for saving MIDI files
+//@{
 /// Writes the given MIDIMultiTrack object into a MIDI file.
 /// \param filename the file name
 /// \param format the MIDI file format (only 0 and 1 are supported)
@@ -82,6 +78,7 @@ bool WriteMIDIFile(const char* filename, int format, const MIDIMultiTrack* track
 /// Writes the given MIDIMultiTrack object into a MIDI file.
 /// \see WriteMIDIFile(const char* filename, format, tracks, strip)
 bool WriteMIDIFile(const std::string& filename, int format, const MIDIMultiTrack* tracks, bool strip = false);
+//@}
 //@}
 
 #endif

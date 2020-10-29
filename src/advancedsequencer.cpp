@@ -1,3 +1,28 @@
+/*
+ *   NiCMidi - A C++ Class Library for MIDI
+ *
+ *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
+ *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
+ *
+ *   This file is part of NiCMidi.
+ *
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 #include "../include/advancedsequencer.h"
 #include "../include/manager.h"
 
@@ -89,10 +114,12 @@ AdvancedSequencer::AdvancedSequencer(MIDISequencerGUINotifier *n) :
     owns_tracks (true)                           // remembers that the multitrack is owned
 {
     MIDIManager::AddMIDITick(this);
-    thru.SetProcessor(&thru_processor);
-    thru_processor.SetProcessor(&thru_rechannelizer);
-    thru_processor.SetProcessor(&thru_transposer);
-    MIDIManager::AddMIDITick(&thru);
+    if (MIDIManager::HasMIDIIn()) {
+        thru = new MIDIThru();
+        thru_transposer = new MIDIProcessorTransposer();
+        thru->SetProcessor(thru_transposer);
+        MIDIManager::AddMIDITick(thru);
+    }
     for (unsigned  int i = 0; i < GetNumTracks(); ++i)
         track_processors[i] = new MIDISequencerTrackProcessor;
 }
@@ -105,10 +132,14 @@ AdvancedSequencer::AdvancedSequencer(MIDIMultiTrack* mlt, MIDISequencerGUINotifi
     MIDIManager::AddMIDITick(this);
     file_loaded = !state.multitrack->IsEmpty();
     ExtractWarpPositions();                     // sets warp_positions and num_measures
-    thru.SetProcessor(&thru_processor);
-    thru_processor.SetProcessor(&thru_rechannelizer);
-    thru_processor.SetProcessor(&thru_transposer);
-    MIDIManager::AddMIDITick(&thru);
+    //thru.SetProcessor(&thru_processor);
+    //thru_processor.SetProcessor(&thru_rechannelizer);
+    if (MIDIManager::HasMIDIIn()) {
+        thru = new MIDIThru();
+        thru_transposer = new MIDIProcessorTransposer();
+        thru->SetProcessor(thru_transposer);
+        MIDIManager::AddMIDITick(thru);
+    }
     for (unsigned  int i = 0; i < GetNumTracks(); ++i)
         track_processors[i] = new MIDISequencerTrackProcessor;
 }
@@ -116,7 +147,10 @@ AdvancedSequencer::AdvancedSequencer(MIDIMultiTrack* mlt, MIDISequencerGUINotifi
 
 AdvancedSequencer::~AdvancedSequencer() {
     Stop();
-    MIDIManager::RemoveMIDITick(this);
+    if (thru) {
+        delete thru;            // removes thru from the manager queue
+        delete thru_transposer;
+    }
     for (unsigned int i = 0; i < GetNumTracks(); ++i) {
         delete track_processors[i];
         track_processors[i] = 0;
@@ -302,23 +336,29 @@ int AdvancedSequencer::GetTrackTimeShift (unsigned int trk) const {
 
 
 void AdvancedSequencer::SetMIDIThruEnable(bool on_off) {
+    if (!thru)
+        return;
     if (on_off)
-        thru.Start();
+        thru->Start();
     else {
-        thru.Stop();            // calls AllNotesOff() on thru out channel
+        thru->Stop();            // calls AllNotesOff() on thru out channel
     }
 }
 
 
 void AdvancedSequencer::SetMIDIThruChannel (int chan) {
-    thru_rechannelizer.SetAllRechan (chan);
-    MIDIManager::AllNotesOff();
+    if (thru) {
+        thru->SetOutChannel(chan);
+        MIDIManager::AllNotesOff();
+    }
 }
 
 
 void AdvancedSequencer::SetMIDIThruTranspose (int amt) {
-    thru_transposer.SetAllTranspose (amt);
-    MIDIManager::AllNotesOff();
+    if (thru_transposer) {
+        thru_transposer->SetAllTranspose (amt);
+        MIDIManager::AllNotesOff();
+    }
 }
 
 
@@ -344,7 +384,7 @@ void AdvancedSequencer::SetTrackSolo (unsigned int trk) {   // unsoloing done by
             ((MIDISequencerTrackProcessor *)track_processors[i])->solo = MIDISequencerTrackProcessor::NOT_SOLOED;
             if (IsPlaying() && GetTrackChannel(i) != -1) {
                 MIDIManager::GetOutDriver(GetTrackPort(trk))->AllNotesOff(GetTrackChannel(i));
-                GetTrackState(i)->note_matrix.Clear();
+                GetTrackState(i)->note_matrix.Reset();
             }
         }
     }
@@ -376,7 +416,7 @@ void AdvancedSequencer::SetTrackMute (unsigned int trk, bool f) {
     if (IsPlaying() && channel != -1) {
         if(f) {
             MIDIManager::GetOutDriver(GetTrackPort(trk))->AllNotesOff(channel);
-            GetTrackState(trk)->note_matrix.Clear();
+            GetTrackState(trk)->note_matrix.Reset();
         }
         else
             // track was muted: this set appropriate CC, PC, etc not previously sent
@@ -414,7 +454,7 @@ void AdvancedSequencer::SetTrackRechannelize (unsigned int trk, int chan) {
     proc_lock.lock();
     if (IsPlaying() && GetTrackChannel(trk) != chan && !(GetTrackChannel(trk) == -1)) {
         MIDIManager::GetOutDriver(GetTrackPort(trk))->AllNotesOff(GetTrackChannel(trk));
-        GetTrackState(trk)->note_matrix.Clear();
+        GetTrackState(trk)->note_matrix.Reset();
     }
     GetTrackProcessor(trk)->rechannel = chan;
     proc_lock.unlock();
@@ -427,7 +467,7 @@ void AdvancedSequencer::SetTrackTranspose (unsigned int trk, int trans) {
     proc_lock.lock();
     if (IsPlaying() && GetTrackTranspose(trk) != trans && !(GetTrackChannel(trk) == -1)) {
         MIDIManager::GetOutDriver(GetTrackPort(trk))->AllNotesOff(GetTrackChannel(trk));
-        GetTrackState (trk)->note_matrix.Clear();
+        GetTrackState (trk)->note_matrix.Reset();
     }
     GetTrackProcessor(trk)->transpose = trans;
     proc_lock.unlock();
@@ -461,7 +501,7 @@ bool AdvancedSequencer::GoToTime (MIDIClockTime time_clk) {
         SetState (&warp_positions[warp_to_item]);
         ret = MIDISequencer::GoToTime (time_clk);
         for (unsigned int i = 0; i < GetNumTracks(); ++i)
-            GetTrackState(i)->note_matrix.Clear();
+            GetTrackState(i)->note_matrix.Reset();
     }
     return ret;
 }
@@ -494,7 +534,7 @@ bool AdvancedSequencer::GoToTimeMs(float time_ms) {
         SetState (&warp_positions[warp_to_item]);
         ret = MIDISequencer::GoToTimeMs (time_ms);
         for (unsigned int i = 0; i < GetNumTracks(); ++i)
-            GetTrackState(i)->note_matrix.Clear();
+            GetTrackState(i)->note_matrix.Reset();
     }
     return ret;
 }
@@ -525,7 +565,7 @@ bool AdvancedSequencer::GoToMeasure (int measure, int beat) {
         SetState (&warp_positions[warp_to_item]);
         ret = MIDISequencer::GoToMeasure (measure, beat);
         for (unsigned int i = 0; i < GetNumTracks(); ++i)
-            GetTrackState (i)->note_matrix.Clear();
+            GetTrackState (i)->note_matrix.Reset();
     }
     return ret;
 }
@@ -547,9 +587,13 @@ void AdvancedSequencer::Start () {
     // allowing to start with correct values; we could incorporate this in the
     // sequencer state, but it would track even CC (not difficult) and SYSEX messages
 
-    MIDISequencer::Start();             // calls OpenOutPorts() again
+    state.Notify (MIDISequencerGUIEvent::GROUP_TRANSPORT,
+                      MIDISequencerGUIEvent::GROUP_TRANSPORT_START);
+    SetTimeShiftMode(true);
+    SetDevOffset((tMsecs)GetCurrentTimeMs());
+    MIDITickComponent::Start();
     std::cout << "\t\t ... Exiting from AdvancedSequencer::Start()" << std::endl;
-    std::cout << "sys_time_offset = " << sys_time_offset << " dev_time_offset = " << dev_time_offset << std::endl;
+    std::cout << "sys_time_offset = " << sys_time_offset << " sys_time = " << MIDITimer::GetSysTimeMs() << std::endl;
 }
 
 
@@ -558,13 +602,17 @@ void AdvancedSequencer::Stop() {
         return;
 
     std::cout << "\t\tEntered in AdvancedSequencer::Stop() ...\n";
-    MIDISequencer::Stop();              // calls CloseOutPorts()
+    MIDITickComponent::Stop();
+    SetTimeShiftMode(false);
+    MIDIManager::AllNotesOff();
+    MIDIManager::CloseOutPorts();
+    state.Notify (MIDISequencerGUIEvent::GROUP_TRANSPORT,
+                  MIDISequencerGUIEvent::GROUP_TRANSPORT_STOP);
     //MIDIManager::CloseOutPorts();
     //mgr->AllNotesOff();       // already done by SeqStop()
     //mgr->Reset();
     // stops on a beat (and clear midi matrix)
     GoToMeasure(state.cur_measure, state.cur_beat);
-    MIDIManager::CloseOutPorts();       // must call again this (see Start())
     std::cout << "\t\t ... Exiting from AdvancedSequencer::Stop()" << std::endl;
 }
 

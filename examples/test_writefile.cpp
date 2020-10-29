@@ -26,7 +26,7 @@
 #include <string>
 
 #include "../include/advancedsequencer.h"
-#include "../include/filewritemultitrack.h"
+#include "../include/filewritemultitrack.h"     // for WriteMIDIFile() function
 
 using namespace std;
 

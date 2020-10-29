@@ -1,35 +1,26 @@
 /*
- *  libjdkmidi-2004 C++ Class Library for MIDI
+ *   NiCMidi - A C++ Class Library for MIDI
  *
- *  Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
- *  www.jdkoftinoff.com
- *  jeffk@jdkoftinoff.com
+ *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
+ *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
  *
- *  *** RELEASED UNDER THE GNU GENERAL PUBLIC LICENSE (GPL) April 27, 2004 ***
+ *   This file is part of NiCMidi.
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-/*
-**	Copyright 1986 to 1998 By J.D. Koftinoff Software, Ltd.
-**
-**	All rights reserved.
-**
-**	No one may duplicate this source code in any form for any reason
-**	without the written permission given by J.D. Koftinoff Software, Ltd.
-**
-*/
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
 /// \file
@@ -42,22 +33,30 @@
 
 /// \addtogroup GLOBALS
 //@{
-/// A type which can hold a time in MIDI ticks.
+/// The type of a variable which can hold a time in MIDI ticks.
 /// The MIDI tick is the basis for MIDI clocking: a quarter note is assigned a number of MIDI ticks, and a
-/// MIDITimedMessage objetìct has its time set in MIDI ticks.
+/// MIDITimedMessage object has its time measured in MIDI ticks.
 typedef unsigned long MIDIClockTime;
-/// An infinite time.
-static const MIDIClockTime TIME_INFINITE = 0xffffffff;
-/// The default clocks per beat parameter when initializing a
-static const unsigned int DEFAULT_CLKS_PER_BEAT = 120;
+/// \name MIDI Clock related constants
+//@{
+/// A constant which represents an infinite time.
+/// Used by some functions which search for specific events in a time interval.
+const MIDIClockTime TIME_INFINITE = 0xffffffff;
+/// The default clocks per beat parameter when initializing a MIDIMultiTrack.
+/// This is the number of MIDI ticks for a quarter note in all the tracks of the multitrack.
+const unsigned int DEFAULT_CLKS_PER_BEAT = 120;
+//@}
 //@}
 
 
-/// \ingroup MIDIENUM
-/// Channel_status.
-/// These are the type values for a MIDI channel message. For a channel message (between 0x80 ... 0xe0)
-/// only the upper four bits of the status byte are affected (and lower four bits represent the channel);
-/// all status bytes between 0xf0 ... 0xff are considered system messages.
+/// \addtogroup MIDIENUM
+//@{
+/// \name Channel status bytes
+//@{
+/// These are the type values for a MIDI channel message. For a channel message (with status byte between
+/// 0x80 ... 0xef) only the upper four bits of the status determine its type (while lower four bits represent
+/// the channel); all status bytes between 0xf0 ... 0xff are considered system messages. You can use these
+/// in the MIDIMessage::SetType() method.
 enum {
     NOTE_OFF	        =0x80,  ///< Note off
     NOTE_ON		        =0x90,  ///< Note on
@@ -75,11 +74,12 @@ enum {
     RESET		        =0xff,	///< 0xff never used as reset in a MIDIMessage
     META_EVENT	        =0xff	///< Meta event
 };
+//@}
 
 
-/// \ingroup MIDIENUM
-/// MIDI Real Time Messages.
-/// Used for quick one-byte messages intended to be sent during playing.
+/// \name MIDI Real Time Messages
+//@{
+/// In the MIDI standard these bytes are used for quick one-byte messages intended to be sent during playback.
 enum {
     RT_TIMING_CLOCK	    =0xf8,  ///< MIDI Real time clock
     RT_MEASURE_END	    =0xf9,	///< Proposed measure end byte UNUSED
@@ -88,13 +88,14 @@ enum {
     RT_STOP		        =0xfc,  ///< Sequencer stop
     RT_ACTIVE_SENSE	    =0xfe   ///< MIDI Active sensing
 };
+//@}
 
 
-/// \ingroup MIDIENUM
-/// GM Controller Numbers.
+/// \name GM Controller Numbers
+//@{
 /// General MIDI standardized controller numbers (stored in the first data byte of a
-/// Control Change message); the last (between 0x78 ... 0x7f) are the channel mode
-/// messages.
+/// Control Change message); the last (between 0x78 ... 0x7f) are the **channel mode
+/// messages**. You can use these in the MIDIMessage::SetController() method.
 enum {
     C_LSB		        =0x20,	///< add this to a non-switch controller to access the LSB.
     C_GM_BANK	        =0x00,	///< General Midi bank select
@@ -146,30 +147,33 @@ enum {
     C_MONO		        =0x7e,	///< mono on, all notes off
     C_POLY		        =0x7f	///< poly on, all notes off
 };
+//@}
 
 
-/// \ingroup MIDIENUM
-/// Registered Parameter Numbers.
-/// Used by the GS standard in a RPN Control Change message
+/// \name Registered Parameter Numbers
+//@{
+/// These bytes are used by the GS standard in a RPN Control Change message.
 enum {
     RPN_BEND_WIDTH	    =0x00,	///< bender sensitivity
     RPN_FINE_TUNE	    =0x01,	///< fine tuning
     RPN_COARSE_TUNE     =0x02	///< coarse tuning
 };
+//@}
 
 
-/// \ingroup MIDIENUM
-/// META Event types.
-/// This is the byte 1 (after the status) of a message with status 0xff, and these types are the same as
-/// MIDIFile meta-events. When the data length is <= 2 bytes, data are stored in bytes 2 and 3 of the
-/// MIDIMessage, otherwise in the sysex object. So the format of the meta-events in a MIDIMessage class
-/// will be different than the standard MIDIFile meta-events.
+/// \name META Event types
+//@{
+/// This is the byte 1 (after the status) of a message with status 0xff (MIDI meta event), and these types
+/// are the same as MIDIFile meta-events. When the data length is <= 2 bytes the library stores data in bytes
+/// 2 and 3 of the MIDIMessage, otherwise in the MIDISystemExclusive object attached to it. So the format of the
+/// meta-events in a %MIDIMessage class will be different than the standard MIDIFile meta-events. You can use these
+/// in the MIDIMessage::SetMetaType() method.
 enum {
     /// Defines the pattern number of a Type 2 MIDI file or the number of a sequence in a Type 0
     /// or Type 1 MIDI file.\ Should always have a delta time of 0 and come before all MIDI Channel
-    /// Events and non-zero delta time events. The data length is 2 bytes.
+    /// Events and non-zero delta time events.\ The data length is 2 bytes.
     META_SEQUENCE_NUMBER	= 0x00,
-    /// This and the following are used for embedding ascii text in a MIDI file. They have variable data length
+    /// This and the following are used for embedding ascii text in a MIDI file.\ They have variable data length
     /// (stored in the sysex object).
     META_GENERIC_TEXT	    = 0x01,
     META_COPYRIGHT		    = 0x02, ///< Text: copyright
@@ -186,46 +190,51 @@ enum {
     META_GENERIC_TEXT_D     = 0x0D, ///< Text: generic d
     META_GENERIC_TEXT_E     = 0x0E, ///< Text: generic e
     META_GENERIC_TEXT_F     = 0x0F, ///< Text: generic f
-    /// Associates a MIDI channel with following meta events\. Its effect is terminated by another
-    /// MIDI Channel Prefix event or any non-Meta event. It is often used before an Instrument Name
-    /// Event to specify which channel an instrument name represents. The data length is 1 byte.
+    /// Associates a MIDI channel with following meta events.\ Its effect is terminated by another
+    /// MIDI Channel Prefix event or any non-Meta event.\ It is often used before an Instrument Name
+    /// Event to specify which channel an instrument name represents.\ The data length is 1 byte.
     META_CHANNEL_PREFIX     = 0x20,
-    /// This may be used in multiport environments to associate a track with a specific port\.
-    /// The data length is 1 byte.
+    /// This may be used in multiport environments to associate a track with a specific port.\ The data
+    /// length is 1 byte.
     META_OUTPUT_CABLE       = 0x21,
     //META_TRACK_LOOP         = 0x2E, I found no documentation for this
-    /// The end of track marker in a MIDI file (also used in the MIDITrack object)\. Data length is 0 byte.
+    /// The end of track marker in a MIDI file (also used in the MIDITrack object).\ The data length is 0 byte.
     META_END_OF_TRACK       = 0x2F,
-    /// Specifies a tempo change and has a length of 3 bytes\. The data is a 3-byte integer,
-    /// the number of microseconds for a quarter note. The MIDIMessage::GetTempo() method converts
+    /// Specifies a tempo change and has a length of 3 bytes.\ The data is a 3-byte integer,
+    /// the number of microseconds for a quarter note.\ The MIDIMessage::GetTempo() method converts
     /// it into the usual bpm value (a double).
     META_TEMPO              = 0x51,
-    /// Specifies the initial SMPTE offset of the beginning of playback\. It has 5 data bytes (stored
+    /// Specifies the initial SMPTE offset of the beginning of playback.\ It has 5 data bytes (stored
     /// in the sysex object) which denote hours, minutes, second frames and subframes of the SMPTE.
     META_SMPTE              = 0x54,
-    /// Specifies a musical time signature change\. It has 4 data bytes (stored in the sysex object)
+    /// Specifies a musical time signature change.\ It has 4 data bytes (stored in the sysex object)
     /// which denote the time numerator, the denominator power of two (1->2, 2->4, 3->8 etc), the metronome
     /// note(24 = quarter, 12 = eigth, 36 dotted quarter etc) and the number of 32th for a quarter note
-    ///(usually 8, but you are allowed to change this). The MIDIMessage::GetTimeSigNumerator() and
+    ///(usually 8, but you are allowed to change this).\ The MIDIMessage::GetTimeSigNumerator() and
     /// MidiMessage::GetTimeSigDenominator() methods give you the timesig numerator and denominator.
     META_TIMESIG            = 0x58,
-    /// Specifies a musical key signature change\. It has 2 data bytes: the 1st is a signed char denoting
+    /// Specifies a musical key signature change.\ It has 2 data bytes: the 1st is a signed char denoting
     /// the number of accidents (-7 = 7 flats, 0 = no accidents, +7 = 7 sharps), the second is the mode
     /// (0 = major, 1 = minor).
     META_KEYSIG             = 0x59,
-    /// Used to give informations specific to a hardware or software sequencer\. The first Data byte
+    /// Used to give informations specific to a hardware or software sequencer.\ The first Data byte
     /// (or three bytes if the first byte is 0) specifies the manufacturer's ID and the following bytes
-    /// contain information specified by the manufacturer. Currently is ignored by the library.
+    /// contain information specified by the manufacturer.\ Currently is ignored by the library.
     META_SEQUENCER_SPECIFIC = 0x7F
 };
+//@}
+//@}
 
 
+// these are used by MIDIMessage class
 extern const signed char	chan_msg_len[16];
 extern const signed char	sys_msg_len[16];
 
 
-/// \name Utility functions
-//<{
+/// \addtogroup GLOBALS
+//@{
+/// \name Helper functions for MIDI and music
+//@{
 /// Returns a readable name for the given channel message status.
 const char*                 GetChanMsgName(unsigned char status);
 /// Returns a readable name for the given channel mode (Control change with
@@ -235,9 +244,11 @@ const char*                 GetChanModeMsgName(unsigned char number);
 const char*                 GetSysMsgName(unsigned char status);
 /// Returns a readable name for the given meta message status.
 const char*                 GetMetaMsgName(unsigned char type);
-/// Returns a readable name for a GM program number
+/// Returns a readable name for a GM program number.
+/// \param format if it is 1 prints the program number before its name.
 const char*                 GetGMProgramName(unsigned char number, int format = 0);
-/// Returns a readable name for a GM program number on channel 10 (drumkit)
+/// Returns a readable name for a GM program number on channel 10 (drumkit).
+/// \param format if it is 1 prints the program number before its name.
 const char*                 GetGMDrumkitName(unsigned char number, int format = 0);
 /// Returns **true** if the MIDI number of the note denotes a white key.
 bool                        IsNoteWhite(unsigned char note);
@@ -255,19 +266,23 @@ inline int GetNoteOctave(unsigned char note) {
 /// \param uppercase if true the key name (A, B, C, ...) is uppercase
 /// \param space if true put a space between the key and the mode (es. A m)
 /// \param use_Mm if true the mode is M or m, otherwise maj or min
-char* KeyName (signed char sharp_flats, unsigned char major_minor, bool uppercase = true,
-               bool space = false, bool use_Mm = true);
-//<}
+const char* KeyName (signed char sharp_flats, unsigned char major_minor, bool uppercase = true,
+                     bool space = false, bool use_Mm = true);
+//@}
+//@}
 
 
-/// \name Default constants when initializing messages and classes.
-//<{
+/// \addtogroup GLOBALS
+//@{
+/// \name Default constants when initializing messages and classes
+//@{
 const int MIDI_DEFAULT_TIMESIG_NUMERATOR = 4;       ///< Timesig numerator
 const int MIDI_DEFAULT_TIMESIG_DENOMINATOR = 4;     ///< Timesig denominator
 const double MIDI_DEFAULT_TEMPO = 120.0;            ///< Musical tempo
 const int MIDI_DEFAULT_KEYSIG_KEY = 0;              ///< Keysig key (C)
 const int MIDI_DEFAULT_KEYSIG_MODE = 0;             ///< Keysig mode (major)
-//<}
+//@}
+//@}
 
 
 #endif

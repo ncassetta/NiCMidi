@@ -1,36 +1,26 @@
 /*
+ *   NiCMidi - A C++ Class Library for MIDI
  *
- *  libjdkmidi-2004 C++ Class Library for MIDI
+ *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
+ *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
  *
- *  Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
- *  www.jdkoftinoff.com
- *  jeffk@jdkoftinoff.com
+ *   This file is part of NiCMidi.
  *
- *  *** RELEASED UNDER THE GNU GENERAL PUBLIC LICENSE (GPL) April 27, 2004 ***
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-/*
-**	Copyright 1986 to 1998 By J.D. Koftinoff Software, Ltd.
-**
-**	All rights reserved.
-**
-**	No one may duplicate this source code in any form for any reason
-**	without the written permission given by J.D. Koftinoff Software, Ltd.
-**
-*/
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
 /// \file
@@ -58,8 +48,6 @@
 ///
 class 	MIDIMessage {
     public:
-        ///@name The Constructors, Destructor and Initializing methods
-        //@{
         /// Creates a a NoOp MIDIMessage (an undefined MIDI message, which will be ignored when playing).
                                 MIDIMessage();
         /// The copy constructor. If the target message has a MIDISystemExclusive object it is duplicated,
@@ -74,11 +62,7 @@ class 	MIDIMessage {
         /// The assignment operator. It primarily frees the old MIDISystemExclusive object if it was allocated,
         /// then duplicates the (eventual) new MIDISystemExclusive, so every MIDIBigMessage has its own object.
         const MIDIMessage&      operator= (const MIDIMessage &msg);
-        //@}
 
-
-        ///@name The 'Get' methods.
-        //@{
         /// Returns the length in bytes of the entire message.
         char	                GetLength() const;
         /// Returns the status byte of the message. If the message is a channel message this contains the message
@@ -99,7 +83,7 @@ class 	MIDIMessage {
         unsigned char	        GetByte3() const	        { return byte3;	}
         /// Returns a pointer to the MIDISystemExclusive object (0 if it is not allocated).
         MIDISystemExclusive*    GetSysEx()                  { return sysex; }
-        /// As above.
+        /// Returns a pointer to the MIDISystemExclusive object (0 if it is not allocated).
         const MIDISystemExclusive*GetSysEx() const          { return sysex; }
         /// If the message is a note on, note off, or poly aftertouch message, returns the note number.
         unsigned char	        GetNote() const		        { return byte1;	}
@@ -135,95 +119,92 @@ class 	MIDIMessage {
         /// If the message is a text meta-message, returns the associated text as a std::string.
         std::string             GetText() const;
 
-        /// Returns *true* if the message is some sort of channel message.
+        /// Returns **true** if the message is some sort of channel message.
         /// You can then call GetChannel() and GetType() for further information.
         bool	                IsChannelMsg() const        { return (status >= 0x80) && (status < 0xf0); }
-        /// Returns *true* if the message is a note on message (status == NOTE_ON and velocity > 0).
+        /// Returns **true** if the message is a note on message (status == NOTE_ON and velocity > 0).
         /// You can then call GetChannel(), GetNote() and GetVelocity() for further information.
         bool	                IsNoteOn() const            { return ((status & 0xf0) == NOTE_ON) && byte2; }
-        /// Returns *true* if the message is a note off message (status == NOTE_OFF or status == NOTE_ON and
+        /// Returns **true** if the message is a note off message (status == NOTE_OFF or status == NOTE_ON and
         /// velocity == 0). You can then call GetChannel() and GetNote() for further information.
         bool	                IsNoteOff() const           { return ((status & 0xf0) == NOTE_OFF) ||
                                                               (((status & 0xf0) == NOTE_ON) && byte2 == 0); }
-        /// Returns *true* if the message is a note on or a note off message.
+        /// Returns **true** if the message is a note on or a note off message.
         bool                    IsNote() const              { return IsNoteOn() || IsNoteOff(); }
-        /// Returns *true* if the message is a polyphonic pressure channel message.
+        /// Returns **true** if the message is a polyphonic pressure channel message.
         /// You can then call GetChannel(), GetNote() and GetVelocity() for further information.
         bool	                IsPolyPressure() const      { return ((status & 0xf0) == POLY_PRESSURE); }
-        /// Returns *true* if the message is a control change message.
+        /// Returns **true** if the message is a control change message.
         /// You can then call GetChannel(), GetController() and GetControllerValue() for further information.
         /// \note This will return *false* on channel mode messages (which have the same status byte of control
         /// changes). Call IsChannelMode() for inspecting them.
         bool	                IsControlChange() const     { return ((status & 0xf0) == CONTROL_CHANGE) &&
                                                                         (byte1 < C_ALL_SOUND_OFF); }
-        /// Returns *true* if the message is a volume change message (control == 0x07).
+        /// Returns **true** if the message is a volume change message (control == 0x07).
         /// You can then call GetChannel() and GetControllerValue() for further information.
         bool                    IsVolumeChange() const      { return IsControlChange() && GetController() == C_MAIN_VOLUME; }
-        /// Returns *true* if the message is a pan change message (control == 0x0A).
+        /// Returns **true** if the message is a pan change message (control == 0x0A).
         /// You can then call GetChannel() and GetControllerValue() for further information.
         bool                    IsPanChange() const         { return IsControlChange() && GetController() == C_PAN; }
-        /// Returns *true* if the message is a pedal on message (control == 0x40 and value >= 0x64).
+        /// Returns **true** if the message is a pedal on message (control == 0x40 and value >= 0x64).
         /// You can then call GetChannel() for further information.
         bool                    IsPedalOn() const           { return IsControlChange() && GetController() == C_DAMPER &&
                                                                                           GetControllerValue() & 0x40; }
-        /// Returns *true* if the message is a pedal off message (control == 0x40 and value < 0x64).
+        /// Returns **true** if the message is a pedal off message (control == 0x40 and value < 0x64).
         /// You can then call GetChannel() for further information.
         bool                    IsPedalOff() const          { return IsControlChange() && GetController() == C_DAMPER &&
                                                                                           !(GetControllerValue() & 0x40); }
-        /// Returns *true if the message is a program change message.
+        /// Returns **true** if the message is a program change message.
         /// You can then call GetChannel() and GetProgramValue() for further information.
         bool	                IsProgramChange() const     { return ((status & 0xf0) == PROGRAM_CHANGE); }
-        /// Returns *true* if the message is a channel pressure message.
+        /// Returns **true** if the message is a channel pressure message.
         /// You can then call GetChannel() and GetChannelPressure() for further information.
         bool	                IsChannelPressure() const   { return ((status & 0xf0) == CHANNEL_PRESSURE); }
-        /// Returns *true* if the message is a bender message.
+        /// Returns **true** if the message is a bender message.
         /// You can then call GetChannel() and GetBenderValue() for further information.
         bool	                IsPitchBend() const         { return ((status & 0xf0) == PITCH_BEND); }
-        /// Returns *true* if the message is a channel mode message (a control change with control >= 0x7A).
+        /// Returns **true** if the message is a channel mode message (a control change with control >= 0x7A).
         bool                    IsChannelMode() const       { return ((status & 0xf0) == CONTROL_CHANGE) &&
                                                                       (byte1 >= C_ALL_SOUND_OFF); }
-        /// Returns *true* if the message is a all notes off message.
+        /// Returns **true** if the message is a all notes off message.
         bool	                IsAllNotesOff() const       { return ((status & 0xf0) == CONTROL_CHANGE) &&
                                                                       (byte1 == C_ALL_NOTES_OFF); }
-        /// Returns *true* if the message is a system message (the status byte is 0xf0 or higher).
+        /// Returns **true** if the message is a system message (the status byte is 0xf0 or higher).
         bool	                IsSystemMessage() const     { return (status & 0xf0) == 0xf0; }
-        /// Returns*true* if the message is a system exclusive message.
+        /// Returns **true** if the message is a system exclusive message.
         bool	                IsSysEx() const             { return (status == SYSEX_START); }
-        /// Returns *true* if the message is a meta event message.
+        /// Returns **true** if the message is a meta event message.
         /// You can then call GetMetaType() and GetMetaValue() for further information.
         bool	                IsMetaEvent() const         { return (status == META_EVENT); }
-        /// Returns *true* if the message is a text message (a subset of meta events).
+        /// Returns **true** if the message is a text message (a subset of meta events).
         /// You can then call GetText() for further information.
         bool 	                IsTextEvent() const         { return (status == META_EVENT && byte1 >= 0x1 && byte1 <= 0xf); }
-        /// Returns *true* if the message is a track name meta-message.
+        /// Returns **true** if the message is a track name meta-message.
         /// You can then call GetText() for further information.
         bool                    IsTrackName() const         { return (IsTextEvent() && GetMetaType() == META_TRACK_NAME); }
-        /// Returns *true* if the message is a marker text meta-message.
+        /// Returns **true** if the message is a marker text meta-message.
         /// You can then call GetText() for further information.
         bool                    IsMarkerText() const        { return (IsTextEvent() && GetMetaType() == META_MARKER_TEXT); }
-        /// Returns *true* if the message is a tempo change meta-message.
+        /// Returns **true** if the message is a tempo change meta-message.
         /// You can then call GetTempo() or GetInternalTempo() for further information.
         bool	                IsTempo() const             { return (status == META_EVENT) && (byte1 == META_TEMPO); }
-        /// Returns *true* if the message is a data end (i.e. end of track) meta-message.
+        /// Returns **true** if the message is a data end (i.e. end of track) meta-message.
         bool	                IsDataEnd() const           { return (status == META_EVENT) && (byte1 == META_END_OF_TRACK); }
-        /// Returns *true* if the message is a SMPTE offset meta-message.
+        /// Returns **true** if the message is a SMPTE offset meta-message.
         /// The SMPTE data are kept in the MIDISystemExclusive object.
         bool	                IsSMPTEOffset() const       { return (status == META_EVENT) && (byte1 == META_SMPTE); }
-        /// Returns *true* if the message is a time Signature meta-message.
+        /// Returns **true** if the message is a time Signature meta-message.
         /// You can then call GetTimeSigNumerator() and GetTimeSigDenominator() for further information.
         bool	                IsTimeSig() const           { return (status == META_EVENT) && (byte1 == META_TIMESIG); }
-        /// Returns *true* if the message is a key signature meta-message.
+        /// Returns **true** if the message is a key signature meta-message.
         /// You can then call GetKeySigSharpFlats() and GetKeySigMajorMinor() for further information.
         bool	                IsKeySig() const            { return (status == META_EVENT) && (byte1 == META_KEYSIG); }
-        /// Returns *true* if the message is a NoOp (not inizialized) message.
+        /// Returns **true** if the message is a NoOp (not inizialized) message.
         bool	                IsNoOp() const              { return (status == STATUS_SERVICE) && (byte1 == NO_OP_VAL); }
-        /// Returns *true* if the message is a beat marker message.
+        /// Returns **true** if the message is a beat marker message.
         /// This is an internal service message used by the MIDISequencer class to mark the metronome clicks.
         bool                    IsBeatMarker() const        { return (status == STATUS_SERVICE) && (byte1 == BEAT_MARKER_VAL); }
-        //@}
 
-        ///@name The 'Set' methods
-        //@{
         /// Sets all bits of the status byte of the message (i.e., for channel messages, the type and the channel).
         void	                SetStatus(unsigned char s)	        { status = s; }
         /// Sets just the lower 4 bits of the status byte without changing the upper 4 bits.
@@ -333,11 +314,7 @@ class 	MIDIMessage {
         void	                SetNoOp()                           { Clear(); }
         /// Makes the message a beat marker internal service message.
         void	                SetBeatMarker();
-        //@}
 
-
-        /// \name Other methods
-        //@{
         /// Returns a human readable ascii string describing the message content.
         virtual std::string     MsgToText() const;
         /// Allocates a MIDISystemExclusive object, with a buffer of given max size.
@@ -347,8 +324,6 @@ class 	MIDIMessage {
         /// An eventual old object is freed.
         void                    CopySysEx(const MIDISystemExclusive* se);
         /// The compare operator execute a bitwise comparison.
-        //@}
-
         friend bool             operator== (const MIDIMessage &m1, const MIDIMessage &m2);
 
         /// This static method determines if the SetNoteOff() method will produce a MIDI NOTE_OFF
@@ -356,17 +331,23 @@ class 	MIDIMessage {
         /// The default is **false** (NOTE_OFF messages). If you want to use the other form call this with **true**.
         static void             UseNoteOnv0ForOff(bool f)           { use_note_onv0 = f; }
 
+        /// \cond EXCLUDED
         /// Status and byte1 for non MIDI messages (internal use).
-        enum { STATUS_SERVICE = 0, NO_OP_VAL = 0, BEAT_MARKER_VAL = 1 };
+        enum { STATUS_SERVICE = 0,              // Status byte for a service (non MIDI) message
+               NO_OP_VAL = 0,                   // Byte 1 for a NoOp (uninitialized) message
+               BEAT_MARKER_VAL = 1 };           // Byte 1 for a beat marker message (used internally by the sequencer)
+        /// \endcond
 
     protected:
 
-        unsigned char	        status;         ///< The status byte.
-        unsigned char	        byte1;          ///< 1st data byte.
-        unsigned char	        byte2;          ///< 2nd data byte.
-        unsigned char	        byte3;		    ///< 3rd data byte (only used for some meta-events).
-        MIDISystemExclusive*    sysex;          ///< The sysex pointer.
-        static bool             use_note_onv0;  ///< This flag influences the SetNoteOff() method behavior.
+        /// \cond EXCLUDED
+        unsigned char	        status;         // The status byte.
+        unsigned char	        byte1;          // 1st data byte.
+        unsigned char	        byte2;          // 2nd data byte.
+        unsigned char	        byte3;		    // 3rd data byte (only used for some meta-events).
+        MIDISystemExclusive*    sysex;          // The sysex pointer.
+        static bool             use_note_onv0;  // This flag influences the SetNoteOff() method behavior.
+        /// \endcond
 };
 
 // NO NEED TO ADD A Reset MESSAGE (status = 0xff)! If you want it can use SetSystemMessage(0xff)
@@ -383,9 +364,6 @@ class 	MIDIMessage {
 ///
 class 	MIDITimedMessage : public MIDIMessage {
     public:
-
-      ///@name The Constructors, Destructor and Initializing methods
-        //@{
 
         /// Creates a a NoOp MIDITimedMessage with the time set to 0. This is an undefined MIDI message),
         /// which will be ignored when playing.
@@ -404,7 +382,6 @@ class 	MIDITimedMessage : public MIDIMessage {
         const MIDITimedMessage &operator= (const MIDITimedMessage &msg);
         /// Assignment operator (sets the time to 0). \see MIDIMessage::operator=()
         const MIDITimedMessage &operator= (const MIDIMessage &msg);
-        //@}
 
         /// Returns a human readable ascii string describing the message content.
         virtual std::string     MsgToText() const;

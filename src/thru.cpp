@@ -1,3 +1,28 @@
+/*
+ *   NiCMidi - A C++ Class Library for MIDI
+ *
+ *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
+ *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
+ *
+ *   This file is part of NiCMidi.
+ *
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 #include "../include/manager.h"
 #include "../include/thru.h"
 
@@ -5,33 +30,32 @@
 MIDIThru::MIDIThru() : MIDITickComponent(PR_PRE_SEQ, StaticTickProc), in_port(0), out_port(0), in_channel(-1),
                                          out_channel(-1), processor(0)
 {
-    if (MIDIManager::GetNumMIDIIns() > 0)
-        in_port = MIDIManager::GetInDriver(0);
-    if (MIDIManager::GetNumMIDIOuts() > 0)
-        out_port = MIDIManager::GetOutDriver(0);
+    if (!MIDIManager::HasMIDIIn() || !MIDIManager::HasMIDIOut())
+        throw RtMidiError("MIDIThru needs almost a MIDI in and out port in the system\n", RtMidiError::INVALID_DEVICE);
 }
 
 
 void MIDIThru::Reset() {
     Stop();
     SilentOut();
-    in_port = (MIDIManager::GetNumMIDIIns() > 0 ? MIDIManager::GetInDriver(0) : 0);
-    out_port = (MIDIManager::GetNumMIDIOuts() > 0 ? MIDIManager::GetOutDriver(0) : 0);
+    in_port = 0;
+    out_port = 0;
     processor = 0;
     in_channel = -1;
     out_channel = -1;
 }
 
 
-void MIDIThru::SetInPort(MIDIInDriver* const port) {
+void MIDIThru::SetInPort(unsigned int port) {
+    port %= MIDIManager::GetNumMIDIIns();           // avoids out of range errors
     if (port == in_port)
         return;                                     // trying to assign same ports: nothing to do
 
     if (IsPlaying()) {
         proc_lock.lock();
-        in_port->ClosePort();
+        MIDIManager::GetInDriver(in_port)->ClosePort();
         SilentOut();
-        port->OpenPort();
+        MIDIManager::GetInDriver(port)->OpenPort();
         in_port = port;
         proc_lock.unlock();
     }
@@ -40,15 +64,17 @@ void MIDIThru::SetInPort(MIDIInDriver* const port) {
 }
 
 
-void MIDIThru::SetOutPort(MIDIOutDriver* const port) {
+void MIDIThru::SetOutPort(unsigned int port) {
+    port %= MIDIManager::GetNumMIDIOuts();          // avoids out of range errors
     if (port == out_port)
         return;                                     // trying to assign same ports: nothing to do
 
     if (IsPlaying()) {
         proc_lock.lock();
         SilentOut();
-        out_port->ClosePort();
-        port->OpenPort();
+        MIDIManager::GetOutDriver(out_port)->ClosePort();
+        MIDIManager::GetOutDriver(port)->OpenPort();
+        out_port = port;
         proc_lock.unlock();
     }
     else
@@ -93,33 +119,29 @@ void MIDIThru::SetOutChannel(char chan) {
 
 
 void MIDIThru::Start() {
-    if (in_port == 0 || out_port == 0 ||            // thru ports not set
-        IsPlaying())
+    if (IsPlaying())
         return;
-    in_port->OpenPort();
-    out_port->OpenPort();
+    MIDIManager::GetInDriver(in_port)->OpenPort();
+    MIDIManager::GetOutDriver(out_port)->OpenPort();
     MIDITickComponent::Start();
 }
 
 
 void MIDIThru::Stop() {
-    if (in_port == 0 || out_port == 0 ||            // thru ports not set
-        !IsPlaying())
+    if (!IsPlaying())
         return;
     MIDITickComponent::Stop();
-    in_port->ClosePort();
+    MIDIManager::GetInDriver(in_port)->ClosePort();
     SilentOut();
-    out_port->ClosePort();
+    MIDIManager::GetOutDriver(out_port)->ClosePort();
 }
 
 
 void MIDIThru::SilentOut() {
-    if (out_port) {
-        if (out_channel != -1)
-            out_port->AllNotesOff(out_channel);
-        else
-            out_port->AllNotesOff();
-    }
+    if (out_channel != -1)
+        MIDIManager::GetOutDriver(out_port)->AllNotesOff(out_channel);
+    else
+        MIDIManager::GetOutDriver(out_port)->AllNotesOff();
 }
 
 
@@ -129,7 +151,6 @@ void MIDIThru::StaticTickProc(tMsecs sys_time, void* pt) {
 }
 
 
-// NEW FUNCTION WITH DIRECT SEND WITH HardwareMsgOut
 void MIDIThru::TickProc(tMsecs sys_time_)
 {
     proc_lock.lock();
@@ -140,13 +161,14 @@ void MIDIThru::TickProc(tMsecs sys_time_)
         std::cout << "MIDIThru::TickProc() called " << times * 1000 << " times\n";
     times++;
 */
-
     MIDIRawMessage rmsg;
     MIDITimedMessage msg;
-    in_port->LockQueue();
-    for (unsigned int i = 0; i < in_port->GetQueueSize(); i++) {
+    MIDIInDriver* in_driver = MIDIManager::GetInDriver(in_port);
+    MIDIOutDriver* out_driver = MIDIManager::GetOutDriver(out_port);
+    in_driver->LockQueue();
+    for (unsigned int i = 0; i < in_driver->GetQueueSize(); i++) {
         std::cout << "Message found\n";
-        in_port->ReadMessage(rmsg, i);
+        in_driver->ReadMessage(rmsg, i);
         msg = rmsg.msg;
         if (msg.IsChannelMsg()) {
             if (in_channel == msg.GetChannel() || in_channel == -1) {
@@ -154,10 +176,10 @@ void MIDIThru::TickProc(tMsecs sys_time_)
                     msg.SetChannel(out_channel);
                 if (processor)
                     processor->Process(&msg);
-                out_port->OutputMessage(msg);
+                out_driver->OutputMessage(msg);
             }
         }
     }
-    in_port->UnlockQueue();
+    in_driver->UnlockQueue();
     proc_lock.unlock();
 }

@@ -7,7 +7,7 @@
   Compile it together with functions.cpp, which contains command
   line I/O functions.
 
-  Copyright (C) 2016 - 2019 N.Cassetta
+  Copyright (C) 2016 - 2020 N.Cassetta
   ncassetta@tiscali.it
 
   This program is free software; you can redistribute it and/or
@@ -29,7 +29,7 @@
 
 #include "../include/manager.h"
 #include "../include/thru.h"
-#include "functions.h"
+#include "functions.h"                  // helper functions for input parsing and output
 
 #include <iostream>
 #include <string>
@@ -55,15 +55,14 @@ const char helpstring[] =                       // shown by the help command
                          (default: port 0, chan all)\n\
    thru on/off         : Sets MIDI thru on/off\n\
    program prog        : Sets the MIDI program (patch) number for\n\
-                         the current out channel (if a single channel\n\
-                         is selected\n\
+                         the current out channel (only if a single\n\
+                         channel is selected)\n\
    print on/off        : Turns on and off the printing of incoming\n\
                          messages\n\
-   status              : Prints the status of the program\n\
+   status              : Prints the status of the thru\n\
    help                : Prints this help screen\n\
    quit                : Exits\n\n\
    MIDI channels are numbered 0 .. 15, and -1 stands for \"all channels\"";
-
 
 
 //////////////////////////////////////////////////////////////////
@@ -72,7 +71,8 @@ const char helpstring[] =                       // shown by the help command
 
 
 int main( int argc, char **argv ) {
-    if (MIDIManager::GetNumMIDIIns() == 0 || MIDIManager::GetNumMIDIOuts()) {
+    // tests if MIDI ports are present in the system
+    if (MIDIManager::GetNumMIDIIns() == 0 || MIDIManager::GetNumMIDIOuts() == 0) {
         cout << "This program has no functionality without MIDI ports!\n" <<
                 "Press a key to quit\n";
         cin.get();
@@ -80,108 +80,114 @@ int main( int argc, char **argv ) {
     }
     // adds the thru to the MIDIManager queue
     MIDIManager::AddMIDITick(&thru);
-    // plugs the printer processor into the thru object
+    // plugs the MIDIProcessorPrinter into the metronome, so all MIDI message will
+    // be printed to stdout
     thru.SetProcessor(&printer);
     cout << "TYPE help TO GET A LIST OF AVAILABLE COMMANDS\n\n";
-    while ( command != "quit" )                     // main loop
+    while (command != "quit")                       // main loop
     {
-        GetCommand();                               // gets user input and parse it
+        GetCommand();                               // gets user input and splits it into command, par1, par2
 
-        if ( command == "ports") {                  // enumerates the midi ports
-            cout << "\tMIDI IN PORTS:\n";
-            for ( unsigned int i = 0; i < MIDIManager::GetNumMIDIIns(); i++ )
-                cout << i << ": " << MIDIManager::GetMIDIInName( i ) << endl;
-            if ( MIDIManager::GetNumMIDIOuts() ) {
+        if (command == "ports") {                   // enumerates the midi ports
+            if (MIDIManager::GetNumMIDIIns()) {
+                cout << "\tMIDI IN PORTS:" << endl;
+                for (unsigned int i = 0; i < MIDIManager::GetNumMIDIIns(); i++)
+                    cout << i << ": " << MIDIManager::GetMIDIInName(i) << endl;
+            }
+            if (MIDIManager::GetNumMIDIOuts()) {
                 cout << "MIDI OUT PORTS:\n";
-                for ( unsigned int i = 0; i < MIDIManager::GetNumMIDIOuts(); i++ )
-                    cout << i << ": " << MIDIManager::GetMIDIOutName( i ) << endl;
+                for (unsigned int i = 0; i < MIDIManager::GetNumMIDIOuts(); i++)
+                    cout << i << ": " << MIDIManager::GetMIDIOutName(i) << endl;
             }
         }
-        else if ( command == "outport") {               // changes the midi out port
-            int port = atoi( par1.c_str() );
-            int chan = -1;
+        else if (command == "outport") {            // changes the midi out port
+            int port = atoi(par1.c_str());
+            int chan = -1;                              // all channels
             if (par2.length() > 0)
-                chan = atoi( par2.c_str() );
+                chan = atoi(par2.c_str()) & 0x0f;
             if (port < 0 || (unsigned)port >= MIDIManager::GetNumMIDIOuts())
-                cout << "Invalid port number\n";
+                cout << "Invalid port number" << endl;
             else {
-                thru.SetOutPort(MIDIManager::GetOutDriver(port));
+                thru.SetOutPort(port);
                 thru.SetOutChannel(chan);
-                cout << "Out port for MIDI thru:\n" << thru.GetOutPort()->GetPortName()
-                     << "\tChan: " << thru.GetOutChannel() << endl;;
+                cout << "Out port for MIDI thru:\n" << MIDIManager::GetMIDIOutName(thru.GetOutPort())
+                     << "\tChan: " << thru.GetOutChannel() << endl;
             }
         }
-        else if ( command == "inport" ) {               // changes the midi in port
-            int port = atoi( par1.c_str() );
+        else if (command == "inport") {             // changes the midi in port
+            int port = atoi(par1.c_str());
             int chan = -1;
             if (par2.length() > 0)
-                chan = atoi( par2.c_str() );
+                chan = atoi(par2.c_str()) & 0x0f;
             if (port < 0 || (unsigned)port >= MIDIManager::GetNumMIDIIns())
-                cout << "Invalid port number\n";
+                cout << "Invalid port number" << endl;
             else {
-                thru.SetInPort(MIDIManager::GetInDriver(port));
+                thru.SetInPort(port);
                 thru.SetInChannel(chan);
-                cout << "In port for MIDI thru:\n" << thru.GetInPort()->GetPortName()
+                cout << "In port for MIDI thru:\n" << MIDIManager::GetMIDIInName(thru.GetInPort())
                      << "\tChan: " << thru.GetInChannel() << endl;
             }
         }
-        else if ( command == "thru") {                  // sets the MIDI thru on and off
+        else if (command == "thru") {               // sets the MIDI thru on and off
             if (par1 == "on") {
                 thru.Start();
-                cout << "MIDIthru on, from  in port " << thru.GetInPort()->GetPortName()
-                     << " to out port " << thru.GetOutPort()->GetPortName() << endl;
+                cout << "MIDIthru on, from in port " << MIDIManager::GetMIDIInName(thru.GetInPort())
+                     << " to out port " << MIDIManager::GetMIDIOutName(thru.GetOutPort()) << endl;
             }
             else if (par1 == "off") {
                 thru.Stop();
-                cout << "MIDI thru off\n";
+                cout << "MIDI thru off" << endl;
             }
         }
-        else if ( command == "program" ) {              // sets the MIDI program
-            MIDITimedMessage msg;
-            unsigned char prog = atoi( par1.c_str() ) % 0x7f;
-            unsigned char chan = (thru.GetOutChannel() == -1 ? 0 : thru.GetOutChannel());
-            msg.SetProgramChange(chan, prog);
-
-            thru.GetOutPort()->OutputMessage(msg);
-            cout << "Sent program change " << prog << "on port " << thru.GetOutPort()->GetPortName()
-                 << " channel " << chan << endl;
+        else if (command == "program") {            // sets the MIDI program
+            unsigned int prog = atoi(par1.c_str()) & 0x7f;      // program number
+            int chan = thru.GetOutChannel();
+            if (chan == -1)                                     // OUT is set on any channel
+                chan = thru.GetInChannel();
+            if (chan == -1)                                     // both are on any channel: no effect
+                cout << "IN and OUT set to all channels. This command has no effect!" << endl;
+            else {
+                MIDITimedMessage msg;                           // new message
+                msg.SetProgramChange(chan, prog);               // sets it as a program change
+                MIDIManager::GetOutDriver(thru.GetOutPort())->OutputMessage(msg);
+                                                                // sends it to the out port
+                cout << "Sent program change " << prog << " on port " << MIDIManager::GetMIDIInName(thru.GetOutPort())
+                     << " channel " << chan << endl;
+            }
         }
-        else if (command == "print") {                  // sets the printing of passing events on and off
+        else if (command == "print") {              // sets the printing of passing events on and off
             if (par1 == "on") {
                 printer.SetPrint(true);
-                cout << "Print on (port " << thru.GetInPort()->GetPortName() << ")" << endl;
+                cout << "Print on (port " << MIDIManager::GetMIDIOutName(thru.GetInPort()) << ")" << endl;
             }
             else if (par1 == "off") {
                 printer.SetPrint(false);
-                cout << "Print off\n";
+                cout << "Print off" << endl;
             }
         }
-        else if ( command == "status" ) {               // prints the general thru status
-            MIDIInDriver* thru_in = thru.GetInPort();
-            MIDIOutDriver* thru_out = thru.GetOutPort();
-            cout << "\nPROGRAM STATUS:\n";
-            cout << "MIDI in port:             " << thru_in->GetPortName() << endl;
+        else if (command == "status") {             // prints the general thru status
+            cout << "\nTHRU STATUS:" << endl;
+            cout << "MIDI in port:             " << MIDIManager::GetMIDIInName(thru.GetInPort()) << endl;
             cout << "MIDI in channel:          ";
             if (thru.GetInChannel() == -1)
-                cout << "all\n";
+                cout << "all" << endl;
             else
-                cout << thru.GetInChannel() << "\n";
-            cout << "MIDI out port:            " << thru_out->GetPortName() << endl;
+                cout << thru.GetInChannel() << endl;
+            cout << "MIDI out port:            " << MIDIManager::GetMIDIOutName(thru.GetOutPort()) << endl;
             cout << "MIDI out channel:         ";
             if (thru.GetOutChannel() == -1)
-                cout << "all\n";
+                cout << "all" << endl;
             else
-                cout << thru.GetOutChannel() << "\n";
+                cout << thru.GetOutChannel() << endl;
             cout << "MIDI thru:                ";
-            cout << (thru.IsPlaying() ? "ON\n" : "OFF\n");
+            cout << (thru.IsPlaying() ? "ON" : "OFF") << endl;
             cout << "Print incoming messages : ";
-            cout << (printer.GetPrint() ? "ON\n" : "OFF\n");
+            cout << (printer.GetPrint() ? "ON" : "OFF") << endl;
         }
-        else if (command == "help")                    // prints help screen
+        else if (command == "help")                 // prints help screen
             cout << helpstring;
-        else if (command != "quit" )                   // unrecognized command
+        else if (command != "quit" )                // unrecognized command
             cout << "Unrecognized command" << endl;
     }
     return EXIT_SUCCESS;
 }
-

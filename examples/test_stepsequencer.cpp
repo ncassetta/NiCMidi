@@ -1,37 +1,37 @@
-/*
- * Copyright (C) 2014 N.Cassetta
- * ncassetta@tiscali.it
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program;
- * if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- *
+/* This is a very basic, and not comfortable, step sequencer,
+   made for demonstrating editing capabilities of the myjdkmidi library.
+   It creates an AdvancedSequencer class instance, gets it MultiTrack,
+   and allow the user to edit it.
+   You can load and save MIDI files, play them, view the file
+   content, edit the file. You can insert, delete or change these
+   MIDI events: note, control (in particular volume and pan)
+   program and tempo. For changing an event, insert a new event
+   (same note, control, program, tempo) at same time position.
+
+  Copyright (C) 2014 - 2020 N.Cassetta
+  ncassetta@tiscali.it
+
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License
+  as published by the Free Software Foundation; either version 2
+  of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program;
+  if not, write to the Free Software Foundation, Inc.,
+  51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
 
-/* This is a very basic, and not comfortable, step sequencer, made for demonstrating
-   editing capabilities of the jdksmidi library. It creates an AdvancedSequencer class instance,
-   gets it MultiTrack, and allow the user to edit it.
-   You can load and save MIDI files, play them, view the file content, edit the file.
-   You can insert, delete or change these MIDI events: note, control (in particular volume and pan)
-   patch and tempo. For changing an event, insert a new event (same note, control, patch, tempo) at
-   same time position.
-*/
-
-
 #include "test_stepsequencer.h"
-#include "functions.h"
+#include "functions.h"                  // helper functions for input parsing and output
+#include "../include/advancedsequencer.h"
+#include "../include/filewritemultitrack.h"
 
 #include <iostream>
 
@@ -42,106 +42,25 @@ using namespace std;
 //                        G L O B A L S                         //
 //////////////////////////////////////////////////////////////////
 
-extern string command_buf, command, par1, par2, par3;      // used by GetCommand() for parsing the user input
 MIDISequencerGUINotifierText notifier;              // a text notifier: send messages to std::cout (default)
 AdvancedSequencer sequencer(&notifier);             // an AdvancedSequencer
 MIDIMultiTrack* multitrack = sequencer.GetMultiTrack();
                                                     // our multitrack which will be edited
+
+extern string command, par1, par2, par3;            // used by GetCommand() for parsing the user input
 position cur_pos(multitrack);                       // the cursor position
 edit_block cur_block;                               // used for cut, copy, paste
 MIDIEditMultiTrack edit_multitrack;                 // used for cut, copy, paste
 char filename[200];                                 // our filename
 
 
-void GetCommand() {
-// gets from the user the string command_buf, then parses it
-// dividing it into command, par1, par2 and par3 substrings
 
-    size_t pos1, pos2;
-
-    cout << "\n=> ";
-    getline(cin, command_buf);
-
-    command = "";
-    par1 = "";
-    par2 = "";
-    par3 = "";
-
-    for (size_t i = 0; i < command_buf.size(); ++i)
-        command_buf[i] = tolower( command_buf[i]);
-
-    pos1 = command_buf.find_first_not_of ( " ");
-    pos2 = command_buf.find_first_of (" ", pos1 + 1);
-    if (pos1 == string::npos)
-        return;
-
-    command = command_buf.substr (pos1, pos2 - pos1);
-    pos1 = command_buf.find_first_not_of (" ", pos2);
-    pos2 = command_buf.find_first_of (" ", pos1 + 1);
-    if ( pos1 == string::npos )
-        return;
-
-    par1 = command_buf.substr (pos1, pos2 - pos1);
-    pos1 = command_buf.find_first_not_of (" ", pos2);
-    pos2 = command_buf.find_first_of (" ", pos1 + 1);
-    if (pos1 == string::npos)
-        return;
-
-    par2 = command_buf.substr (pos1, pos2 - pos1);
-    pos1 = command_buf.find_first_not_of ( " ", pos2);
-    pos2 = command_buf.find_first_of (" ", pos1 + 1);
-    if (pos1 == string::npos)
-        return;
-    par3 = command_buf.substr (pos1, pos2 - pos1);
-}
+////////////////////////////////////////////////////////////
+/////         H E L P E R   F U N C T I O N S          /////
+////////////////////////////////////////////////////////////
 
 
-void DumpMIDIMultiTrackWithPauses (MIDIMultiTrack *mlt) {
-    MIDIMultiTrackIterator iter (mlt);
-    MIDITimedMessage *msg;
-    int trk_num;
-    int num_lines = 0;
-
-    printf ("DUMP OF MIDI MULTITRACK\n");
-    printf ("Clocks per beat: %d\n\n", mlt->GetClksPerBeat() );
-
-    iter.GoToTime (0);
-
-    while (iter.GetNextEvent (&trk_num, &msg)) {
-        printf ("Tr %2d - ", trk_num);
-        DumpMIDITimedMessage (msg);
-        num_lines++;
-        if (num_lines == 80) {
-            printf ("Press <ENTER> to continue or q + <ENTER> to exit ...\n");
-            char ch = std::cin.get();
-            if (tolower(ch) == 'q')
-                return;
-            num_lines = 0;
-        }
-    }
-}
-
-
-void DumpMIDITrackWithPauses (MIDITrack *trk, int trk_num) {
-    int num_lines = 0;
-
-    printf ("DUMP OF MIDI TRACK %d\n", trk_num);
-
-    for (unsigned int ev_num = 0; ev_num < trk->GetNumEvents(); ev_num++) {
-        DumpMIDITimedMessage (trk->GetEventAddress(ev_num));
-        num_lines++;
-        if (num_lines == 80) {
-            printf ("Press <ENTER> to continue or q + <ENTER> to exit ...\n");
-            char ch = std::cin.get();
-            if (tolower(ch) == 'q')
-                return;
-            num_lines = 0;
-        }
-    }
-}
-
-
-unsigned char NameToValue( string s ) {
+unsigned char NameToValue(string s) {
 // Converts a string as "C6" or "a#5" into corresponding MIDI note value
 
     static const unsigned char noteoffsets[7] = { 9, 11, 0, 2, 4, 5, 7,};
@@ -202,7 +121,7 @@ int main(int argc, char **argv) {
     multitrack->SetClksPerBeat(120);
     cur_pos.setstep (120);
     cout << "Step sequencer example for jdksmidi library" << endl <<
-            "Copyright 2014 - 2017 Nicola Cassetta" << endl << endl;
+            "Copyright 2014 - 2020 Nicola Cassetta" << endl << endl;
     PrintResolution();
     cout << endl << "TYPE help TO GET A LIST OF AVAILABLE COMMANDS" << endl << endl;
 
@@ -226,9 +145,8 @@ int main(int argc, char **argv) {
         }
 
         else if (command == "save"){                // saves current file
-            if (par1.length() > 0)
-                strcpy (filename, par1.c_str() );
-            if (strlen(filename ) == 0)
+            strcpy (filename, par1.c_str());
+            if (strlen(filename) == 0)
                 cout << "File name not defined" << endl;
             else {
                 if (WriteMIDIFile(filename, 1, multitrack))
@@ -339,7 +257,7 @@ int main(int argc, char **argv) {
             sequencer.UpdateStatus();
         }
 
-        else if (command == "volume") {                     // inserts a volume event
+        else if (command == "volume") {             // inserts a volume event
             msg.SetTime(cur_pos.gettime());
             if (par1 != "*") {
                 msg.SetControlChange(cur_pos.gettrack() - 1, C_MAIN_VOLUME, atoi(par1.c_str()));
@@ -357,7 +275,7 @@ int main(int argc, char **argv) {
             sequencer.UpdateStatus();
         }
 
-        else if ( command == "pan") {                   // inserts a pan event
+        else if ( command == "pan") {               // inserts a pan event
             msg.SetTime(cur_pos.gettime());
             if (par1 != "*") {
                 msg.SetControlChange(cur_pos.gettrack() - 1, C_PAN, atoi(par1.c_str()));
@@ -375,7 +293,7 @@ int main(int argc, char **argv) {
             sequencer.UpdateStatus();
         }
 
-        else if (command == "control") {                // inserts a generic control event
+        else if (command == "control") {            // inserts a generic control event
 
             msg.SetTime(cur_pos.gettime());
             if (par2 != "*") {
@@ -394,7 +312,7 @@ int main(int argc, char **argv) {
             sequencer.UpdateStatus();
         }
 
-        else if ( command == "patch") {                     // inserts a patch event
+        else if ( command == "program") {           // inserts a program event
             msg.SetTime(cur_pos.gettime());
             if (par1 != "*") {
                 msg.SetProgramChange(cur_pos.gettrack() - 1, atoi(par1.c_str()));
@@ -412,7 +330,7 @@ int main(int argc, char **argv) {
             sequencer.UpdateStatus();
         }
 
-        else if ( command == "tempo") {                     // inserts a tempo event in track 0
+        else if ( command == "tempo") {             // inserts a tempo event in track 0
             msg.SetTime (cur_pos.gettime());
             if (par1 != "*") {
                 msg.SetTempo(atoi(par1.c_str()));
@@ -430,7 +348,7 @@ int main(int argc, char **argv) {
             sequencer.UpdateStatus();
         }
 
-        else if (command == "time") {
+        else if (command == "time") {               // inserts a time event in track 0
             msg.SetTime (cur_pos.gettime());
             if (par1 != "*") {
                 msg.SetTimeSig(atoi(par1.c_str()), atoi(par2.c_str()));

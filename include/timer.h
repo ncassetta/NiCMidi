@@ -1,3 +1,27 @@
+/*
+ *   NiCMidi - A C++ Class Library for MIDI
+ *
+ *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
+ *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
+ *
+ *   This file is part of NiCMidi.
+ *
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 
 /// \file
 /// Contains the definition of the MIDITimer class and some other typedef related to MIDI timing.
@@ -11,11 +35,13 @@
 #include <atomic>
 
 
-
+/// \addtogroup GLOBALS
+//@{
 /// The type of a variable which can hold the elapsed time in milliseconds.
 typedef unsigned long long tMsecs;
 /// This is the typedef of the callback function which is called at every timer tick.
 typedef  void (MIDITick)(tMsecs, void*);
+//@}
 
 ///
 /// A static class which provides the timing required for MIDI playback, using the C++11 &lt;chrono&gt;
@@ -31,8 +57,9 @@ typedef  void (MIDITick)(tMsecs, void*);
 class MIDITimer {
     public:
 
+        /// Type for a variable which can hold a specific time point (internal use).
         typedef std::chrono::steady_clock::time_point timepoint;
-        /// The time is counted in milliseconds.
+        /// Type for a variable which can hold a time duration (in milliseconds).
 		typedef std::chrono::milliseconds duration;
 
         /// The class is static so the constructor is deleted.
@@ -40,8 +67,8 @@ class MIDITimer {
 
         /// Returns the timer resolution, i.e. the time interval (in milliseconds) between two ticks.
         static unsigned int         GetResolution()                 { return resolution; }
-        /// Returns the pointer to the callback function.
-        static MIDITick*            GetMIDITick()                   { return tick; }
+        /// Returns the pointer to the callback function set by the user.
+        static MIDITick*            GetMIDITick()                   { return tick_proc; }
         /// Returns **true** if the timer is running
         static bool                 IsOpen()                        { return (num_open > 0);  }
 
@@ -79,15 +106,19 @@ class MIDITimer {
 
         static const unsigned int   DEFAULT_RESOLUTION = 10;
                                                         ///< The default timer resolution
-        /// The background thread procedure which calls the callback function
+        /// The background thread procedure. This calls the tick_proc callback supplied by the user and sleeps
+        /// until next tick.
         static void                 ThreadProc();
 
-        static unsigned int         resolution;         ///< The timer resolution
-        static MIDITick*            tick;               ///< The callback function
-        static void*                tick_param;         ///< The callback second parameter
-        static std::thread          bg_thread;          ///< The background thread
-        static std::atomic<int>     num_open;           ///< The number of times Start() was called without a corresponding Stop()
-        static const timepoint      sys_clock_base;     ///< The base timepoint for calculating system time
+        /// \cond EXCLUDED
+        static unsigned int         resolution;         // The actual timer resolution
+        static MIDITick*            tick_proc;          // The callback function set by the user
+        static void*                tick_param;         // The callback second parameter set by the user
+        static std::thread          bg_thread;          // The background thread
+        static std::atomic<int>     num_open;           // The number of times Start() was called without a corresponding Stop()
+        static const timepoint      sys_clock_base;     // The base timepoint for calculating system time
+        static timepoint            current;            // Internal use
+        /// \endcond
 };
 
 //extern MIDITimer main_timer;

@@ -1,11 +1,10 @@
 /*
- *
  * Example using the classes MIDITrack and MIDIMultiTrack for
  * libJDKSmidi C++ MIDI Library.
  * A simple step sequencer: you can add, remove, edit MIDI
  * events and play and save your file (console app, no GUI!)
  *
- * Copyright (C) 2014 N.Cassetta
+ * Copyright (C) 2014-2020 N.Cassetta
  * ncassetta@tiscali.it
  *
  * This program is free software; you can redistribute it and/or
@@ -39,11 +38,7 @@
 #ifndef TEST_STEPSEQUENCER_H_INCLUDED
 #define TEST_STEPSEQUENCER_H_INCLUDED
 
-#include <string>
-
-#include "../include/advancedsequencer.h"
-#include "../include/filewritemultitrack.h"
-#include "../include/dump_tracks.h"
+#include "../include/multitrack.h"
 
 
 static const char helpstring1[] =
@@ -75,7 +70,7 @@ static const char helpstring2[] =
    volume val          : Inserts a volume event at current position\n\
    pan val             : Inserts a pan event at current position\n\
    control nn val      : Inserts a control nn event at current position\n\
-   patch val           : Inserts a patch event at current position\n\
+   program val         : Inserts a program event at current position\n\
    tempo val           : Inserts a tempo event at current position\n\
    time num den        : Inserts a timesig event at current position\n\
    note nn *, volume *, etc... (followed by an asterisk)\n\
@@ -100,11 +95,6 @@ static const char helpstring3[] =
    NOTE: when playing, the sequencer notifier will print beat messages,\n\
    messing up the program input prompt. You can turn it off with the ""notify""\n\
    command. However you can still type your commands during playback.\n\n";
-
-
-void GetCommand();
-unsigned char NameToValue( std::string s );
-void DumpMIDIMultiTrackWithPauses( MIDIMultiTrack *mlt );
 
 
 class position {

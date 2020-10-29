@@ -1,42 +1,29 @@
 /*
- *  libjdkmidi-2004 C++ Class Library for MIDI
+ *   NiCMidi - A C++ Class Library for MIDI
  *
- *  Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
- *  www.jdkoftinoff.com
- *  jeffk@jdkoftinoff.com
+ *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
+ *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
  *
- *  *** RELEASED UNDER THE GNU GENERAL PUBLIC LICENSE (GPL) April 27, 2004 ***
+ *   This file is part of NiCMidi.
  *
- *  MODIFIED BY NICOLA CASSETTA
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-/*
-**	Copyright 1986 to 1998 By J.D. Koftinoff Software, Ltd.
-**
-**	All rights reserved.
-**
-**	No one may duplicate this source code in any form for any reason
-**	without the written permission given by J.D. Koftinoff Software, Ltd.
-**
-*/
-
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
 #include "../include/multitrack.h"
-
 #include "../include/dump_tracks.h"    // DEBUG:
 #include <iostream>
 
@@ -216,14 +203,14 @@ bool MIDIMultiTrack::MoveTrack(int from, int to) {
 }
 
 
-bool MIDIMultiTrack::InsertEvent(int trk, const MIDITimedMessage& msg, int _ins_mode) {
+bool MIDIMultiTrack::InsertEvent(int trk, const MIDITimedMessage& msg, tInsMode _ins_mode) {
     if (IsValidTrackNumber(trk))
         return tracks[trk]->InsertEvent(msg, _ins_mode);
     return false;
 }
 
 
-bool MIDIMultiTrack::InsertNote(int trk, const MIDITimedMessage& msg, MIDIClockTime len, int _ins_mode) {
+bool MIDIMultiTrack::InsertNote(int trk, const MIDITimedMessage& msg, MIDIClockTime len, tInsMode _ins_mode) {
     if (IsValidTrackNumber(trk))
         return tracks[trk]->InsertNote(msg, len, _ins_mode);
     return false;
@@ -375,32 +362,6 @@ void MIDIMultiTrackIteratorState::Reset() {
 }
 
 
-bool MIDIMultiTrackIteratorState::SetTimeShiftMode(bool f, std::vector<int>* v) {
-    if (v != 0) {                           // we want to set or change the time_offsets vector
-        if (time_shift_mode)
-            return false;                   // can't do it while time_offset_mode is on
-        else
-            time_shifts = v;
-    }
-
-    if (f == false) {                       // time offset_mode off
-        time_shift_mode = false;
-        std::cout << "Time shift mode off" << std::endl;
-    }
-    else {                                  // time_offset_mode on
-        if (time_shifts!= 0) {              // the out driver is set
-            time_shift_mode = true;         // turn thru on
-            std::cout << "Time shift mode on" << std::endl;
-        }
-        else {
-            time_shift_mode = false;        // the out driver isn't set yet
-            return false;                   // the function failed
-        }
-    }
-    return true;
-}
-
-
 MIDIClockTime MIDIMultiTrackIteratorState::GetShiftedTime(const MIDITimedMessage* msg, int trk) {
     if (!time_shift_mode)
         return msg->GetTime();
@@ -465,6 +426,21 @@ void MIDIMultiTrackIterator::Reset() {
 }
 
 
+bool MIDIMultiTrackIterator::SetTimeShiftMode(bool f) {
+    if (state.time_shifts == 0)             // the time shift vector is not set
+        return false;
+    state.time_shift_mode = f;
+    std::cout << "Time shift mode " << (f ? "on" : "off") << std::endl;
+    return true;
+}
+
+
+void MIDIMultiTrackIterator::SetTimeShiftVector(std::vector<int>* v) {
+    state.time_shift_mode = false;
+    state.time_shifts = v;
+}
+
+
 bool MIDIMultiTrackIterator::GoToTime(MIDIClockTime time) {
     if (time > multitrack->GetEndTime())
         return false;
@@ -485,7 +461,7 @@ bool MIDIMultiTrackIterator::GoToTime(MIDIClockTime time) {
 
 
 bool MIDIMultiTrackIterator::GetNextEvent(int *track, MIDITimedMessage **msg) {
-    int trk = state.GetCurEventTrack();
+    int trk = state.cur_event_track;
 
     if(trk != -1) {
         *track = trk;
@@ -510,7 +486,6 @@ bool MIDIMultiTrackIterator::GetNextEvent(int *track, MIDITimedMessage **msg) {
         }
     }
     return false;
-
 }
 
 
@@ -542,8 +517,8 @@ bool MIDIMultiTrackIterator::GetNextEventOnTrack(int track, MIDITimedMessage **m
 
 bool MIDIMultiTrackIterator::GetNextEventTime(MIDIClockTime *t) const {
     // if there is a next event, then set *t to the time of the event and return true
-    if(state.GetCurEventTrack() != -1) {
-        *t = state.GetCurTime();
+    if(state.cur_event_track != -1) {
+        *t = state.cur_time;
         return true;
     }
     return false;

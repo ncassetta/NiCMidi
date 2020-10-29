@@ -7,7 +7,7 @@
   Compile it together with functions.cpp, which contains command
   line I/O functions.
 
-  Copyright (C) 2019 N.Cassetta
+  Copyright (C) 2019 - 2020 N.Cassetta
   ncassetta@tiscali.it
 
   This program is free software; you can redistribute it and/or
@@ -31,7 +31,7 @@
 #include "../include/sequencer.h"
 #include "../include/manager.h"
 #include "../include/filereadmultitrack.h"
-#include "functions.h"
+#include "functions.h"                  // helper functions for input parsing and output
 
 using namespace std;
 

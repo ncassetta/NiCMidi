@@ -4,7 +4,7 @@
   and how to add the component to the MIDIManager queue, making it
   effective.
 
-  Copyright (C) 2019 N.Cassetta
+  Copyright (C) 2019 - 2020 N.Cassetta
   ncassetta@tiscali.it
 
   This program is free software; you can redistribute it and/or
@@ -40,6 +40,7 @@ using namespace std;
 class TestComp : public MIDITickComponent {
     public:
                                 TestComp();
+        virtual void            Reset() {}
         virtual void            Start();
         virtual void            Stop();
 
@@ -48,7 +49,7 @@ class TestComp : public MIDITickComponent {
         virtual void            TickProc(tMsecs sys_time);
 
 
-        static const tMsecs     NOTE_INTERVAL = 1000;   // the time (in msecs) between two notes
+        static const tMsecs     NOTE_INTERVAL = 1000;   // the time (in msecs) between two note on
         static const tMsecs     NOTE_LENGTH = 400;      // the time between note on and note off
 
         tMsecs                  next_note_on;
@@ -63,8 +64,8 @@ class TestComp : public MIDITickComponent {
 TestComp::TestComp() : MIDITickComponent(PR_PRE_SEQ, StaticTickProc) {}
 
 
-// The Start() method should do the class specific work and then call the base class Start(),
-// which sets the sys_time_offset variable and enables the callback.
+// The Start() method should initialize the class and then call the base class Start(),
+// which loads the sys_time_offset variable with the start time and enables the callback.
 //
 void TestComp::Start() {
     cout << "Starting the component ... " << endl;
@@ -96,8 +97,8 @@ void TestComp::StaticTickProc(tMsecs sys_time, void* pt) {
 }
 
 
-// This is finally the object callback, making all the work. Its parameter is the absolute
-// now time.
+// This is finally the object callback, which does all the work. Its parameter is the absolute
+// now time (remember you have the start time in the sys_time_offset variable).
 //
 void TestComp::TickProc(tMsecs sys_time) {
     MIDITimedMessage msg;

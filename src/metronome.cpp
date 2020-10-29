@@ -1,3 +1,26 @@
+/*
+ *   NiCMidi - A C++ Class Library for MIDI
+ *
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
+ *
+ *   This file is part of NiCMidi.
+ *
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 #include "../include/metronome.h"
 #include "../include/manager.h"
 
@@ -12,6 +35,8 @@ Metronome::Metronome (MIDISequencerGUINotifier* n) :
     MIDITickComponent(PR_POST_SEQ, StaticTickProc),
     notifier(n)
 {
+    if (!MIDIManager::HasMIDIOut())
+        throw RtMidiError("Metronome needs almost a MIDI out port in the system\n", RtMidiError::INVALID_DEVICE);
     Reset();
 }
 
@@ -19,16 +44,13 @@ Metronome::Metronome (MIDISequencerGUINotifier* n) :
 
 void Metronome::Reset() {
     Stop();
-    if (MIDIManager::GetNumMIDIOuts() > 0)
-        port = new_port = 0;
-    else
-        port = new_port = -1;
+    out_port = new_out_port = 0;
     chan = new_chan = DEFAULT_CHAN;
     meas_note = new_meas_note = DEFAULT_MEAS_NOTE;
     beat_note = new_beat_note = DEFAULT_BEAT_NOTE;
     subd_note = new_subd_note = DEFAULT_SUBD_NOTE;
     subd_type = new_subd_type = 0;
-    timesig_numerator = new_timesig_numerator = MIDI_DEFAULT_TIMESIG_NUMERATOR;
+    timesig_numerator = new_timesig_numerator = 0;
     timesig_denominator = new_timesig_denominator = MIDI_DEFAULT_TIMESIG_DENOMINATOR;
     tempobpm = new_tempobpm = (float)MIDI_DEFAULT_TEMPO;
     tempo_scale = new_tempo_scale = 100;
@@ -39,6 +61,7 @@ void Metronome::Reset() {
     cur_measure = 0;
     beat_length = QUARTER_LENGTH;
     msecs_per_beat = 60000.0 / tempobpm;
+    onoff_time = std::max((float)MIN_NOTE_LEN, msecs_per_beat / 4);
 }
 
 
@@ -59,26 +82,27 @@ void Metronome::SetTempo(float t) {
 
 
 void Metronome::SetTempoScale(unsigned int scale) {
-    new_tempo_scale = scale;
+    if (tempo_scale >= 1)
+        new_tempo_scale = scale;
     if (!IsPlaying())
         UpdateValues();
 }
 
 
-void Metronome::SetOutPort(unsigned int p) {
-    p %= MIDIManager::GetNumMIDIOuts();
-    if (p == (unsigned)port)
+void Metronome::SetOutPort(unsigned int port) {
+    port %= MIDIManager::GetNumMIDIOuts();                  // avoids out of range errors
+    if (port == out_port)                                   // trying to assign same ports: nothing to do
         return;
     if (IsPlaying()) {
         proc_lock.lock();
-        MIDIManager::GetOutDriver(port)->AllNotesOff(chan);
-        MIDIManager::GetOutDriver(port)->ClosePort();
-        port = p;
-        MIDIManager::GetOutDriver(port)->OpenPort();
+        MIDIManager::GetOutDriver(out_port)->AllNotesOff(chan);
+        MIDIManager::GetOutDriver(out_port)->ClosePort();
+        out_port = port;
+        MIDIManager::GetOutDriver(out_port)->OpenPort();
         proc_lock.unlock();
     }
     else
-        port = p;
+        out_port = port;
 }
 
 
@@ -159,8 +183,8 @@ void Metronome::SetTimeSigDenominator(unsigned char d) {
 
 void Metronome::Start() {
     if (!IsPlaying()) {
-        std::cout << "\t\tEntered in Metronome::Start() ..." << std::endl;
-        MIDIManager::OpenOutPorts();
+        //std::cout << "\t\tEntered in Metronome::Start() ..." << std::endl;
+        MIDIManager::GetOutDriver(out_port)->OpenPort();
         if (notifier)
             notifier->Notify (MIDISequencerGUIEvent(MIDISequencerGUIEvent::GROUP_TRANSPORT,
                                                     0,
@@ -173,37 +197,39 @@ void Metronome::Start() {
         cur_measure = 0;
         MIDITickComponent::Start();
 
-        std::cout << "\t\t ... Exiting from Metronome::Start()" << std::endl;
+        //std::cout << "\t\t ... Exiting from Metronome::Start()" << std::endl;
     }
 }
 
 
 void Metronome::Stop() {
     if (IsPlaying()) {
-        std::cout << "\t\tEntered in Metronome::Stop() ..." << std::endl;
+        //std::cout << "\t\tEntered in Metronome::Stop() ..." << std::endl;
         MIDITickComponent::Stop();
-        MIDIManager::GetOutDriver(port)->AllNotesOff(chan);
-        MIDIManager::CloseOutPorts();
+        MIDIManager::GetOutDriver(out_port)->AllNotesOff(chan);
+        MIDIManager::GetOutDriver(out_port)->ClosePort();
 
         if (notifier)
             notifier->Notify (MIDISequencerGUIEvent(MIDISequencerGUIEvent::GROUP_TRANSPORT,
                                                     0,
                                                     MIDISequencerGUIEvent::GROUP_TRANSPORT_STOP));
-        std::cout << "\t\t ... Exiting from Metronome::Stop()" << std::endl;
+        //std::cout << "\t\t ... Exiting from Metronome::Stop()" << std::endl;
     }
 }
 
 
 
 void Metronome::UpdateValues() {
+    /* Not used
     if (new_port != port) {
         if (IsPlaying())
             MIDIManager::GetOutDriver(port)->AllNotesOff(chan);
         port = new_port;
      }
+     */
     if (new_chan != chan) {
         if (IsPlaying())
-            MIDIManager::GetOutDriver(port)->AllNotesOff(chan);
+            MIDIManager::GetOutDriver(out_port)->AllNotesOff(chan);
         chan = new_chan;
     }
     meas_note = new_meas_note;
@@ -219,10 +245,10 @@ void Metronome::UpdateValues() {
 
     if (new_timesig_numerator != timesig_numerator) {
         timesig_numerator = new_timesig_numerator;
+        if (timesig_numerator == 0)
+            cur_measure = 0;
         cur_beat = 0;
     }
-        unsigned char                   timesig_denominator;///< The denominator of current time signature (can be 2, 4, 8, 16)
-
     if (new_tempobpm != tempobpm) {
         tempobpm = new_tempobpm;
         msecs_per_beat = 6000000.0 / (tempo_scale * tempobpm * (subd_type == 0 ? 1 : subd_type));
@@ -259,7 +285,7 @@ void Metronome::TickProc(tMsecs sys_time) {
     //
     tMsecs cur_time = sys_time - sys_time_offset + dev_time_offset;
 
-    if (static_cast<tMsecs>(next_time_on) <= cur_time) {    // we must send a note on
+    if (cur_time >= static_cast<tMsecs>(next_time_on)) {    // we must send a note on
         if (cur_clock % QUARTER_LENGTH) {           // this is a subdivision beat
             note = subd_note;                       // send a subd note message
             vel = SUBD_NOTE_VEL;
@@ -273,7 +299,6 @@ void Metronome::TickProc(tMsecs sys_time) {
                 if (cur_beat == 0) {                // 1st beat of a measure
                     note = meas_note;               // if meas beat is on we send a meas note message ...
                     vel = MEAS_NOTE_VEL;
-                    cur_beat++;
                     //std::cout << "MEAS on MIDI clock " << cur_clock << std::endl;
                     ev = MIDISequencerGUIEvent(MIDISequencerGUIEvent::GROUP_TRANSPORT,
                                                0,
@@ -282,15 +307,15 @@ void Metronome::TickProc(tMsecs sys_time) {
                 else {
                     note = beat_note;               // ... otherwise an ordinary beat message
                     vel = BEAT_NOTE_VEL;
-                    cur_beat++;
-                    if (cur_beat == timesig_numerator) {
-                        cur_measure++;
-                        cur_beat = 0;
-                    }
                     //std::cout << "BEAT on MIDI clock " << cur_clock << std::endl;
                     ev = MIDISequencerGUIEvent(MIDISequencerGUIEvent::GROUP_TRANSPORT,
                                                0,
                                                MIDISequencerGUIEvent::GROUP_TRANSPORT_BEAT);
+                }
+                cur_beat++;
+                if (cur_beat == timesig_numerator) {
+                    cur_measure++;
+                    cur_beat = 0;
                 }
             }
             else {                                  // ordinary beat, no measures count
@@ -301,12 +326,11 @@ void Metronome::TickProc(tMsecs sys_time) {
                                            0,
                                            MIDISequencerGUIEvent::GROUP_TRANSPORT_BEAT);
             }
-
         }
 
-        // tell the driver the send the click note on
-        msg_beat.SetNoteOn(chan, note, vel );
-        MIDIManager::GetOutDriver(port)->OutputMessage(msg_beat);
+        // tell the driver to send the click note on
+        msg_beat.SetNoteOn(chan, note, vel);
+        MIDIManager::GetOutDriver(out_port)->OutputMessage(msg_beat);
         if (notifier)
             notifier->Notify(ev);
         //std::cout << "Note on ... ";
@@ -317,11 +341,11 @@ void Metronome::TickProc(tMsecs sys_time) {
         last_note = note;
     }
 
-    else if (static_cast<tMsecs>(next_time_off) <= cur_time) {  // we must send the note off
+    else if (cur_time >= static_cast<tMsecs>(next_time_off)) {  // we must send the note off
 
         // tell the driver the send the beat note off
         msg_beat.SetNoteOff(chan, last_note, 0);
-        MIDIManager::GetOutDriver(port)->OutputMessage(msg_beat);
+        MIDIManager::GetOutDriver(out_port)->OutputMessage(msg_beat);
         next_time_off += msecs_per_beat;
         //std::cout << "Note off" << std::endl;
     }

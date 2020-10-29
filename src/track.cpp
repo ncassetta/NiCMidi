@@ -1,23 +1,28 @@
-/*  Adapted from
- *  libjdkmidi-2004 C++ Class Library for MIDI
+/*
+ *   NiCMidi - A C++ Class Library for MIDI
  *
- *  Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
- *  www.jdkoftinoff.com
- *  jeffk@jdkoftinoff.com
+ *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
+ *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
+ *   Copyright (C) 2010 V.R.Madgazin
+ *   www.vmgames.com vrm@vmgames.com
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
  *
- *  *** RELEASED UNDER THE GNU GENERAL PUBLIC LICENSE (GPL) April 27, 2004 ***
+ *   This file is part of NiCMidi.
  *
- *  by Nicola Cassetta
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
  *
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-//
-// Copyright (C) 2010 V.R.Madgazin
-// www.vmgames.com vrm@vmgames.com
-//
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
 #include "../include/track.h"
@@ -29,7 +34,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 
-int MIDITrack::ins_mode = INSMODE_INSERT_OR_REPLACE;
+tInsMode MIDITrack::ins_mode = INSMODE_INSERT_OR_REPLACE;
 
 
 MIDITrack::MIDITrack(MIDIClockTime end_time) : status(INIT_STATUS) {
@@ -148,13 +153,13 @@ MIDIClockTime MIDITrack::GetNoteLength(const MIDITimedMessage& msg) const {
 }
 
 
-void MIDITrack::SetInsertMode(int mode) {
+void MIDITrack::SetInsertMode(tInsMode mode) {
     if (mode != INSMODE_DEFAULT)
         ins_mode = mode;
 }
 
 
-bool MIDITrack::InsertEvent(const MIDITimedMessage& msg, int mode) {
+bool MIDITrack::InsertEvent(const MIDITimedMessage& msg, tInsMode mode) {
     if (msg.IsDataEnd()) return false;                  // DATA_END only auto managed
 
     if (GetEndTime() < msg.GetTime()) {                 // insert as last event
@@ -173,6 +178,7 @@ bool MIDITrack::InsertEvent(const MIDITimedMessage& msg, int mode) {
         mode = ins_mode;                                // set inert mode to default behaviour
 
     switch (mode) {
+        case INSMODE_DEFAULT:                           // dummy, for avoiding a warning
         case INSMODE_INSERT:                            // always insert the event
                 // find the right place among events with same time
             while (CompareEventsForInsert(msg, events[ev_num]) == 1)
@@ -218,7 +224,7 @@ bool MIDITrack::InsertEvent(const MIDITimedMessage& msg, int mode) {
 }
 
 
-bool MIDITrack::InsertNote(const MIDITimedMessage& msg, MIDIClockTime len, int mode) {
+bool MIDITrack::InsertNote(const MIDITimedMessage& msg, MIDIClockTime len, tInsMode mode) {
     if (!msg.IsNoteOn()) return false;
 
     MIDITimedMessage msgoff(msg);                       // set our NOTE_OFF message
@@ -231,6 +237,7 @@ bool MIDITrack::InsertNote(const MIDITimedMessage& msg, MIDIClockTime len, int m
         mode = ins_mode;                                // set insert mode to default behavior
 
     switch (mode) {
+        case INSMODE_DEFAULT:                           // dummy, for avoiding a warning
         case INSMODE_INSERT:                            // always insert the event
         case INSMODE_INSERT_OR_REPLACE_BUT_NOTE:
             InsertEvent(msg, mode);                     // always return true
@@ -442,7 +449,7 @@ void MIDITrack::CloseOpenEvents(MIDIClockTime t) {
     unsigned int ev_num = 0;
     // scan events before current time, remembering notes, pedal and pitch bend
     while (ev_num < GetNumEvents() && (msg = GetEvent(ev_num)).GetTime() < t) {
-        matrix.Process(msg);
+        matrix.Process(&msg);
         if (msg.IsPitchBend())
             pitchbend[msg.GetChannel()] = msg.GetBenderValue();
         ev_num++;
@@ -450,7 +457,7 @@ void MIDITrack::CloseOpenEvents(MIDIClockTime t) {
     // now scan events at current time, closing open notes, pedal and pitch bend
     while (ev_num < GetNumEvents() && (msg = GetEvent(ev_num)).GetTime() == t) {
         if (msg.IsNoteOff() || msg.IsPedalOff())
-            matrix.Process (msg);
+            matrix.Process (&msg);
         if (msg.IsPitchBend() && msg.GetBenderValue() == 0)
             pitchbend[msg.GetChannel()] = msg.GetBenderValue();
         ev_num++;
@@ -685,7 +692,8 @@ bool MIDITrackIterator::GoToTime(MIDIClockTime time) {
 
 
 bool MIDITrackIterator::GetNextEvent(MIDITimedMessage** msg) {
-    if (!track->IsValidEventNum(cur_ev_num)) return false;
+    if (!track->IsValidEventNum(cur_ev_num))
+        return false;
     *msg = track->GetEventAddress(cur_ev_num);
     MIDIClockTime old_time = cur_time;
     cur_time = (*msg)->GetTime();
@@ -697,7 +705,8 @@ bool MIDITrackIterator::GetNextEvent(MIDITimedMessage** msg) {
 
 
 bool MIDITrackIterator::GetNextEventTime(MIDIClockTime* t) const {
-    if (!track->IsValidEventNum(cur_ev_num)) return false;  // we are at the end of track
+    if (!track->IsValidEventNum(cur_ev_num))
+        return false;  // we are at the end of track
     *t = track->GetEventAddress(cur_ev_num)->GetTime();
     return true;
 }
@@ -756,11 +765,32 @@ bool MIDITrackIterator::Process(const MIDITimedMessage *msg) {
 
 void MIDITrackIterator::ScanEventsAtThisTime() {
 // process all messages up to and including this time only
-// warning: this can be used only when we reach the first event at a new time!
 
-    int ev_num = cur_ev_num;
-    while (track->GetEventAddress(ev_num)->GetTime() == cur_time) {
-        Process(track->GetEventAddress(ev_num));
+    unsigned int ev_num = cur_ev_num;
+        // move to first event at this time
+    while (ev_num > 0 && track->GetEventAddress(ev_num - 1)->GetTime() == cur_time)
+        ev_num--;
+        // now examine all events at this time upgrading the iterator status
+    while (ev_num < track->GetNumEvents() && track->GetEventAddress(ev_num)->GetTime() == cur_time) {
+        MIDITimedMessage* msg = track->GetEventAddress(ev_num);
+
+        // is msg a normal MIDI channel message?
+        if(msg->IsChannelMsg()) {
+            if (msg->IsNoteOff() && notes_on[msg->GetNote()]) {
+                notes_on[msg->GetNote()]--;
+                num_notes_on--;
+            }
+            else if (msg->IsNoteOn() && !notes_on[msg->GetNote()]) {
+                notes_on[msg->GetNote()]++;
+                num_notes_on++;
+            }
+            else if (msg->IsPitchBend())
+                bender_value = msg->GetBenderValue();
+            else if (msg->IsControlChange())
+                controls[msg->GetController()] = msg->GetControllerValue();
+            else if (msg->IsProgramChange())
+                program = msg->GetProgramValue();
+        }
         ev_num++;
     }
 }

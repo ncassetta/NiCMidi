@@ -1,32 +1,26 @@
 /*
- *  libjdkmidi-2004 C++ Class Library for MIDI
+ *   NiCMidi - A C++ Class Library for MIDI
  *
- *  Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
- *  www.jdkoftinoff.com
- *  jeffk@jdkoftinoff.com
+ *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
+ *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
  *
- *  *** RELEASED UNDER THE GNU GENERAL PUBLIC LICENSE (GPL) April 27, 2004 ***
+ *   This file is part of NiCMidi.
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-/*
-** Copyright 2016 By N. Cassetta
-** myjdkmidi library
-**
-** CHECKED with jdksmidi. NO CHANGES
-*/
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
 /// \file
@@ -46,8 +40,9 @@
 
 ///
 /// A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing
-/// its content. Many objects, such as MIDIDriver, MIDIManager and MIDISequencer, allow you to insert a
-/// MIDIProcessor into the flow of outgoing or ingoing messages.
+/// its content. Many objects, such as MIDIInDriver, MIDIOutDriver, MIDIThru and MIDISequencer, allow you
+/// to insert a MIDIProcessor into the flow of outgoing or ingoing messages with their **SetProcessor()** method.
+/// The library comes with some useful subclasses of it.
 ///
 class MIDIProcessor {
     public:
@@ -55,7 +50,8 @@ class MIDIProcessor {
                                         MIDIProcessor() {}
         /// The destructor.
         virtual                         ~MIDIProcessor() {}
-        /// Resets the MIDIProcessor to its initial state.
+        /// You should implement this pure virtual method in order to return the MIDIProcessor to its
+        /// initial state.
         virtual void                    Reset() = 0;
         /// The Process() pure virtual method. It takes as parameter a MIDITimedMessage (which can
         /// be modified by the method) and returns a boolean, which can be used for filtering
@@ -72,7 +68,7 @@ class MIDIMultiProcessor : public MIDIProcessor {
 
         /// The constructor creates an object with empty queue.
                                         MIDIMultiProcessor() : process_mode(MODE_CONTINUE) {}
-        /// Empties the processors queue.
+        /// Empties the processors queue, removing all their pointers from it.
         virtual void                    Reset();
         /// Returns a pointer to the MIDIProcessor at the given position.
         MIDIProcessor*                  GetProcessor(int pos)           { return processors[pos]; }
@@ -84,19 +80,19 @@ class MIDIMultiProcessor : public MIDIProcessor {
         /// \param proc the MIDIProcessor to be inserted (it is **not** owned by the MIDIMultiProcessor)
         /// \param pos the position in the queue. If you leave the default value the processor will be
         /// appended to the queue, otherwise the new processor substitutes the old (the method does nothing
-        /// if _pos_ isn't in the appropriate range)
+        /// if _pos_ is not in the appropriate range)
         void                            SetProcessor(MIDIProcessor* proc, int pos = -1);
         /// Removes the MIDIProcessor at the given position. It only removes the processor pointer from
-        /// the queue, and does nothing if _pos_ isn't in the appropriate range.
+        /// the queue, and does nothing if _pos_ is not in the appropriate range.
         void                            RemoveProcessor(int pos);
         /// Searches the given MIDIProcessor in the queue and removes it (it does nothing
-        /// if the processor isn't in the queue). It only removes the processor pointer from the queue.
+        /// if the processor is not in the queue). It only removes the processor pointer from the queue.
         void                            RemoveProcessor(const MIDIProcessor* proc);
         /// Determines the behaviour of the MIDIMultiProcessor if any of the processors return
         /// **false**. You can set these three values:
         /// - MODE_IGNORE :   the MIDIMultiProcessor ignores return values and always returns **true**
         /// - MODE_CONTINUE : the MIDIMultiProcessor performs all the processing, and returns **false**
-        /// if any processor returned **false**, **true** otherwise (this the default when the object is created)
+        /// if any processor returned **false**, **true** otherwise (this is the default when the object is created)
         /// - MODE_STOP :     the MIDIMultiProcessor stops processing when a processor returns **false**
         /// and returns **false**, **true** otherwise.
         void                            SetProcessMode(int mode)        { process_mode = mode; }
@@ -107,9 +103,11 @@ class MIDIMultiProcessor : public MIDIProcessor {
         /// These are the values to be given as parameters to the SetProcessMode() method.
         enum { MODE_IGNORE, MODE_CONTINUE, MODE_STOP };
 
-    private:
-        std::vector<MIDIProcessor*>     processors;     ///< The array of processors
-        int                             process_mode;   ///< The process mode parameter
+    protected:
+        /// \cond EXCLUDED
+        std::vector<MIDIProcessor*>     processors;     // The array of processor pointers
+        int                             process_mode;   // The process mode parameter
+        /// \endcond
 };
 
 
@@ -121,7 +119,7 @@ class MIDIProcessorTransposer : public MIDIProcessor {
     public:
         /// The constructor.
                                         MIDIProcessorTransposer();
-        /// Resets the default status (no transposing on all channels).
+        /// Resets to the default status (no transposing on all channels).
         virtual void                    Reset();
         /// Gets the transposing amount (in semitones) for the given channel
         int                             GetChannelTranspose (int chan) const        { return trans_amount[chan]; }
@@ -137,8 +135,10 @@ class MIDIProcessorTransposer : public MIDIProcessor {
         /// the method returns **false**, otherwise it returns **true**.
         virtual bool                    Process (MIDITimedMessage *msg);
 
-    private:
-        int                             trans_amount[16];
+    protected:
+        /// \cond EXCLUDED
+        int                             trans_amount[16];   // The transposing amount
+        /// \endcond
 };
 
 ///
@@ -168,8 +168,10 @@ class MIDIProcessorRechannelizer : public MIDIProcessor {
         /// otherwise returns **true**.
         virtual bool                    Process(MIDITimedMessage *msg);
 
-    private:
-        int                             rechan_map[16];
+    protected:
+        /// \cond EXCLUDED
+        int                             rechan_map[16];         // The rechannel map
+        /// \endcond
 };
 
 
@@ -183,8 +185,8 @@ class MIDIProcessorPrinter : public MIDIProcessor {
         /// The constructor sets the std::ostream that will print the messages (default: std::cout).
                                         MIDIProcessorPrinter(std::ostream& stream = std::cout) :
                                                              print_on(true), ost(stream) {}
-        /// Same of SetPrint(false)
-        virtual void                    Reset()                                     { print_on = false; }
+        /// Same of SetPrint(true)
+        virtual void                    Reset()                                     { print_on = true; }
         /// Gets the printing status.
         bool                            GetPrint() const                            { return print_on; }
         /// Sets the printing on and off (default is on).
@@ -193,9 +195,11 @@ class MIDIProcessorPrinter : public MIDIProcessor {
         /// in the constructor. The message is left unchanged and always returns **true**.
         virtual bool                    Process(MIDITimedMessage *msg);
 
-    private:
-        bool                            print_on;
-        std::ostream&                   ost;
+    protected:
+        /// \cond EXCLUDED
+        bool                            print_on;           // The on/off printing flag
+        std::ostream&                   ost;                // The out stream
+        /// \endcond
 };
 
 

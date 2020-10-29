@@ -1,3 +1,28 @@
+/*
+ *   NiCMidi - A C++ Class Library for MIDI
+ *
+ *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
+ *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
+ *
+ *   This file is part of NiCMidi.
+ *
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 /// \file
 /// Contains the definition of the classes MIDISequencerGUIEvent, MIDISequencerGUINotifier (abstract),
 /// MIDISequencerGUINotifierText and  MIDISequencerGUINotifierWin32.
@@ -107,7 +132,9 @@ class MIDISequencerGUIEvent {
         static const char user_items_names[][10];
 
     protected:
-        unsigned long bits;         ///< Storage for group, subgroup and item
+        /// \cond EXCLUDED
+        unsigned long bits;         // Storage for group, subgroup and item
+        /// \endcond
 };
 
 

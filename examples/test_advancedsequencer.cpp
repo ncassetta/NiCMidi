@@ -29,7 +29,8 @@
 
 
 #include "../include/advancedsequencer.h"
-#include "functions.h"
+#include "../include/manager.h"
+#include "functions.h"                  // helper functions for input parsing and output
 
 using namespace std;
 
@@ -220,8 +221,11 @@ int main( int argc, char **argv ) {
                 sequencer.SetMIDIThruEnable(true);
                 if (sequencer.GetMIDIThruEnable()) {
                     cout << "Set MIDI thru on" << endl;
-                    cout << "In port " << sequencer.GetMIDIThru()->GetInPort()->GetPortName() << endl;
-                    cout << "Out port" << sequencer.GetMIDIThru()->GetOutPort()->GetPortName() << endl;
+                    cout << "In port " << MIDIManager::GetInDriver(sequencer.GetMIDIThru()->GetInPort())->GetPortName() << endl;
+                    cout << "Out port " << MIDIManager::GetOutDriver(sequencer.GetMIDIThru()->GetOutPort())->GetPortName() << endl;
+                }
+                else {
+                    cout << "Thru enable failed" << endl;
                 }
             }
             else if (par1 == "off") {

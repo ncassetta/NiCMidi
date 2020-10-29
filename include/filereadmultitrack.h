@@ -1,41 +1,26 @@
 /*
- *  libjdkmidi-2004 C++ Class Library for MIDI
+ *   NiCMidi - A C++ Class Library for MIDI
  *
- *  Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
- *  www.jdkoftinoff.com
- *  jeffk@jdkoftinoff.com
+ *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
+ *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
  *
- *  *** RELEASED UNDER THE GNU GENERAL PUBLIC LICENSE (GPL) April 27, 2004 ***
+ *   This file is part of NiCMidi.
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-/*
-**	Copyright 1986 to 1998 By J.D. Koftinoff Software, Ltd.
-**
-**	All rights reserved.
-**
-**	No one may duplicate this source code in any form for any reason
-**	without the written permission given by J.D. Koftinoff Software, Ltd.
-**
-*/
-/*
-** Copyright 2016 By N. Cassetta
-** myjdkmidi library
-**
-** CHECKED with jdksmidi. NO CHANGES
-*/
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
 /// \file
@@ -56,7 +41,7 @@
 
 ///
 /// Receives MIDI data from a MIDIFileReader (not documented) class and writes them to a MIDIMultiTrack.
-/// Used for reading MIDI files; actually it ignores these kind of messages:
+/// Used by other classes and functions for reading MIDI files; actually it ignores these kind of messages:
 /// - META Sequencer Specific
 /// - other not identified meta data
 ///
@@ -64,7 +49,7 @@
 /// global function (that creates and uses this class), so this is not documented.
 ///
 class MIDIFileReadMultiTrack : public MIDIFileEventHandler {
-/// \cond INTERNAL
+/// \cond EXCLUDED
     public:
                                         MIDIFileReadMultiTrack (MIDIMultiTrack *tracks);
         virtual                         ~MIDIFileReadMultiTrack()       {}
@@ -122,6 +107,8 @@ class MIDIFileReadMultiTrack : public MIDIFileEventHandler {
 
 /// \addtogroup GLOBALS
 //@{
+/// \name Functions for Loading MIDI files
+//@{
 /// Returns the header of the MIDI file specified by _filename_.
 /// You can then inspect the format, (0, 1 or 2), the number of tracks and the division (MIDI ticks per
 /// quarter note) of the file. If the header cannot be read these are all 0.
@@ -144,6 +131,7 @@ bool                                    LoadMIDIFile(const char* filename, MIDIM
 /// Loads a MIDI file into a MIDIMultiTrack object. \see LoadMIDIFile(const char*, MIDIMultiTrack, MIDIFileHeader* const).
 bool                                    LoadMIDIFile(const std::string& filename, MIDIMultiTrack* tracks,
                                                      MIDIFileHeader* const head = 0);
+//@}
 //@}
 
 

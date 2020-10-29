@@ -1,9 +1,32 @@
+/*
+ *   NiCMidi - A C++ Class Library for MIDI
+ *
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
+ *
+ *   This file is part of NiCMidi.
+ *
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
 #include "../include/recorder.h"
 #include "../include/manager.h"
 
 
 MIDIRecorder::MIDIRecorder() :
-    MIDITickComponent(PR_PRE_SEQ, StaticTickProc),
+    MIDITickComponent(PR_POST_SEQ, StaticTickProc),
     tempobpm(120.0), start_time(0), rec_on(false)
 {
     multitrack = new MIDIMultiTrack();

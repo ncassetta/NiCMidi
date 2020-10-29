@@ -1,19 +1,26 @@
-/*  Adapted from
- *  libjdkmidi-2004 C++ Class Library for MIDI
+/*
+ *   NiCMidi - A C++ Class Library for MIDI
  *
- *  Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
- *  www.jdkoftinoff.com
- *  jeffk@jdkoftinoff.com
+ *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
+ *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
  *
- *  *** RELEASED UNDER THE GNU GENERAL PUBLIC LICENSE (GPL) April 27, 2004 ***
+ *   This file is part of NiCMidi.
  *
- *  by Nicola Cassetta
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
  *
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
 /// \file
@@ -40,10 +47,10 @@
 /// be changed by the MIDITrack::SetInsertMode() method (the default is INSMODE_INSERT_OR_REPLACE).
 /// When the above methods are called with default argument *_ins_mode* they follow the default behavior,
 /// this can be overriden giving them one of the other values as last parameter
-enum TInsmode
+enum tInsMode
 {
     INSMODE_DEFAULT,    ///< follow the default behaviour (only used as default argument in methods MIDITrack::InsertEvent() and MIDITrack::InsertNote()
-    INSMODE_INSERT,     ///< always insert events, if a same kind event was found  duplicate it.
+    INSMODE_INSERT,     ///< always insert events, if a same kind event was found  keep both.
     INSMODE_REPLACE,    ///< replace if a same kind event was found, otherwise do nothing.
     INSMODE_INSERT_OR_REPLACE,          ///< replace if a same kind event was found, otherwise insert.
     INSMODE_INSERT_OR_REPLACE_BUT_NOTE  ///< as above, but allow two same note events at same time (don't replace, insert a new note).
@@ -69,8 +76,6 @@ enum
 ///
 class  MIDITrack {
     public:
-        ///@name The Constructors, Destructor and Initializing methods
-        //@{
         /// The constructor creates an empty track with only the EOT event.
         /// \param end_time the MIDI clock time of the EOT; this become the "time length" of the track
                                     MIDITrack(MIDIClockTime end_time = 0);
@@ -84,10 +89,7 @@ class  MIDITrack {
         /// \param mantain_end If it is **true** the method doesn't change the time of the EOT,
         /// otherwise sets it to 0.
         void	                    Clear(bool mantain_end = false);
-        //@}
 
-        ///@name The 'Get' methods.
-        //@{
         /// Returns the number of events in the track (if the track is empty this returns
         /// 1, for the EOT event).
         unsigned int	            GetNumEvents() const                { return events.size(); }
@@ -120,18 +122,11 @@ class  MIDITrack {
         /// Returns a reference to an event in the track.
         /// \param ev_num the index of the event in the track (must be in the range 0 ... GetNumEvents() - 1).
         const MIDITimedMessage&     GetEvent(int ev_num) const         { return events[ev_num]; }
-        //@}
 
-        ///@name The 'Set' methods.
-        //@{
         /// Sets the time of the EOT event.
         /// \param end_time the new EOT time. If there are events of other type after it the method fails and returns
         /// **false**.
         bool                        SetEndTime(MIDIClockTime end_time);
-        //@}
-
-        /// @name The editing methods
-        // @{
         /// Sets the channel of all MIDI channel events to _ch_ (_ch_ must be in the range 0 ... 15).
         void                        SetChannel(int ch);
         /// Sets the time of the EOT event equal to the time of the last (non data end) event
@@ -157,7 +152,7 @@ class  MIDITrack {
         /// + __ins_mode_ was INSMODE_REPLACE but there is no event to replace
         /// + a memory error occurred.
         /// otherwise **true**.
-        bool                        InsertEvent( const MIDITimedMessage& msg, int mode = INSMODE_DEFAULT );
+        bool                        InsertEvent( const MIDITimedMessage& msg, tInsMode mode = INSMODE_DEFAULT );
         /// Inserts a Note On and a Note Off event into the track. Use this method for inserting note messages as
         /// InsertEvent() doesn't check the correct order of note on/note off. It handles automatically the
         /// EndOfTrack message, moving it if needed, so you must not deal with it. It also determines
@@ -176,7 +171,7 @@ class  MIDITrack {
         /// \bug In the latter case the method could leave the track in an inconsistent state (a Note On without
         /// corresponding Note Off or viceversa).
         bool                        InsertNote( const MIDITimedMessage& msg, MIDIClockTime len,
-                                                int mode = INSMODE_DEFAULT );
+                                                tInsMode mode = INSMODE_DEFAULT );
         /// Deletes an event from the track. Use DeleteNote() for safely deleting both Note On and Note Off. You cannot
         /// delete the data end event.
         /// \param msg a copy of the event to delete.
@@ -195,7 +190,6 @@ class  MIDITrack {
         /// (MultiTrack::AssignEventsToTracks() does it).
         void                        PushEvent( const MIDITimedMessage& msg);
 
-        /// Inserts a
         void                        InsertInterval(MIDIClockTime start, MIDIClockTime length, const MIDITrack* src = 0);
                                                     // if src == 0 only shift events of length clocks
         /// Copies events from _start_ to _end_ into the track _interval_.
@@ -231,7 +225,6 @@ class  MIDITrack {
         /// **-1** if *time* was invalid, or the number of the last event before *time*.
         /// \return **true** if an event with given time was found, **false** otherwise.
         bool                        FindEventNumber (MIDIClockTime time, int *event_num) const;
-        //@}
 
         /// Sets the default behaviour for the methods InsertEvent() and InsertNote(). This can be overriden
         /// by them by mean of the last (default) parameter.
@@ -239,9 +232,10 @@ class  MIDITrack {
         /// #INSMODE_INSERT_OR_REPLACE_BUT_NOTE; default is #INSMODE_INSERT_OR_REPLACE.
         /// \note #INSMODE_DEFAULT is used only in the insert methods (as default argument) and
         /// does nothing if given as parameter here.
-        static void                 SetInsertMode(int mode);
+        static void                 SetInsertMode(tInsMode mode);
 
-        /// Used in the status request
+        /// Used in the content analysis of a track. Values 0 ... 9 are track status types (which you can get with the
+        /// GetStatus() method), others are for internal use.
         enum {
             TYPE_EMPTY = 0,         ///< Track is empty
             TYPE_MAIN = 1,          ///< Track has Main meta events (time, tempo, key ...) and no channel events
@@ -265,16 +259,17 @@ class  MIDITrack {
 
 
     protected:
-
         /// Analyses the events in the track upgrading its status attribute. This is called automatically by GetType()
         /// when needed (i.e. the track was edited by one of the above methods and the status is no more valid), so has
         /// no utility for the user.
         void                        Analyze();
 
+        /// \cond EXCLUDED
         std::vector<MIDITimedMessage>
-                                    events;     ///< The buffer of events
-        int                         status;     ///< A bitfield used to determine the track type
-        static int                  ins_mode;   ///< See SetInsertMode()
+                                    events;     // The buffer of events
+        int                         status;     // A bitfield used to determine the track type
+        static tInsMode             ins_mode;   // See SetInsertMode()
+        /// \endcond
 };
 
 
@@ -341,15 +336,16 @@ class MIDITrackIterator {
         bool                        EventIsNow(const MIDITimedMessage& msg);
         //bool GoToNextEvent(); unused use GetNextEvent()
 
-    private:
+    protected:
 
         bool                        Process(const MIDITimedMessage *msg);
         void                        ScanEventsAtThisTime();
                                         // warning: this can be used only when we reach the first
                                         // event at a new time!
 
+        /// \cond EXCLUDED
         MIDITrack*                  track;
-        int                         cur_ev_num;     // number of the current event
+        unsigned int                cur_ev_num;     // number of the current event
         MIDIClockTime               cur_time;       // current time
 
         char                        program;        // current program change, or -1
@@ -357,6 +353,7 @@ class MIDITrackIterator {
         short                       bender_value;	// last seen bender value
         unsigned char               num_notes_on;	// number of notes currently on
         char		                notes_on[128];  // 0 if off, or velocity
+        /// \endcond
 };
 
 

@@ -1,6 +1,26 @@
-/* Some code Copyright 1986 to 1998 By J.D. Koftinoff Software, Ltd.
+/*
+ *   NiCMidi - A C++ Class Library for MIDI
  *
-*/
+ *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
+ *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
+ *
+ *   This file is part of NiCMidi.
+ *
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
 /// \file
@@ -63,54 +83,56 @@ class MIDISequencerTrackProcessor : public MIDIProcessor {
 /// These are the improvements:
 /// + There is no need to manually add it to the MIDIManager queue (the constructor does it)
 /// + Has methods for loading/unloading a MIDI file into the internal MIDIMultiTrack
-/// + Embeds a MIDIThru component with processors for rechannelizing and transposing incoming messages, so
+/// + Embeds a MIDIThru component wich can rechannelize and transpose incoming messages, so
 ///   you can play your keyboard while the sequencer is playing
-/// + Embeds a MIDISequencerTrackProcessor for each track, allowing to transpose, rechannelize, scale velocity
+/// + Embeds a MIDISequencerTrackProcessor for each track, allowing to transpose, rechannelize, scale velocity,
 ///   solo and mute the tracks
 /// + Has improved methods for jumping from a time to another: if you start the sequencer from the middle of a
-///   song it automatically sets appropriate MIDI controls, patches and sysex
+///   song it automatically sets appropriate MIDI controls, programs and sysex
 ///
 class AdvancedSequencer : public MIDISequencer {
     public:
-        /// \name Constructors, destructor and reset
-        ///@{
-
-
         /// Creates an AdvancedSequencer with 17 tracks (one for each channel plus the master track). Adds the
         /// sequencer to the MIDIManager queue of tick components, so you can immediately start to edit the
-        /// MIDIMultiTrack or load MIDI files and play.
+        /// MIDIMultiTrack or load MIDI files and play. It raises an exception if in your system there are no
+        /// MIDI out ports; if in the system there are no MIDI in ports the embedded MIDIThru is not created
+        /// and its features are disabled.
         /// \note If you create the object with this constructor the Internal multitrack is owned by the
         /// sequencer and will be deleted when you destroy it.
+        /// \param n a pointer to a MIDISequencerGUINotifier. If you leave 0 the sequencer will not notify
+        /// the GUI.
+        /// \exception RtMidiError::INVALID_DEVICE if in the system are not present MIDI out ports.
                             AdvancedSequencer(MIDISequencerGUINotifier *n = 0);
         /// Creates an AdvancedSequencer from a given MIDIMultiTrack. Adds the sequencer to the MIDIManager queue
-        /// of tick components, so you can immediately start to play.
+        /// of tick components, so you can immediately start to play. It raises an exception if in your system
+        /// there are no MIDI out ports; if in the system there are no MIDI in ports the embedded MIDIThru is not
+        /// created and its features are disabled.
         /// \note If you create the object with this constructor the Internal multitrack is **not** owned by the
         /// sequencer and won't be deleted when you destroy it.
+        /// \param mlt the MIDIMultiTrack supplied by the user
+        /// \param n a pointer to a MIDISequencerGUINotifier. If you leave 0 the sequencer will not notify
+        /// the GUI.
+        /// \exception RtMidiError::INVALID_DEVICE if in the system are not present MIDI out ports.
                             AdvancedSequencer(MIDIMultiTrack* mlt, MIDISequencerGUINotifier *n = 0);
         /// The destructor.
         virtual             ~AdvancedSequencer();
 
-        /// Resets the status of the sequencer (doesn't empty the MIDIMultiTrack).
+        /// Resets the status of the sequencer (does not empty the MIDIMultiTrack).
         /// Use this if you have modified the MIDIMultiTrack adding, moving or deleting tracks; this
         /// moves the time to 0 and resets all the processors.
         virtual void        Reset();
-
-        /// Loads a MIDIFile into the internal MIDIMultiTrack. It can change the multitrack clks_per_beat parameter
-        /// according to the file signature. You can then play the MIDI content with the Play() method.
+        /// Loads a MIDIFile into the internal MIDIMultiTrack. It can change the MIDIMultiTrack::clks_per_beat
+        /// parameter according to the file signature. You can then play the MIDI content with the Play() method.
         /// \param fname the file name.
         bool                Load(const char *fname);
-        /// Copies the content of an external MIDIMultiTrack into the sequencer. It can change the multitrack
-        /// clks_per_beat parameter according to the multitrack signature. You can then play the MIDI content with
-        /// the Play() method.
+        /// Copies the content of an external MIDIMultiTrack into the sequencer. It can change the
+        /// MIDIMultiTrack::clks_per_beat parameter according to the multitrack signature. You can then play the
+        /// MIDI content with the Play() method.
         /// \param tracks the MIDIMultiTrack to be copied.
         bool                Load(const MIDIMultiTrack* tracks);
-        /// Clears the contents of the internal MIDIMultiTrack and reset its clks_per_beat parameter to DEFAULT_CLKS_PER_BEAT
-        /// (actually 120).
+        /// Clears the contents of the internal MIDIMultiTrack and reset its MIDIMultiTrack::clks_per_beat parameter
+        /// to **DEFAULT_CLKS_PER_BEAT** (actually 120).
         void                UnLoad();
-        ///@}
-
-        /// \name The get methods
-        ///@{
 
         /// Returns **true** if the internal MIDIMultiTrack is not empty.
         bool                IsLoaded() const                { return file_loaded; }
@@ -118,14 +140,18 @@ class AdvancedSequencer : public MIDISequencer {
         std::string         GetFileName()                   { return header.filename; }
         /// Returns the header of the loaded file.
         const MIDIFileHeader& GetFileHeader()               { return header; }
-        /// Returns the address of the MIDIThru tick component.
-        const MIDIThru*     GetMIDIThru() const             { return &thru; }
-        /// Returns **true** if MIDI thru is enabled.
-        bool                GetMIDIThruEnable() const       { return thru.IsPlaying(); }
-        /// Returns the output channel of the MIDIThru tick component.
-        int                 GetMIDIThruChannel() const      { return thru_rechannelizer.GetRechanMap(0); }
-        /// Returns the transpose amount of the MIDIThru tick component.
-        int                 GetMIDIThruTranspose() const    { return thru_transposer.GetChannelTranspose(0); }
+        /// Returns the address of the MIDIThru tick component. This is NULL if in the system there are non MIDI
+        /// in ports and the thru is disabled.
+        MIDIThru*           GetMIDIThru()                   { return thru; }
+        /// Returns the address of the MIDIThru tick component. This is NULL if in the system there are non MIDI
+        /// in ports and the thru is disabled.
+        const MIDIThru*     GetMIDIThru() const             { return thru; }
+        /// Returns **true** if MIDIThru is enabled (always **false** if the thru is not present).
+        bool                GetMIDIThruEnable() const       { return thru ? thru->IsPlaying() : false; }
+        /// Returns the output channel of the MIDIThru, -1 if the thru is not present.
+        int                 GetMIDIThruChannel() const      { return thru ? thru->GetOutChannel() : -1; }
+        /// Returns the transpose amount of the MIDIThru, 0 if the thru is not present.
+        int                 GetMIDIThruTranspose() const    { return thru ? thru_transposer->GetChannelTranspose(0) : 0; }
         /// Returns **true** if any track is soloed.
         bool                GetSoloMode() const;
         /// Returns **true** if a specific track is soloed
@@ -181,18 +207,15 @@ class AdvancedSequencer : public MIDISequencer {
         /// Returns a pointer to the MIDISequencerTrackProcessor for the given track.
         const MIDISequencerTrackProcessor* GetTrackProcessor(unsigned int trk) const
                                                             { return (const MIDISequencerTrackProcessor *)track_processors[trk]; }
-        ///@}
-
-        /// \name The set methods
-        ///@{
 
         /// Sets a name for the content of sequencer.
         void                SetFileName(std::string& fname) { header.filename = fname; }
-        /// Enables or disables the embedded MIDIthru.
+        /// Enables or disables the embedded MIDIthru. This has no effect if the thru is not present.
         void                SetMIDIThruEnable(bool on_off);
-        /// Sets the out channel for MIDIthru.
+        /// Sets the out channel for MIDIthru. This has no effect if the thru is not present.
         void                SetMIDIThruChannel(int chan);
-        /// Sets a transpose amount in semitones for the messages coming from the MIDI thru (see MIDIProcessorTransposer).
+        /// Sets a transpose amount in semitones for the messages coming from the MIDIThru (see MIDIProcessorTransposer).
+        /// This has no effect if the thru is not present.
         void                SetMIDIThruTranspose (int amt);
         /// Soloes the given track muting all others.
         void                SetTrackSolo(unsigned int trk);
@@ -209,12 +232,6 @@ class AdvancedSequencer : public MIDISequencer {
         void                SetTrackRechannelize(unsigned int trk, int chan);
         /// Sets a transpose amount in semitones for the given track (see MIDIProcessorTransposer).
         void                SetTrackTranspose(unsigned int trk, int trans);
-        ///@}
-
-        /// \name Other methods
-        ///@{
-
-        // Inherited from MIDISequencer
         /// Sets the current time to the beginning of the song, updating the internal status. This method is
         /// thread-safe and can be called during playback. Notifies the GUI a GROUP_ALL event to signify a
         /// full GUI reset.
@@ -231,7 +248,6 @@ class AdvancedSequencer : public MIDISequencer {
         bool                GoToMeasure(int measure, int beat = 0);
 
 
-        // Inherited from MIDITICK
         /// Starts the sequencer playing from the current time.
         virtual void        Start();
         /// Stops the sequencer playing.
@@ -250,11 +266,8 @@ class AdvancedSequencer : public MIDISequencer {
         /// and MoveTrack()). If you have edited the multitrack, call this before moving time, getting events
         /// or playing.
         void                UpdateStatus();
-        ///@}
 
     protected:
-
-        static const int    MEASURES_PER_WARP = 4;  ///< The interval between measures in ExtractWarpPositions()
 
         /// Internal use. It registers the state of the sequencer every MEASURES_PER_WARP measures, and create a
         /// std::vector of MIDISequencerState for a quicker jump from a time to another.
@@ -264,23 +277,24 @@ class AdvancedSequencer : public MIDISequencer {
         /// appropriate control, program, pitch bend and sysex messages in order to exactly reproduce the sequencer
         /// setting at the new time.
         void                CatchEventsBefore();
-        /// Internal use. As before, but only on the given track (this is useful when a formerly muted track is unmuted,
+        /// Internal use. As above, but only on the given track (this is useful when a formerly muted track is unmuted,
         /// and needs to be set with appropriate controls, program etc.
         void                CatchEventsBefore(int trk);
 
-        MIDIThru                            thru;               ///< The embedded MIDI thru
+        /// \cond EXCLUDED
+        // The interval between measures in ExtractWarpPositions()
+        static const int                    MEASURES_PER_WARP = 4;
+        MIDIThru*                           thru;               // The embedded MIDI thru
+        MIDIProcessorTransposer*            thru_transposer;    // Transposes thru note messages while playing
+        int                                 num_measures;       // Number of measures
+        MIDIFileHeader                      header;             // Stores the loaded file parameters
+        bool                                file_loaded;        // True if the multitrack is not empty
 
-        MIDIMultiProcessor                  thru_processor;     ///< Processes incoming MIDI messages for MIDI thru
-        MIDIProcessorTransposer             thru_transposer;    ///< Transposes thru note messages while playing
-        MIDIProcessorRechannelizer          thru_rechannelizer; ///< Rechannelize thru messages while playing
-        int                                 num_measures;       ///< Number of measures
-        MIDIFileHeader                      header;             ///< Stores the loaded file parameters
-        bool                                file_loaded;        ///< True if the multitrack is not empty
-
-        std::vector<MIDISequencerState>     warp_positions;     ///< Vector of MIDISequencerState objects for fast time moving
+        std::vector<MIDISequencerState>     warp_positions;     // Vector of MIDISequencerState objects for fast time moving
+        /// \endcond
 
     private:
-        bool owns_tracks;
+        bool                                owns_tracks;        // true if the multitrack is owned by the AdvancedSequencer
 };
 
 

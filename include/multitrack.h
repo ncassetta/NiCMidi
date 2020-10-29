@@ -1,22 +1,26 @@
 /*
- * ADAPTED FROM
+ *   NiCMidi - A C++ Class Library for MIDI
  *
- * libjdkmidi-2004 C++ Class Library for MIDI
+ *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
+ *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
  *
- *  Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
- *  www.jdkoftinoff.com
- *  jeffk@jdkoftinoff.com
+ *   This file is part of NiCMidi.
  *
- *  *** RELEASED UNDER THE GNU GENERAL PUBLIC LICENSE (GPL) April 27, 2004 ***
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
  *
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
  *
- * BY NICOLA CASSETTA
- *
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
 /// \file
@@ -45,9 +49,6 @@ class MIDIEditMultiTrack;       // forward declaration
 ///
 class MIDIMultiTrack {
     public:
-        ///@name The Constructors, Destructor and Initializing methods
-        //@{
-
         /// The constructor creates an object with given number of tracks (default no track) and base MIDI clocks
         /// per beat.
         /// \param num_tracks The number of tracks of the multitrack. The tracks are created by the constructor and they are
@@ -69,11 +70,6 @@ class MIDIMultiTrack {
         /// Clears tracks events but mantains the tracks (leaves only the EOT). If _mantain_end_ is **true**
         /// doesn't change the time of EOT events, otherwise sets them to 0.
         void                        ClearTracks(bool mantain_end = false);
-        //@}
-
-
-        ///@name The 'Get' methods.
-        //@{
 
         /// Returns the MIDI clocks per beat of all tracks (i.e.\ the number of MIDI ticks in a quarter note).
         unsigned int                GetClksPerBeat() const          { return clks_per_beat; }
@@ -94,15 +90,12 @@ class MIDIMultiTrack {
         unsigned int                GetNumEvents() const;
         /// Returns the end time of the longest track.
         MIDIClockTime               GetEndTime() const;
-        /// Returns *true* if _trk_ is in thee range 0 ... GetNumTracks() - 1.
+        /// Returns **true** if _trk_ is in thee range 0 ... GetNumTracks() - 1.
         bool                        IsValidTrackNumber(int trk) const
                                                                     { return (0 <= trk && (unsigned)trk < tracks.size()); }
-        /// Returns *true* if there are no events in the tracks and the end time is 0.
+        /// Returns **true** if there are no events in the tracks and the end time is 0.
         bool                        IsEmpty() const                 { return (GetNumEvents() == 0 && GetEndTime() == 0); }
-        //@}
 
-        ///@name The 'Set' methods
-        //@{
         /// Changes the value of the clock per beat parameter for the tracks, updating the times of all MIDI
         /// events. This may lead to loss in precision or rounding error if the new clocks per beat
         /// is not a multiple of the old, so it's better to call this function before inserting any event in
@@ -110,12 +103,9 @@ class MIDIMultiTrack {
         /// \param cl_p_b see the constructor
         void                        SetClksPerBeat(unsigned int cl_p_b);
         /// Sets the time of the data end event to _end_time_. If there are events of other type after
-        /// _end_time_ the function fails and returns *false*.
+        /// _end_time_ the function fails and returns **false**.
         bool                        SetEndTime(MIDIClockTime end_time);
-        //@}
 
-        ///@name The editing methods
-        //@{
         /// Sets the time of the data end event equal to the time of the last event of every track.
         void                        ShrinkEndTime();
 
@@ -127,28 +117,28 @@ class MIDIMultiTrack {
         /// The same as previous, but argument is the track number of multitrack object himself
         void                        AssignEventsToTracks (int trk = 0)
                                             { return AssignEventsToTracks(GetTrack(trk)); }
-        /// Inserts a new empty track at position _trk_ (_trk_ must be in the range 0 ... GetNumTracks() - 1). If
+        /// Inserts a new empty track at position _trk_ (_trk_ must be in the range 0 ...\ GetNumTracks() - 1). If
         /// _trk_ == -1 appends the track at the end.
-        /// \return *true* if the track was effectively inserted.
+        /// \return **true** if the track was effectively inserted.
         /// \warning if you are using the MIDIMultiTrack into a MIDISequencer class don't call this directly
         /// but the corresponding MIDISequencer method (which adjust the MIDISequencer internal values also).
         bool                        InsertTrack(int trk = -1);
         /// Deletes the track _trk_ and its events. _trk_ must be in the range 0 ... GetNumTracks() - 1.
-        /// \return *true* if the track was effectively deleted
+        /// \return **true** if the track was effectively deleted
         /// \see warning in the InsertTrack() method
         bool                        DeleteTrack(int trk);
-        /// Moves a track from the position _from_ to the position _to_. ( _from_ e _to_ must be in the range
+        /// Moves a track from the position _from_ to the position _to_. ( _from_ and _to_ must be in the range
         /// 0 ... GetNumTracks() - 1).
-        /// \return *true* if the track was effectively moved
+        /// \return **true** if the track was effectively moved
         /// \see warning in the InsertTrack() method
         bool                        MoveTrack(int from, int to);
 
         /// Inserts the event _msg_ in the track _trk_. See MIDITrack::InsertEvent() for details.
-        /// \return *true* if the event was effectively inserted
-        bool                        InsertEvent(int trk,  const MIDITimedMessage& msg, int _ins_mode = INSMODE_DEFAULT);
+        /// \return **true** if the event was effectively inserted
+        bool                        InsertEvent(int trk,  const MIDITimedMessage& msg, tInsMode _ins_mode = INSMODE_DEFAULT);
         /// Inserts a Note On and a Note Off event into the track. See MIDITrack::InsertNote() for details.
         bool                        InsertNote(int trk, const MIDITimedMessage& msg,
-                                            MIDIClockTime len, int _ins_mode = INSMODE_DEFAULT);
+                                            MIDIClockTime len, tInsMode _ins_mode = INSMODE_DEFAULT);
         /// Deletes the event _msg_ from the track _trk_. See MIDITrack::DeleteEvent() for details.
         bool                        DeleteEvent(int trk,  const MIDITimedMessage& msg);
         /// Deletes the note _msg_ (_msg_ must be a Note On) from the track _trk_. See MIDITrack::DeleteNote() for details.
@@ -168,81 +158,65 @@ class MIDIMultiTrack {
                                         // (if <edit> == 0 insert a blank interval)
         void                        EditReplace(MIDIClockTime start, int tr_start, int times,
                                                 bool sysex, MIDIEditMultiTrack* edit);
-        //@}
 
     protected:
-
         unsigned int 	            clks_per_beat;      ///< The common clock per beat timing parameter for all tracks
-                                                        ///< (this is the number of MIDI ticks for a quarter note)
-        std::vector<MIDITrack*>     tracks;             ///< The array of pointers to the MIDITrack objects
+                                                        ///< (this is the number of MIDI ticks for a quarter note).
+        /// \cond EXCLUDED
+        std::vector<MIDITrack*>     tracks;             // The array of pointers to the MIDITrack objects
+        /// \endcond
 };
 
 
 ///
 /// Used by the MIDIMultiTrackIterator to keep track of the current state of the iterator. It
-/// remembers the current time and keep track of the next event in every track. You usually don't need to
+/// remembers the current time and keeps track of the next event in every track. The user does not need to
 /// deal with it, and the only useful thing is getting and restoring a state for faster processing (see
-/// MIDIMultiTrack::SetStatus()).
-/// \note This class is responsible for the time shifting of the track events. For this it relies on an external
-/// std::vector<int> which must be passed by address by the SetTimeShiftMode() method. The class only reads values
-/// in this vector and never modifies it; when the class is copied only the address is copied. This "strange" design
-/// is in order to allow an higher-level class (tipically the MIDISequencer) to handle time shifting, without
-/// overcharging this.
+/// MIDIMultiTrack::SetStatus()), so the details are not documented.
 ///
 class MIDIMultiTrackIteratorState {
+/// \cond EXCLUDED
+    // This is used only by the MIDIMultiTrackIterator, so all is protected
     friend class MIDIMultiTrackIterator;
 
     public:
-        /// The constructor.
+        // The constructor.
                                     MIDIMultiTrackIteratorState(int n_tracks);
 
                     // . . . no need for dtor and others . . .
-
-        /// Gets the number of tracks of the state.
-        int	                        GetNumTracks() const	                { return num_tracks; }
-        /// Gets the track of the next event.
-        int	                        GetCurEventTrack() const    			{ return cur_event_track; }
-        /// Gets current time.
-        MIDIClockTime               GetCurTime() const				    	{ return cur_time; }
-        /// Changes the number of tracks (this causes a reset of the state).
+    protected:
+        // Changes the number of tracks (this causes a reset of the state).
         void                        SetNumTracks(int n);
-        /// Sets the time to 0 and an undefined first event and track.
-        /// \warning this is, in general, **not** a valid state. Don't call this but MIDIMultiTrackIterator::Reset().
+        // Sets the time to 0 and an undefined first event and track.
+        // \warning this is, in general, **not** a valid state. Don't call this but MIDIMultiTrackIterator::Reset().
         void                        Reset();
-
-        /// Turns time shifting on and off. If time shifting is off events are sorted according to their
-        /// time, otherwise an offset (positive or negative) is added to channel and sysex events time (other
-        /// events time remain unchanged). The first time you call this you must set the external vector which
-        /// holds track offsets
-        /// \return *true* if the function succeeded (it could fail if you try to set the mode on without having
-        /// set a vector, of you try to change the vector address while the mode is on).
-        bool                        SetTimeShiftMode(bool f, std::vector<int>* v = 0);
-        /// Returns *true* if time shifting is on.
-        bool                        GetTimeShiftMode() const                { return time_shift_mode; }
-        /// Returns the time of the given MIDITimedMessage in the given track, taking into account the time
-        /// shifting. This the same time of the message if time shifting is off or _msg_ is not a channel
-        /// or sysex message, otherwise this will return the message time plus the track offset.
+        // Returns the time of the given MIDITimedMessage in the given track, taking into account the time
+        // shifting. This is the same time of the message if time shifting is off or _msg_ is not a channel
+        // or sysex message, otherwise this will return the message time plus the track offset.
         MIDIClockTime               GetShiftedTime(const MIDITimedMessage* msg, int trk);
-
-    private:
         int                         FindTrackOfFirstEvent();
 
-        int                         num_tracks;         ///< The number of tracks
-        MIDIClockTime               cur_time;           ///< The current time
-        int                         cur_event_track;    ///< The track of the next event
-        std::vector<int>            next_event_number;  ///< Array holding the next event for every track
-        std::vector<MIDIClockTime>  next_event_time;    ///< Array holding the next event time for every track
-        std::vector<int>*           time_shifts;        ///< Array holding the time shift for every track
-        bool                        time_shift_mode;    ///< Time shift on/off
+        int                         num_tracks;         // The number of tracks
+        MIDIClockTime               cur_time;           // The current time
+        int                         cur_event_track;    // The track of the next event
+        std::vector<int>            next_event_number;  // Array holding the next event for every track
+        std::vector<MIDIClockTime>  next_event_time;    // Array holding the next event time for every track
+        std::vector<int>*           time_shifts;        // Array holding the time shift for every track
+        bool                        time_shift_mode;    // Time shift on/off
+        /// \endcond
 };
 
 
 ///
-/// A forward iterator for moving along a MIDIMultiTrack. It defines a current time (initially 0)
-/// and a current event. You can skip to any time in the MultiTrack and get its events in temporal order, beginning
-/// with the first event with time greater or equal current time, regardless their track.
-/// When the iterator reaches the end of the multitrack the current event become undefined, and the get methods
-/// will return **false**.
+/// A forward iterator for moving along a MIDIMultiTrack. It defines a current time (initially 0) and a
+/// current event, and stores its status in a MIDIMultiTrackIteratorState object. You can jump to any time in
+/// the multitrack and get its events in chronological order, starting with the first event with time greater
+/// than or equal to the current time, regardless of their track.
+/// \note This class also handles the time shifting of track events. For this it relies on an external
+/// std::vector <int> which must be passed by address to the SetTimeShiftVector() method. The class only reads
+/// the values in this vector and never changes it: you can turn time shifting on and off but not set the values
+/// for the tracks. This "strange" design is intended to allow a higher level class (typically the MIDISequencer)
+/// to handle the time shift, without overloading it.
 ///
 class MIDIMultiTrackIterator {
     public:
@@ -252,13 +226,26 @@ class MIDIMultiTrackIterator {
         /// Syncs _num_tracks_ with the multitrack and resets time to 0.
         void                        Reset();
         /// Gets the current time of the iterator.
-        MIDIClockTime               GetCurrentTime() const              { return state.GetCurTime(); }
-        /// Gets the current MIDIMultiTackIteratorState. You can save and then restore it for a
+        MIDIClockTime               GetCurrentTime() const              { return state.cur_time; }
+        /// Returns **true** if time shifting is on.
+        bool                        GetTimeShiftMode() const            { return state.time_shift_mode; }
+        /// Gets the current MIDIMultiTrackIteratorState. You can save and then restore it for a
         /// faster processing in GoTo operations (admitting the contents of the multitrack are not
         /// changed).
         MIDIMultiTrackIteratorState&        GetState()                  { return state; }
-        /// As above.
+         /// Gets the current MIDIMultiTrackIteratorState. You can save and then restore it for a
+        /// faster processing in GoTo operations (admitting the contents of the multitrack are not
+        /// changed).
         const MIDIMultiTrackIteratorState&  GetState() const            { return state; }
+        /// Turns time shifting on and off. If time shifting is off events are sorted according to their
+        /// time, otherwise an offset (positive or negative) is added to channel and sysex events time (other
+        /// events time remain unchanged).
+        /// \return **true** if the function succeeded (it could fail if you try to set the mode on without having
+        /// set a vector).
+        bool                        SetTimeShiftMode(bool f);
+        /// Sets the given vector as time shift vector. You must call this before turning time shifting on and off,
+        /// or it will be ineffective.
+        void                        SetTimeShiftVector(std::vector<int>* v);
         /// Sets the given MIDIMultiTrackIteratorState as current state.
         void                        SetState(const MIDIMultiTrackIteratorState& s) { state = s; }
         /// Goes to the given time, which becomes the current time, and sets then the current event as the
@@ -266,35 +253,38 @@ class MIDIMultiTrackIterator {
         /// same time in different tracks their order is not defined, as the iterator tries to rotate
         /// across the tracks rather than to get first all events in a single track. However, temporal order
         /// is always granted.
-        /// \return *true* if the given time is effectively reached, *false* otherwise (it is after the end
+        /// \return **true** if the given time is effectively reached, *false* otherwise (it is after the end
         /// of the multitrack)
         bool                        GoToTime(MIDIClockTime time);
         /// Gets the next event in the multitrack in temporal order and updates the iterator state. If the
-        /// state has time shifting mode on the events are sorted according to their shifted time.
+        /// time shifting mode is on the events are sorted according to their shifted time.
         /// \param track the track of the event, if valid.
         /// \param *msg a pointer to the event in the MidiMultiTrack
-        /// \return *true* if there is effectively a next event (we aren't at the end of the
-        /// MIDIMultiTrack), *false* otherwise (*track and **msg don't contain undefined values).
+        /// \return **true** if there is effectively a next event (we are not at the end of the
+        /// MIDIMultiTrack), **false** otherwise (and *track and **msg contain undefined values).
         bool                        GetNextEvent(int *track, MIDITimedMessage **msg);
-        //bool GoToNextEvent() unused: use GetNextEvent()
-        /// Set as current the next event on track _track_.
-        /// @return *true* if there is effectively a next event (we aren't at the end of the
-        /// MIDIMultiTrack, *false* otherwise.
+        /// Gets the next event in the multitrack on track _track_ and updates the iterator state.
+        /// \param track the track of the event, if valid.
+        /// \param *msg a pointer to the event in the MidiMultiTrack
+        /// \return **true** if there is effectively a next event (we are not at the end of the
+        /// track), **false** otherwise (and **msg contains an undefined value).
         bool                        GetNextEventOnTrack(int track, MIDITimedMessage **msg);
         /// Gets the time of the next event in the multitrack (it can be different from current time if
-        /// at current time there are not events). If the iterator state has time shifting mode on it
-        /// is the shifted time (see MIDIMultiTrackIteratorState::GetShiftedTime().
-        /// \param t here we get the time of next event, if valid.
-        /// \return *true* if there is effectively a next event (we aren't at the end of the
-        /// MIDIMultiTrack, *false* otherwise (*t doesn't contain a valid time).
+        /// at current time there are not events). This does not change the iterator state.
+        /// \param t here we get the time of next event, if valid. If the time shifting mode is on it
+        /// is the shifted time.
+        /// \return **true** if there is effectively a next event (we aren't at the end of the
+        /// MIDIMultiTrack, **false** otherwise (*t doesn't contain a valid time).
         bool                        GetNextEventTime(MIDIClockTime *t) const;
         // Returns a pointer to the MIDIMultiTrack the iterator is attached to.
         //MIDIMultiTrack*             GetMultiTrack()  				    { return multitrack; }
         //const MIDIMultiTrack*       GetMultiTrack() const 	            { return multitrack; }
 
     protected:
-        MIDIMultiTrack*             multitrack;     ///< The MIDIMultiTrack the class refers to
-        MIDIMultiTrackIteratorState state;          ///< The iterator state
+        /// \cond EXCLUDED
+        MIDIMultiTrack*             multitrack;     // The MIDIMultiTrack the class refers to
+        MIDIMultiTrackIteratorState state;          // The iterator state
+        /// \endcond
 };
 
 

@@ -1,28 +1,26 @@
 /*
- *  libjdkmidi-2004 C++ Class Library for MIDI
+ *   NiCMidi - A C++ Class Library for MIDI
  *
- *  Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
- *  www.jdkoftinoff.com
- *  jeffk@jdkoftinoff.com
+ *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
+ *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
  *
- *  *** RELEASED UNDER THE GNU GENERAL PUBLIC LICENSE (GPL) April 27, 2004 ***
+ *   This file is part of NiCMidi.
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
-// updated to reflect changes in jdksmidi
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
 /// \file
@@ -69,24 +67,28 @@ public:
     /// MIDITickComponent queue.
     static void                 Reset();
 
-    /// Returns the number of MIDI out ports in the system.
-    static unsigned int         GetNumMIDIOuts()                { return MIDI_out_names.size(); }
-    /// Returns the system name of the given MIDI out port.
-    static const std::string&   GetMIDIOutName(unsigned int n)  { return MIDI_out_names[n]; }
     /// Returns the number of MIDI in ports in the system.
     static unsigned int         GetNumMIDIIns()                 { return MIDI_in_names.size(); }
     /// Returns the system name of the given MIDI in port.
     static const std::string&   GetMIDIInName(unsigned int n)   { return MIDI_in_names[n]; }
-    /// Returns a pointer to the MIDIOutDriver with given port id.
-    static MIDIOutDriver*       GetOutDriver(unsigned int n)    { return MIDI_outs[n]; }
     /// Returns a pointer to the MIDIInDriver with given port id.
     static MIDIInDriver*        GetInDriver(unsigned int n)     { return MIDI_ins[n]; }
+    /// Returns **true** if almost one MIDI in port is present on the system.
+    static bool                 HasMIDIIn()                     { return MIDI_ins.size() > 0; }
+    /// Returns the number of MIDI out ports in the system.
+    static unsigned int         GetNumMIDIOuts()                { return MIDI_out_names.size(); }
+    /// Returns the system name of the given MIDI out port.
+    static const std::string&   GetMIDIOutName(unsigned int n)  { return MIDI_out_names[n]; }
+    /// Returns a pointer to the MIDIOutDriver with given port id.
+    static MIDIOutDriver*       GetOutDriver(unsigned int n)    { return MIDI_outs[n]; }
+    /// Returns **true** if almost one MIDI out port is present on the system.
+    static bool                 HasMIDIOut()                    { return MIDI_outs.size() > 0; }
     /// Returns the pointer to the (unique) MIDITickComponent in the queue with tPriority PR_SEQ
     /// (0 if not found).
     static MIDISequencer*       GetSequencer();
     /// Starts the MIDITimer thread procedure.
-    /// It calls, at every timer tick, the TickProc() which in turn calls all the MIDITickComponent::StaticTickProc()
-    /// added to the queue via the AddMIDITick() method.
+    /// It calls, at every timer tick, the TickProc() which in turn calls all the
+    /// MIDITickComponent::StaticTickProc() added to the queue via the AddMIDITick() method.
     static bool                 StartTimer()                    { return MIDITimer::Start(); }
     /// Stops the MIDITimer thread procedure.
     /// This causes all the MIDITickComponent callbacks to halt.
@@ -120,20 +122,22 @@ protected:
 
     /// This is the main callback, called at every tick of the MIDITimer. It calls in turn the StaticTickProc()
     /// method of every queued MIDITickComponent object with running status. The user must not call it directly.
-    static void                 TickProc(tMsecs sys_time_, void* p);
+    static void                         TickProc(tMsecs sys_time_, void* p);
 
-    static std::vector<MIDIOutDriver*>  MIDI_outs;      ///< A vector of MIDIOutDriver objects (one for each
-                                                        /// hardware port)
-    static std::vector<std::string>     MIDI_out_names; ///< The system names of hardware out ports
-    static std::vector<MIDIInDriver*>   MIDI_ins;       ///< A vector of MIDIInDriver objects (one for each
-                                                        /// hardware port)
-    static std::vector<std::string>     MIDI_in_names;  ///< The system names of hardware in ports
+    /// \cond EXCLUDED
+    static std::vector<MIDIOutDriver*>  MIDI_outs;      // A vector of MIDIOutDriver objects (one for each
+                                                        // hardware port)
+    static std::vector<std::string>     MIDI_out_names; // The system names of hardware out ports
+    static std::vector<MIDIInDriver*>   MIDI_ins;       // A vector of MIDIInDriver objects (one for each
+                                                        // hardware port)
+    static std::vector<std::string>     MIDI_in_names;  // The system names of hardware in ports
 
     static std::vector<MIDITickComponent*>
-                                        MIDITicks;      ///< The array of MIDITickCompnent objects, everyone
-                                                        /// of them has his StaticTickProc() callback
+                                        MIDITicks;      // The array of MIDITickCompnent objects, everyone
+                                                        // of them has his StaticTickProc() callback
 
-    static std::mutex                   proc_lock;      ///< A mutex for thread safe
+    static std::mutex                   proc_lock;      // A mutex for thread safe processing
+    /// \endcond
 };
 
 

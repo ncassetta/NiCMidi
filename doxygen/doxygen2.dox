@@ -6,7 +6,7 @@
 
 /// \page PROCESSORS MIDI Processors
 ///
-/// MIDI Processors are objects which can manipulate the content of a MIDIMessage. The abstract class MIDIProcessor defines basically an object which has a bool MIDIProcessor::Process(MIDITimedMessage* msg) method, which takes a pointer to a %MIDITimedMessage as argument: it can change or inspect the message and return an answer yes/no.
+/// MIDI Processors are objects which can manipulate the content of a MIDIMessage. The abstract class MIDIProcessor defines basically an object which has a bool MIDIProcessor::Process(MIDITimedMessage* msg) method, which takes a pointer to a %MIDITimedMessage as argument: it can change or inspect the message and returns an answer yes/no.
 /// Some subclasses are already built in the library:
 /// + The MIDIProcessorTransposer transposes all note and polyphonic pressure messages by a given amount of semitones
 /// + The MIDIProcessorRechannelizer remaps channel messages to a given channel map
@@ -21,18 +21,40 @@
 ///
 /// int main() {
 ///    MIDIInDriver* driver = MIDIManager::GetInDriver(0);
-///                 // this is the MIDI IN port 0 in your system: you can change the number
-///    MIDIProcessorPrinter printer;        // prints the processed messages
+///                 // this is the MIDI IN port 0 in your system
+///    MIDIProcessorPrinter printer;        // creates a printer processor
 ///    driver->SetProcessor(&printer);      // plugs the printer into the driver
 ///    driver->OpenPort();                  // starts receiving messages
 ///    MIDITimer::Wait(20000);
 ///                 // waits 20 secs: you can play with a MIDI device connected to the port
 ///                 // and the incoming messages will be printed on stdout
 ///    driver->ClosePort();                 // closes the port
+///    return 0;
 /// }
 /// \endcode
 ///
-/// A similar use of the same processor is done in the \ref test_thru.cpp example file.
+/// This is another example using the MIDIThru class.
+/// \code
+/// #include "manager.h"                    // includes driver.h and timer.h
+/// #include "thru.h"
+///
+/// int main() {
+///    MIDIThru thru;                       // creates a thru object. It receives and sends
+///                                         // messages on MIDI IN and OUT ports 0 in your system
+///    MIDIProcessorTransposer tr;          // creates a transposer processor
+///    thru.SetProcessor(tr);               // plugs the transposer into the thru
+///    tr.SetAllTranspose(12);              // set transposing up an octave on all channels
+///    MIDIManager::AddMIDITick(&thru);     // adds the thru to the MIDIManager queue
+///    thru.Start();                        // starts the thru
+///    MIDITimer::Wait(20000);
+///             // waits 20 secs: you can play with a MIDI device connected to the port
+///             // and the notes will sound one octave up
+///    thru.Stop();                         // stops the thru
+///    return 0;
+///}
+/// \endcode
+///
+/// A similar use of the MIDIProcessorPrinter is done in the \ref test_thru.cpp example file.
 ///
 
 
@@ -185,10 +207,12 @@
 
 
 
-/// \page OTHER_MIDITICKS Other MIDITickComponent objects
+/// \page OTHER_MIDITICKS Other %MIDITickComponent objects
+///
+/// The library implements other useful objects derived from the MIDITickComponent class.
 ///
 /// The %MIDIThru class
-/// ------------------
+/// -------------------
 ///
 /// The MIDIThru is an object which can receive messages from a MIDI in port and immediately send them to a MIDI out one. It therefore allows the user to play a MIDI instrument connected to the computer while listening to his performance.
 ///
@@ -196,10 +220,15 @@
 ///
 /// As for other MIDITickComponent derived classes, once created the object you must add it to the MIDIManager queue with the MIDIManager::AddMIDITick() method, then you can call the MIDIThru::Start() and MIDIThru::Stop() methods for turning on and off the object. Events taken from the in port are however left into its queue for an eventual other MIDITickComponent which can use them (for example a MIDIRecorder), so the priority is usually not relevant. The AdvancedSequencer class embeds a MIDIThru  controlled from within the class.
 ///
-/// An example of the use of the MIDIThru is in the file:
+/// An example of the use of the %MIDIThru is in the file:
 /// + \ref test_thru.cpp
 ///
 /// The %Metronome class
 /// --------------------
 ///
-/// The Metronome
+/// The Metronome class implements all the features of an ordinary metronome: you can set the musical tempo (between 1 and 300 bpm), enable measure counting (with a different click on first beat) choosing different musical times and also enable a subdivision click. Moreover, you can choose the MIDI notes (which will be ordinarily sent on MIDI channel 10) for normal, first beat and subdivision clicks.
+///
+/// This class also inherits from the MIDITickComponent and must be added to the MIDIManager queue with the MIDIManager::AddMIDITick() method. The metronome only sends messages to the output port, so the priority is usually not relevant.
+///
+/// An example of the use of the %Metronome is in the file:
+/// + \ref test_metronome.cpp

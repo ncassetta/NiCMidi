@@ -1,3 +1,27 @@
+/*
+ *   NiCMidi - A C++ Class Library for MIDI
+ *
+ *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
+ *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
+ *
+ *   This file is part of NiCMidi.
+ *
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 
 /// \file
 /// Contains the definition of the pure virtual class MIDITickComponent.
@@ -59,24 +83,26 @@ class MIDITickComponent {
         MIDITick*                   GetFunc() const                 { return tick_proc; }
         /// Returns the priority.
         tPriority                   GetPriority() const             { return priority; }
-
-        /// Sets the running status as **true** and starts to call the callback. Moreover it set
-        /// \ref sys_time_offset to the now time so, at every subsequent call of the callback, you can calculate
-        /// the elapsed time. In your derived class you probably will want to redefine this for doing other
-        /// things before starting the callback: however in your derived method you must call the base class
-        /// method.
+        /// Returns the user time offset parameter (see SetDevOffset()).
+        tMsecs                      GetDevOffset() const            { return dev_time_offset; }
+        /// Returns **true** if the callback procedure is active.
+        bool                        IsPlaying() const               { return running.load(); }
+        /// Sets an user defined time offset, which will be added to every time calculation. For example,
+        /// the MIDISequencer uses this as the start time of the sequencer.
+        void                        SetDevOffset(tMsecs dev_offs);
+        /// Sets the running status as **true** and starts to call the callback. Moreover it set the
+        /// \ref sys_time_offset parameter to the now time so, at every subsequent call of the callback, you can
+        /// calculate the elapsed time. In your derived class you probably will want to redefine this for doing
+        /// other things before starting the callback (for example opening MIDI ports): however in your derived
+        /// method you must call this base class method.
         ///
         /// You must call this **after** inserting the object into the MIDIManager queue with the
         /// MIDIManager::AddMIDITick() method, or you will have no effect.
-        /// \param dev_offs a time offset you can use for your calculations (for example, in the MIDISequencer
-        /// it is used as the start time of the sequencer)
-        virtual void                Start(tMsecs dev_offs = 0);
+
+        virtual void                Start();
         /// Sets the running status as **false** and stops the callback.
         /// \see Start()
         virtual void                Stop();
-
-        /// Returns **true** if the callback procedure is active.
-        bool                        IsPlaying() const               { return running.load(); }
 
 
     protected:
@@ -95,12 +121,12 @@ class MIDITickComponent {
         /// The pointer to the static callback (probably set by the constructor to StaticTickProc()).
         const MIDITick*             tick_proc;
 
-        /// A time offset set by the Start() method and which you can use for your calculations.
+        /// A time offset set by the user and which you can use for your calculations.
         tMsecs                      dev_time_offset;
         /// The system time of the last call of Start(). You can use this for calculating the time elapsed between the
         /// start of the callback and the actual call of TickProc().
         tMsecs                      sys_time_offset;
-        /// A mutex you can use for implementing thread safe methods (it is not used by the base class).
+        /// A mutex you can use for implementing thread safe methods.
         std::recursive_mutex        proc_lock;
 
     private:

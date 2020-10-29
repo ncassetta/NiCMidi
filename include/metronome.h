@@ -1,34 +1,24 @@
 /*
- *  libjdkmidi-2004 C++ Class Library for MIDI
+ *   NiCMidi - A C++ Class Library for MIDI
  *
- *  Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
- *  www.jdkoftinoff.com
- *  jeffk@jdkoftinoff.com
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
  *
- *  *** RELEASED UNDER THE GNU GENERAL PUBLIC LICENSE (GPL) April 27, 2004 ***
+ *   This file is part of NiCMidi.
  *
- *  MODIFIED BY NICOLA CASSETTA
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-/*
-**	Copyright 2019 By N. Cassetta.
-**
-**	All rights reserved.
-**
-*/
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 
 /// \file
@@ -47,19 +37,24 @@
 
 ///
 /// A MIDITickComponent implementing a metronome. You can select the port, channel and MIDI notes of the
-/// metronome clicks; moreover you can have three types of click: the ordinary (beat) click, the measure click (first beat
-/// of a measure) and a subdivision click. If you enable measure clicks the metronome can count the measures and the beats
-/// of a measure (so you can represent them in a graphical interface).
+/// metronome clicks; moreover you can have three types of click: the ordinary (beat) click, the measure click
+/// (first beat of a measure) and a subdivision click. If you enable measure clicks the metronome can count the
+/// measures and the beats of a measure (so you can represent them in a graphical interface).
+/// When you change some parameter (tempo, measure, etc./) the metronome is not updated immediately, but only at
+/// the subsequent click (see UpdateValues()).
+/// \note Remember that you must call the MIDIManager::AddTick() to make effective the StaticTickProc(), then
+/// you can call Start() and Stop() methods to enable or disable the thru.
 ///
 class Metronome : public MIDITickComponent {
     public:
-        /// The constructor.
-        /// \param n a pointer to a MIDISequencerGUIEventNotifier. If you leave 0 the sequencer will not notify
+        /// The constructor. It raises an exception if in your system there are no MIDI out ports.
+        /// \param n a pointer to a MIDISequencerGUINotifier. If you leave 0 the sequencer will not notify
         /// the GUI.
+        /// \exception RtMidiError::INVALID_DEVICE if in the system are not present MIDI out ports.
                                         Metronome(MIDISequencerGUINotifier* n = 0);
-        /// The destructor. The MIDISequencerGUINotifier is not owned by the MIDISequencer.
+        /// The destructor. The MIDISequencerGUINotifier is not owned by the Metronome.
         virtual                         ~Metronome() { Stop(); }
-        /// Stops the metronome and resets it to its default values
+        /// Stops the metronome and resets it to its default values.
         virtual void                    Reset();
         /// Returns the number of MIDIticks for a quarter note
         /// Returns current MIDIClockTime in MIDI ticks from the start of the metronome.
@@ -77,13 +72,13 @@ class Metronome : public MIDITickComponent {
         float                           GetTempoWithoutScale() const        { return new_tempobpm; }
         /// Returns current tempo (BPM) taking into account scaling (this is the true actual tempo).
         float                           GetTempoWithScale() const           { return new_tempobpm * new_tempo_scale * 0.01; }
-        /// Returns the number of the MIDI out port assigned to the metronome.
-        int                             GetOutPort() const                  { return new_port; }
+        /// Returns the number of the MIDI out port assigned to the .
+        int                             GetOutPort() const                  { return new_out_port; }
         /// Returns the number of the MIDI channel assigned to the metronome.
         unsigned char                   GetOutChannel() const               { return new_chan; }
         /// Returns the MIDI note number for the measure click.
         unsigned char                   GetMeasNote() const                 { return new_meas_note; }
-        /// Returns the MIDI note number for the ordinary beat click.
+        /// Returns the MIDI note number for the ordinary beat click.metronome
         unsigned char                   GetBeatNote() const                 { return new_beat_note; }
         /// Returns the MIDI note number for the subdivision click.
         unsigned char                   GetSubdNote() const                 { return new_subd_note; }
@@ -94,14 +89,15 @@ class Metronome : public MIDITickComponent {
         unsigned char                   GetTimeSigNumerator() const         { return timesig_numerator; }
         ///
         unsigned char                   GetTimeSigDenominator() const       { return timesig_denominator; }
-
+        /// Sets the musical tempo.
         void                            SetTempo(float t);
 
-        /// Sets the global tempo scale (_scale_ is the percentage: 100 = no scaling, 200 = twice faster, etc.).
+        /// Sets the tempo scale (scale_ is the percentage: 100 = no scaling, 200 = twice faster, etc.).
         void                            SetTempoScale(unsigned int scale);
         /// Sets the MIDI out port for the metronome clicks.
-        void                            SetOutPort(unsigned int p);
-        /// Sets the MIDI channel for the metronome clicks.
+        /// \param port The out MIDI port id number
+        void                            SetOutPort(unsigned int port);
+        /// Sets the MIDI channel for the metronome clicks (channels are numbered 0 ... 15).
         void                            SetOutChannel(unsigned char ch);
         /// Sets the MIDI note number for the measure click (the 1st beat of the measure). It is only effective if you
         /// have already set the timesig numerator (see SetTimesigNumerator()).
@@ -110,7 +106,7 @@ class Metronome : public MIDITickComponent {
         void                            SetBeatNote(unsigned char note);
         /// Sets the MIDI note number for the subdivision click.
         void                            SetSubdNote(unsigned char note);
-        ///
+        /// Sets the subdivision type. It can be 0 (subd clicks disabled), 2, 3, 4, 5, 6.
         void                            SetSubdType(unsigned char type);
         ///
         void                            SetTimeSigNumerator(unsigned char n);
@@ -119,49 +115,46 @@ class Metronome : public MIDITickComponent {
 
         // Inherited from MIDITICK
 
-        virtual void Start();
-        virtual void Stop();
+        /// Starts the metronome.
+        virtual void                    Start();
+        /// Stops the metronome.
+        virtual void                    Stop();
 
-
-/*
-
-
-        static void                     SetMetronomeMode(int mode)
-                                                        { metronome_mode = mode; }
-*/
 
     protected:
         /// Copies the temp values assigned by the set methods into the effective ones. It is
         /// called immediately if the metronome is not running, otherwise at every click, so
         /// the metronome parameters are updated in sync.
         void                            UpdateValues();
-        /// Inherited by MIDITICK
+        /// Implements the static method inherited from MIDITickComponent and called at every timer tick.
+        /// It only calls the member TickProc().
         static void                     StaticTickProc(tMsecs sys_time, void* pt);
+        /// Implements the pure virtual method inherited from MIDITickComponent (you must not call it directly).
         virtual void                    TickProc(tMsecs sys_time);
 
-        MIDISequencerGUINotifier*       notifier;           ///< The (optional) notifier
+        /// \cond EXCLUDED
+        MIDISequencerGUINotifier*       notifier;           // The (optional) notifier
+        unsigned int                    out_port;           // The out port id
+        unsigned char                   chan;               // The MIDI channel for sound output
+        unsigned char                   meas_note;          // The MIDI note number for the measure click (1st note of a measure)
+        unsigned char                   beat_note;          // The MIDI note number for the ordinary beat click
+        unsigned char                   subd_note;          // The MIDI note number for subdivision click
+        unsigned char                   subd_type;          // Number of subdivisions (can be 2, 3, 4, 5, 6, 0 = disable subd click)
+        unsigned char                   timesig_numerator;  // The numerator of current time signature (0 = disable measure click)
+        unsigned char                   timesig_denominator;// The denominator of current time signature (can be 2, 4, 8, 16)
+        float                           tempobpm;           // The current tempo in beats per minute
+        unsigned int                    tempo_scale;        // The tempo scale in percentage (100 = true time)
 
-        int                             port;               ///< The out port id (-1 if unassigned)
-        unsigned char                   chan;               ///< The MIDI channel for sound output
-        unsigned char                   meas_note;          ///< The MIDI note number for the measure click (1st note of a measure)
-        unsigned char                   beat_note;          ///< The MIDI note number for the ordinary beat click
-        unsigned char                   subd_note;          ///< The MIDI note number for subdivision click
-        unsigned char                   subd_type;          ///< Number of subdivisions (can be 2, 3, 4, 5, 6, 0 = disable subd click)
-        unsigned char                   timesig_numerator;  ///< The numerator of current time signature (0 = disable measure click)
-        unsigned char                   timesig_denominator;///< The denominator of current time signature (can be 2, 4, 8, 16)
-        float                           tempobpm;           ///< The current tempo in beats per minute
-        unsigned int                    tempo_scale;        ///< The tempo scale in percentage (100 = true time)
+        MIDIClockTime                   cur_clock;          // The current MIDI clock in MIDI ticks from the metronme start
+        float                           cur_time_ms;        // The current clock in milliseconds from the metronoe start
+        unsigned int                    cur_beat;           // The current beat in the measure (1st beat is 0)
+        unsigned int                    cur_measure;        // The current measure (1st measure is 0)
 
-        MIDIClockTime                   cur_clock;          ///< The current MIDI clock in MIDI ticks from the metronme start
-        float                           cur_time_ms;        ///< The current clock in milliseconds from the metronoe start
-        unsigned int                    cur_beat;           ///< The current beat in the measure (1st beat is 0)
-        unsigned int                    cur_measure;        ///< The current measure (1st measure is 0)
-
-        MIDIClockTime                   beat_length;        ///< The duration of a beat
-        float                           msecs_per_beat;     ///< Milliseconds per beat (for internal use)
-        float                           onoff_time;         ///< Milliseconds between note on and off
-        float                           next_time_on;       ///< The time of the next Note On message (for internal use)
-        float                           next_time_off;      ///< The time of the next Note Off message (for internal use)
+        MIDIClockTime                   beat_length;        // The duration of a beat
+        float                           msecs_per_beat;     // Milliseconds per beat (for internal use)
+        float                           onoff_time;         // Milliseconds between note on and off
+        float                           next_time_on;       // The time of the next Note On message (for internal use)
+        float                           next_time_off;      // The time of the next Note Off message (for internal use)
 
 
         /* UNUSED ????
@@ -170,7 +163,7 @@ class Metronome : public MIDITickComponent {
         */
 
 
-        static const MIDIClockTime      QUARTER_LENGTH = 120;
+        static const MIDIClockTime      QUARTER_LENGTH = DEFAULT_CLKS_PER_BEAT;
         static const unsigned char      DEFAULT_CHAN = 9;
         static const unsigned char      DEFAULT_MEAS_NOTE = 60;
         static const unsigned char      DEFAULT_BEAT_NOTE = 58;
@@ -178,12 +171,13 @@ class Metronome : public MIDITickComponent {
         static const unsigned char      MEAS_NOTE_VEL = 120;
         static const unsigned char      BEAT_NOTE_VEL = 100;
         static const unsigned char      SUBD_NOTE_VEL = 80;
-        static const int                MIN_NOTE_LEN = 30;      // C++ trouble if you declare it float!
+        static const int                MIN_NOTE_LEN = 20;      // C++ trouble if you declare it float!
+        /// \endcond
 
     private:
         // These are set by our set methods, and are used as buffer values, because real values are updated only at a
         // metronome (or measure) click
-        int                             new_port;
+        unsigned int                    new_out_port;
         unsigned char                   new_chan;
         unsigned char                   new_meas_note;
         unsigned char                   new_beat_note;
