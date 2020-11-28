@@ -265,7 +265,7 @@
 ///}
 /// \endcode
 ///
-/// + **Timing**: The manager takes the control of the (also static) MIDITimer, redirecting its background thread to call the static method MIDIManager::TickProc() at every timer tick. It can start and stop the timer with the MIDIManager::StartTimer() and MIDIManager::StopTimer() methods.
+/// + **Timing**: The manager takes the control of the (also static) MIDITimer, redirecting its background thread to call the static method MIDIManager::TickProc() at every timer tick.
 ///
 /// + **Communications with other classes**: The MIDIManager handles a queue of MIDITickComponent objects (i.e. objects "which have a callback", see below): you can insert a pointer to such an object in the queue with the MIDIManager::AddMIDITick() method and remove it with MIDIManager::RemoveMIDITick(). The MIDIManager::TickProc() (which is called at every timer tick) calls in turn all the callbacks of the queued objects, giving them the absolute time as parameter. So every MIDITickComponent object can perform its tasks with accurate timing. This is a sketch of MIDIManager calling mechanism:
 /// \image html "MIDIManager.png"
@@ -323,14 +323,6 @@
 /// + \ref test_component.cpp shows a simple example of subclass.
 ///
 
-
-
-
-/// \defgroup INTERNALS Internals
-/// Classes and functions used internally, the knowledge of which may be omitted by the end user.
-
-/// \defgroup GLOBALS   Globals
-/// Global functions, typedef or preprocessor labels.
 
 
 

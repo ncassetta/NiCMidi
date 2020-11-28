@@ -151,23 +151,21 @@ void MIDIMultiTrack::ShrinkEndTime() {
 }
 
 
-// TODO: Revise this
-void MIDIMultiTrack::AssignEventsToTracks ( const MIDITrack *src )
+void MIDIMultiTrack::AssignEventsToTracks (const MIDITrack *src)
 {
-    MIDITrack tmp( *src ); // make copy of src track
+    MIDITrack tmp(*src); // make a copy of source track
 
     // renew multitrack object with 17 tracks:
     // tracks 1-16 for channel events, and track 0 for other types of events
-    Clear( 17 );
+    Clear(17);
 
-    // move events to tracks 0-16 according it's types/channels
-    for (unsigned int i = 0; i < tmp.GetNumEvents(); ++i)
-    {
+    // move events to tracks 0-16 according their types/channels
+    for (unsigned int i = 0; i < tmp.GetNumEvents(); ++i) {
         const MIDITimedMessage *msg;
-        msg = tmp.GetEventAddress ( i );
+        msg = tmp.GetEventAddress (i);
 
         int track_num = 0;
-        if ( msg->IsChannelMsg() )
+        if (msg->IsChannelMsg())
             track_num = 1 + msg->GetChannel();
 
         tracks[track_num]->PushEvent(*msg);
@@ -175,18 +173,18 @@ void MIDIMultiTrack::AssignEventsToTracks ( const MIDITrack *src )
 }
 
 
-bool MIDIMultiTrack::InsertTrack(int trk) {
-    if (trk == -1) trk = tracks.size();                 // if trk = -1 (default) append track
-    if (trk < 0 || (unsigned)trk > tracks.size()) return false;
-    tracks.insert(tracks.begin() + trk, new MIDITrack);
+bool MIDIMultiTrack::InsertTrack(int trk_num) {
+    if (trk_num == -1) trk_num = tracks.size();                 // if trk_num = -1 (default) append track
+    if (trk_num < 0 || (unsigned)trk_num > tracks.size()) return false;
+    tracks.insert(tracks.begin() + trk_num, new MIDITrack);
     return true;
 }
 
 
-bool MIDIMultiTrack::DeleteTrack(int trk) {
-    if (!IsValidTrackNumber(trk)) return false;
-    delete tracks[trk];
-    tracks.erase(tracks.begin() + trk);
+bool MIDIMultiTrack::DeleteTrack(int trk_num) {
+    if (!IsValidTrackNumber(trk_num)) return false;
+    delete tracks[trk_num];
+    tracks.erase(tracks.begin() + trk_num);
     return true;
 }
 
@@ -203,30 +201,30 @@ bool MIDIMultiTrack::MoveTrack(int from, int to) {
 }
 
 
-bool MIDIMultiTrack::InsertEvent(int trk, const MIDITimedMessage& msg, tInsMode _ins_mode) {
-    if (IsValidTrackNumber(trk))
-        return tracks[trk]->InsertEvent(msg, _ins_mode);
+bool MIDIMultiTrack::InsertEvent(int trk_num, const MIDITimedMessage& msg, tInsMode _ins_mode) {
+    if (IsValidTrackNumber(trk_num))
+        return tracks[trk_num]->InsertEvent(msg, _ins_mode);
     return false;
 }
 
 
-bool MIDIMultiTrack::InsertNote(int trk, const MIDITimedMessage& msg, MIDIClockTime len, tInsMode _ins_mode) {
-    if (IsValidTrackNumber(trk))
-        return tracks[trk]->InsertNote(msg, len, _ins_mode);
+bool MIDIMultiTrack::InsertNote(int trk_num, const MIDITimedMessage& msg, MIDIClockTime len, tInsMode _ins_mode) {
+    if (IsValidTrackNumber(trk_num))
+        return tracks[trk_num]->InsertNote(msg, len, _ins_mode);
     return false;
 }
 
 
-bool MIDIMultiTrack::DeleteEvent(int trk, const MIDITimedMessage& msg) {
-    if (IsValidTrackNumber(trk))
-        return tracks[trk]->DeleteEvent(msg);
+bool MIDIMultiTrack::DeleteEvent(int trk_num, const MIDITimedMessage& msg) {
+    if (IsValidTrackNumber(trk_num))
+        return tracks[trk_num]->DeleteEvent(msg);
     return false;
 }
 
 
-bool MIDIMultiTrack::DeleteNote(int trk, const MIDITimedMessage& msg) {
-    if (IsValidTrackNumber(trk))
-        return tracks[trk]->DeleteNote(msg);
+bool MIDIMultiTrack::DeleteNote(int trk_num, const MIDITimedMessage& msg) {
+    if (IsValidTrackNumber(trk_num))
+        return tracks[trk_num]->DeleteNote(msg);
     return false;
 }
 
@@ -367,7 +365,7 @@ MIDIClockTime MIDIMultiTrackIteratorState::GetShiftedTime(const MIDITimedMessage
         return msg->GetTime();
     if (!msg->IsChannelMsg() && !msg->IsSysEx())
         return msg->GetTime();
-    long shifted_time = (signed)msg->GetTime() + time_shifts->operator[](trk);
+    long shifted_time = (signed)msg->GetTime() + (*time_shifts)[trk];
     return shifted_time < 0 ? 0: (MIDIClockTime)shifted_time;
 }
 

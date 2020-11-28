@@ -1,30 +1,33 @@
 /*
-  A command line example of the features of the AdvancedSequencer
-  class. It creates an instance of the class and allows the user
-  to interact with it. You can load MIDI files and play them
-  changing a lot of parameters (muting, soloing, and transposing
-  tracks; jumping from a time to another, changing the tempo, etc.)
-  even while the sequencer is playing.
-  Compile it together with functions.cpp, which contains command
-  line I/O functions.
+ *   Example file for NiCMidi - A C++ Class Library for MIDI
+ *
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
+ *
+ *   This file is part of NiCMidi.
+ *
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-  Copyright (C) 2013 - 2019 N.Cassetta
-  ncassetta@tiscali.it
-
-  This program is free software; you can redistribute it and/or
-  modify it under the terms of the GNU General Public License
-  as published by the Free Software Foundation; either version 2
-  of the License, or (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program;
-  if not, write to the Free Software Foundation, Inc.,
-  51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ /*
+ A command line example of the features of the AdvancedSequencer
+ class. It creates an instance of the class and allows the user
+ to interact with it. You can load MIDI files and play them
+ changing a lot of parameters (muting, soloing, and transposing
+ tracks; jumping from a time to another, changing the tempo, etc.)
+ even while the sequencer is playing.
+ Requires functions.cpp, which contains command line I/O functions.
 */
 
 

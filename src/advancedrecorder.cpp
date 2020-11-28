@@ -59,6 +59,7 @@ bool AdvancedRecorder::GoToTime(MIDIClockTime time_clk) {
 
 
 bool AdvancedRecorder::GoToTimeMs(float time_ms) {
+return true;
 }
 
 bool AdvancedRecorder::GoToMeasure(int measure, int beat) {

@@ -32,27 +32,28 @@
 
 
 /// \addtogroup GLOBALS
-//@{
+///@{
+
+/// \name MIDI Clock related constants
+///@{
 /// The type of a variable which can hold a time in MIDI ticks.
 /// The MIDI tick is the basis for MIDI clocking: a quarter note is assigned a number of MIDI ticks, and a
 /// MIDITimedMessage object has its time measured in MIDI ticks.
 typedef unsigned long MIDIClockTime;
-/// \name MIDI Clock related constants
-//@{
 /// A constant which represents an infinite time.
 /// Used by some functions which search for specific events in a time interval.
 const MIDIClockTime TIME_INFINITE = 0xffffffff;
 /// The default clocks per beat parameter when initializing a MIDIMultiTrack.
 /// This is the number of MIDI ticks for a quarter note in all the tracks of the multitrack.
 const unsigned int DEFAULT_CLKS_PER_BEAT = 120;
-//@}
-//@}
+///@}
+///@}
 
 
 /// \addtogroup MIDIENUM
-//@{
+///@{
 /// \name Channel status bytes
-//@{
+///@{
 /// These are the type values for a MIDI channel message. For a channel message (with status byte between
 /// 0x80 ... 0xef) only the upper four bits of the status determine its type (while lower four bits represent
 /// the channel); all status bytes between 0xf0 ... 0xff are considered system messages. You can use these
@@ -74,11 +75,11 @@ enum {
     RESET		        =0xff,	///< 0xff never used as reset in a MIDIMessage
     META_EVENT	        =0xff	///< Meta event
 };
-//@}
+///@}
 
 
 /// \name MIDI Real Time Messages
-//@{
+///@{
 /// In the MIDI standard these bytes are used for quick one-byte messages intended to be sent during playback.
 enum {
     RT_TIMING_CLOCK	    =0xf8,  ///< MIDI Real time clock
@@ -88,11 +89,11 @@ enum {
     RT_STOP		        =0xfc,  ///< Sequencer stop
     RT_ACTIVE_SENSE	    =0xfe   ///< MIDI Active sensing
 };
-//@}
+///@}
 
 
 /// \name GM Controller Numbers
-//@{
+///@{
 /// General MIDI standardized controller numbers (stored in the first data byte of a
 /// Control Change message); the last (between 0x78 ... 0x7f) are the **channel mode
 /// messages**. You can use these in the MIDIMessage::SetController() method.
@@ -147,22 +148,21 @@ enum {
     C_MONO		        =0x7e,	///< mono on, all notes off
     C_POLY		        =0x7f	///< poly on, all notes off
 };
-//@}
+///@}
 
 
 /// \name Registered Parameter Numbers
-//@{
+///@{
 /// These bytes are used by the GS standard in a RPN Control Change message.
 enum {
     RPN_BEND_WIDTH	    =0x00,	///< bender sensitivity
     RPN_FINE_TUNE	    =0x01,	///< fine tuning
     RPN_COARSE_TUNE     =0x02	///< coarse tuning
 };
-//@}
-
+///@}
 
 /// \name META Event types
-//@{
+///@{
 /// This is the byte 1 (after the status) of a message with status 0xff (MIDI meta event), and these types
 /// are the same as MIDIFile meta-events. When the data length is <= 2 bytes the library stores data in bytes
 /// 2 and 3 of the MIDIMessage, otherwise in the MIDISystemExclusive object attached to it. So the format of the
@@ -222,19 +222,21 @@ enum {
     /// contain information specified by the manufacturer.\ Currently is ignored by the library.
     META_SEQUENCER_SPECIFIC = 0x7F
 };
-//@}
-//@}
+///@}
+///@}
 
 
+/// \cond EXCLUDED
 // these are used by MIDIMessage class
 extern const signed char	chan_msg_len[16];
 extern const signed char	sys_msg_len[16];
+/// \endcond
 
 
 /// \addtogroup GLOBALS
-//@{
+///@{
 /// \name Helper functions for MIDI and music
-//@{
+///@{
 /// Returns a readable name for the given channel message status.
 const char*                 GetChanMsgName(unsigned char status);
 /// Returns a readable name for the given channel mode (Control change with
@@ -245,9 +247,11 @@ const char*                 GetSysMsgName(unsigned char status);
 /// Returns a readable name for the given meta message status.
 const char*                 GetMetaMsgName(unsigned char type);
 /// Returns a readable name for a GM program number.
+/// \param number the program number
 /// \param format if it is 1 prints the program number before its name.
 const char*                 GetGMProgramName(unsigned char number, int format = 0);
 /// Returns a readable name for a GM program number on channel 10 (drumkit).
+/// \param number the program number
 /// \param format if it is 1 prints the program number before its name.
 const char*                 GetGMDrumkitName(unsigned char number, int format = 0);
 /// Returns **true** if the MIDI number of the note denotes a white key.
@@ -268,21 +272,21 @@ inline int GetNoteOctave(unsigned char note) {
 /// \param use_Mm if true the mode is M or m, otherwise maj or min
 const char* KeyName (signed char sharp_flats, unsigned char major_minor, bool uppercase = true,
                      bool space = false, bool use_Mm = true);
-//@}
-//@}
+
+// unsigned char NoteNumber(const char*name);
+
+///@}
 
 
-/// \addtogroup GLOBALS
-//@{
 /// \name Default constants when initializing messages and classes
-//@{
+///@{
 const int MIDI_DEFAULT_TIMESIG_NUMERATOR = 4;       ///< Timesig numerator
 const int MIDI_DEFAULT_TIMESIG_DENOMINATOR = 4;     ///< Timesig denominator
 const double MIDI_DEFAULT_TEMPO = 120.0;            ///< Musical tempo
 const int MIDI_DEFAULT_KEYSIG_KEY = 0;              ///< Keysig key (C)
 const int MIDI_DEFAULT_KEYSIG_MODE = 0;             ///< Keysig mode (major)
-//@}
-//@}
+///@}
+///@}
 
 
 #endif

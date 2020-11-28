@@ -397,7 +397,8 @@ const char* KeyName(signed char sharp_flats, unsigned char major_minor, bool upp
 
 
 /*
-unsigned char KeyNumber(const char* name) {
+TODO: finish this
+unsigned char NoteNumber(const char* name) {
     static const unsigned char offsets[7] =
     // a,  b, c, d, e, f, g
     {  9, 11, 0, 2, 4, 5, 7 };

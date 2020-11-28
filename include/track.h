@@ -38,7 +38,8 @@
 #include <vector>
 
 /// \addtogroup GLOBALS
-//@{
+///@{
+
 /// Defines the default behavior of the methods MIDITrack::InsertEvent() and MIDITrack::InsertNote()
 /// when inserting events.
 /// If they are trying to insert an event into a track and find an equal or similar event at same MIDI time
@@ -64,7 +65,7 @@ enum
     COMPMODE_SAMEKIND,  ///< the method searches for an event matching the MIDITimedMessage::IsSameKind() method.
     COMPMODE_TIME       ///< the method searches for the first event with time equal to the event time.
 };
-//@}
+///@}
 
 
 ///
@@ -337,13 +338,13 @@ class MIDITrackIterator {
         //bool GoToNextEvent(); unused use GetNextEvent()
 
     protected:
+        /// \cond EXCLUDED
 
         bool                        Process(const MIDITimedMessage *msg);
         void                        ScanEventsAtThisTime();
                                         // warning: this can be used only when we reach the first
                                         // event at a new time!
 
-        /// \cond EXCLUDED
         MIDITrack*                  track;
         unsigned int                cur_ev_num;     // number of the current event
         MIDIClockTime               cur_time;       // current time

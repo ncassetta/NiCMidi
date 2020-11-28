@@ -1,8 +1,6 @@
-
 /// \defgroup MIDIENUM MIDI Enumerations
 /// These are the enum used by the library to avoid MIDI hexadecimal values.
 
-/// \defgroup GLOBALS   Globals
+/// \defgroup GLOBALS Globals
 /// Typedef, functions, enums and preprocessor labels globally defined.
-
 

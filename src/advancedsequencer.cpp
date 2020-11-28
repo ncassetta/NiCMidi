@@ -572,7 +572,8 @@ bool AdvancedSequencer::GoToMeasure (int measure, int beat) {
 
 
 void AdvancedSequencer::Start () {
-    // TODO: if (IsPlaying() as in other MIDITicksComponent ???
+    // If you call this while already èlaying the sequencer will restart from the
+    // loop initial measure (if repeat play is on)
     if (!file_loaded)
         return;
 

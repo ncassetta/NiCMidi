@@ -237,34 +237,34 @@ class MIDISequencer : public MIDITickComponent {
         /// current time). You can easily jump from a time to another saving and retrieving sequencer states.
         const MIDISequencerState*       GetState() const        { return &state; }
         /// Returns a pointer to the MIDISequencerTrackState for a track.
-        /// \param trk the track number
-        MIDISequencerTrackState*        GetTrackState(unsigned int trk)
-                                                                { return state.track_states[trk]; }
+        /// \param trk_num the track number
+        MIDISequencerTrackState*        GetTrackState(unsigned int trk_num)
+                                                                { return state.track_states[trk_num]; }
         /// Returns a pointer to the MIDISequencerTrackState for a track.
-        /// \param trk the track number
-        const MIDISequencerTrackState*  GetTrackState(unsigned int trk) const
-                                                                { return state.track_states[trk]; }
+        /// \param trk_num the track number
+        const MIDISequencerTrackState*  GetTrackState(unsigned int trk_num) const
+                                                                { return state.track_states[trk_num]; }
         /// Returns a pointer to the MIDISequencerTrackProcessor for a track.
-        /// \param trk the track number
+        /// \param trk_num the track number
         /// \return the processor pointer (if you have already set it with the SetProcessor() method),
         /// otherwise 0
-        MIDIProcessor*                  GetTrackProcessor(unsigned int trk)
-                                                                { return track_processors[trk]; }
+        MIDIProcessor*                  GetTrackProcessor(unsigned int trk_num)
+                                                                { return track_processors[trk_num]; }
         /// Returns a pointer to the MIDISequencerTrackProcessor for a track.
-        /// \param trk the track number
+        /// \param trk_num the track number
         /// \return the processor pointer (if you have already set it with the SetProcessor() method),
         /// otherwise 0
-        const MIDIProcessor*            GetTrackProcessor(unsigned int trk) const
-                                                                { return track_processors[trk]; }
+        const MIDIProcessor*            GetTrackProcessor(unsigned int trk_num) const
+                                                                { return track_processors[trk_num]; }
         /// Returns the time offset (in MIDI ticks) assigned to a track.
         /// \see SetTimeOffset(), SetTimeOffsetMode().
-        /// \param trk the track number
-        int                             GetTrackTimeShift(unsigned int trk) const
-                                                                { return time_shifts[trk]; }
+        /// \param trk_num the track number
+        int                             GetTrackTimeShift(unsigned int trk_num) const
+                                                                { return time_shifts[trk_num]; }
         /// Return the number of the port assigned to a track.
-        /// \param trk the track number
-        unsigned int                    GetTrackPort(unsigned int trk) const
-                                                                { return track_ports[trk]; }
+        /// \param trk_num the track number
+        unsigned int                    GetTrackPort(unsigned int trk_num) const
+                                                                { return track_ports[trk_num]; }
 
         /// Sets the repeat play (loop) parameters: you can set the repeat play status on/off, the start and the
         /// end measure.
@@ -286,14 +286,14 @@ class MIDISequencer : public MIDITickComponent {
         /// If you select a negative offset, be sure not to have shifted events at lesser time than the offset
         /// (they won't be shifted). This method is thread-safe and can be called during playback.
         /// \see SetTimeOffsetMode().
-        /// \param trk the track number
+        /// \param trk_num the track number
         /// \param offset the offset in MIDI ticks
-        void                            SetTrackTimeShift(unsigned int trk, int offset);
+        void                            SetTrackTimeShift(unsigned int trk_num, int offset);
         /// Sets the MIDI port for a track. This method is thread-safe and can be called during playback (in this
         /// case the sequencer will send a MIDI AllNotesOff message to the old port).
-        /// \param trk the track number
+        /// \param trk_num the track number
         /// \param port the id number of the port (see MIDIManager::GetOutPorts())
-        void                            SetTrackOutPort(unsigned int trk, unsigned int port);
+        void                            SetTrackOutPort(unsigned int trk_num, unsigned int port);
         /// Copies a given MIDISequencerState into the internal sequencer state. This method is thread-safe and
         /// can be called during playback. Notifies the GUI a GROUP_ALL event to signify a full GUI reset.
         /// \param s a pointer to the new state.
@@ -301,28 +301,29 @@ class MIDISequencer : public MIDITickComponent {
         /// however you should avoid to save a state, edit the multitrack events and then restore the old state,
         /// because you can get inconsistent state parameters.
         void                            SetState(MIDISequencerState* s);
-        /// Sets a MIDIProcessor for a track. This can't be done while the sequencer is playing so it stops it.
+        /// Sets a MIDIProcessor for the given track. This can't be done while the sequencer is playing
+        /// so it stops it.
         /// \note the Reset() method deletes all processors set by this method.
-        void                            SetProcessor(unsigned int trk, MIDIProcessor* p);
+        void                            SetProcessor(unsigned int trk_num, MIDIProcessor* p);
 
         /// Inserts into the internal MIDIMultiTrack a new empty track with default track parameters (transpose,
         /// time offset, etc.). This method is thread-safe and can be called during playback. Notifies the GUI a
         /// GROUP_ALL event to signify a full GUI reset.
-        /// \param trk the track number (it must be in the range 0 ... GetNumTracks() - 1). If you leave the default
-        /// value the track will be appended as last.
+        /// \param trk_num the track number (it must be in the range 0 ... GetNumTracks() - 1). If you leave the
+        /// default value the track will be appended as last.
         /// \return **true** if the track was effectively inserted
         /// \note You should not use the corresponding method of MIDIMultiTrack class, as it does not sync the
         /// iterator and the sequencer internal arrays. If you change the number of tracks directly in the
         /// multitrack (for example when loading a MIDI file) you must then call MIDISequencer::Reset() for
         /// updating the sequencer parameters, but this will reset all track parameters to the default.
-        bool                            InsertTrack(int trk = -1);
+        bool                            InsertTrack(int trk_num = -1);
         /// Deletes a track and all its events from the internal MIDIMultiTrack. This method is thread-safe and can
         /// be called during playback (in this case the sequencer will send a MIDI AllNotesOff message to the old track
         /// port). Notifies the GUI a GROUP_ALL event to signify a full GUI reset.
-        /// \param trk the track number (must be in the range 0 ... GetNumTracks() - 1).
+        /// \param trk_num the track number (must be in the range 0 ... GetNumTracks() - 1).
         /// \return **true** if the track was effectively deleted
         /// \see note to InsertTrack()
-        bool                            DeleteTrack(int trk);
+        bool                            DeleteTrack(int trk_num);
         /// Moves a track from one position to another in the internal MIDIMultiTrack. This method is thread-safe and can
         /// be called during playback (in this case the sequencer will send a MIDI AllNotesOff message to the involved
         /// ports). Notifies the GUI a GROUP_ALL event to signify a full GUI reset.
@@ -350,11 +351,11 @@ class MIDISequencer : public MIDITickComponent {
         /// multitrack, then processes it with the corresponding track processor (if you have set it with
         /// SetProcessor)) and updates the state. Moreover it notifies the GUI with appropriate messages. If
         /// there are no events before the next metronome click you will get a Beat Marker internal event.
-        /// \param[out] trk will return the track of the next event
+        /// \param[out] trk_num will return the track number of the next event
         /// \param[out] msg will return the MIDI event
         /// \return **true** if there is effectively a next event (and the parameters are valid), **false** otherwise
         /// (parameters are undefined)
-        bool                            GetNextEvent (int *trk, MIDITimedMessage *msg);
+        bool                            GetNextEvent (int *trk_num, MIDITimedMessage *msg);
         /// Gets the time of the next event (it can be different from current time if at current time there
         /// are not events).
         /// \param[out] time_clk: will return the requested time in MIDI ticks from the beginning

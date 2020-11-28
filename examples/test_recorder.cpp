@@ -1,40 +1,38 @@
 /*
-  MIDIRecorder class example for libJDKSmidi C++ MIDI Library
-  (console app, no GUI!)
+ *   Example file for NiCMidi - A C++ Class Library for MIDI
+ *
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
+ *
+ *   This file is part of NiCMidi.
+ *
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-  Copyright (C) 2013 N.Cassetta
-  ncassetta@tiscali.it
-
-  This program is free software; you can redistribute it and/or
-  modify it under the terms of the GNU General Public License
-  as published by the Free Software Foundation; either version 2
-  of the License, or (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program;
-  if not, write to the Free Software Foundation, Inc.,
-  51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-
+ /*
+  A command line example of the features of the MIDIRecorder class.
+  You can record MIDI content through a MIDI in port in your system
+  and store the recorded content in an AdvancedSequencer.
+  Requires functions.cpp, which contains command line I/O functions.
 */
-//
-// Copyright (C) 2013 - 2020 N. Cassetta
-// ncassetta@tiscali.it
-//
+
 
 #include "../include/advancedsequencer.h"
 #include "../include/recorder.h"
 #include "../include/manager.h"
 #include "functions.h"                  // helper functions for input parsing and output
 
-
-/// \file
-/// A command line example of the features of the MIDIRecorder class. You can record MIDI content through a MIDI in port
-/// in your system. Compile it together with functions.cpp, which contains I/O functions.
 
 using namespace std;
 

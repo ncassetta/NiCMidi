@@ -65,9 +65,10 @@ class MIDIFileWriteMultiTrack {
 
 
 /// \addtogroup GLOBALS
-//@{
+///@{
+
 /// \name Functions for saving MIDI files
-//@{
+///@{
 /// Writes the given MIDIMultiTrack object into a MIDI file.
 /// \param filename the file name
 /// \param format the MIDI file format (only 0 and 1 are supported)
@@ -78,7 +79,7 @@ bool WriteMIDIFile(const char* filename, int format, const MIDIMultiTrack* track
 /// Writes the given MIDIMultiTrack object into a MIDI file.
 /// \see WriteMIDIFile(const char* filename, format, tracks, strip)
 bool WriteMIDIFile(const std::string& filename, int format, const MIDIMultiTrack* tracks, bool strip = false);
-//@}
-//@}
+///@}
+///@}
 
 #endif

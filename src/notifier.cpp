@@ -136,8 +136,8 @@ void MIDISequencerGUINotifierText::Notify(const MIDISequencerGUIEvent &ev) {
 #ifdef _WIN32
 
 MIDISequencerGUINotifierWin32::MIDISequencerGUINotifierWin32 (
-    HWND w, DWORD msg, WPARAM wparam_value_ ) :
-    dest_window ( w ), window_msg ( msg ), wparam_value ( wparam_value_ ) {}
+    HWND w, DWORD msg, WPARAM param_value ) :
+    dest_window ( w ), window_msg ( msg ), wparam_value ( param_value ) {}
 
 
 // NEW BY NC: auto sets window_msg and wparam_value

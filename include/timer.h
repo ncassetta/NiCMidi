@@ -35,13 +35,17 @@
 #include <atomic>
 
 
+
+
 /// \addtogroup GLOBALS
-//@{
+///@{
+
 /// The type of a variable which can hold the elapsed time in milliseconds.
 typedef unsigned long long tMsecs;
 /// This is the typedef of the callback function which is called at every timer tick.
 typedef  void (MIDITick)(tMsecs, void*);
-//@}
+///@}
+///@}
 
 ///
 /// A static class which provides the timing required for MIDI playback, using the C++11 &lt;chrono&gt;
@@ -62,8 +66,11 @@ class MIDITimer {
         /// Type for a variable which can hold a time duration (in milliseconds).
 		typedef std::chrono::milliseconds duration;
 
-        /// The class is static so the constructor is deleted.
-                                    MIDITimer() = delete;
+        /// \cond EXCLUDED
+        // We must construct a dummy object (see source file)
+                                    MIDITimer();
+                                   ~MIDITimer();
+        /// \endcond
 
         /// Returns the timer resolution, i.e. the time interval (in milliseconds) between two ticks.
         static unsigned int         GetResolution()                 { return resolution; }

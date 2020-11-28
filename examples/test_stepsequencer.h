@@ -1,37 +1,28 @@
 /*
- * Example using the classes MIDITrack and MIDIMultiTrack for
- * libJDKSmidi C++ MIDI Library.
- * A simple step sequencer: you can add, remove, edit MIDI
- * events and play and save your file (console app, no GUI!)
+ *   Example file for NiCMidi - A C++ Class Library for MIDI
  *
- * Copyright (C) 2014-2020 N.Cassetta
- * ncassetta@tiscali.it
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ *   This file is part of NiCMidi.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program;
- * if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
  *
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 
-/* This is a very basic, and not comfortable, step sequencer, made for demonstrating
-   editing capabilities of the jdksmidi library. It creates an AdvancedSequencer class instance,
-   gets it MultiTrack, and allows the user to edit it.
-   You can load and save MIDI files, play them, view the file content, edit the file.
-   You can insert, delete or change these MIDI events: note, control (in particular volume and pan)
-   patch and tempo. For changing an event, insert a new event (same note, control, patch, tempo) at
-   same time position.
+/*
+  Header file for test_stepsequencer.cpp
 */
 
 

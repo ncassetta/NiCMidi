@@ -32,9 +32,9 @@
 #define _JDKMIDI_SMPTE_H
 
 
-/// \addtogroup GLOBALS The smpte and sample rates
-/// These are the allowed smpte rates and sample rates for SMPTE class.
-//@{
+/// \addtogroup GLOBALS
+///@{
+
 /// The smpte rates (determine the frames/sec rate)
 enum SMPTE_RATE {
     SMPTE_RATE_24 = 0,          ///< 24 frames/sec
@@ -55,10 +55,7 @@ enum SAMPLE_RATE {
     SAMPLE_48000,               ///< 48000 samples/sec
     SAMPLE_48048                ///< 48048 samples/sec
 };
-//@}
-
-
-
+///@}
 
 
 ///
@@ -91,7 +88,7 @@ class  SMPTE {
         SAMPLE_RATE         GetSampleRate() const           { return sample_rate; }
 
         /// \name To get and set the sample number
-        //@{
+        ///@{
         /// Performs a smpte-to-samples or milliseconds-to-samples conversion.
         /// You must first load the SMPTE with the smpte values (using SetTime() or SetHours() ...)
         /// or the number of milliseconds (using SetMilliSeconds()) to convert; then you can call
@@ -104,10 +101,10 @@ class  SMPTE {
         /// GetMilliseconds() to perform a sample-to-milliseconds conversion.
         void                SetSampleNumber (unsigned long n)
                                                             { sample_number = n; sample_number_dirty = true; }
-        //@}
+        ///@}
 
         /// \name To get and set the milliseconds
-        //@{
+        ///@{
         /// Performs a smpte-to-millisecond or sample-to-millisecond conversion.
         /// You must first load the SMPTE with the number of samples (using SetSampleNumber())
         /// or with smpte values (using SetTime() or SetHours() ...) to convert; then you can call
@@ -118,7 +115,7 @@ class  SMPTE {
         /// You can then call GetSampleNumber() to perform a milliseconds-to-sample conversion or GetHours(),
         /// GetMinutes() etc.\ to perform a milliseconds-to-smpte conversion.
         void                SetMilliSeconds (unsigned long msecs);
-        //@}
+        ///@}
 
         /// \name To get and set the smpte values
         /// These perform a samples-to-smpte or milliseconds-to-smpte conversion.\ You must first
@@ -126,7 +123,7 @@ class  SMPTE {
         /// milliseconds (using SetMilliSeconds()) to convert; then you can call thiese to get the
         /// converted smpte values.
         /// \note These are NOT const! May perform an internal conversion.
-        //@{
+        ///@{
         /// Returns the smpte hours.
         unsigned char       GetHours();
         /// Returns the smpte minutes.
@@ -152,22 +149,22 @@ class  SMPTE {
         void                SetFrames (unsigned char f)     { frames = f; sample_number_dirty = true; }
         /// See SetTime(). This only affect the  smpte subframes, leaving unchanged other parameters.
         void                SetSubFrames (unsigned char sf) { sub_frames = sf; sample_number_dirty = true; }
-        //@}
+        ///@}
 
         /// \name To add, increment and decrement samples
         /// These functions add, increment or decrement the current sample number.
-        //@{
+        ///@{
         /// Adds n samples.
         void                AddSamples (long n);
         /// Adds one sample.
         void                IncSamples()                    { AddSamples (1); }
         /// Subtracts one sample.
         void                DecSamples()                    { AddSamples (-1); }
-        //@}
+        ///@}
 
         /// \name To add, increment and decrement smpte
         /// These functions add, increment or decrement smpte time parameters.
-        //@{
+        ///@{
         /// Adds hours to smpte time.
         void                AddHours (char h);
         /// Adds minutes to smpte time.
@@ -198,11 +195,11 @@ class  SMPTE {
         void                DecFrames()                     { AddFrames (-1); }
         /// Subtract one subframe from smpte time
         void                DecSubFrames()                  { AddSubFrames (-1); }
-        //@}
+        ///@}
 
         /// \name The operators (these compare the current time)
         /// \note All these are NOT const! May perform an internal conversion
-        //@{
+        ///@{
 
         /// Equal.
         bool                operator== (SMPTE &s)           { return Compare (s) == 0; }
@@ -222,7 +219,7 @@ class  SMPTE {
         SMPTE&          operator+ (SMPTE &s);
         SMPTE&          operator- (SMPTE &s);
         */
-        //@}
+        ///@}
 
     /* NEW */
         /// Sets an offset to be added to the current time to the given amount of samples.

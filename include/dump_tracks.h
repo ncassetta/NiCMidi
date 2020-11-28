@@ -35,9 +35,10 @@
 
 
 /// \addtogroup GLOBALS
-//@{
+///@{
+
 /// \name Helper functions for viewing track content
-//@{
+///@{
 /// Prints a readable string describing the contents of the given MIDIMessage (or MIDITimedMessage).
 void DumpMIDITimedMessage (MIDITimedMessage* const msg, std::ostream& ost = std::cout);
 /// Prints a list of all the MIDI messages in the given MIDItrack.
@@ -46,7 +47,8 @@ void DumpMIDITrack (MIDITrack* const t, std::ostream& ost = std::cout);
 void DumpAllTracks (MIDIMultiTrack* const mlt, std::ostream& ost = std::cout);
 /// Prints a list of all MIDI messages in the given MIDIMultiTrack in temporal order.
 void DumpMIDIMultiTrack (MIDIMultiTrack*const mlt, std::ostream& ost = std::cout);
-//@}
+///@}
+///@}
 
 
 #endif // DUMP_TRACKS_H_INCLUDED

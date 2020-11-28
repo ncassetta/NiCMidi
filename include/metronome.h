@@ -87,7 +87,7 @@ class Metronome : public MIDITickComponent {
         /// Returns the numerator of the current timesig. If it is 0 the measure clicks are disabled, otherwise the 1st click
         /// of a measure will sound with different note and volume.
         unsigned char                   GetTimeSigNumerator() const         { return timesig_numerator; }
-        ///
+        /// TODO: Actually denominator is not implemented.
         unsigned char                   GetTimeSigDenominator() const       { return timesig_denominator; }
         /// Sets the musical tempo.
         void                            SetTempo(float t);
@@ -108,9 +108,10 @@ class Metronome : public MIDITickComponent {
         void                            SetSubdNote(unsigned char note);
         /// Sets the subdivision type. It can be 0 (subd clicks disabled), 2, 3, 4, 5, 6.
         void                            SetSubdType(unsigned char type);
-        ///
+        /// Sets the numerator of the current timesig. If it is 0 the measure clicks are disabled, otherwise the 1st click
+        /// of a measure will sound with different note and volume.
         void                            SetTimeSigNumerator(unsigned char n);
-        /// TODO:
+        /// TODO: Actually denominator is not implemented
         void                            SetTimeSigDenominator(unsigned char d);
 
         // Inherited from MIDITICK

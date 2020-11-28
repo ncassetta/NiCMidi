@@ -66,7 +66,7 @@ class 	MIDIMessage {
         /// Returns the length in bytes of the entire message.
         char	                GetLength() const;
         /// Returns the status byte of the message. If the message is a channel message this contains the message
-        /// type in the top 4 bits and the channel in the bottom 4. \ref Channel_status
+        /// type in the top 4 bits and the channel in the bottom 4. See \ref MIDIENUM for status bytes
         unsigned char	        GetStatus() const	        { return (unsigned char)status;	}
         /// If the message is a channel message, returns its MIDI channel (0...15).
         unsigned char	        GetChannel() const          { return (unsigned char)(status  &0x0f);	}

@@ -44,7 +44,7 @@
 
 ///
 /// A static class that manages computer hardware resources (in and out MIDI ports) and timing.
-/// It embeds a MIDITimer object and a MIDIInDriver or MIDIOutDriver for every hardware port;
+/// It controls the MIDITimer object and embeds a MIDIInDriver or MIDIOutDriver for every hardware port;
 /// moreover it manages a queue of MIDITickComponent (objects with a callback procedure to be called at regular
 /// pace). When the timer is started the MIDIManager begins to call its main tick procedure at every timer tick;
 /// this in turn calls the callback procedure of all the MIDITickComponent objects in the queue; typically
@@ -55,44 +55,41 @@
 ///
 class MIDIManager {
 public:
-    /// The constructor. It creates
-    /// - a MIDIOutDriver for every hardware out port
-    /// - a MIDIInDriver for every hardware in port.
-    /// - a MIDITimer for playback timing.
-    /// - an empty queue of MIDITickComponent objects.
-                                MIDIManager();
-    /// The destructor deletes the drivers and the timer.
-    virtual                     ~MIDIManager();
+                                MIDIManager() = delete;
+
     /// Stops the timer if it is running, resets all the MIDI in and out ports and flushes the
     /// MIDITickComponent queue.
     static void                 Reset();
 
     /// Returns the number of MIDI in ports in the system.
-    static unsigned int         GetNumMIDIIns()                 { return MIDI_in_names.size(); }
+    static unsigned int         GetNumMIDIIns();
     /// Returns the system name of the given MIDI in port.
-    static const std::string&   GetMIDIInName(unsigned int n)   { return MIDI_in_names[n]; }
+    static const std::string&   GetMIDIInName(unsigned int n);
     /// Returns a pointer to the MIDIInDriver with given port id.
-    static MIDIInDriver*        GetInDriver(unsigned int n)     { return MIDI_ins[n]; }
+    static MIDIInDriver*        GetInDriver(unsigned int n);
     /// Returns **true** if almost one MIDI in port is present on the system.
-    static bool                 HasMIDIIn()                     { return MIDI_ins.size() > 0; }
+    static bool                 HasMIDIIn();
     /// Returns the number of MIDI out ports in the system.
-    static unsigned int         GetNumMIDIOuts()                { return MIDI_out_names.size(); }
+    static unsigned int         GetNumMIDIOuts();
     /// Returns the system name of the given MIDI out port.
-    static const std::string&   GetMIDIOutName(unsigned int n)  { return MIDI_out_names[n]; }
+    static const std::string&   GetMIDIOutName(unsigned int n);
     /// Returns a pointer to the MIDIOutDriver with given port id.
-    static MIDIOutDriver*       GetOutDriver(unsigned int n)    { return MIDI_outs[n]; }
+    static MIDIOutDriver*       GetOutDriver(unsigned int n);
     /// Returns **true** if almost one MIDI out port is present on the system.
-    static bool                 HasMIDIOut()                    { return MIDI_outs.size() > 0; }
+    static bool                 HasMIDIOut();
     /// Returns the pointer to the (unique) MIDITickComponent in the queue with tPriority PR_SEQ
     /// (0 if not found).
     static MIDISequencer*       GetSequencer();
+
+/* TODO: are these useful?
     /// Starts the MIDITimer thread procedure.
     /// It calls, at every timer tick, the TickProc() which in turn calls all the
     /// MIDITickComponent::StaticTickProc() added to the queue via the AddMIDITick() method.
-    static bool                 StartTimer()                    { return MIDITimer::Start(); }
+    static bool                 StartTimer();
     /// Stops the MIDITimer thread procedure.
     /// This causes all the MIDITickComponent callbacks to halt.
-    static void                 StopTimer()                     { MIDITimer::Stop(); }
+    static void                 StopTimer();
+*/
     /// Opens all the system MIDI In ports.
     /// It calls the MIDIInDriver::OpenPort() method for every port.
     static void                 OpenInPorts();
@@ -124,19 +121,31 @@ protected:
     /// method of every queued MIDITickComponent object with running status. The user must not call it directly.
     static void                         TickProc(tMsecs sys_time_, void* p);
 
-    /// \cond EXCLUDED
-    static std::vector<MIDIOutDriver*>  MIDI_outs;      // A vector of MIDIOutDriver objects (one for each
-                                                        // hardware port)
-    static std::vector<std::string>     MIDI_out_names; // The system names of hardware out ports
-    static std::vector<MIDIInDriver*>   MIDI_ins;       // A vector of MIDIInDriver objects (one for each
-                                                        // hardware port)
-    static std::vector<std::string>     MIDI_in_names;  // The system names of hardware in ports
+    /// This is the initialization function, called the first time a class method is accessed. It creates
+    /// - a MIDIOutDriver for every hardware out port
+    /// - a MIDIInDriver for every hardware in port.
+    /// - an empty queue of MIDITickComponent objects.
+    /// Moreover, it redirects the MIDITimer callback pointer to TickProc(), so StartTimer() and StopTimer()
+    /// start and stop the callback.
+    static void                         Init();
 
-    static std::vector<MIDITickComponent*>
+    /// \cond EXCLUDED
+    static void                         Exit();         // called at exit
+
+    // WARNING! We MUST use pointers to avoid the "static inizialization order fiasco"
+    static std::vector<MIDIOutDriver*>* MIDI_outs;      // A vector of MIDIOutDriver objects (one for each
+                                                        // hardware port)
+    static std::vector<std::string>*    MIDI_out_names; // The system names of hardware out ports
+    static std::vector<MIDIInDriver*>*  MIDI_ins;       // A vector of MIDIInDriver objects (one for each
+                                                        // hardware port)
+    static std::vector<std::string>*    MIDI_in_names;  // The system names of hardware in ports
+
+    static std::vector<MIDITickComponent*>*
                                         MIDITicks;      // The array of MIDITickCompnent objects, everyone
                                                         // of them has his StaticTickProc() callback
 
-    static std::mutex                   proc_lock;      // A mutex for thread safe processing
+    static std::mutex*                  proc_lock;      // A mutex for thread safe processing
+    static bool                         init;
     /// \endcond
 };
 

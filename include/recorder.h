@@ -57,15 +57,25 @@ class MIDIMultiTrackCopier {
 
 ///
 /// A MIDITickComponent which can record MIDI messages incoming from a MIDI in port, putting them into an internal
-/// MIDIMultiTrack. You can enable and disable ports and channels for recording.
+/// MIDIMultiTrack. You can select the port, channel and MIDI notes of the
+/// metronome clicks; moreover you can have three types of click: the ordinary (beat) click, the measure click (first beat
+/// of a measure) and a subdivision click. If you enable measure clicks the metronome can count the measures and the beats
+/// of a measure (so you can represent them in a graphical interface).
 ///
 class MIDIRecorder : public MIDITickComponent {
     public:
+        /// \name Constructors, destructor and reset
+        ///@{
+
         /// The constructor.
                                         MIDIRecorder();
         /// The destructor
         virtual                         ~MIDIRecorder();
         virtual void                    Reset();
+        ///@}
+
+        /// \name The get methods
+        ///@{
 
         /// Returns a pointer to the internal MIDIMultiTrack.
         MIDIMultiTrack*                 GetMultiTrack() const           { return multitrack; }
@@ -73,6 +83,10 @@ class MIDIRecorder : public MIDITickComponent {
         float                           GetTempo() const                { return tempobpm; }
         /// Returns the start MIDI time of the recording.
         MIDIClockTime                   GetStartTime() const            { return start_time; }
+        ///@}
+
+        ///@name The 'Set' methods
+        ///@{
 
         /// Sets the recording tempo.
         /// \param t the tempo in bpm
@@ -82,11 +96,12 @@ class MIDIRecorder : public MIDITickComponent {
         /// Sets the recording start time.
         /// \param t the MIDI clock time
         void                            SetStartTime(MIDIClockTime t)   { start_time = t; }
+        ///@}
 
         /// Enables a MIDI in port in the system for recording.
         /// \param port the system port id (you can use MIDIManager::GetNumMIDIIns() and
         /// MIDIManager::GetMIDIInName() for inspecting them).
-        /// \param en_chans if **true** (default) enables recording from all channels, creating a MIDITrack in
+        /// \param en_chans if étrueé (default) enables recording from all channels, creating a MIDITrack in
         /// the multitrack for every one, otherwise you must set the recording channel with EnableChannel()
         void                            EnablePort(unsigned int port, bool en_chans = true);
         /// Enables a specific MIDI channel for recording, creating a track for it in the internal MIDIMultiTrack.

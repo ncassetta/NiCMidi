@@ -1,30 +1,35 @@
-/* This is a very basic, and not comfortable, step sequencer,
-   made for demonstrating editing capabilities of the myjdkmidi library.
+/*
+ *   Example file for NiCMidi - A C++ Class Library for MIDI
+ *
+ *   Copyright (C) 2020  Nicola Cassetta
+ *   https://github.com/ncassetta/NiCMidi
+ *
+ *   This file is part of NiCMidi.
+ *
+ *   NiCMidi is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   NiCMidi is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+/* A very basic, and not comfortable, command line step sequencer,
+   made for demonstrating editing capabilities of the NiCMidi library.
    It creates an AdvancedSequencer class instance, gets it MultiTrack,
-   and allow the user to edit it.
+   and allows the user to edit it.
    You can load and save MIDI files, play them, view the file
    content, edit the file. You can insert, delete or change these
-   MIDI events: note, control (in particular volume and pan)
+   MIDI events: note, control (in particular volume and pan),
    program and tempo. For changing an event, insert a new event
    (same note, control, program, tempo) at same time position.
-
-  Copyright (C) 2014 - 2020 N.Cassetta
-  ncassetta@tiscali.it
-
-  This program is free software; you can redistribute it and/or
-  modify it under the terms of the GNU General Public License
-  as published by the Free Software Foundation; either version 2
-  of the License, or (at your option) any later version.
-
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with this program;
-  if not, write to the Free Software Foundation, Inc.,
-  51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+   Requires functions.cpp, which contains command line I/O functions.
  */
 
 

@@ -154,8 +154,7 @@ class MIDISequencerGUINotifier {
         /// sends them; you can set it in the constructor or later.
                         MIDISequencerGUINotifier(const MIDISequencer* seq = 0) :
                             sequencer(seq), en(true)                {}
-        /// The destructor.
-        virtual         ~MIDISequencerGUINotifier()                 {}
+        // (no need for destructor)
         /// This sets the sequencer which generates messages sent to the GUI.
         /// \warning If you use the notifier in conjunction with an AdvancedSequencer class,
         /// this is automatically set by the class
@@ -167,8 +166,10 @@ class MIDISequencerGUINotifier {
         /// Sets message sending on/off.
         virtual void    SetEnable(bool f)                           { en = f; }
     protected:
+        /// \cond EXCLUdED
         const MIDISequencer*  sequencer;            ///< The sequencer which will send the messages
         bool en;                                    ///< Enable/disable message sending
+        /// \endcond
 };
 
 
@@ -177,13 +178,19 @@ class MIDISequencerGUINotifier {
 ///
 class MIDISequencerGUINotifierText : public MIDISequencerGUINotifier {
     public:
-                        MIDISequencerGUINotifierText(const MIDISequencer* seq = 0, std::ostream& o = std::cout) :
-                                MIDISequencerGUINotifier(seq), ost(o)   {}
-        virtual         ~MIDISequencerGUINotifierText()                 {}
+        /// The constructor.
+        /// \param seq the sequencer from which messages originate
+        /// \param os the std::ostream which will print the messages
+                        MIDISequencerGUINotifierText(const MIDISequencer* seq = 0, std::ostream& os = std::cout) :
+                                MIDISequencerGUINotifier(seq), ost(os)   {}
+
+        /// Notifies the event _ev_, printing to it a readable event description.
         virtual void    Notify(const MIDISequencerGUIEvent &ev);
 
-    private:
+    protected:
+        /// \cond EXCLUDED
         std::ostream& ost;
+        /// \endcond
 };
 
 
@@ -199,9 +206,9 @@ class MIDISequencerGUINotifierWin32 : public MIDISequencerGUINotifier {
     public:
             /// In this form of the constructor you must give the Windows parameters to the notifier.
             /// \param w the id of the window to whom sending messages
-            /// \param wmmsg a Windows message id used by the notifier to communicate with the window
-            /// \param wparam_value an optional parameter sent by the message.
-                            MIDISequencerGUINotifierWin32 (HWND w, DWORD wmmsg, WPARAM wparam_value_ = 0);
+            /// \param msg a Windows message id used by the notifier to communicate with the window
+            /// \param param_value an optional parameter sent by the message.
+                            MIDISequencerGUINotifierWin32 (HWND w, DWORD msg, WPARAM param_value = 0);
 
             /// This form auto sets the Windows message id and wparam_value, so you don't have to worry
             /// about them.
@@ -212,17 +219,18 @@ class MIDISequencerGUINotifierWin32 : public MIDISequencerGUINotifier {
             /// Returns the Window message id.
             DWORD           GetMsgId() const            { return window_msg; }
 
-            /// Sends the MIDISequencerGUIEvent _e_ to the window.
+            /// Sends the MIDISequencerGUIEvent _ev_ to the window.
             virtual void    Notify (const MIDISequencerGUIEvent &ev);
 
     protected:
-
-            /// Returns a safe Windows message id, so we can create the notifier without worrying about this
+            /// \cond EXCLUDED
+            // Returns a safe Windows message id, so we can create the notifier without worrying about this
             static UINT     GetSafeSystemMsgId()        { static UINT base = WM_APP; return base++; }
 
             HWND            dest_window;
             DWORD           window_msg;
             WPARAM          wparam_value;
+            /// \endcond
 };
 
 #endif // _WIN32

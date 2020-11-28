@@ -106,9 +106,10 @@ class MIDIFileReadMultiTrack : public MIDIFileEventHandler {
 
 
 /// \addtogroup GLOBALS
-//@{
+///@{
+
 /// \name Functions for Loading MIDI files
-//@{
+///@{
 /// Returns the header of the MIDI file specified by _filename_.
 /// You can then inspect the format, (0, 1 or 2), the number of tracks and the division (MIDI ticks per
 /// quarter note) of the file. If the header cannot be read these are all 0.
@@ -131,8 +132,8 @@ bool                                    LoadMIDIFile(const char* filename, MIDIM
 /// Loads a MIDI file into a MIDIMultiTrack object. \see LoadMIDIFile(const char*, MIDIMultiTrack, MIDIFileHeader* const).
 bool                                    LoadMIDIFile(const std::string& filename, MIDIMultiTrack* tracks,
                                                      MIDIFileHeader* const head = 0);
-//@}
-//@}
+///@}
+///@}
 
 
 #endif

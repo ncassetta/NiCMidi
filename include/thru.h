@@ -50,7 +50,7 @@ class MIDIThru : public MIDITickComponent {
         /// \exception RtMidiError::INVALID_DEVICE if in the system are not present MIDI out or MIDI in ports
                                 MIDIThru();
         /// The destructor.
-        virtual                 ~MIDIThru() { Stop(); }
+        virtual                 ~MIDIThru();
         /// Resets the class to initial status:
         /// - In and out ports set to the OS id 0
         /// - No extra processor (warning: this only sets the processor pointer to 0! The driver

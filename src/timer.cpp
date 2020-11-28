@@ -24,7 +24,8 @@
 
 
 #include "../include/timer.h"
-#include <iostream>     // for debug
+
+#include <iostream>         // for debugging
 
 const MIDITimer::timepoint MIDITimer::sys_clock_base = std::chrono::steady_clock::now();
 
@@ -37,6 +38,21 @@ MIDITick* MIDITimer::tick_proc = 0;
 std::atomic<int> MIDITimer::num_open(0);
 MIDITimer::timepoint MIDITimer::current;
 std::thread MIDITimer::bg_thread;
+
+
+// We need this for assuring the destructor is called at exit, stopping the timer and joining the bg_thread
+// Without this we have errors if exiting while the timer is open
+static MIDITimer dummy;
+
+MIDITimer::MIDITimer() {
+    std::cout << "MIDITimer constructor" << std::endl;
+
+}
+
+MIDITimer::~MIDITimer() {
+    std::cout << "MIDITimer destructor" << std::endl;
+    HardStop();             // this joins the bg_thread
+ };
 
 
 
@@ -83,7 +99,7 @@ void MIDITimer::Stop() {
         if (num_open == 0) {
             bg_thread.join();
 
-            std:: cout << "Timer stopped" << std::endl;
+            std:: cout << "Timer stopped by MIDITimer::Stop()" << std::endl;
         }
     }
 }
@@ -93,22 +109,19 @@ void MIDITimer::HardStop() {
     if (num_open > 0) {
         num_open = 0;
         bg_thread.join();
-        std:: cout << "Timer stopped" << std::endl;
+        std:: cout << "Timer stopped by MIDITimer::HardStop()" << std::endl;
     }
 }
 
     // This is the background thread procedure
 void MIDITimer::ThreadProc() {
-    //timepoint current, next;
     duration tick(resolution);
 
     while(MIDITimer::num_open) {
-        //current = std::chrono::steady_clock::now();
-                // execute the supplied function
+        // execute the supplied function
         MIDITimer::tick_proc(MIDITimer::GetSysTimeMs(), MIDITimer::tick_param);
-                // find the next timepoint and sleep until it
+        // find the next timepoint and sleep until it
         current += tick;
-        //next = current + tick;
         std::this_thread::sleep_until(current);
     }
 }

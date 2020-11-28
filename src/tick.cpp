@@ -28,7 +28,7 @@
 
 
 MIDITickComponent::~MIDITickComponent() {
-    MIDITimer::Stop();
+    Stop();
     MIDIManager::RemoveMIDITick(this);
 }
 

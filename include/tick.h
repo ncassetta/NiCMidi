@@ -35,7 +35,9 @@
 #include "timer.h"
 
 /// \addtogroup GLOBALS
-//@{
+///@{
+
+///@{
 /// These are the available priorities for a MIDITickComponent. When you add a component to the MIDIManager queue with
 /// the MIDIManager::SetComponent() method the order in the queue reflects the priority of the components.
 /// \see MIDIManager::AddComponent().
@@ -46,7 +48,8 @@ typedef enum {
     PR_POST_SEQ,        ///< The component is inserted after the sequencer
     PR_LAST             ///< The component is inserted as last element in the queue
 } tPriority;
-//@}
+///@}
+///@}
 
 
 ///

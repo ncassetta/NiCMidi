@@ -74,11 +74,11 @@ class MIDIMultiTrack {
         /// Returns the MIDI clocks per beat of all tracks (i.e.\ the number of MIDI ticks in a quarter note).
         unsigned int                GetClksPerBeat() const          { return clks_per_beat; }
         /// Returns the pointer to the track
-        /// \param track_num The track number
-        MIDITrack*                  GetTrack(int trk)               { return tracks[trk]; }
+        /// \param trk_num The track number
+        MIDITrack*                  GetTrack(int trk_num)           { return tracks[trk_num]; }
         /// Returns the pointer to the track
-        /// \param track_num The track number
-        const MIDITrack*            GetTrack(int trk) const         { return tracks[trk]; }
+        /// \param trk_num The track number
+        const MIDITrack*            GetTrack(int trk_num) const     { return tracks[trk_num]; }
         /// Returns the number of the pointed track, -1 if the track is not in the multitrack.
         int                         GetTrackNum(MIDITrack* trk) const;
         /// Returns the number of allocated tracks.
@@ -90,9 +90,9 @@ class MIDIMultiTrack {
         unsigned int                GetNumEvents() const;
         /// Returns the end time of the longest track.
         MIDIClockTime               GetEndTime() const;
-        /// Returns **true** if _trk_ is in thee range 0 ... GetNumTracks() - 1.
-        bool                        IsValidTrackNumber(int trk) const
-                                                                    { return (0 <= trk && (unsigned)trk < tracks.size()); }
+        /// Returns **true** if _trk_num_ is in thee range 0 ... GetNumTracks() - 1.
+        bool                        IsValidTrackNumber(int trk_num) const
+                                                                    { return (0 <= trk_num && (unsigned)trk_num < tracks.size()); }
         /// Returns **true** if there are no events in the tracks and the end time is 0.
         bool                        IsEmpty() const                 { return (GetNumEvents() == 0 && GetEndTime() == 0); }
 
@@ -112,37 +112,37 @@ class MIDIMultiTrack {
         /// This function is useful in dealing with MIDI format 0 files (with all events in an unique track).
         /// It remakes the MIDIMultiTrack object with 17 tracks (_src_ track can be a member of multitrack object
         /// himself), moves _src_ track channel events to tracks 1-16 according their channel, and all other types
-        /// of events to track 0. This is automatically done when loading a MIDI format 0 file.
+        /// of events to track 0. This is automatically called when loading a MIDI format 0 file.
         void                        AssignEventsToTracks (const MIDITrack *src);
-        /// The same as previous, but argument is the track number of multitrack object himself
-        void                        AssignEventsToTracks (int trk = 0)
-                                            { return AssignEventsToTracks(GetTrack(trk)); }
-        /// Inserts a new empty track at position _trk_ (_trk_ must be in the range 0 ...\ GetNumTracks() - 1). If
-        /// _trk_ == -1 appends the track at the end.
+        /// The same as previous, but argument is the track number in the multitrack object himself
+        void                        AssignEventsToTracks (int trk_num = 0)
+                                            { return AssignEventsToTracks(GetTrack(trk_num)); }
+        /// Inserts a new empty track at position _trk_num_ (_trk_num_ must be in the range 0 ...\ GetNumTracks() - 1).
+        /// If _trk_num_ == -1 appends the track at the end.
         /// \return **true** if the track was effectively inserted.
         /// \warning if you are using the MIDIMultiTrack into a MIDISequencer class don't call this directly
         /// but the corresponding MIDISequencer method (which adjust the MIDISequencer internal values also).
-        bool                        InsertTrack(int trk = -1);
-        /// Deletes the track _trk_ and its events. _trk_ must be in the range 0 ... GetNumTracks() - 1.
+        bool                        InsertTrack(int trk_num = -1);
+        /// Deletes the track _trk_num_ and its events. (_trk_num_ must be in the range 0 ... GetNumTracks() - 1).
         /// \return **true** if the track was effectively deleted
         /// \see warning in the InsertTrack() method
-        bool                        DeleteTrack(int trk);
+        bool                        DeleteTrack(int trk_num);
         /// Moves a track from the position _from_ to the position _to_. ( _from_ and _to_ must be in the range
         /// 0 ... GetNumTracks() - 1).
         /// \return **true** if the track was effectively moved
         /// \see warning in the InsertTrack() method
         bool                        MoveTrack(int from, int to);
 
-        /// Inserts the event _msg_ in the track _trk_. See MIDITrack::InsertEvent() for details.
+        /// Inserts the event _msg_ in the track _trk_num_. See MIDITrack::InsertEvent() for details.
         /// \return **true** if the event was effectively inserted
-        bool                        InsertEvent(int trk,  const MIDITimedMessage& msg, tInsMode _ins_mode = INSMODE_DEFAULT);
-        /// Inserts a Note On and a Note Off event into the track. See MIDITrack::InsertNote() for details.
-        bool                        InsertNote(int trk, const MIDITimedMessage& msg,
+        bool                        InsertEvent(int trk_num,  const MIDITimedMessage& msg, tInsMode _ins_mode = INSMODE_DEFAULT);
+        /// Inserts a Note On and a Note Off event into the track _trk_num_. See MIDITrack::InsertNote() for details.
+        bool                        InsertNote(int trk_num, const MIDITimedMessage& msg,
                                             MIDIClockTime len, tInsMode _ins_mode = INSMODE_DEFAULT);
-        /// Deletes the event _msg_ from the track _trk_. See MIDITrack::DeleteEvent() for details.
-        bool                        DeleteEvent(int trk,  const MIDITimedMessage& msg);
-        /// Deletes the note _msg_ (_msg_ must be a Note On) from the track _trk_. See MIDITrack::DeleteNote() for details.
-        bool                        DeleteNote(int trk, const MIDITimedMessage& msg);
+        /// Deletes the event _msg_ from the track _trk_num_. See MIDITrack::DeleteEvent() for details.
+        bool                        DeleteEvent(int trk_num,  const MIDITimedMessage& msg);
+        /// Deletes the note _msg_ (_msg_ must be a Note On) from the track _trk_num. See MIDITrack::DeleteNote() for details.
+        bool                        DeleteNote(int trk_num, const MIDITimedMessage& msg);
 
 
         void                        EditCopy(MIDIClockTime start, MIDIClockTime end, int tr_start,
@@ -170,7 +170,7 @@ class MIDIMultiTrack {
 
 ///
 /// Used by the MIDIMultiTrackIterator to keep track of the current state of the iterator. It
-/// remembers the current time and keeps track of the next event in every track. The user does not need to
+/// remembers the current time and the next event in every track. The user does not need to
 /// deal with it, and the only useful thing is getting and restoring a state for faster processing (see
 /// MIDIMultiTrack::SetStatus()), so the details are not documented.
 ///
@@ -194,6 +194,7 @@ class MIDIMultiTrackIteratorState {
         // shifting. This is the same time of the message if time shifting is off or _msg_ is not a channel
         // or sysex message, otherwise this will return the message time plus the track offset.
         MIDIClockTime               GetShiftedTime(const MIDITimedMessage* msg, int trk);
+        // Internal use.
         int                         FindTrackOfFirstEvent();
 
         int                         num_tracks;         // The number of tracks
@@ -213,7 +214,7 @@ class MIDIMultiTrackIteratorState {
 /// the multitrack and get its events in chronological order, starting with the first event with time greater
 /// than or equal to the current time, regardless of their track.
 /// \note This class also handles the time shifting of track events. For this it relies on an external
-/// std::vector <int> which must be passed by address to the SetTimeShiftVector() method. The class only reads
+/// **std::vector<int>** which must be passed by address to the SetTimeShiftVector() method. The class only reads
 /// the values in this vector and never changes it: you can turn time shifting on and off but not set the values
 /// for the tracks. This "strange" design is intended to allow a higher level class (typically the MIDISequencer)
 /// to handle the time shift, without overloading it.

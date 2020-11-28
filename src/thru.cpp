@@ -23,16 +23,24 @@
  */
 
 
-#include "../include/manager.h"
 #include "../include/thru.h"
+#include "../include/manager.h"
 
 
 MIDIThru::MIDIThru() : MIDITickComponent(PR_PRE_SEQ, StaticTickProc), in_port(0), out_port(0), in_channel(-1),
                                          out_channel(-1), processor(0)
 {
+    std::cout << "MIDIThru constructor" << std::endl;
     if (!MIDIManager::HasMIDIIn() || !MIDIManager::HasMIDIOut())
         throw RtMidiError("MIDIThru needs almost a MIDI in and out port in the system\n", RtMidiError::INVALID_DEVICE);
 }
+
+
+MIDIThru::~MIDIThru() {
+    std::cout << "MIDIThru destructor" << std::endl;
+    Stop();
+}
+
 
 
 void MIDIThru::Reset() {
@@ -119,21 +127,21 @@ void MIDIThru::SetOutChannel(char chan) {
 
 
 void MIDIThru::Start() {
-    if (IsPlaying())
-        return;
-    MIDIManager::GetInDriver(in_port)->OpenPort();
-    MIDIManager::GetOutDriver(out_port)->OpenPort();
-    MIDITickComponent::Start();
+    if (!IsPlaying()) {
+        MIDIManager::GetInDriver(in_port)->OpenPort();
+        MIDIManager::GetOutDriver(out_port)->OpenPort();
+        MIDITickComponent::Start();
+    }
 }
 
 
 void MIDIThru::Stop() {
-    if (!IsPlaying())
-        return;
-    MIDITickComponent::Stop();
-    MIDIManager::GetInDriver(in_port)->ClosePort();
-    SilentOut();
-    MIDIManager::GetOutDriver(out_port)->ClosePort();
+    if (IsPlaying()) {
+        MIDITickComponent::Stop();
+        MIDIManager::GetInDriver(in_port)->ClosePort();
+        SilentOut();
+        MIDIManager::GetOutDriver(out_port)->ClosePort();
+    }
 }
 
 

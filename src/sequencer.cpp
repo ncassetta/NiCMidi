@@ -412,34 +412,34 @@ void MIDISequencer::SetTempoScale(unsigned int scale) {
 }
 
 
-void MIDISequencer::SetTrackTimeShift(unsigned int trk, int offset) {
-    if (!state.multitrack->IsValidTrackNumber(trk))
+void MIDISequencer::SetTrackTimeShift(unsigned int trk_num, int offset) {
+    if (!state.multitrack->IsValidTrackNumber(trk_num))
         return;
-    char channel = state.multitrack->GetTrack(trk)->GetChannel();
+    char channel = state.multitrack->GetTrack(trk_num)->GetChannel();
     proc_lock.lock();
 
     if (IsPlaying() && channel != -1) {
-        MIDIManager::GetOutDriver(GetTrackPort(trk))->AllNotesOff(channel);
-        GetTrackState(trk)->note_matrix.Reset();
+        MIDIManager::GetOutDriver(GetTrackPort(trk_num))->AllNotesOff(channel);
+        GetTrackState(trk_num)->note_matrix.Reset();
     }
-    time_shifts[trk] = offset;
+    time_shifts[trk_num] = offset;
     //GoToTime(GetCurrentMIDIClockTime());      // TODO: this should sync the iterator, but provokes a AllNotesOff
                                                 // on all channels, so I eliminated it. Is this correct?
     proc_lock.unlock();
 }
 
 
-void MIDISequencer::SetTrackOutPort(unsigned int trk, unsigned int port) {
-    if (!state.multitrack->IsValidTrackNumber(trk))
+void MIDISequencer::SetTrackOutPort(unsigned int trk_num, unsigned int port) {
+    if (!state.multitrack->IsValidTrackNumber(trk_num))
         return;
-    char channel = state.multitrack->GetTrack(trk)->GetChannel();
+    char channel = state.multitrack->GetTrack(trk_num)->GetChannel();
     proc_lock.lock();
-    if (IsPlaying() && port != GetTrackPort(trk) && channel != -1) {
-        MIDIManager::GetOutDriver(GetTrackPort(trk))->AllNotesOff(channel);
-        GetTrackState(trk)->note_matrix.Reset();
+    if (IsPlaying() && port != GetTrackPort(trk_num) && channel != -1) {
+        MIDIManager::GetOutDriver(GetTrackPort(trk_num))->AllNotesOff(channel);
+        GetTrackState(trk_num)->note_matrix.Reset();
     }
     port %= MIDIManager::GetNumMIDIOuts();
-    track_ports[trk] = port;
+    track_ports[trk_num] = port;
     proc_lock.unlock();
 }
 
@@ -455,22 +455,22 @@ void MIDISequencer::SetState(MIDISequencerState* s) {
 }
 
 
-void MIDISequencer::SetProcessor(unsigned int trk, MIDIProcessor* p) {
-    if (!state.multitrack->IsValidTrackNumber(trk))
+void MIDISequencer::SetProcessor(unsigned int trk_num, MIDIProcessor* p) {
+    if (!state.multitrack->IsValidTrackNumber(trk_num))
         return;
     Stop();
-    track_processors[trk] = p;
+    track_processors[trk_num] = p;
 }
 
 
-bool MIDISequencer::InsertTrack(int trk) {
-    if (trk == -1) trk = GetNumTracks();                // if trk = -1 (default) append track
+bool MIDISequencer::InsertTrack(int trk_num) {
+    if (trk_num == -1) trk_num = GetNumTracks();        // if trk_num = -1 (default) append track
     bool ret = false;
     proc_lock.lock();
-    if (state.multitrack->InsertTrack(trk)) {
-        track_processors.insert(track_processors.begin() + trk, 0);
-        time_shifts.insert(time_shifts.begin() + trk, 0);
-        track_ports.insert(track_ports.begin() + trk, 0);
+    if (state.multitrack->InsertTrack(trk_num)) {
+        track_processors.insert(track_processors.begin() + trk_num, 0);
+        time_shifts.insert(time_shifts.begin() + trk_num, 0);
+        track_ports.insert(track_ports.begin() + trk_num, 0);
         MIDIClockTime now = state.cur_clock;            // remember current time
         state.Reset();                                  // reset the state (syncs the iterator and the track states)
         GoToTime(now);                                  // returns to current time
@@ -483,20 +483,20 @@ bool MIDISequencer::InsertTrack(int trk) {
 }
 
 
-bool MIDISequencer::DeleteTrack(int trk) {
+bool MIDISequencer::DeleteTrack(int trk_num) {
     bool ret = false;
     proc_lock.lock();
-    char channel = state.multitrack->GetTrack(trk)->GetChannel();
+    char channel = state.multitrack->GetTrack(trk_num)->GetChannel();
     if (IsPlaying() && channel != -1) {
-        MIDIManager::GetOutDriver(GetTrackPort(trk))->AllNotesOff(channel);
-        GetTrackState(trk)->note_matrix.Reset();
+        MIDIManager::GetOutDriver(GetTrackPort(trk_num))->AllNotesOff(channel);
+        GetTrackState(trk_num)->note_matrix.Reset();
     }
-    if (state.multitrack->DeleteTrack(trk)) {
-        if (track_processors[trk])
-            delete track_processors[trk];
-        track_processors.erase(track_processors.begin() + trk);
-        time_shifts.erase(time_shifts.begin() + trk);
-        track_ports.erase(track_ports.begin() + trk);
+    if (state.multitrack->DeleteTrack(trk_num)) {
+        if (track_processors[trk_num])
+            delete track_processors[trk_num];
+        track_processors.erase(track_processors.begin() + trk_num);
+        time_shifts.erase(time_shifts.begin() + trk_num);
+        track_ports.erase(track_ports.begin() + trk_num);
         MIDIClockTime now = state.cur_clock;            // remember current time
         state.Reset();                                  // reset the state (syncs the iterator and the track states)
         GoToTime(now);                                  // returns to current time
@@ -750,7 +750,7 @@ bool MIDISequencer::GoToMeasure (unsigned int measure, unsigned int beat) {
 }
 
 
-bool MIDISequencer::GetNextEvent(int *trk, MIDITimedMessage *msg) {
+bool MIDISequencer::GetNextEvent(int *trk_num, MIDITimedMessage *msg) {
     MIDIClockTime t;
     bool ret = false;
 
@@ -771,7 +771,7 @@ bool MIDISequencer::GetNextEvent(int *trk, MIDITimedMessage *msg) {
         if(state.next_beat_time <= t) {
             // yes, this is a beat event now.
             // say this event came on track 0, the conductor track
-            state.last_event_track = *trk = 0;
+            state.last_event_track = *trk_num = 0;
 
             // put current info into beat marker message
             beat_marker_msg.SetTime(state.next_beat_time);
@@ -782,13 +782,13 @@ bool MIDISequencer::GetNextEvent(int *trk, MIDITimedMessage *msg) {
         else    {   // this event comes before the next beat
             MIDITimedMessage *msg_ptr;
 
-            if(state.iterator.GetNextEvent(trk, &msg_ptr)) {
-                state.last_event_track = *trk;
+            if(state.iterator.GetNextEvent(trk_num, &msg_ptr)) {
+                state.last_event_track = *trk_num;
 
                 // copy the event so Process can modify it
                 *msg = *msg_ptr;
 
-                if ((track_processors[*trk] && !track_processors[*trk]->Process(msg)) ||
+                if ((track_processors[*trk_num] && !track_processors[*trk_num]->Process(msg)) ||
                      !state.Process(msg))
                     msg->Clear();
             }

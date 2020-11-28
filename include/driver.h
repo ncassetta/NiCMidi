@@ -47,6 +47,9 @@
 // TODO: implements RtMidi functions (error callback, selection of input, etc.)
 
 
+/// \addtogroup GLOBALS
+///@{
+
 /// This item only affects AllNotesOff() function. All modern MIDI devices should respond to all notes off
 /// messages so usually there is no need to stop notes sending Note off messages.
 /// If you set this to 1 the driver will keep track of all sounding notes and, if the AllNotesOff() method is
@@ -61,6 +64,7 @@
 #define DRIVER_MAX_RETRIES 100
 /// This is the number of milliseconds the driver waits after sending a MIDI system exclusive message.
 #define DRIVER_WAIT_AFTER_SYSEX 20
+///@}
 
 
 // EXCLUDED FROM DOCUMENTATION BECAUSE UNDOCUMENTED
