@@ -339,9 +339,10 @@ class MIDISequencer : public MIDITickComponent {
         /// and can be called during playback. Notifies the GUI a GROUP_ALL event to signify a full GUI reset
         /// \param time_clk the new time in MIDI ticks
         /// \return **true** if the new time is effectively reached, **false** otherwise (_time_clk_ is after
-        /// the end of the song)
+        /// the end of the song: in this case the sequencer is leaved in its original state)
         bool                            GoToTime (MIDIClockTime time_clk);
         /// Same as GoToTime(), but the time is given in milliseconds.
+        /// \return see GoToTime()
         bool                            GoToTimeMs (float time_ms);
         /// Sets the current time to the given measure and beat, updating the internal status. This method is
         /// thread-safe and can be called during playback. Notifies the GUI a GROUP_ALL event to signify a GUI reset
@@ -354,7 +355,7 @@ class MIDISequencer : public MIDITickComponent {
         /// \param[out] trk_num will return the track number of the next event
         /// \param[out] msg will return the MIDI event
         /// \return **true** if there is effectively a next event (and the parameters are valid), **false** otherwise
-        /// (parameters are undefined)
+        /// (parameters are undefined and the sequencer is leaved in its original state)
         bool                            GetNextEvent (int *trk_num, MIDITimedMessage *msg);
         /// Gets the time of the next event (it can be different from current time if at current time there
         /// are not events).

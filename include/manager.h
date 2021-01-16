@@ -67,16 +67,18 @@ public:
     static const std::string&   GetMIDIInName(unsigned int n);
     /// Returns a pointer to the MIDIInDriver with given port id.
     static MIDIInDriver*        GetInDriver(unsigned int n);
-    /// Returns **true** if almost one MIDI in port is present on the system.
-    static bool                 HasMIDIIn();
+    /// Returns **true** if n is a valid MIDI in port number. If you call this with 0 as argument
+    /// no MIDI in port is present in the system.
+    static bool                 IsValidInPortNumber(unsigned int n);
     /// Returns the number of MIDI out ports in the system.
     static unsigned int         GetNumMIDIOuts();
     /// Returns the system name of the given MIDI out port.
     static const std::string&   GetMIDIOutName(unsigned int n);
     /// Returns a pointer to the MIDIOutDriver with given port id.
     static MIDIOutDriver*       GetOutDriver(unsigned int n);
-    /// Returns **true** if almost one MIDI out port is present on the system.
-    static bool                 HasMIDIOut();
+    /// Returns **true** if n is a valid MIDI out port number. If you call this with 0 as argument
+    /// no MIDI out port is present in the system.
+    static bool                 IsValidOutPortNumber(unsigned int n);
     /// Returns the pointer to the (unique) MIDITickComponent in the queue with tPriority PR_SEQ
     /// (0 if not found).
     static MIDISequencer*       GetSequencer();

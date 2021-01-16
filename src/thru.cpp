@@ -31,7 +31,8 @@ MIDIThru::MIDIThru() : MIDITickComponent(PR_PRE_SEQ, StaticTickProc), in_port(0)
                                          out_channel(-1), processor(0)
 {
     std::cout << "MIDIThru constructor" << std::endl;
-    if (!MIDIManager::HasMIDIIn() || !MIDIManager::HasMIDIOut())
+    //check if inand out ports exist
+    if (!MIDIManager::IsValidInPortNumber(0) || !MIDIManager::IsValidOutPortNumber(0))
         throw RtMidiError("MIDIThru needs almost a MIDI in and out port in the system\n", RtMidiError::INVALID_DEVICE);
 }
 
@@ -55,7 +56,8 @@ void MIDIThru::Reset() {
 
 
 void MIDIThru::SetInPort(unsigned int port) {
-    port %= MIDIManager::GetNumMIDIIns();           // avoids out of range errors
+    if (!MIDIManager::IsValidInPortNumber(port))
+        return;                                     // avoids out of range errors
     if (port == in_port)
         return;                                     // trying to assign same ports: nothing to do
 
@@ -73,7 +75,8 @@ void MIDIThru::SetInPort(unsigned int port) {
 
 
 void MIDIThru::SetOutPort(unsigned int port) {
-    port %= MIDIManager::GetNumMIDIOuts();          // avoids out of range errors
+    if (!MIDIManager::IsValidOutPortNumber(port))
+        return;                                     // avoids out of range errors
     if (port == out_port)
         return;                                     // trying to assign same ports: nothing to do
 

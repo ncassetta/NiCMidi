@@ -35,7 +35,8 @@ Metronome::Metronome (MIDISequencerGUINotifier* n) :
     MIDITickComponent(PR_POST_SEQ, StaticTickProc),
     notifier(n)
 {
-    if (!MIDIManager::HasMIDIOut())
+    // verify if almost one out port is present in the system
+    if (!MIDIManager::IsValidOutPortNumber(0))
         throw RtMidiError("Metronome needs almost a MIDI out port in the system\n", RtMidiError::INVALID_DEVICE);
     Reset();
 }
@@ -90,7 +91,8 @@ void Metronome::SetTempoScale(unsigned int scale) {
 
 
 void Metronome::SetOutPort(unsigned int port) {
-    port %= MIDIManager::GetNumMIDIOuts();                  // avoids out of range errors
+    if (!MIDIManager::IsValidOutPortNumber(port))
+        return;                                             // avoids out of range errors
     if (port == out_port)                                   // trying to assign same ports: nothing to do
         return;
     if (IsPlaying()) {

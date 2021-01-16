@@ -136,6 +136,7 @@ int main( int argc, char **argv ) {
                  << sequencer.GetCurrentBeat() << endl;
         }
         else if (command == "rew") {                // stops and rewinds to time 0
+            sequencer.Stop();
             sequencer.GoToZero();
             cout << "Rewind to 0:0" << endl;
         }

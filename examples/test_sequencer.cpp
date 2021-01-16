@@ -32,8 +32,8 @@
 
 #include "../include/sequencer.h"
 #include "../include/manager.h"
-#include "../include/filereadmultitrack.h"
-#include "functions.h"                  // helper functions for input parsing and output
+#include "../include/filereadmultitrack.h"  // for LoadMIDIFile()
+#include "functions.h"                      // helper functions for input parsing and output
 
 using namespace std;
 
@@ -85,10 +85,10 @@ int main( int argc, char **argv ) {
     // does it by itself
     MIDIManager::AddMIDITick(&sequencer);
     cout << "TYPE help TO GET A LIST OF AVAILABLE COMMANDS" << endl << endl;
-    while ( command != "quit" ) {                   // main loop
-        GetCommand();                               // gets user input and parse it
+    while (command != "quit") {                     // main loop
+        GetCommand();                               // gets user input and splits it into command, par1, par2
 
-        if( command == "load" ) {                   // loads a file
+        if (command == "load") {                    // loads a file
             // this is different from the same on AdvancedSequencer, because there is
             // no dedicated method in MIDISequencer: you must load the multitrack and
             // then call MIDISequencer::Reset() for initializing the sequencer
@@ -119,12 +119,11 @@ int main( int argc, char **argv ) {
             cout << "Sequencer started at measure: " << sequencer.GetCurrentMeasure() << ":"
                  << sequencer.GetCurrentBeat() << endl;
         }
-        else if (command == "loop") {               // sets repeates play
+        else if (command == "loop") {               // sets repeated play
             int beg = atoi(par1.c_str());
             int end = atoi(par2.c_str());
             if (!(beg == 0 && end == 0)) {
-
-                sequencer.SetRepeatPlay( true, beg, end );
+                sequencer.SetRepeatPlay(true, beg, end);
                 cout << "Repeat play set from measure " << beg << " to measure " << end << endl;
             }
             else {
@@ -138,6 +137,7 @@ int main( int argc, char **argv ) {
                  << sequencer.GetCurrentBeat() << endl;
         }
         else if (command == "rew") {                // stops and rewind to time 0
+            sequencer.Stop();
             sequencer.GoToZero();
             cout << "Rewind to 0:0" << endl;
         }
@@ -148,22 +148,19 @@ int main( int argc, char **argv ) {
             // AdvancedSequencer)
             int measure = atoi(par1.c_str());
             int beat = atoi (par2.c_str());
-            MIDIClockTime now = sequencer.GetCurrentMIDIClockTime();
             if (sequencer.GoToMeasure(measure, beat))
                 cout << "Actual position: " << sequencer.GetCurrentMeasure() << ":"
                      << sequencer.GetCurrentBeat() << endl;
-            else {
-                sequencer.GoToTime(now);
+            else
                 cout << "Invalid position" << endl;
-            }
         }
         else if (command == "dump") {               // prints a dump of the sequencer contents
             if (par1.size() == 0)
-                DumpMIDIMultiTrackWithPauses(sequencer.GetMultiTrack());
+                DumpMIDIMultiTrackWithPauses(&tracks);
             else {
                 int trk_num = atoi(par1.c_str());
-                if (sequencer.GetMultiTrack()->IsValidTrackNumber(trk_num)) {
-                    MIDITrack* trk = sequencer.GetMultiTrack()->GetTrack(trk_num);
+                if (tracks.IsValidTrackNumber(trk_num)) {
+                    MIDITrack* trk = tracks.GetTrack(trk_num);
                     DumpMIDITrackWithPauses(trk, trk_num);
                 }
                 else
@@ -194,8 +191,8 @@ int main( int argc, char **argv ) {
             cout << "Track " << track << " time shifted by " << amount << " MIDI ticks" << endl;
         }
         else if (command == "trackinfo") {          // prints info about tracks
-            for (unsigned int i = 0; i < sequencer.GetNumTracks(); i++) {
-                MIDITrack* trk = sequencer.GetMultiTrack()->GetTrack(i);
+            for (unsigned int i = 0; i < tracks.GetNumTracks(); i++) {
+                MIDITrack* trk = tracks.GetTrack(i);
                 cout << "Track " << i << ": " << sequencer.GetState()->track_states[i]->track_name << endl;
                 if (trk->IsEmpty())
                     cout << "EMPTY" << endl;
@@ -219,8 +216,8 @@ int main( int argc, char **argv ) {
         else if (command == "f") {                  // goes a measure forward
             int meas = sequencer.GetCurrentMeasure();
             if (sequencer.GoToMeasure(++meas))
-            cout << "Actual position: " << sequencer.GetCurrentMeasure() << ":"
-                 << sequencer.GetCurrentBeat() << endl;
+                cout << "Actual position: " << sequencer.GetCurrentMeasure() << ":"
+                     << sequencer.GetCurrentBeat() << endl;
         }
         else if (command == "help")                 // prints help screen
             cout << helpstring;

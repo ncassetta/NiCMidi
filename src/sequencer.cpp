@@ -315,7 +315,7 @@ MIDISequencer::MIDISequencer (MIDIMultiTrack *m, MIDISequencerGUINotifier *n) :
     track_ports(m->GetNumTracks(), 0),
     state (m, n) {
     // checks if the system has almost a MIDI out
-    if (!MIDIManager::HasMIDIOut())
+    if (!MIDIManager::IsValidOutPortNumber(0))
         throw RtMidiError("MIDISequencer needs almost a MIDI out port in the system\n", RtMidiError::INVALID_DEVICE);
     if (n)
         n->SetSequencer(this);
@@ -430,7 +430,7 @@ void MIDISequencer::SetTrackTimeShift(unsigned int trk_num, int offset) {
 
 
 void MIDISequencer::SetTrackOutPort(unsigned int trk_num, unsigned int port) {
-    if (!state.multitrack->IsValidTrackNumber(trk_num))
+    if (!state.multitrack->IsValidTrackNumber(trk_num) || !MIDIManager::IsValidOutPortNumber(port))
         return;
     char channel = state.multitrack->GetTrack(trk_num)->GetChannel();
     proc_lock.lock();
@@ -559,6 +559,7 @@ void MIDISequencer::GoToZero() {
         state.notifier->Notify(MIDISequencerGUIEvent::GROUP_ALL);
     }
     if (IsPlaying()) {
+        // update real time parameters
         dev_time_offset = state.cur_time_ms = MIDItoMs(state.cur_clock);
         sys_time_offset = MIDITimer::GetSysTimeMs();
         MIDIManager::AllNotesOff();
@@ -571,7 +572,9 @@ bool MIDISequencer::GoToTime(MIDIClockTime time_clk) {
     bool ret = true;
 
     proc_lock.lock();
-        // temporarily disable the gui notifier
+    // save sequencer state in the case of failure
+    MIDISequencerState old_state = state;
+    // temporarily disable the gui notifier
     bool notifier_mode = false;
     if(state.notifier) {
         notifier_mode = state.notifier->GetEnable();
@@ -591,6 +594,7 @@ bool MIDISequencer::GoToTime(MIDIClockTime time_clk) {
 
     while (state.cur_clock < time_clk) {
         if (!GetNextEventTime(&t)) {    // no other events: we can't reach time_clk and return false
+            state = old_state;          // refresh initial state
             ret = false;
             break;
         }
@@ -607,20 +611,23 @@ bool MIDISequencer::GoToTime(MIDIClockTime time_clk) {
         }
     }
 
+    if (ret) {                          // we have effectively moved time
         // examine all the events at this specific time
         // and update the track states to reflect this time
-    if (ret) ScanEventsAtThisTime();
-
-        // re-enable the gui notifier if it was enabled previously
-    if( state.notifier ) {
+        ScanEventsAtThisTime();
+        if (IsPlaying()) {
+            // update real time parameters
+            dev_time_offset = state.cur_time_ms = MIDItoMs(state.cur_clock);
+            sys_time_offset = MIDITimer::GetSysTimeMs();
+            MIDIManager::AllNotesOff();
+        }
+    }
+    // re-enable the gui notifier if it was enabled previously
+    if(state.notifier) {
         state.notifier->SetEnable(notifier_mode);
         // cause a full gui refresh now
-        state.notifier->Notify(MIDISequencerGUIEvent::GROUP_ALL);
-    }
-    if (IsPlaying()) {
-        dev_time_offset = state.cur_time_ms = MIDItoMs(state.cur_clock);
-        sys_time_offset = MIDITimer::GetSysTimeMs();
-        MIDIManager::AllNotesOff();
+        if (ret)
+            state.notifier->Notify(MIDISequencerGUIEvent::GROUP_ALL);
     }
     proc_lock.unlock();
     return ret;
@@ -631,6 +638,8 @@ bool MIDISequencer::GoToTimeMs(float time_ms) {
     bool ret = true;
 
     proc_lock.lock();
+    // save sequencer state in the case of failure
+    MIDISequencerState old_state = state;
     // temporarily disable the gui notifier
     bool notifier_mode = false;
     if(state.notifier) {
@@ -653,6 +662,7 @@ bool MIDISequencer::GoToTimeMs(float time_ms) {
 
     while (state.cur_time_ms < time_ms) {
         if (!GetNextEventTimeMs(&t)) {  // no other events: we can't reach time_clk and return false
+            state = old_state;          // refresh initial state
             ret = false;
             break;
         }
@@ -672,20 +682,23 @@ bool MIDISequencer::GoToTimeMs(float time_ms) {
         }
     }
 
+	if (ret) {                          // we have effectively moved time
         // examine all the events at this specific time
         // and update the track states to reflect this time
-	if (ret) ScanEventsAtThisTime();
-
-        // re-enable the gui notifier if it was enabled previously
+        ScanEventsAtThisTime();
+        if (IsPlaying()) {
+            // update real time parameters
+            dev_time_offset = state.cur_time_ms = MIDItoMs(state.cur_clock);
+            sys_time_offset = MIDITimer::GetSysTimeMs();
+            MIDIManager::AllNotesOff();
+        }
+    }
+    // re-enable the gui notifier if it was enabled previously
     if(state.notifier) {
         state.notifier->SetEnable( notifier_mode );
         // cause a full gui refresh now
-        state.notifier->Notify(MIDISequencerGUIEvent::GROUP_ALL);
-    }
-    if (IsPlaying()) {
-        dev_time_offset = state.cur_time_ms = MIDItoMs(state.cur_clock);
-        sys_time_offset = MIDITimer::GetSysTimeMs();
-        MIDIManager::AllNotesOff();
+        if (ret)
+            state.notifier->Notify(MIDISequencerGUIEvent::GROUP_ALL);
     }
     proc_lock.unlock();
     return ret;
@@ -697,7 +710,9 @@ bool MIDISequencer::GoToMeasure (unsigned int measure, unsigned int beat) {
     bool ret = true;
 
     proc_lock.lock();
-        // temporarily disable the gui notifier
+    // save sequencer state in the case of failure
+    MIDISequencerState old_state = state;
+    // temporarily disable the gui notifier
     bool notifier_mode = false;
     if (state.notifier) {
         notifier_mode = state.notifier->GetEnable();
@@ -720,6 +735,7 @@ bool MIDISequencer::GoToMeasure (unsigned int measure, unsigned int beat) {
     if (measure > 0 || beat > 0) {          // if meas == 0 && beat == 0 nothing to do
         while(1) {
             if (!GetNextEvent(&trk, &msg)) {
+                state = old_state;          // refresh initial state
                 ret = false;
                 break;
             }
@@ -729,23 +745,26 @@ bool MIDISequencer::GoToMeasure (unsigned int measure, unsigned int beat) {
             }
         }
     }
+
+    if (ret) {                          // we have effectively moved time
         // examine all the events at this specific time
         // and update the track states to reflect this time
-    if (ret) ScanEventsAtThisTime();
-
-        // re-enable the gui notifier if it was enabled previously
-    if (state.notifier) {
-        state.notifier->SetEnable (notifier_mode);
-        // cause a full gui refresh now
-        state.Notify (MIDISequencerGUIEvent::GROUP_ALL);
+        ScanEventsAtThisTime();
+        if (IsPlaying()) {
+            // update real time parameters
+            dev_time_offset = state.cur_time_ms = MIDItoMs(state.cur_clock);
+            sys_time_offset = MIDITimer::GetSysTimeMs();
+            MIDIManager::AllNotesOff();
+        }
     }
-    if (IsPlaying()) {
-        dev_time_offset = state.cur_time_ms = MIDItoMs(state.cur_clock);
-        sys_time_offset = MIDITimer::GetSysTimeMs();
-        MIDIManager::AllNotesOff();
+    // re-enable the gui notifier if it was enabled previously
+    if(state.notifier) {
+        state.notifier->SetEnable( notifier_mode );
+        // cause a full gui refresh now
+        if (ret)
+            state.notifier->Notify(MIDISequencerGUIEvent::GROUP_ALL);
     }
     proc_lock.unlock();
-        // return true if we actually found the measure requested
     return ret;
 }
 
@@ -836,8 +855,9 @@ float MIDISequencer::MIDItoMs(MIDIClockTime t) {
     MIDIClockTime base_t = 0, delta_t = 0, now_t = 0;
     double ms_time = 0.0;
     MIDITimedMessage* msg;
-    // see below
-    float ms_per_clock = 6000000.0 / (MIDI_DEFAULT_TEMPO * (float)tempo_scale * //TODO: is this right????
+    // we initialize this variable in the case of no tempo signature at the beginning
+    // it wil be changed (see below) at first tempo change message
+    float ms_per_clock = 6000000.0 / (MIDI_DEFAULT_TEMPO * (float)tempo_scale *
                                        state.multitrack->GetClksPerBeat());
 
     while (now_t < t) {

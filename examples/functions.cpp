@@ -19,7 +19,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
  */
- .
+
+
 /*
   Input/output functions for the example files of NiCMidi library.
 */

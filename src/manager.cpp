@@ -91,10 +91,10 @@ MIDIInDriver* MIDIManager::GetInDriver(unsigned int n) {
 }
 
 
-bool MIDIManager::HasMIDIIn() {
+bool MIDIManager::IsValidInPortNumber(unsigned int n) {
     if (!init)
         Init();
-    return MIDI_ins->size() > 0;
+    return MIDI_ins->size() > n;
 }
 
 
@@ -119,10 +119,10 @@ MIDIOutDriver* MIDIManager::GetOutDriver(unsigned int n) {
 }
 
 
-bool MIDIManager::HasMIDIOut() {
+bool MIDIManager::IsValidOutPortNumber(unsigned int n) {
     if (!init)
         Init();
-    return MIDI_outs->size() > 0;
+    return MIDI_outs->size() > n;
 }
 
 

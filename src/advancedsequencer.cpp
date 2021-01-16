@@ -114,7 +114,7 @@ AdvancedSequencer::AdvancedSequencer(MIDISequencerGUINotifier *n) :
     owns_tracks (true)                           // remembers that the multitrack is owned
 {
     MIDIManager::AddMIDITick(this);
-    if (MIDIManager::HasMIDIIn()) {
+    if (MIDIManager::IsValidInPortNumber(0)) {
         thru = new MIDIThru();
         thru_transposer = new MIDIProcessorTransposer();
         thru->SetProcessor(thru_transposer);
@@ -134,7 +134,7 @@ AdvancedSequencer::AdvancedSequencer(MIDIMultiTrack* mlt, MIDISequencerGUINotifi
     ExtractWarpPositions();                     // sets warp_positions and num_measures
     //thru.SetProcessor(&thru_processor);
     //thru_processor.SetProcessor(&thru_rechannelizer);
-    if (MIDIManager::HasMIDIIn()) {
+    if (MIDIManager::IsValidInPortNumber(0)) {
         thru = new MIDIThru();
         thru_transposer = new MIDIProcessorTransposer();
         thru->SetProcessor(thru_transposer);
@@ -494,14 +494,16 @@ bool AdvancedSequencer::GoToTime (MIDIClockTime time_clk) {
         proc_lock.lock();
         SetState (&warp_positions[warp_to_item]);
         ret = MIDISequencer::GoToTime (time_clk);
-        CatchEventsBefore();
+        if (ret)                // we have effectively moved time
+            CatchEventsBefore();
         proc_lock.unlock();
     }
     else {
         SetState (&warp_positions[warp_to_item]);
         ret = MIDISequencer::GoToTime (time_clk);
-        for (unsigned int i = 0; i < GetNumTracks(); ++i)
-            GetTrackState(i)->note_matrix.Reset();
+        if (ret)                // we have effectively moved time
+            for (unsigned int i = 0; i < GetNumTracks(); ++i)
+                GetTrackState(i)->note_matrix.Reset();
     }
     return ret;
 }
@@ -527,14 +529,16 @@ bool AdvancedSequencer::GoToTimeMs(float time_ms) {
         proc_lock.lock();
         SetState (&warp_positions[warp_to_item]);
         ret = MIDISequencer::GoToTimeMs (time_ms);
-        CatchEventsBefore();
+        if (ret)                // we have effectively moved time
+            CatchEventsBefore();
         proc_lock.unlock();
     }
     else {
         SetState (&warp_positions[warp_to_item]);
         ret = MIDISequencer::GoToTimeMs (time_ms);
-        for (unsigned int i = 0; i < GetNumTracks(); ++i)
-            GetTrackState(i)->note_matrix.Reset();
+        if (ret)                // we have effectively moved time
+            for (unsigned int i = 0; i < GetNumTracks(); ++i)
+                GetTrackState(i)->note_matrix.Reset();
     }
     return ret;
 }
@@ -558,14 +562,16 @@ bool AdvancedSequencer::GoToMeasure (int measure, int beat) {
         proc_lock.lock();
         SetState (&warp_positions[warp_to_item]);
         ret = MIDISequencer::GoToMeasure (measure, beat);
-        CatchEventsBefore();
+        if (ret)                // we have effectively moved time
+            CatchEventsBefore();
         proc_lock.unlock();
     }
     else {
         SetState (&warp_positions[warp_to_item]);
         ret = MIDISequencer::GoToMeasure (measure, beat);
-        for (unsigned int i = 0; i < GetNumTracks(); ++i)
-            GetTrackState (i)->note_matrix.Reset();
+        if (ret)                // we have effectively moved time
+            for (unsigned int i = 0; i < GetNumTracks(); ++i)
+                GetTrackState (i)->note_matrix.Reset();
     }
     return ret;
 }

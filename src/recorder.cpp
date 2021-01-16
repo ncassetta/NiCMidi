@@ -27,7 +27,7 @@
 
 MIDIRecorder::MIDIRecorder() :
     MIDITickComponent(PR_POST_SEQ, StaticTickProc),
-    tempobpm(120.0), start_time(0), rec_on(false)
+    tempobpm(120.0), rec_start_time(0), rec_end_time(0), rec_on(false)
 {
     multitrack = new MIDIMultiTrack();
     for(unsigned int i = 0; i < MIDIManager::GetNumMIDIIns(); i++)
@@ -153,7 +153,7 @@ void MIDIRecorder::TickProc(tMsecs sys_time) {
         port->LockQueue();
         for (unsigned int j = 0, out_count = 0; j < port->GetQueueSize() && out_count < 100; j++, out_count++) {
             port->ReadMessage(rmsg, j);
-            msg_time = (MIDIClockTime)((rmsg.timestamp - sys_time_offset + rec_time_offset) * clocks_per_ms) + start_time;
+            msg_time = (MIDIClockTime)((rmsg.timestamp - sys_time_offset + rec_time_offset) * clocks_per_ms);
             MIDITimedMessage msg(rmsg.msg);
             msg.SetTime(msg_time);
             if (msg.IsChannelMsg()) {
