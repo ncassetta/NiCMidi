@@ -56,7 +56,7 @@ MIDIMultiTrack::~MIDIMultiTrack() {
 
 MIDIMultiTrack& MIDIMultiTrack::operator=(const MIDIMultiTrack& mlt) {
     if (&mlt != this) {         // check for autoassignment
-        Clear();
+        Reset();
         clks_per_beat = mlt.clks_per_beat;
         tracks.resize(mlt.GetNumTracks());
         for (unsigned int i = 0; i < mlt.GetNumTracks(); i++)
@@ -66,7 +66,8 @@ MIDIMultiTrack& MIDIMultiTrack::operator=(const MIDIMultiTrack& mlt) {
 }
 
 
-void MIDIMultiTrack::Clear(unsigned int num_tracks) {
+void MIDIMultiTrack::Reset(unsigned int num_tracks) {
+    clks_per_beat = DEFAULT_CLKS_PER_BEAT;
     for(unsigned int i = 0; i < tracks.size(); i++)
         delete tracks[i];
     tracks.resize(0);
@@ -157,7 +158,7 @@ void MIDIMultiTrack::AssignEventsToTracks (const MIDITrack *src)
 
     // renew multitrack object with 17 tracks:
     // tracks 1-16 for channel events, and track 0 for other types of events
-    Clear(17);
+    Reset(17);
 
     // move events to tracks 0-16 according their types/channels
     for (unsigned int i = 0; i < tmp.GetNumEvents(); ++i) {
@@ -233,7 +234,7 @@ bool MIDIMultiTrack::DeleteNote(int trk_num, const MIDITimedMessage& msg) {
 void MIDIMultiTrack::EditCopy(MIDIClockTime start, MIDIClockTime end,
                                 int tr_start, int tr_end, MIDIEditMultiTrack* edit) {
     if (tr_start < 0 || (unsigned int)tr_end >= GetNumTracks()) return;
-    edit->Clear();
+    edit->Reset();
     // does nothing if tr_end < tr_start
     for (int i = 0; i <= tr_end - tr_start; i++) {
         edit->InsertTrack();
@@ -514,9 +515,15 @@ MIDIClockTime MIDIMultiTrackIterator::GetShiftedTime(const MIDITimedMessage* msg
 }
 
 
+/////////////////////////////////////////////////////////////////
+//                  class MIDIEditMultiTrack                   //
+/////////////////////////////////////////////////////////////////
+
+
+
 // Don't implement Cut, Edit, Paste... (see header)
 void MIDIEditMultiTrack::CopyAll(MIDIMultiTrack* m) {
-    Clear();
+    Reset();
     for (unsigned int i = 0; i < m->GetNumTracks(); i++) {
         InsertTrack(i);
         *GetTrack(i) = *(m->GetTrack(i));

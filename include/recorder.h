@@ -28,8 +28,7 @@
 #ifndef RECORDER_H_INCLUDED
 #define RECORDER_H_INCLUDED
 
-#include "tick.h"
-#include "multitrack.h"
+#include "sequencer.h"
 #include "process.h"
 
 #include <atomic>
@@ -139,7 +138,7 @@ class MIDIRecorderState : public MIDIProcessor {
 class MIDIRecorder : public MIDITickComponent {
     public:
         /// The constructor.
-                                        MIDIRecorder();
+                                        MIDIRecorder(const MIDISequencer* s);
         /// The destructor
         virtual                         ~MIDIRecorder();
         virtual void                    Reset();
@@ -156,7 +155,7 @@ class MIDIRecorder : public MIDITickComponent {
         /// \param t the tempo in bpm
         void                            SetTempo(float t);
 
-        //void                            SetEnableRec(bool on_off)       { rec_on.store(on_off); }
+        void                            EnableTrack();
         /// Sets the recording start time.
         /// \param t the MIDI clock time
         void                            SetStartRecTime(MIDIClockTime t)   { rec_start_time = t; }
@@ -208,6 +207,7 @@ class MIDIRecorder : public MIDITickComponent {
         virtual void                    TickProc(tMsecs sys_time);
 
         /// \cond EXCLUDED
+        const MIDISequencer*            seq;                // The attached sequencer
         MIDIMultiTrack*                 multitrack;         // The internal MIDIMultiTrack
         std::vector<std::vector<MIDITrack*>*> en_ports;     // A vector which keeps track of the corrispondence between
                                                             // channels and tracks in the multitrack

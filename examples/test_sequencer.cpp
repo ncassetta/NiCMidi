@@ -174,7 +174,7 @@ int main(int argc, char **argv) {
                 cout << "Invalid port number" << endl;
             else {
                 sequencer.SetTrackOutPort(track, port);
-                cout << "Assigned out port n. " << sequencer.GetTrackPort(track)
+                cout << "Assigned out port n. " << sequencer.GetTrackOutPort(track)
                      << " to track " << track << endl;
             }
         }

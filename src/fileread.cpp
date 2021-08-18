@@ -143,6 +143,16 @@ MIDIFileReader::~MIDIFileReader() {
 }
 
 
+void MIDIFileReader::Reset() {
+    in_stream->seekg(0, in_stream->beg);
+    cur_time = 0;
+    to_be_read = 0;
+    cur_track = 0;
+    abort_parse = 0;
+    msg_index = 0;
+}
+
+
 void MIDIFileReader::mf_error(const char *e) {
     event_handler->mf_error(e);
     abort_parse = true;
@@ -152,6 +162,7 @@ void MIDIFileReader::mf_error(const char *e) {
 bool MIDIFileReader::Parse() {
     int n;
 
+    Reset();
     n = ReadHeader();
     if(n <= 0) {
         mf_error( "No Tracks" );
@@ -197,6 +208,7 @@ int MIDIFileReader::ReadHeader() {
     int ntrks;
     int division;
 
+    Reset();
     if(ReadMT(_MThd, skip_init) == 0xffff)
         return 0;
 

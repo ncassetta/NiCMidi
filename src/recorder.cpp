@@ -25,13 +25,11 @@
 #include "../include/manager.h"
 
 
-MIDIRecorder::MIDIRecorder() :
+MIDIRecorder::MIDIRecorder(const MIDISequencer* s) :
     MIDITickComponent(PR_POST_SEQ, StaticTickProc),
-    tempobpm(120.0), rec_start_time(0), rec_end_time(0), rec_on(false)
+    seq(s), rec_start_time(0), rec_end_time(0), rec_on(false)
 {
     multitrack = new MIDIMultiTrack();
-    for(unsigned int i = 0; i < MIDIManager::GetNumMIDIIns(); i++)
-        en_ports.push_back(0);
 }
 
 
@@ -43,18 +41,8 @@ MIDIRecorder::~MIDIRecorder() {
 
 void MIDIRecorder::Reset() {}
 
-
-void MIDIRecorder::SetTempo(float t) {
-    if (IsPlaying())
-        return;
-    MIDITimedMessage msg;
-    msg.SetTempo(t);
-    if (multitrack->GetTrack(0)->InsertEvent(msg))
-        tempobpm = t;
-}
-
-
-void MIDIRecorder::EnablePort(unsigned int port, bool en_chans) {
+void MIDIRecorder::EnableTrack() {
+/*
     if (en_ports[port] != 0)
         return;
     if (multitrack->GetNumTracks() == 0)
@@ -70,6 +58,7 @@ void MIDIRecorder::EnablePort(unsigned int port, bool en_chans) {
         else
             (*en_ports[port])[i] = 0;
     }
+*/
 }
 
 

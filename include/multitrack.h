@@ -65,9 +65,10 @@ class MIDIMultiTrack {
 
         /// The assignment operator.
         MIDIMultiTrack&             operator=(const MIDIMultiTrack& mlt);
-        /// Deletes all the tracks in the Multitrack and resize it to the given number of tracks
-        void                        Clear(unsigned int num_tracks = 0);
-        /// Clears tracks events but mantains the tracks (leaves only the EOT). If _mantain_end_ is **true**
+        /// Deletes all the tracks in the Multitrack, resizes it to the given number of tracks and resets
+        /// _clks_per_beat_.
+        void                        Reset(unsigned int num_tracks = 0);
+        /// Clears tracks events but mantains the tracks and their parameters. If _mantain_end_ is **true**
         /// doesn't change the time of EOT events, otherwise sets them to 0.
         void                        ClearTracks(bool mantain_end = false);
 

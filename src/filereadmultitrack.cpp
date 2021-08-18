@@ -159,12 +159,12 @@ void MIDIFileReadMultiTrack::mf_header (int format_, int ntrks_, int division_) 
     header.ntrks = ntrks_;
     header.division = division_;
 
-    multitrack->SetClksPerBeat( header.division );
     if (header.format == 0)                        // this is modified by me
         // split format 0 files into separate tracks, one for each channel,
-        multitrack->Clear(17);         //
+        multitrack->Reset(17);         //
     else
-        multitrack->Clear(header.ntrks); //
+        multitrack->Reset(header.ntrks); //
+    multitrack->SetClksPerBeat( header.division );
 }
 
 

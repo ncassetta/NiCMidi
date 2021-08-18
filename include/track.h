@@ -87,7 +87,9 @@ class  MIDITrack {
         /// The assignment operator.
         MIDITrack&                  operator=(const MIDITrack &trk);
         /// Deletes all events leaving the track empty (i.e.\ with only the EOT event) and
-        /// sets time shift to 0.
+        /// resets time_shift, in_port, out_port to 0.
+        void                        Reset();
+        /// Deletes all events leaving the track empty (i.e.\ with only the EOT event).
         /// \param mantain_end If it is **true** the method doesn't change the time of the EOT,
         /// otherwise sets it to 0.
         void	                    Clear(bool mantain_end = false);
@@ -102,6 +104,10 @@ class  MIDITrack {
         bool                        IsEmpty() const                     { return events.size() == 1; }
         /// Returns the time of the EOT event (i.e\. the time length of the track).
         MIDIClockTime               GetEndTime() const                 { return events.back().GetTime(); }
+        /// Returns the MIDI out port id.
+        unsigned int                GetOutPort() const                  { return out_port; }
+        /// Returns the MIDI in port id.
+        unsigned int                GetInPort() const                   { return in_port; }
         /// Returns the track channel (-1 if the track has not type TYPE_CHAN or TYPE_IRREG_CHAN).
         /// \note This is **not** const, because it may call Analyze(), causing an update of the track status.
         char                        GetChannel();
@@ -133,6 +139,12 @@ class  MIDITrack {
         bool                        SetEndTime(MIDIClockTime end_time);
         /// Sets the channel of all MIDI channel events to _ch_ (_ch_ must be in the range 0 ... 15).
         void                        SetChannel(int ch);
+        /// Sets the output port of the track.
+        /// \warning This doesn't check if _port_ is a valid port number.
+        void                        SetOutPort(unsigned int port)       { out_port = port; }
+        /// Sets the input port of the track
+        /// \warning This doesn't check if _port_ is a valid port number.
+        void                        SetInPort(unsigned int port)        { in_port = port; }
         /// Sets the track time shift in MIDI ticks.
         void                        SetTimeShift(int t)                 { time_shift = t; }
         /// Sets the time of the EOT event equal to the time of the last (non data end) event
@@ -275,7 +287,8 @@ class  MIDITrack {
                                     events;     // The buffer of events
         int                         status;     // A bitfield used to determine the track type
         int                         time_shift; // The time shift in MIDI ticks
-        unsigned int                out_port;   // The out port id for midi events
+        unsigned int                in_port;    // The in port id for recording midi events
+        unsigned int                out_port;   // The out port id for playing midi events
 
         static tInsMode             ins_mode;   // See SetInsertMode()
         /// \endcond

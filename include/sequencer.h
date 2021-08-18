@@ -261,10 +261,15 @@ class MIDISequencer : public MIDITickComponent {
         /// \param trk_num the track number
         int                             GetTrackTimeShift(unsigned int trk_num) const
                                                                 { return state.multitrack->GetTrack(trk_num)->GetTimeShift(); }
-        /// Return the number of the port assigned to a track.
+        /// Returns the number of the in port assigned to a track.
         /// \param trk_num the track number
-        unsigned int                    GetTrackPort(unsigned int trk_num) const
-                                                                { return track_ports[trk_num]; }
+        unsigned int                    GetTrackInPort(unsigned int trk_num) const
+                                                                { return state.multitrack->GetTrack(trk_num)->GetInPort(); }
+        /// Returns the number of the out port assigned to a track.
+        /// \param trk_num the track number
+        unsigned int                    GetTrackOutPort(unsigned int trk_num) const
+                                                                { return state.multitrack->GetTrack(trk_num)->GetOutPort(); }
+
 
         /// Sets the repeat play (loop) parameters: you can set the repeat play status on/off, the start and the
         /// end measure.
@@ -289,8 +294,14 @@ class MIDISequencer : public MIDITickComponent {
         /// \param trk_num the track number
         /// \param offset the offset in MIDI ticks
         void                            SetTrackTimeShift(unsigned int trk_num, int offset);
-        /// Sets the MIDI port for a track. This method is thread-safe and can be called during playback (in this
-        /// case the sequencer will send a MIDI AllNotesOff message to the old port).
+        /// Sets the MIDI port for a track. This has obviously no effetct for the sequencer, but could be used
+        /// by a MIDIRecorder. This method is thread-safe, however changing a port during playback can lead to
+        /// unexpected results in recording.
+        /// \param trk_num the track number
+        /// \param port the id number of the port (see MIDIManager::GetOutPorts())
+        void                            SetTrackInPort(unsigned int trk_num, unsigned int port);
+        /// Sets the MIDI out port for a track. This method is thread-safe and can be called during playback
+        /// (in this case the sequencer will send a MIDI AllNotesOff message to the old port).
         /// \param trk_num the track number
         /// \param port the id number of the port (see MIDIManager::GetOutPorts())
         void                            SetTrackOutPort(unsigned int trk_num, unsigned int port);
@@ -430,7 +441,7 @@ class MIDISequencer : public MIDITickComponent {
 
         std::vector<MIDIProcessor*>     track_processors;   // A MIDIProcessor for every track
         //std::vector<int>                time_shifts;        // A time shift (in MIDI ticks) for every track
-        std::vector<unsigned int>       track_ports;        // The port id for every track
+        //std::vector<unsigned int>       track_ports;        // The port id for every track
         MIDISequencerState              state;              // The sequencer state
         /// \endcond
 };

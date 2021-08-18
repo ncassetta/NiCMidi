@@ -312,7 +312,7 @@ MIDISequencer::MIDISequencer (MIDIMultiTrack *m, MIDISequencerGUINotifier *n) :
     repeat_start_meas(0), repeat_end_meas(0),
     track_processors(m->GetNumTracks(), 0),
     //time_shifts(m->GetNumTracks(), 0),
-    track_ports(m->GetNumTracks(), 0),
+    //track_ports(m->GetNumTracks(), 0),
     state (m, n) {
     // checks if the system has almost a MIDI out
     if (!MIDIManager::IsValidOutPortNumber(0))
@@ -341,12 +341,12 @@ void MIDISequencer::Reset() {
     if (track_processors.size() != GetNumTracks()) {
         track_processors.resize(GetNumTracks());
         //time_shifts.resize(GetNumTracks());
-        track_ports.resize(GetNumTracks());
+        //track_ports.resize(GetNumTracks());
     }
     for (unsigned int i = 0; i < GetNumTracks(); ++i) {
         track_processors[i] = 0;
         state.multitrack->GetTrack(i)->SetTimeShift(0);
-        track_ports[i] = 0;
+        //track_ports[i] = 0;
     }
     tempo_scale = 100;
     SetTimeShiftMode(false);
@@ -419,7 +419,7 @@ void MIDISequencer::SetTrackTimeShift(unsigned int trk_num, int offset) {
     proc_lock.lock();
 
     if (IsPlaying() && channel != -1) {
-        MIDIManager::GetOutDriver(GetTrackPort(trk_num))->AllNotesOff(channel);
+        MIDIManager::GetOutDriver(GetTrackOutPort(trk_num))->AllNotesOff(channel);
         GetTrackState(trk_num)->note_matrix.Reset();
     }
     state.multitrack->GetTrack(trk_num)->SetTimeShift(offset);
@@ -435,12 +435,13 @@ void MIDISequencer::SetTrackOutPort(unsigned int trk_num, unsigned int port) {
         return;
     char channel = state.multitrack->GetTrack(trk_num)->GetChannel();
     proc_lock.lock();
-    if (IsPlaying() && port != GetTrackPort(trk_num) && channel != -1) {
-        MIDIManager::GetOutDriver(GetTrackPort(trk_num))->AllNotesOff(channel);
+    if (IsPlaying() && port != GetTrackOutPort(trk_num) && channel != -1) {
+        MIDIManager::GetOutDriver(GetTrackOutPort(trk_num))->AllNotesOff(channel);
         GetTrackState(trk_num)->note_matrix.Reset();
     }
-    port %= MIDIManager::GetNumMIDIOuts();
-    track_ports[trk_num] = port;
+    //port %= MIDIManager::GetNumMIDIOuts();        already controlled
+    state.multitrack->GetTrack(trk_num)->SetOutPort(port);
+    //track_ports[trk_num] = port;
     proc_lock.unlock();
 }
 
@@ -471,7 +472,7 @@ bool MIDISequencer::InsertTrack(int trk_num) {
     if (state.multitrack->InsertTrack(trk_num)) {
         track_processors.insert(track_processors.begin() + trk_num, 0);
         //time_shifts.insert(time_shifts.begin() + trk_num, 0);
-        track_ports.insert(track_ports.begin() + trk_num, 0);
+        //track_ports.insert(track_ports.begin() + trk_num, 0);
         MIDIClockTime now = state.cur_clock;            // remember current time
         state.Reset();                                  // reset the state (syncs the iterator and the track states)
         GoToTime(now);                                  // returns to current time
@@ -489,7 +490,7 @@ bool MIDISequencer::DeleteTrack(int trk_num) {
     proc_lock.lock();
     char channel = state.multitrack->GetTrack(trk_num)->GetChannel();
     if (IsPlaying() && channel != -1) {
-        MIDIManager::GetOutDriver(GetTrackPort(trk_num))->AllNotesOff(channel);
+        MIDIManager::GetOutDriver(GetTrackOutPort(trk_num))->AllNotesOff(channel);
         GetTrackState(trk_num)->note_matrix.Reset();
     }
     if (state.multitrack->DeleteTrack(trk_num)) {
@@ -497,7 +498,7 @@ bool MIDISequencer::DeleteTrack(int trk_num) {
             delete track_processors[trk_num];
         track_processors.erase(track_processors.begin() + trk_num);
         //time_shifts.erase(time_shifts.begin() + trk_num);
-        track_ports.erase(track_ports.begin() + trk_num);
+        //track_ports.erase(track_ports.begin() + trk_num);
         MIDIClockTime now = state.cur_clock;            // remember current time
         state.Reset();                                  // reset the state (syncs the iterator and the track states)
         GoToTime(now);                                  // returns to current time
@@ -517,15 +518,15 @@ bool MIDISequencer::MoveTrack(int from, int to) {
     if (state.multitrack->MoveTrack(from, to)) {        // checks if from and to are valid
         MIDIProcessor* temp_processor = track_processors[from];
         //int temp_offset = time_shifts[from];
-        int temp_port = track_ports[from];
+        //int temp_port = track_ports[from];
         track_processors.erase(track_processors.begin() + from);
         //time_shifts.erase(time_shifts.begin() + from);
-        track_ports.erase(track_ports.begin() + from);
+        //track_ports.erase(track_ports.begin() + from);
         if (from < to)
             to--;
         track_processors.insert(track_processors.begin() + to, temp_processor);
         //time_shifts.insert(time_shifts.begin() + to, temp_offset);
-        track_ports.insert(track_ports.begin() + to, temp_port);
+        //track_ports.insert(track_ports.begin() + to, temp_port);
         MIDIClockTime now = state.cur_clock;            // remember current time
         state.Reset();                                  // reset the state (syncs the iterator)
         GoToTime(now);                                  // returns to current time
@@ -994,7 +995,7 @@ void MIDISequencer::TickProc(tMsecs sys_time) {
         if(GetNextEvent(&msg_track, &msg) && !msg.IsMetaEvent())
 
             // tell the driver the send this message now
-            MIDIManager::GetOutDriver(GetTrackPort(msg_track))->OutputMessage(msg);
+            MIDIManager::GetOutDriver(GetTrackOutPort(msg_track))->OutputMessage(msg);
     }
 
     // auto stop at end of sequence

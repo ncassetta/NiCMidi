@@ -135,36 +135,36 @@ class AdvancedSequencer : public MIDISequencer {
         void                UnLoad();
 
         /// Returns **true** if the internal MIDIMultiTrack is not empty.
-        bool                IsLoaded() const                { return file_loaded; }
+        bool                IsLoaded() const                    { return file_loaded; }
         /// Returns the name of the loaded file (or an empty string if it is not yet defined).
-        std::string         GetFileName()                   { return header.filename; }
+        std::string         GetFileName()                       { return header.filename; }
         /// Returns the header of the loaded file.
-        const MIDIFileHeader& GetFileHeader()               { return header; }
+        const MIDIFileHeader& GetFileHeader()                   { return header; }
         /// Returns the address of the MIDIThru tick component. This is NULL if in the system there are non MIDI
         /// in ports and the thru is disabled.
-        MIDIThru*           GetMIDIThru()                   { return thru; }
+        MIDIThru*           GetMIDIThru()                       { return thru; }
         /// Returns the address of the MIDIThru tick component. This is NULL if in the system there are non MIDI
         /// in ports and the thru is disabled.
-        const MIDIThru*     GetMIDIThru() const             { return thru; }
+        const MIDIThru*     GetMIDIThru() const                 { return thru; }
         /// Returns **true** if MIDIThru is enabled (always **false** if the thru is not present).
-        bool                GetMIDIThruEnable() const       { return thru ? thru->IsPlaying() : false; }
+        bool                GetMIDIThruEnable() const           { return thru ? thru->IsPlaying() : false; }
         /// Returns the output channel of the MIDIThru, -1 if the thru is not present.
-        int                 GetMIDIThruChannel() const      { return thru ? thru->GetOutChannel() : -1; }
+        int                 GetMIDIThruChannel() const          { return thru ? thru->GetOutChannel() : -1; }
         /// Returns the transpose amount of the MIDIThru, 0 if the thru is not present.
-        int                 GetMIDIThruTranspose() const    { return thru ? thru_transposer->GetChannelTranspose(0) : 0; }
+        int                 GetMIDIThruTranspose() const        { return thru ? thru_transposer->GetChannelTranspose(0) : 0; }
         /// Returns **true** if any track is soloed.
         bool                GetSoloMode() const;
         /// Returns **true** if a specific track is soloed
         /// \param trk the number of the track
-        bool                GetTrackSolo(unsigned int trk) const
-                                                            { return (((MIDISequencerTrackProcessor *)track_processors[trk])->solo ==
-                                                                       MIDISequencerTrackProcessor::SOLOED); }
+        bool                GetTrackSolo(unsigned int trk_num) const
+                                                { return (((MIDISequencerTrackProcessor *)track_processors[trk_num])->solo ==
+                                                  MIDISequencerTrackProcessor::SOLOED); }
          /// Returns **true** if a specific track is muted
         /// \param trk the number of the track
-        bool                GetTrackMute (unsigned int trk) const
-                                                            { return ((MIDISequencerTrackProcessor *)track_processors[trk])->mute; }
+        bool                GetTrackMute (unsigned int trk_num) const
+                                                { return ((MIDISequencerTrackProcessor *)track_processors[trk_num])->mute; }
         /// Returns the number of measures of the sequencer.
-        int                 GetNumMeasures() const          { return num_measures; }
+        int                 GetNumMeasures() const              { return num_measures; }
         /// Returns the current measure number (first is 0).
         unsigned int        GetCurrentMeasure() const;
         /// Returns the number of current beat (first is 0).
@@ -182,34 +182,33 @@ class AdvancedSequencer : public MIDISequencer {
         /// Returns the current marker text.
         std::string         GetCurrentMarker() const;
         /// Returns the name of the given track.
-        std::string         GetTrackName(unsigned int trk) const;
+        std::string         GetTrackName(unsigned int trk_num) const;
         /// Returns the current MIDI volume for the given track (-1 if volume wasn't set at time 0).
-        char                GetTrackVolume(unsigned int trk) const;          // MIDI value or -1
+        char                GetTrackVolume(unsigned int trk_num) const;     // MIDI value or -1
         /// Returns the current MIDI program (patch) for the given track (-1 if the program wasn't set  at time 0).
-        char                GetTrackProgram (unsigned int trk) const;      // MIDI value or -1
+        char                GetTrackProgram (unsigned int trk_num) const;   // MIDI value or -1
         /// Returns the number of notes currently sounding on the given track (0 if the sequencer is not playing).
-        int                 GetTrackNoteCount(unsigned int trk) const;
-
+        int                 GetTrackNoteCount(unsigned int trk_num) const;
         /// Returns the velocity scale percentage for the given track.
-        unsigned int        GetTrackVelocityScale(unsigned int trk) const;
+        unsigned int        GetTrackVelocityScale(unsigned int trk_num) const;
         /// Returns the rechannelized channel for the given track (-1 if the track is not rechannelized).
-        int                 GetTrackRechannelize(unsigned int trk) const;
+        int                 GetTrackRechannelize(unsigned int trk_num) const;
         /// If the track has channel messages all with same channel returns the channel, otherwise -1.
         /// \note This is **not** const because it may reanalyze the track setting its status parameter.
-        int                 GetTrackChannel(unsigned int trk);   // NOT const!!!
+        int                 GetTrackChannel(unsigned int trk_num);          // NOT const!!!
         /// Returns the transposing amount in semitones for the given track.
-        int                 GetTrackTranspose(unsigned int trk) const;
+        int                 GetTrackTranspose(unsigned int trk_num) const;
         /// Returns the time offset (in MIDI ticks) assigned to the given track.
-        int                 GetTrackTimeShift(unsigned int trk) const;
+        int                 GetTrackTimeShift(unsigned int trk_num) const;
         /// Returns a pointer to the MIDISequencerTrackProcessor for the given track.
-        MIDISequencerTrackProcessor*    GetTrackProcessor(unsigned int trk)
-                                                            { return (MIDISequencerTrackProcessor *)track_processors[trk]; }
+        MIDISequencerTrackProcessor*    GetTrackProcessor(unsigned int trk_num)
+                                                { return (MIDISequencerTrackProcessor *)track_processors[trk_num]; }
         /// Returns a pointer to the MIDISequencerTrackProcessor for the given track.
-        const MIDISequencerTrackProcessor* GetTrackProcessor(unsigned int trk) const
-                                                            { return (const MIDISequencerTrackProcessor *)track_processors[trk]; }
+        const MIDISequencerTrackProcessor* GetTrackProcessor(unsigned int trk_num) const
+                                                { return (const MIDISequencerTrackProcessor *)track_processors[trk_num]; }
 
         /// Sets a name for the content of sequencer.
-        void                SetFileName(std::string& fname) { header.filename = fname; }
+        void                SetFileName(std::string& fname)     { header.filename = fname; }
         /// Enables or disables the embedded MIDIthru. This has no effect if the thru is not present.
         void                SetMIDIThruEnable(bool on_off);
         /// Sets the out channel for MIDIthru. This has no effect if the thru is not present.
@@ -218,24 +217,24 @@ class AdvancedSequencer : public MIDISequencer {
         /// This has no effect if the thru is not present.
         void                SetMIDIThruTranspose (int amt);
         /// Soloes the given track muting all others.
-        void                SetTrackSolo(unsigned int trk);
+        void                SetTrackSolo(unsigned int trk_num);
         /// Unsoloes the soloed track unmuting all others.
         void                UnSoloTrack();
         /// Mute/unmute the given track (it has no effect on others).
-        void                SetTrackMute(unsigned int trk, bool f);
+        void                SetTrackMute(unsigned int trk_num, bool f);
         /// Unmutes all muted tracks (this has no effect on tracks muted by SoloTrack()).
         void                UnmuteAllTracks();
         /// Sets a track velocity scale in percentage for the given track.
-        void                SetTrackVelocityScale(unsigned int trk, unsigned int scale);
+        void                SetTrackVelocityScale(unsigned int trk_num, unsigned int scale);
         /// Sets a channel for the given track (all chennel messages in it will be output on given channel,
         /// regardless their original channel).
-        void                SetTrackRechannelize(unsigned int trk, int chan);
+        void                SetTrackRechannelize(unsigned int trk_num, int chan);
         /// Sets a transpose amount in semitones for the given track (see MIDIProcessorTransposer).
-        void                SetTrackTranspose(unsigned int trk, int trans);
+        void                SetTrackTranspose(unsigned int trk_num, int trans);
         /// Sets the current time to the beginning of the song, updating the internal status. This method is
         /// thread-safe and can be called during playback. Notifies the GUI a GROUP_ALL event to signify a
         /// full GUI reset.
-        void                GoToZero()                      { GoToTime(0); }
+        void                GoToZero()                          { GoToTime(0); }
         /// Sets the current time to the given MIDI time, updating the internal status. This is as
         /// MIDISequencer::GoToTime() but uses a better algorithm and sends to the MIDI out ports all the
         /// appropriate sysex, patch, pitch bend and control change messages.
@@ -279,7 +278,7 @@ class AdvancedSequencer : public MIDISequencer {
         void                CatchEventsBefore();
         /// Internal use. As above, but only on the given track (this is useful when a formerly muted track is unmuted,
         /// and needs to be set with appropriate controls, program etc.
-        void                CatchEventsBefore(int trk);
+        void                CatchEventsBefore(int trk_num);
 
         /// \cond EXCLUDED
         // The interval between measures in ExtractWarpPositions()

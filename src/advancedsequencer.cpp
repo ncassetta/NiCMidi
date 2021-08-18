@@ -114,6 +114,7 @@ AdvancedSequencer::AdvancedSequencer(MIDISequencerGUINotifier *n) :
     owns_tracks (true)                           // remembers that the multitrack is owned
 {
     MIDIManager::AddMIDITick(this);
+    // sets the embedded MIDIThru only if the system has almost an in port
     if (MIDIManager::IsValidInPortNumber(0)) {
         thru = new MIDIThru();
         thru_transposer = new MIDIProcessorTransposer();
@@ -134,6 +135,7 @@ AdvancedSequencer::AdvancedSequencer(MIDIMultiTrack* mlt, MIDISequencerGUINotifi
     ExtractWarpPositions();                     // sets warp_positions and num_measures
     //thru.SetProcessor(&thru_processor);
     //thru_processor.SetProcessor(&thru_rechannelizer);
+    // sets the embedded MIDIThru only if the system has almost an in port
     if (MIDIManager::IsValidInPortNumber(0)) {
         thru = new MIDIThru();
         thru_transposer = new MIDIProcessorTransposer();
@@ -175,7 +177,7 @@ void AdvancedSequencer::Reset() {
 
 bool AdvancedSequencer::Load (const char *fname) {
     Stop();
-    state.multitrack->Clear();
+    //state.multitrack->Reset();    this is done by LoadMIDIFile
 
     file_loaded = LoadMIDIFile(fname, state.multitrack, &header);
     Reset();                    // synchronizes the sequencer with the multitrack and goes to 0
@@ -196,8 +198,7 @@ bool AdvancedSequencer::Load (const MIDIMultiTrack* tracks) {
 
 void AdvancedSequencer::UnLoad() {
     Stop();
-    state.multitrack->Clear();
-    state.multitrack->SetClksPerBeat(DEFAULT_CLKS_PER_BEAT);
+    state.multitrack->Reset();
     file_loaded = false;
     Reset();
     //seq->GoToZero();      now called by Reset()
@@ -270,68 +271,68 @@ std::string AdvancedSequencer::GetCurrentMarker() const {
 }
 
 
-std::string AdvancedSequencer::GetTrackName (unsigned int trk) const {
+std::string AdvancedSequencer::GetTrackName (unsigned int trk_num) const {
     if (!file_loaded)
         return "";
-    return GetTrackState(trk)->track_name;
+    return GetTrackState(trk_num)->track_name;
 }
 
 
-char AdvancedSequencer::GetTrackVolume (unsigned int trk) const {
+char AdvancedSequencer::GetTrackVolume (unsigned int trk_num) const {
     if (!file_loaded)
         return 100;
-    return GetTrackState(trk)->control_values[C_MAIN_VOLUME];
+    return GetTrackState(trk_num)->control_values[C_MAIN_VOLUME];
 }
 
 
-char AdvancedSequencer::GetTrackProgram (unsigned int trk) const {
+char AdvancedSequencer::GetTrackProgram (unsigned int trk_num) const {
     if (!file_loaded)
         return 0;
-    return GetTrackState(trk)->program;
+    return GetTrackState(trk_num)->program;
 }
 
 
-int AdvancedSequencer::GetTrackNoteCount (unsigned int trk) const {
+int AdvancedSequencer::GetTrackNoteCount (unsigned int trk_num) const {
     if (!file_loaded || !IsPlaying())
         return 0;
     else
-        return GetTrackState(trk)->note_matrix.GetTotalCount();
+        return GetTrackState(trk_num)->note_matrix.GetTotalCount();
 }
 
 
-unsigned int AdvancedSequencer::GetTrackVelocityScale (unsigned int trk) const {
+unsigned int AdvancedSequencer::GetTrackVelocityScale (unsigned int trk_num) const {
     if (!file_loaded)
         return 100;
-    return ((MIDISequencerTrackProcessor *)track_processors[trk])->velocity_scale;
+    return ((MIDISequencerTrackProcessor *)track_processors[trk_num])->velocity_scale;
 }
 
 
-int AdvancedSequencer::GetTrackRechannelize (unsigned int trk) const {
+int AdvancedSequencer::GetTrackRechannelize (unsigned int trk_num) const {
     if (!file_loaded)
         return -1;
-    return GetTrackProcessor(trk)->rechannel;
+    return GetTrackProcessor(trk_num)->rechannel;
 }
 
 
-int AdvancedSequencer::GetTrackChannel (unsigned int trk) {
+int AdvancedSequencer::GetTrackChannel (unsigned int trk_num) {
     if (!file_loaded)
         return -1;
-    return (GetTrackProcessor(trk)->rechannel == -1 ?
-            GetMultiTrack()->GetTrack(trk)->GetChannel() : GetTrackProcessor(trk)->rechannel);
+    return (GetTrackProcessor(trk_num)->rechannel == -1 ?
+            GetMultiTrack()->GetTrack(trk_num)->GetChannel() : GetTrackProcessor(trk_num)->rechannel);
 }
 
 
-int AdvancedSequencer::GetTrackTranspose (unsigned int trk) const {
+int AdvancedSequencer::GetTrackTranspose (unsigned int trk_num) const {
     if (!file_loaded)
         return 0;
-    return GetTrackProcessor(trk)->transpose;
+    return GetTrackProcessor(trk_num)->transpose;
 }
 
 
-int AdvancedSequencer::GetTrackTimeShift (unsigned int trk) const {
+int AdvancedSequencer::GetTrackTimeShift (unsigned int trk_num) const {
     if (!file_loaded)
         return 0;
-    return GetTrackTimeShift(trk);
+    return GetTrackTimeShift(trk_num);
 }
 
 
@@ -368,22 +369,22 @@ void AdvancedSequencer::SetMIDIThruTranspose (int amt) {
  */
 
 
-void AdvancedSequencer::SetTrackSolo (unsigned int trk) {   // unsoloing done by UnSoloTrack()
-    if (!file_loaded || !state.multitrack->IsValidTrackNumber(trk))
+void AdvancedSequencer::SetTrackSolo (unsigned int trk_num) {   // unsoloing done by UnSoloTrack()
+    if (!file_loaded || !state.multitrack->IsValidTrackNumber(trk_num))
         return;
     proc_lock.lock();
     for (unsigned int i = 0; i < GetNumTracks(); ++i ) {
-        if(i == trk) {
+        if(i == trk_num) {
             ((MIDISequencerTrackProcessor *)track_processors[i])->solo = MIDISequencerTrackProcessor::SOLOED;
             if (IsPlaying())
                 // track could be muted before soloing: this sets appropriate CC, PC, etc
                 // not previously sent
-                CatchEventsBefore(trk);     // MUST be here! We must previously unmute the track!
+                CatchEventsBefore(trk_num);     // MUST be here! We must previously unmute the track!
         }
         else {
             ((MIDISequencerTrackProcessor *)track_processors[i])->solo = MIDISequencerTrackProcessor::NOT_SOLOED;
             if (IsPlaying() && GetTrackChannel(i) != -1) {
-                MIDIManager::GetOutDriver(GetTrackPort(trk))->AllNotesOff(GetTrackChannel(i));
+                MIDIManager::GetOutDriver(GetTrackOutPort(trk_num))->AllNotesOff(GetTrackChannel(i));
                 GetTrackState(i)->note_matrix.Reset();
             }
         }
@@ -407,20 +408,20 @@ void AdvancedSequencer::UnSoloTrack()  {
 }
 
 
-void AdvancedSequencer::SetTrackMute (unsigned int trk, bool f) {
-    if (!file_loaded || !state.multitrack->IsValidTrackNumber(trk))
+void AdvancedSequencer::SetTrackMute (unsigned int trk_num, bool f) {
+    if (!file_loaded || !state.multitrack->IsValidTrackNumber(trk_num))
         return;
     proc_lock.lock();
-    GetTrackProcessor(trk)->mute = f;
-    int channel = GetTrackChannel(trk);
+    GetTrackProcessor(trk_num)->mute = f;
+    int channel = GetTrackChannel(trk_num);
     if (IsPlaying() && channel != -1) {
         if(f) {
-            MIDIManager::GetOutDriver(GetTrackPort(trk))->AllNotesOff(channel);
-            GetTrackState(trk)->note_matrix.Reset();
+            MIDIManager::GetOutDriver(GetTrackOutPort(trk_num))->AllNotesOff(channel);
+            GetTrackState(trk_num)->note_matrix.Reset();
         }
         else
             // track was muted: this set appropriate CC, PC, etc not previously sent
-            CatchEventsBefore(trk);
+            CatchEventsBefore(trk_num);
     }
     proc_lock.unlock();
 }
@@ -439,37 +440,37 @@ void AdvancedSequencer::UnmuteAllTracks() {
 }
 
 
-void AdvancedSequencer::SetTrackVelocityScale (unsigned int trk, unsigned int scale) {
-    if (!file_loaded || !state.multitrack->IsValidTrackNumber(trk))
+void AdvancedSequencer::SetTrackVelocityScale (unsigned int trk_num, unsigned int scale) {
+    if (!file_loaded || !state.multitrack->IsValidTrackNumber(trk_num))
         return;
     proc_lock.lock();
-    ((MIDISequencerTrackProcessor *)track_processors[trk])->velocity_scale = scale;
+    ((MIDISequencerTrackProcessor *)track_processors[trk_num])->velocity_scale = scale;
     proc_lock.unlock();
 }
 
 
-void AdvancedSequencer::SetTrackRechannelize (unsigned int trk, int chan) {
-    if (!file_loaded || !state.multitrack->IsValidTrackNumber(trk))
+void AdvancedSequencer::SetTrackRechannelize (unsigned int trk_num, int chan) {
+    if (!file_loaded || !state.multitrack->IsValidTrackNumber(trk_num))
         return;
     proc_lock.lock();
-    if (IsPlaying() && GetTrackChannel(trk) != chan && !(GetTrackChannel(trk) == -1)) {
-        MIDIManager::GetOutDriver(GetTrackPort(trk))->AllNotesOff(GetTrackChannel(trk));
-        GetTrackState(trk)->note_matrix.Reset();
+    if (IsPlaying() && GetTrackChannel(trk_num) != chan && !(GetTrackChannel(trk_num) == -1)) {
+        MIDIManager::GetOutDriver(GetTrackOutPort(trk_num))->AllNotesOff(GetTrackChannel(trk_num));
+        GetTrackState(trk_num)->note_matrix.Reset();
     }
-    GetTrackProcessor(trk)->rechannel = chan;
+    GetTrackProcessor(trk_num)->rechannel = chan;
     proc_lock.unlock();
 }
 
 
-void AdvancedSequencer::SetTrackTranspose (unsigned int trk, int trans) {
-    if (!file_loaded || !state.multitrack->IsValidTrackNumber(trk))
+void AdvancedSequencer::SetTrackTranspose (unsigned int trk_num, int trans) {
+    if (!file_loaded || !state.multitrack->IsValidTrackNumber(trk_num))
         return;
     proc_lock.lock();
-    if (IsPlaying() && GetTrackTranspose(trk) != trans && !(GetTrackChannel(trk) == -1)) {
-        MIDIManager::GetOutDriver(GetTrackPort(trk))->AllNotesOff(GetTrackChannel(trk));
-        GetTrackState (trk)->note_matrix.Reset();
+    if (IsPlaying() && GetTrackTranspose(trk_num) != trans && !(GetTrackChannel(trk_num) == -1)) {
+        MIDIManager::GetOutDriver(GetTrackOutPort(trk_num))->AllNotesOff(GetTrackChannel(trk_num));
+        GetTrackState(trk_num)->note_matrix.Reset();
     }
-    GetTrackProcessor(trk)->transpose = trans;
+    GetTrackProcessor(trk_num)->transpose = trans;
     proc_lock.unlock();
 }
 
@@ -769,7 +770,7 @@ void AdvancedSequencer::CatchEventsBefore() {
         trk = GetMultiTrack()->GetTrack(i);
         if (!(trk->HasSysex())) continue;
         msg.SetTime(0);
-        port = GetTrackPort(i);
+        port = GetTrackOutPort(i);
         for (unsigned int j = 0; j < trk->GetNumEvents() && msg.GetTime() <= GetCurrentMIDIClockTime(); j++) {
             msg = trk->GetEvent(j);
             if (msg.IsSysEx() &&
@@ -788,7 +789,7 @@ void AdvancedSequencer::CatchEventsBefore() {
         if (!GetTrackMute(i) &&
             (trk->GetType() == MIDITrack::TYPE_CHAN || trk->GetType() == MIDITrack::TYPE_IRREG_CHAN)) {
             int channel = GetTrackChannel(i);
-            port = GetTrackPort(i);
+            port = GetTrackOutPort(i);
             const MIDISequencerTrackState* tr_state = GetTrackState(i);
             // set the current program
             if (tr_state->program != -1) {
@@ -815,7 +816,7 @@ void AdvancedSequencer::CatchEventsBefore() {
     for (unsigned int i = 0; i < GetMultiTrack()->GetNumTracks(); i++) {
         trk = GetMultiTrack()->GetTrack(i);
         if (trk->GetType() == MIDITrack::TYPE_MIXED_CHAN) {
-            port = GetTrackPort(i);
+            port = GetTrackOutPort(i);
             msg.SetTime(0);
             for (unsigned int j = 0; j < trk->GetNumEvents() && msg.GetTime() <= GetCurrentMIDIClockTime(); j++) {
                 msg = trk->GetEvent(j);
@@ -832,15 +833,15 @@ void AdvancedSequencer::CatchEventsBefore() {
 }
 
 
-void AdvancedSequencer::CatchEventsBefore(int trk) {
+void AdvancedSequencer::CatchEventsBefore(int trk_num) {
     MIDITimedMessage msg;
-    MIDITrack* t = GetMultiTrack()->GetTrack(trk);
-    unsigned int port = GetTrackPort(trk);
+    MIDITrack* t = GetMultiTrack()->GetTrack(trk_num);
+    unsigned int port = GetTrackOutPort(trk_num);
     int events_sent = 0;
 
     if (GetCurrentMIDIClockTime() == 0)         // nothing to do
         return;
-    std::cout << "Catch events before started for track " << trk << " ..." << std::endl;
+    std::cout << "Catch events before started for track " << trk_num << " ..." << std::endl;
 
     MIDIManager::OpenOutPorts();
 
@@ -860,11 +861,11 @@ void AdvancedSequencer::CatchEventsBefore(int trk) {
 
 
     // restore program, pitch bend and controllers as registered in the sequencer state
-    if (!GetTrackMute(trk)) {
+    if (!GetTrackMute(trk_num)) {
         // if this is an ordinary channel track ...
         if (t->GetType() == MIDITrack::TYPE_CHAN || t->GetType() == MIDITrack::TYPE_IRREG_CHAN) {
-            int channel = GetTrackChannel(trk);     // takes into account rechannelize
-            const MIDISequencerTrackState* tr_state = GetTrackState(trk);
+            int channel = GetTrackChannel(trk_num);     // takes into account rechannelize
+            const MIDISequencerTrackState* tr_state = GetTrackState(trk_num);
             // set the current program
             if (tr_state->program != -1) {
                 msg.SetProgramChange(channel, tr_state->program);
