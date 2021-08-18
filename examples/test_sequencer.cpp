@@ -80,7 +80,7 @@ All commands can be given during playback\n";
 //////////////////////////////////////////////////////////////////
 
 
-int main( int argc, char **argv ) {
+int main(int argc, char **argv) {
     // you must add the sequencer to the MIDIManager queue (AdvancedSequencer
     // does it by itself
     MIDIManager::AddMIDITick(&sequencer);
@@ -102,7 +102,7 @@ int main( int argc, char **argv ) {
             if (MIDIManager::GetNumMIDIIns()) {
                 cout << "MIDI IN PORTS:" << endl;
                 for (unsigned int i = 0; i < MIDIManager::GetNumMIDIIns(); i++)
-                    cout << i << ": " << MIDIManager::GetMIDIInName( i ) << endl;
+                    cout << i << ": " << MIDIManager::GetMIDIInName(i) << endl;
             }
             else
                 cout << "NO MIDI IN PORTS" << endl;

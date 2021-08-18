@@ -260,7 +260,7 @@ class MIDISequencer : public MIDITickComponent {
         /// \see SetTimeOffset(), SetTimeOffsetMode().
         /// \param trk_num the track number
         int                             GetTrackTimeShift(unsigned int trk_num) const
-                                                                { return time_shifts[trk_num]; }
+                                                                { return state.multitrack->GetTrack(trk_num)->GetTimeShift(); }
         /// Return the number of the port assigned to a track.
         /// \param trk_num the track number
         unsigned int                    GetTrackPort(unsigned int trk_num) const
@@ -429,7 +429,7 @@ class MIDISequencer : public MIDITickComponent {
         bool                            time_shift_mode;    // The time shift on/off (during playback time shift is always on)
 
         std::vector<MIDIProcessor*>     track_processors;   // A MIDIProcessor for every track
-        std::vector<int>                time_shifts;        // A time shift (in MIDI ticks) for every track
+        //std::vector<int>                time_shifts;        // A time shift (in MIDI ticks) for every track
         std::vector<unsigned int>       track_ports;        // The port id for every track
         MIDISequencerState              state;              // The sequencer state
         /// \endcond

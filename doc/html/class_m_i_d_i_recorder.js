@@ -1,0 +1,26 @@
+var class_m_i_d_i_recorder =
+[
+    [ "MIDIRecorder", "class_m_i_d_i_recorder.html#aaa8801daa1c14bd74d7cfe206842e853", null ],
+    [ "~MIDIRecorder", "class_m_i_d_i_recorder.html#acdb0a37702827ed782841761f76bff4a", null ],
+    [ "Reset", "class_m_i_d_i_recorder.html#a529108417592825416522c50551ca26c", null ],
+    [ "GetMultiTrack", "class_m_i_d_i_recorder.html#ab4883a0a16cd78f0d8e9deac0a86447c", null ],
+    [ "GetTempo", "class_m_i_d_i_recorder.html#a27ead2d43ebd59848216fed702b95874", null ],
+    [ "GetStartRecTime", "class_m_i_d_i_recorder.html#a09414429295c2b8ed2a23baffa5a5418", null ],
+    [ "GetEndRecTime", "class_m_i_d_i_recorder.html#a1ed39fbbdd5bb5606d56aebad8bc0bc0", null ],
+    [ "SetTempo", "class_m_i_d_i_recorder.html#a7eb001011639cc7ed86e622f6b81acfc", null ],
+    [ "SetStartRecTime", "class_m_i_d_i_recorder.html#a0f77044cce7892befd3f354b7dd1fd21", null ],
+    [ "SetStartRecTime", "class_m_i_d_i_recorder.html#a9fa25bfcbcb6de47e1371171e995b57d", null ],
+    [ "SetEndRecTime", "class_m_i_d_i_recorder.html#a9501ed8bc2e4c05483a63979bca36d92", null ],
+    [ "SetEndRecTime", "class_m_i_d_i_recorder.html#a963128d48432cc4ee16ee97408f2d166", null ],
+    [ "EnablePort", "class_m_i_d_i_recorder.html#a1e71bce9e1f1da3cec8b08e3e9d29ef0", null ],
+    [ "EnableChannel", "class_m_i_d_i_recorder.html#a9377d201a5a99f72a24e19baba3ffbc0", null ],
+    [ "DisablePort", "class_m_i_d_i_recorder.html#ae108ff2a6566542d3309ad090aec65e0", null ],
+    [ "DisableChannel", "class_m_i_d_i_recorder.html#a7c2f960fed1f325061afc01513c18ce6", null ],
+    [ "GoToZero", "class_m_i_d_i_recorder.html#ab5c5b4b78222f4ca5e6c2896dae242e5", null ],
+    [ "GoToTime", "class_m_i_d_i_recorder.html#a303a9e4c290c2f657d8e8afc2bacf51b", null ],
+    [ "GoToTimeMs", "class_m_i_d_i_recorder.html#ae4427027cf34c780a525356fc7acd8aa", null ],
+    [ "Start", "class_m_i_d_i_recorder.html#ab1000a44dcb29976cda7969e04a77a28", null ],
+    [ "Stop", "class_m_i_d_i_recorder.html#a196dfa9145e4e12de3f913a1ce420870", null ],
+    [ "StaticTickProc", "class_m_i_d_i_recorder.html#a7a51c8bd3b8a15c172a92ab8dd684c4e", null ],
+    [ "TickProc", "class_m_i_d_i_recorder.html#acf2da44386b821659f3ad69ccf3172ec", null ]
+];

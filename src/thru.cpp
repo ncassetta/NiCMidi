@@ -31,7 +31,7 @@ MIDIThru::MIDIThru() : MIDITickComponent(PR_PRE_SEQ, StaticTickProc), in_port(0)
                                          out_channel(-1), processor(0)
 {
     std::cout << "MIDIThru constructor" << std::endl;
-    //check if inand out ports exist
+    //check if in and out ports exist
     if (!MIDIManager::IsValidInPortNumber(0) || !MIDIManager::IsValidOutPortNumber(0))
         throw RtMidiError("MIDIThru needs almost a MIDI in and out port in the system\n", RtMidiError::INVALID_DEVICE);
 }

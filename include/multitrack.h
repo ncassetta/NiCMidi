@@ -190,10 +190,6 @@ class MIDIMultiTrackIteratorState {
         // Sets the time to 0 and an undefined first event and track.
         // \warning this is, in general, **not** a valid state. Don't call this but MIDIMultiTrackIterator::Reset().
         void                        Reset();
-        // Returns the time of the given MIDITimedMessage in the given track, taking into account the time
-        // shifting. This is the same time of the message if time shifting is off or _msg_ is not a channel
-        // or sysex message, otherwise this will return the message time plus the track offset.
-        MIDIClockTime               GetShiftedTime(const MIDITimedMessage* msg, int trk);
         // Internal use.
         int                         FindTrackOfFirstEvent();
 
@@ -202,7 +198,6 @@ class MIDIMultiTrackIteratorState {
         int                         cur_event_track;    // The track of the next event
         std::vector<int>            next_event_number;  // Array holding the next event for every track
         std::vector<MIDIClockTime>  next_event_time;    // Array holding the next event time for every track
-        std::vector<int>*           time_shifts;        // Array holding the time shift for every track
         bool                        time_shift_mode;    // Time shift on/off
         /// \endcond
 };
@@ -243,10 +238,7 @@ class MIDIMultiTrackIterator {
         /// events time remain unchanged).
         /// \return **true** if the function succeeded (it could fail if you try to set the mode on without having
         /// set a vector).
-        bool                        SetTimeShiftMode(bool f);
-        /// Sets the given vector as time shift vector. You must call this before turning time shifting on and off,
-        /// or it will be ineffective.
-        void                        SetTimeShiftVector(std::vector<int>* v);
+        void                        SetTimeShiftMode(bool f);
         /// Sets the given MIDIMultiTrackIteratorState as current state.
         void                        SetState(const MIDIMultiTrackIteratorState& s) { state = s; }
         /// Goes to the given time, which becomes the current time, and sets then the current event as the
@@ -283,6 +275,11 @@ class MIDIMultiTrackIterator {
 
     protected:
         /// \cond EXCLUDED
+        // Returns the time of the given MIDITimedMessage in the given track, taking into account the time
+        // shifting. This is the same time of the message if time shifting is off or _msg_ is not a channel
+        // or sysex message, otherwise this will return the message time plus the track offset.
+        MIDIClockTime               GetShiftedTime(const MIDITimedMessage* msg, int trk);
+
         MIDIMultiTrack*             multitrack;     // The MIDIMultiTrack the class refers to
         MIDIMultiTrackIteratorState state;          // The iterator state
         /// \endcond

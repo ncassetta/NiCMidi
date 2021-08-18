@@ -86,7 +86,8 @@ class  MIDITrack {
         virtual                     ~MIDITrack()                {}
         /// The assignment operator.
         MIDITrack&                  operator=(const MIDITrack &trk);
-        /// Deletes all events leaving the track empty (i.e.\ with only the EOT event).
+        /// Deletes all events leaving the track empty (i.e.\ with only the EOT event) and
+        /// sets time shift to 0.
         /// \param mantain_end If it is **true** the method doesn't change the time of the EOT,
         /// otherwise sets it to 0.
         void	                    Clear(bool mantain_end = false);
@@ -108,6 +109,8 @@ class  MIDITrack {
         /// \ref TYPE_MIXED_CHAN, \ref TYPE_UNKNOWN, \ref TYPE_SYSEX, \ref TYPE_RESET_SYSEX, \ref TYPE_BOTH_SYSEX).
         /// \note This is **not** const, because it may call Analyze(), causing an update of the track status.
         char                        GetType();
+        /// Returns the track time shift in MIDI ticks.
+        int                         GetTimeShift() const                { return time_shift; }
         /// Returns **true** if the track contains MIDI SysEx messages.
         /// \note This is **not** const, because it may call Analyze(), causing an update of the track status.
         char                        HasSysex();
@@ -130,6 +133,8 @@ class  MIDITrack {
         bool                        SetEndTime(MIDIClockTime end_time);
         /// Sets the channel of all MIDI channel events to _ch_ (_ch_ must be in the range 0 ... 15).
         void                        SetChannel(int ch);
+        /// Sets the track time shift in MIDI ticks.
+        void                        SetTimeShift(int t)                 { time_shift = t; }
         /// Sets the time of the EOT event equal to the time of the last (non data end) event
         /// of the track.
         void                        ShrinkEndTime();
@@ -269,6 +274,9 @@ class  MIDITrack {
         std::vector<MIDITimedMessage>
                                     events;     // The buffer of events
         int                         status;     // A bitfield used to determine the track type
+        int                         time_shift; // The time shift in MIDI ticks
+        unsigned int                out_port;   // The out port id for midi events
+
         static tInsMode             ins_mode;   // See SetInsertMode()
         /// \endcond
 };

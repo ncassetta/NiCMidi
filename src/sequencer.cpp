@@ -311,7 +311,7 @@ MIDISequencer::MIDISequencer (MIDIMultiTrack *m, MIDISequencerGUINotifier *n) :
     tempo_scale (100), repeat_play_mode(false),
     repeat_start_meas(0), repeat_end_meas(0),
     track_processors(m->GetNumTracks(), 0),
-    time_shifts(m->GetNumTracks(), 0),
+    //time_shifts(m->GetNumTracks(), 0),
     track_ports(m->GetNumTracks(), 0),
     state (m, n) {
     // checks if the system has almost a MIDI out
@@ -320,7 +320,7 @@ MIDISequencer::MIDISequencer (MIDIMultiTrack *m, MIDISequencerGUINotifier *n) :
     if (n)
         n->SetSequencer(this);
     beat_marker_msg.SetBeatMarker();
-    state.iterator.SetTimeShiftVector(&time_shifts);
+    //state.iterator.SetTimeShiftVector(&time_shifts);
 }
 
 
@@ -340,12 +340,12 @@ void MIDISequencer::Reset() {
             delete track_processors[i];
     if (track_processors.size() != GetNumTracks()) {
         track_processors.resize(GetNumTracks());
-        time_shifts.resize(GetNumTracks());
+        //time_shifts.resize(GetNumTracks());
         track_ports.resize(GetNumTracks());
     }
     for (unsigned int i = 0; i < GetNumTracks(); ++i) {
         track_processors[i] = 0;
-        time_shifts[i] = 0;
+        state.multitrack->GetTrack(i)->SetTimeShift(0);
         track_ports[i] = 0;
     }
     tempo_scale = 100;
@@ -422,7 +422,8 @@ void MIDISequencer::SetTrackTimeShift(unsigned int trk_num, int offset) {
         MIDIManager::GetOutDriver(GetTrackPort(trk_num))->AllNotesOff(channel);
         GetTrackState(trk_num)->note_matrix.Reset();
     }
-    time_shifts[trk_num] = offset;
+    state.multitrack->GetTrack(trk_num)->SetTimeShift(offset);
+    //time_shifts[trk_num] = offset;
     //GoToTime(GetCurrentMIDIClockTime());      // TODO: this should sync the iterator, but provokes a AllNotesOff
                                                 // on all channels, so I eliminated it. Is this correct?
     proc_lock.unlock();
@@ -469,7 +470,7 @@ bool MIDISequencer::InsertTrack(int trk_num) {
     proc_lock.lock();
     if (state.multitrack->InsertTrack(trk_num)) {
         track_processors.insert(track_processors.begin() + trk_num, 0);
-        time_shifts.insert(time_shifts.begin() + trk_num, 0);
+        //time_shifts.insert(time_shifts.begin() + trk_num, 0);
         track_ports.insert(track_ports.begin() + trk_num, 0);
         MIDIClockTime now = state.cur_clock;            // remember current time
         state.Reset();                                  // reset the state (syncs the iterator and the track states)
@@ -495,7 +496,7 @@ bool MIDISequencer::DeleteTrack(int trk_num) {
         if (track_processors[trk_num])
             delete track_processors[trk_num];
         track_processors.erase(track_processors.begin() + trk_num);
-        time_shifts.erase(time_shifts.begin() + trk_num);
+        //time_shifts.erase(time_shifts.begin() + trk_num);
         track_ports.erase(track_ports.begin() + trk_num);
         MIDIClockTime now = state.cur_clock;            // remember current time
         state.Reset();                                  // reset the state (syncs the iterator and the track states)
@@ -515,15 +516,15 @@ bool MIDISequencer::MoveTrack(int from, int to) {
     proc_lock.lock();
     if (state.multitrack->MoveTrack(from, to)) {        // checks if from and to are valid
         MIDIProcessor* temp_processor = track_processors[from];
-        int temp_offset = time_shifts[from];
+        //int temp_offset = time_shifts[from];
         int temp_port = track_ports[from];
         track_processors.erase(track_processors.begin() + from);
-        time_shifts.erase(time_shifts.begin() + from);
+        //time_shifts.erase(time_shifts.begin() + from);
         track_ports.erase(track_ports.begin() + from);
         if (from < to)
             to--;
         track_processors.insert(track_processors.begin() + to, temp_processor);
-        time_shifts.insert(time_shifts.begin() + to, temp_offset);
+        //time_shifts.insert(time_shifts.begin() + to, temp_offset);
         track_ports.insert(track_ports.begin() + to, temp_port);
         MIDIClockTime now = state.cur_clock;            // remember current time
         state.Reset();                                  // reset the state (syncs the iterator)

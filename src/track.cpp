@@ -37,7 +37,7 @@
 tInsMode MIDITrack::ins_mode = INSMODE_INSERT_OR_REPLACE;
 
 
-MIDITrack::MIDITrack(MIDIClockTime end_time) : status(INIT_STATUS) {
+MIDITrack::MIDITrack(MIDIClockTime end_time) : status(INIT_STATUS), time_shift(0) {
 // a track always contains at least the MIDI_END event, so num_events > 0
     MIDITimedMessage msg;
     msg.SetDataEnd();
@@ -46,13 +46,15 @@ MIDITrack::MIDITrack(MIDIClockTime end_time) : status(INIT_STATUS) {
 }
 
 
-MIDITrack::MIDITrack(const MIDITrack &trk) : events(trk.events), status(trk.status) {
+MIDITrack::MIDITrack(const MIDITrack &trk) : events(trk.events), status(trk.status),
+                     time_shift(trk.time_shift) {
 }
 
 
 MIDITrack& MIDITrack::operator=(const MIDITrack &trk) {
     events = trk.events;
     status = trk.status;
+    time_shift = trk.time_shift;
     return *this;
 }
 
@@ -65,6 +67,7 @@ void MIDITrack::Clear(bool mantain_end) {
     msg.SetTime(end);
     events.push_back(msg);
     status = INIT_STATUS;
+    time_shift = 0;
 }
 
 

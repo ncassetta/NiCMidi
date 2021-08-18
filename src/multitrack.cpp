@@ -334,7 +334,7 @@ void MIDIMultiTrack::EditReplace(MIDIClockTime start, int tr_start, int times, b
 
 
 MIDIMultiTrackIteratorState::MIDIMultiTrackIteratorState(int n_tracks) :
-        time_shifts(0), time_shift_mode(false) {
+        time_shift_mode(false) {
     SetNumTracks(n_tracks);
     Reset();
 }
@@ -357,16 +357,6 @@ void MIDIMultiTrackIteratorState::Reset() {
         next_event_number[i] = 0;
         next_event_time[i] = TIME_INFINITE;
     }
-}
-
-
-MIDIClockTime MIDIMultiTrackIteratorState::GetShiftedTime(const MIDITimedMessage* msg, int trk) {
-    if (!time_shift_mode)
-        return msg->GetTime();
-    if (!msg->IsChannelMsg() && !msg->IsSysEx())
-        return msg->GetTime();
-    long shifted_time = (signed)msg->GetTime() + (*time_shifts)[trk];
-    return shifted_time < 0 ? 0: (MIDIClockTime)shifted_time;
 }
 
 
@@ -417,25 +407,16 @@ void MIDIMultiTrackIterator::Reset() {
 
     // keep track of the event number and the event time.
         //state.next_event_number[i] = 0; already done by state.Reset()
-        state.next_event_time[i] = state.GetShiftedTime(msg, i);
+        state.next_event_time[i] = GetShiftedTime(msg, i);
     }
     // sets cur_event_track
     state.FindTrackOfFirstEvent();
 }
 
 
-bool MIDIMultiTrackIterator::SetTimeShiftMode(bool f) {
-    if (state.time_shifts == 0)             // the time shift vector is not set
-        return false;
+void MIDIMultiTrackIterator::SetTimeShiftMode(bool f) {
     state.time_shift_mode = f;
-    std::cout << "Time shift mode " << (f ? "on" : "off") << std::endl;
-    return true;
-}
-
-
-void MIDIMultiTrackIterator::SetTimeShiftVector(std::vector<int>* v) {
-    state.time_shift_mode = false;
-    state.time_shifts = v;
+    //std::cout << "Time shift mode " << (f ? "on" : "off") << std::endl;
 }
 
 
@@ -468,10 +449,10 @@ bool MIDIMultiTrackIterator::GetNextEvent(int *track, MIDITimedMessage **msg) {
         if(ev_num >= 0) {
             MIDITrack* t = multitrack->GetTrack(trk);
             *msg = t->GetEventAddress(ev_num);
-            state.cur_time = state.GetShiftedTime(*msg, trk);
+            state.cur_time = GetShiftedTime(*msg, trk);
             if (t->IsValidEventNum(ev_num + 1)) {
                 state.next_event_number[trk]++;
-                state.next_event_time[trk] = state.GetShiftedTime(t->GetEventAddress(ev_num + 1), trk);
+                state.next_event_time[trk] = GetShiftedTime(t->GetEventAddress(ev_num + 1), trk);
             }
             else
                 state.next_event_number[trk] = -1;
@@ -496,7 +477,7 @@ bool MIDIMultiTrackIterator::GetNextEventOnTrack(int track, MIDITimedMessage **m
         // get the event
         *msg = multitrack->GetTrack(track)->GetEventAddress(ev_num);
         // adjust current time
-        state.cur_time = state.GetShiftedTime(*msg, track);
+        state.cur_time = GetShiftedTime(*msg, track);
         // adjust the next event num in the track trk
         if (multitrack->GetTrack(track)->IsValidEventNum(ev_num + 1))
             state.next_event_number[track]++;
@@ -522,6 +503,15 @@ bool MIDIMultiTrackIterator::GetNextEventTime(MIDIClockTime *t) const {
     return false;
 }
 
+
+MIDIClockTime MIDIMultiTrackIterator::GetShiftedTime(const MIDITimedMessage* msg, int trk) {
+    if (!state.time_shift_mode)
+        return msg->GetTime();
+    if (!msg->IsChannelMsg() && !msg->IsSysEx())
+        return msg->GetTime();
+    long shifted_time = (signed)msg->GetTime() + multitrack->GetTrack(trk)->GetTimeShift();
+    return shifted_time < 0 ? 0: (MIDIClockTime)shifted_time;
+}
 
 
 // Don't implement Cut, Edit, Paste... (see header)
