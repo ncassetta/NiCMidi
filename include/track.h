@@ -31,11 +31,13 @@
 #define MIDI_TRACK_H_INCLUDED
 
 
+#include "manager.h"
 #include "midi.h"
 #include "sysex.h"
 #include "msg.h"
 
 #include <vector>
+#include <string>
 
 /// \addtogroup GLOBALS
 ///@{
@@ -84,6 +86,7 @@ class  MIDITrack {
                                     MIDITrack(const MIDITrack &trk);
         /// The destructor deletes the events in the track.
         virtual                     ~MIDITrack()                {}
+        // TODO: these should not be needed!
         /// The assignment operator.
         MIDITrack&                  operator=(const MIDITrack &trk);
         /// Deletes all events leaving the track empty (i.e.\ with only the EOT event) and
@@ -111,6 +114,8 @@ class  MIDITrack {
         /// Returns the track channel (-1 if the track has not type TYPE_CHAN or TYPE_IRREG_CHAN).
         /// \note This is **not** const, because it may call Analyze(), causing an update of the track status.
         char                        GetChannel();
+        /// Returns the channel for recording (-1 for all channels).
+        char                        GetRecChannel()                     { return rec_chan; }
         /// Returns the track type (one of \ref TYPE_MAIN, \ref TYPE_TEXT, \ref TYPE_CHAN, \ref TYPE_IRREG_CHAN,
         /// \ref TYPE_MIXED_CHAN, \ref TYPE_UNKNOWN, \ref TYPE_SYSEX, \ref TYPE_RESET_SYSEX, \ref TYPE_BOTH_SYSEX).
         /// \note This is **not** const, because it may call Analyze(), causing an update of the track status.
@@ -138,13 +143,17 @@ class  MIDITrack {
         /// **false**.
         bool                        SetEndTime(MIDIClockTime end_time);
         /// Sets the channel of all MIDI channel events to _ch_ (_ch_ must be in the range 0 ... 15).
-        void                        SetChannel(int ch);
-        /// Sets the output port of the track.
-        /// \warning This doesn't check if _port_ is a valid port number.
-        void                        SetOutPort(unsigned int port)       { out_port = port; }
+        /// \return **true** if events were changed, **false** otherwise (_ch_ was not a valid channel number).
+        bool                        SetChannel(int ch);
+        /// Sets the channel for recording (-1 for all channels).
+        /// \return **true** if _ch_ was in the correct range, **false** otherwise).
+        bool                        SetRecChannel(int ch);
         /// Sets the input port of the track
-        /// \warning This doesn't check if _port_ is a valid port number.
-        void                        SetInPort(unsigned int port)        { in_port = port; }
+        /// \return **true** if _port_ is a valid port number, **false** otherwise.
+        bool                        SetInPort(unsigned int port);
+        /// Sets the output port of the track.
+        /// \return **true** if _port_ is a valid port number, **false** otherwise.
+        bool                        SetOutPort(unsigned int port);
         /// Sets the track time shift in MIDI ticks.
         void                        SetTimeShift(int t)                 { time_shift = t; }
         /// Sets the time of the EOT event equal to the time of the last (non data end) event
@@ -170,7 +179,7 @@ class  MIDITrack {
         /// + __ins_mode_ was INSMODE_REPLACE but there is no event to replace
         /// + a memory error occurred.
         /// otherwise **true**.
-        bool                        InsertEvent( const MIDITimedMessage& msg, tInsMode mode = INSMODE_DEFAULT );
+        bool                        InsertEvent(const MIDITimedMessage& msg, tInsMode mode = INSMODE_DEFAULT);
         /// Inserts a Note On and a Note Off event into the track. Use this method for inserting note messages as
         /// InsertEvent() doesn't check the correct order of note on/note off. It handles automatically the
         /// EndOfTrack message, moving it if needed, so you must not deal with it. It also determines
@@ -244,6 +253,9 @@ class  MIDITrack {
         /// \return **true** if an event with given time was found, **false** otherwise.
         bool                        FindEventNumber (MIDIClockTime time, int *event_num) const;
 
+        /// Returns in a std::string the track properties.
+        std::string                 PrintProperties();
+
         /// Sets the default behaviour for the methods InsertEvent() and InsertNote(). This can be overriden
         /// by them by mean of the last (default) parameter.
         /// \param mode one of \ref ::INSMODE_INSERT, \ref ::INSMODE_REPLACE, #INSMODE_INSERT_OR_REPLACE,
@@ -286,6 +298,7 @@ class  MIDITrack {
         std::vector<MIDITimedMessage>
                                     events;     // The buffer of events
         int                         status;     // A bitfield used to determine the track type
+        char                        rec_chan;   // The channel for recordng, or -1 for all channels
         int                         time_shift; // The time shift in MIDI ticks
         unsigned int                in_port;    // The in port id for recording midi events
         unsigned int                out_port;   // The out port id for playing midi events

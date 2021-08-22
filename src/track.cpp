@@ -37,8 +37,8 @@
 tInsMode MIDITrack::ins_mode = INSMODE_INSERT_OR_REPLACE;
 
 
-MIDITrack::MIDITrack(MIDIClockTime end_time) : status(INIT_STATUS), time_shift(0),
-    in_port(0), out_port() {
+MIDITrack::MIDITrack(MIDIClockTime end_time) : status(INIT_STATUS), rec_chan(-1),
+    time_shift(0), in_port(0), out_port() {
 // a track always contains at least the MIDI_END event, so num_events > 0
     MIDITimedMessage msg;
     msg.SetDataEnd();
@@ -47,13 +47,14 @@ MIDITrack::MIDITrack(MIDIClockTime end_time) : status(INIT_STATUS), time_shift(0
 }
 
 
-MIDITrack::MIDITrack(const MIDITrack &trk) : events(trk.events), status(trk.status),
+MIDITrack::MIDITrack(const MIDITrack &trk) : events(trk.events), status(trk.status), rec_chan(trk.rec_chan),
                      time_shift(trk.time_shift), in_port(trk.in_port), out_port(trk.out_port)
 {}
 
 
 MIDITrack& MIDITrack::operator=(const MIDITrack &trk) {
     events = trk.events;
+    rec_chan = trk.rec_chan;
     status = trk.status;
     time_shift = trk.time_shift;
     in_port = trk.in_port;
@@ -64,6 +65,7 @@ MIDITrack& MIDITrack::operator=(const MIDITrack &trk) {
 
 void MIDITrack::Reset() {
     Clear();
+    rec_chan = 0;
     time_shift = 0;
     in_port = 0;
     out_port = 0;
@@ -130,13 +132,39 @@ bool MIDITrack::SetEndTime(MIDIClockTime end_time) {
 }
 
 
-void MIDITrack::SetChannel(int ch) {
-    ch &= 0x0f;
+bool MIDITrack::SetChannel(int ch) {
+    if (ch < 0 || ch > 15)
+        return false;
     for (unsigned int i = 0; i < events.size(); i++) {
         if (GetEvent(i).IsChannelMsg())
             GetEvent(i).SetChannel(ch);
     }
     status |= STATUS_DIRTY;
+    return true;
+}
+
+
+bool MIDITrack::SetRecChannel(int ch) {
+    if (ch < -1 || ch > 15)
+        return false;
+    rec_chan = ch;
+    return true;
+}
+
+
+bool MIDITrack::SetInPort(unsigned int port) {
+    if (!MIDIManager::IsValidInPortNumber(port))
+        return false;
+    in_port = port;
+    return true;
+}
+
+
+bool MIDITrack::SetOutPort(unsigned int port) {
+    if (!MIDIManager::IsValidOutPortNumber(port))
+        return false;
+    out_port = port;
+    return true;
 }
 
 

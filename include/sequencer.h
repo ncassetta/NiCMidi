@@ -230,12 +230,18 @@ class MIDISequencer : public MIDITickComponent {
         /// Returns the repeat play (loop) end measure.
         unsigned int                    GetRepeatPlayEnd() const
                                                                 { return repeat_end_meas; }
+        /// Returns the time shift mode (on or off). This is the value of the internal parameter, **not**
+        /// the actual mode (during the playback the Start() method always sets it to on, while at the end
+        /// the Stop() method resets it to this value).
+        bool                            GetTimeShiftMode() const    { return time_shift_mode; }
         /// Returns a pointer to the current MIDISequencerState (i.e\. the global sequencer state at
         /// current time). You can easily jump from a time to another saving and retrieving sequencer states.
         MIDISequencerState*             GetState()              { return &state; }
         /// Returns a pointer to the current MIDISequencerState (i.e\. the global sequencer state at
         /// current time). You can easily jump from a time to another saving and retrieving sequencer states.
         const MIDISequencerState*       GetState() const        { return &state; }
+        /// Returns the auto stop state.
+        bool                            GetAutoStop()           { return auto_stop; }
         /// Returns a pointer to the MIDISequencerTrackState for a track.
         /// \param trk_num the track number
         MIDISequencerTrackState*        GetTrackState(unsigned int trk_num)
@@ -244,6 +250,10 @@ class MIDISequencer : public MIDITickComponent {
         /// \param trk_num the track number
         const MIDISequencerTrackState*  GetTrackState(unsigned int trk_num) const
                                                                 { return state.track_states[trk_num]; }
+        /// Returns the number of the out port assigned to a track.
+        /// \param trk_num the track number
+        unsigned int                    GetTrackOutPort(unsigned int trk_num) const
+                                                                { return state.multitrack->GetTrack(trk_num)->GetOutPort(); }
         /// Returns a pointer to the MIDISequencerTrackProcessor for a track.
         /// \param trk_num the track number
         /// \return the processor pointer (if you have already set it with the SetProcessor() method),
@@ -261,16 +271,6 @@ class MIDISequencer : public MIDITickComponent {
         /// \param trk_num the track number
         int                             GetTrackTimeShift(unsigned int trk_num) const
                                                                 { return state.multitrack->GetTrack(trk_num)->GetTimeShift(); }
-        /// Returns the number of the in port assigned to a track.
-        /// \param trk_num the track number
-        unsigned int                    GetTrackInPort(unsigned int trk_num) const
-                                                                { return state.multitrack->GetTrack(trk_num)->GetInPort(); }
-        /// Returns the number of the out port assigned to a track.
-        /// \param trk_num the track number
-        unsigned int                    GetTrackOutPort(unsigned int trk_num) const
-                                                                { return state.multitrack->GetTrack(trk_num)->GetOutPort(); }
-
-
         /// Sets the repeat play (loop) parameters: you can set the repeat play status on/off, the start and the
         /// end measure.
         /// When the repeat play mode is on, the sequencer will start playing from its current position if it is
@@ -286,25 +286,12 @@ class MIDISequencer : public MIDITickComponent {
         /// Sets the global tempo scale.
         /// \param scale the percentage: 100 = no scaling, 200 = twice faster, 50 = twice slower, etc.).
         void                            SetTempoScale(unsigned int scale);
-        /// Sets the time shift offset (in MIDI ticks) for a track. The offset can be positive or negative; events
-        /// shifted include all channel messages and sysex messages (others remain at their time).
-        /// If you select a negative offset, be sure not to have shifted events at lesser time than the offset
-        /// (they won't be shifted). This method is thread-safe and can be called during playback.
-        /// \see SetTimeOffsetMode().
-        /// \param trk_num the track number
-        /// \param offset the offset in MIDI ticks
-        void                            SetTrackTimeShift(unsigned int trk_num, int offset);
-        /// Sets the MIDI port for a track. This has obviously no effetct for the sequencer, but could be used
-        /// by a MIDIRecorder. This method is thread-safe, however changing a port during playback can lead to
-        /// unexpected results in recording.
-        /// \param trk_num the track number
-        /// \param port the id number of the port (see MIDIManager::GetOutPorts())
-        void                            SetTrackInPort(unsigned int trk_num, unsigned int port);
-        /// Sets the MIDI out port for a track. This method is thread-safe and can be called during playback
-        /// (in this case the sequencer will send a MIDI AllNotesOff message to the old port).
-        /// \param trk_num the track number
-        /// \param port the id number of the port (see MIDIManager::GetOutPorts())
-        void                            SetTrackOutPort(unsigned int trk_num, unsigned int port);
+        /// Sets the time shifting of events on and off. If you are editing the multitrack events you probably
+        /// want to see the original (not shifted) MIDI time of events, while during playback you want them
+        /// shifted. So you can turn time shifting on and off (and all the time related methods of the sequencer
+        /// will return the shifted or the original time of events). The Start() method sets time shifting on,
+        /// while the Stop() resets it to your choice, so usually if you can leave time shifting off.
+        void                            SetTimeShiftMode(bool f);
         /// Copies a given MIDISequencerState into the internal sequencer state. This method is thread-safe and
         /// can be called during playback. Notifies the GUI a GROUP_ALL event to signify a full GUI reset.
         /// \param s a pointer to the new state.
@@ -312,10 +299,30 @@ class MIDISequencer : public MIDITickComponent {
         /// however you should avoid to save a state, edit the multitrack events and then restore the old state,
         /// because you can get inconsistent state parameters.
         void                            SetState(MIDISequencerState* s);
+        /// Sets the auto stop state on or off.
+        void                            SetAutoStop(bool f);
+        /// Sets the MIDI out port for a track. This method is thread-safe and can be called during playback
+        /// (in this case the sequencer will send a MIDI AllNotesOff message to the old port).
+        /// \param trk_num the track number
+        /// \param port the id number of the port (see MIDIManager::GetOutPorts())
+        /// \return **true** if parameters are valid (and the port has been changed), **false** otherwise.
+        bool                            SetTrackOutPort(unsigned int trk_num, unsigned int port);
         /// Sets a MIDIProcessor for the given track. This can't be done while the sequencer is playing
         /// so it stops it.
+        /// \param trk_num the track number
+        /// \param p a pointer to a MIDIProcessor; calling this with _p_ = 0 sets the track to no processor
         /// \note the Reset() method deletes all processors set by this method.
-        void                            SetProcessor(unsigned int trk_num, MIDIProcessor* p);
+        /// \return **true** if _trk_num_ is valid (and the processor has been changed), **false** otherwise.
+        bool                            SetTrackProcessor(unsigned int trk_num, MIDIProcessor* p);
+        /// Sets the time shift offset (in MIDI ticks) for a track. The offset can be positive or negative; events
+        /// shifted include all channel messages and sysex messages (others remain at their time).
+        /// If you select a negative offset, be sure not to have shifted events at lesser time than the offset
+        /// (they won't be shifted). This method is thread-safe and can be called during playback.
+        /// \see SetTimeOffsetMode().
+        /// \param trk_num the track number
+        /// \param offset the offset in MIDI ticks
+        /// \return **true** if _trk_num_ is valid (and the offset has been changed), **false** otherwise.
+        bool                            SetTrackTimeShift(unsigned int trk_num, int offset);
 
         /// Inserts into the internal MIDIMultiTrack a new empty track with default track parameters (transpose,
         /// time offset, etc.). This method is thread-safe and can be called during playback. Notifies the GUI a
@@ -331,10 +338,11 @@ class MIDISequencer : public MIDITickComponent {
         /// Deletes a track and all its events from the internal MIDIMultiTrack. This method is thread-safe and can
         /// be called during playback (in this case the sequencer will send a MIDI AllNotesOff message to the old track
         /// port). Notifies the GUI a GROUP_ALL event to signify a full GUI reset.
-        /// \param trk_num the track number (must be in the range 0 ... GetNumTracks() - 1).
+        /// \param trk_num the track number (must be in the range 0 ... GetNumTracks() - 1). If you leave he default
+        /// value the last track wil be deleted.
         /// \return **true** if the track was effectively deleted
         /// \see note to InsertTrack()
-        bool                            DeleteTrack(int trk_num);
+        bool                            DeleteTrack(int trk_num = -1);
         /// Moves a track from one position to another in the internal MIDIMultiTrack. This method is thread-safe and can
         /// be called during playback (in this case the sequencer will send a MIDI AllNotesOff message to the involved
         /// ports). Notifies the GUI a GROUP_ALL event to signify a full GUI reset.
@@ -385,12 +393,6 @@ class MIDISequencer : public MIDITickComponent {
         /// structure see InsertTrack(), DeleteTrack() and MoveTrack()). If you have edited the multitrack, call
         /// this before moving time, getting events or playing.
         void                            UpdateStatus()  { GoToTime(state.cur_clock); }
-        /// Sets the time shifting of events on and off. If you are editing the multitrack events you probably
-        /// want to see the original (not shifted) MIDI time of events, while during playback you want them
-        /// shifted. So you can turn time shifting on and off (and all the time related methods of the sequencer
-        /// will return the shifted or the original time of events). The Start() method sets time shifting on,
-        /// while the Stop() resets it to your choice, so usually if you can leave time shifting off.
-        void                            SetTimeShiftMode(bool f);
 
         // Inherited from MIDITICK
         /// Starts the sequencer playing from the current time.
@@ -438,6 +440,7 @@ class MIDISequencer : public MIDITickComponent {
         unsigned int                    repeat_start_meas;  // The loop start measure
         unsigned int                    repeat_end_meas;    // The loop end measure
         bool                            time_shift_mode;    // The time shift on/off (during playback time shift is always on)
+        bool                            auto_stop;          // Auto sop mode on/off
 
         std::vector<MIDIProcessor*>     track_processors;   // A MIDIProcessor for every track
         //std::vector<int>                time_shifts;        // A time shift (in MIDI ticks) for every track

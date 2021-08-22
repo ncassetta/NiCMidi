@@ -41,8 +41,9 @@ using namespace std;
 //                        G L O B A L S                         //
 //////////////////////////////////////////////////////////////////
 
-AdvancedSequencer sequencer;                // an AdvancedSequencer (without GUI notifier)
-MIDIRecorder recorder;                      // a MIDIRecorder
+MIDISequencerGUINotifierText text_n;        // the AdvancedSequencer notifier
+AdvancedSequencer sequencer(&text_n);       // an AdvancedSequencer (without GUI notifier)
+MIDIRecorder recorder(&sequencer);          // a MIDIRecorder
 
 extern string command, par1, par2;          // used by GetCommand() for parsing the user input
 
@@ -54,15 +55,21 @@ const char helpstring[] =                   // shown by the help command
    play                : Starts playback from current time\n\
    stop                : Stops playback\n\
    rec on/off          : Enable/disable recording\n\
-   enable port [chan]  : Enable input from port (if channel is not\n\
-                         given records all channels)\n\
-   disable port [chan] : Disable input from port (if channel is not\n\
-                       : given disables all channels)\n\
+   addtrack [n]        : Insert a new track (if n is not given appends\n\
+                         it)\n\
+   deltrack [n]        : Deletes a track (if n is not given deletes the\n\
+                         last track)\n\
+   enable trk [chan]   : Enable track trk for recording (if you don't specify\n\
+                         the channel this will be the track channel if the\n\
+                         track is a channel track or all channels\n\
+   disable trk         : Disable track trk for recording\n\
    rew                 : Goes to the beginning (stops the playback)\n\
    goto meas [beat]    : Moves current time to given meas and beat\n\
                          (numbered from 0)\n\
-   dump [trk]          : Prints a dump of all midi events in the file\n\
-                         (or in the track trk)\n\
+   dumps [trk]         : Prints a dump of all midi events in the sequencer\n\
+                         (or in its track trk)\n\
+   dumpr [trk]         : Prints a dump of all midi events in the recorder\n\
+                         (or in its track trk)\n\
    outport track port  : Sets the MIDI port for the given track\n\
    thru on/off         : Sets the MIDI thru on and off.\n\
    trackinfo           : Shows info about all tracks of the file\n\
@@ -80,18 +87,22 @@ All commands can be given during playback\n";
 
 
 int main( int argc, char **argv ) {
+    MIDIManager::AddMIDITick(&sequencer);
     MIDIManager::AddMIDITick(&recorder);
+    text_n.SetSequencer(&sequencer);
     cout << "TYPE help TO GET A LIST OF AVAILABLE COMMANDS" << endl << endl;
-    while ( command != "quit" ) {                   // main loop
+    while (command != "quit") {                     // main loop
         GetCommand();                               // gets user input and parses it (see functions.cpp)
 
-        if( command == "load" ) {                   // loads a file
-            if (sequencer.Load(par1.c_str()))
+        if(command == "load") {                     // loads a file
+            if (sequencer.Load(par1.c_str())) {
                 cout << "Loaded file " << par1 << endl;
+                recorder.GetMultiTrack()->SetClksPerBeat(sequencer.GetClksPerBeat());
+            }
             else
                 cout << "Error loading file" << endl;
         }
-        else if( command == "save" ) {              // save the multitrack contents
+        else if(command == "save") {                // save the multitrack contents
             /*
             if (sequencer.Load(par1.c_str()))
                 cout << "Loaded file " << par1 << endl;
@@ -125,41 +136,59 @@ int main( int argc, char **argv ) {
             cout << "Sequencer stopped at measure: " << sequencer.GetCurrentMeasure() << ":"
                  << sequencer.GetCurrentBeat() << endl;
         }
-        else if( command == "rec" ) {               // starts/stops recording
+        else if(command == "rec") {                 // starts/stops recording
             if (par1 == "on")
                 recorder.Start();
             else {
                 recorder.Stop();
-                sequencer.Load(recorder.GetMultiTrack());
+                //sequencer.Load(recorder.GetMultiTrack());
             }
         }
-        else if( command == "enable" ) {            // enables recording from a port
-            int port = atoi(par1.c_str());
-            int chan = (par2.size() ? atoi(par2.c_str()) : -1);
-            if (port < 0 || (unsigned)port >= MIDIManager::GetNumMIDIIns() || chan < -1 || chan > 15)
+        else if(command == "addtrack") {            // inserts a track into the multitrack
+            int trk = (par1.size() ? atoi(par1.c_str()) : -1);
+            if (!sequencer.GetMultiTrack()->IsValidTrackNumber(trk) && trk != -1)
                 cout << "Invalid parameters" << endl;
             else {
-                recorder.EnablePort(port, chan);
-                if (chan == -1)
-                    cout << "Enabled recording from port " << par1 << ", all channels" << endl;
+                sequencer.InsertTrack(trk);
+                recorder.InsertTrack(trk);
+                if (trk == -1) trk = sequencer.GetNumTracks() - 1;
+                cout << "Track inserted at position " << trk;
+            }
+        }
+        else if(command == "deltrack") {            // deletes a track from the multitrack
+            int trk = (par1.size() ? atoi(par1.c_str()) : -1);
+            if (!sequencer.GetMultiTrack()->IsValidTrackNumber(trk) && trk != -1)
+                cout << "Invalid parameters" << endl;
+            else {
+                sequencer.DeleteTrack(trk);
+                recorder.DeleteTrack(trk);
+                if (trk == -1) trk = sequencer.GetNumTracks();
+                cout << "Deleted track " << trk;
+            }
+        }
+        else if(command == "enable") {              // enables a track for recording
+            int trk = atoi(par1.c_str());
+            int chan = (par2.size() ? atoi(par2.c_str()) : -1);
+            if (!sequencer.GetMultiTrack()->IsValidTrackNumber(trk) || chan < -1 || chan > 15)
+                cout << "Invalid parameters" << endl;
+            else {
+                recorder.EnableTrack(trk);
+                if (chan != -1)
+                    recorder.SetTrackRecChannel(trk, chan);
+                if (recorder.GetTrack(trk)->GetRecChannel() == -1)
+                    cout << "Enabled track " << par1 << " for recording from all channels" << endl;
                 else
-                    cout << "Enabled recording form port " << par1 << ", channel " << chan + 1 << endl;
+                    cout << "Enabled track " << par1 << " for recording from channel " <<
+                            recorder.GetTrack(trk)->GetRecChannel() + 1 << endl;
             }
         }
-        else if( command == "disable" ) {           // disables recording from a port
-            int port = atoi(par1.c_str());
-            int chan = (par2.size() ? atoi(par2.c_str()) : -1);
-            if (port < 0 || (unsigned)port >= MIDIManager::GetNumMIDIIns() || chan < -1 || chan > 15)
+        else if(command == "disable") {             // disables a track for recording
+            int trk = atoi(par1.c_str());
+            if (!sequencer.GetMultiTrack()->IsValidTrackNumber(trk))
                 cout << "Invalid parameters" << endl;
             else {
-                if (chan == -1) {
-                    recorder.DisablePort(port);
-                    cout << "Disabled recording from port " << par1 << endl;
-                }
-                else {
-                    recorder.DisableChannel(port, chan);
-                    cout << "Disabled recording form port " << par1 << ", channel " << chan + 1 << endl;
-                }
+                recorder.DisableTrack(trk);
+                cout << "Disabled track " << par1 << " for recording" << endl;
             }
         }
         else if (command == "rew") {                // stops and rewinds to time 0
@@ -177,7 +206,20 @@ int main( int argc, char **argv ) {
                      << sequencer.GetCurrentBeat() << endl;
             }
         }
-        else if (command == "dump") {               // prints a dump of the sequencer contents
+        else if (command == "dumps") {              // prints a dump of the sequencer contents
+            if (par1.size() == 0)
+                DumpMIDIMultiTrackWithPauses(sequencer.GetMultiTrack()); //in functions.cpp
+            else {
+                int trk_num = atoi(par1.c_str());
+                if (sequencer.GetMultiTrack()->IsValidTrackNumber(trk_num)) {
+                    MIDITrack* trk = sequencer.GetMultiTrack()->GetTrack(trk_num);
+                    DumpMIDITrackWithPauses(trk, trk_num);              // in functions.cpp
+                }
+                else
+                    cout << "Invalid track number" << endl;
+            }
+        }
+        else if (command == "dumpr") {              // prints a dump of the sequencer contents
             if (par1.size() == 0)
                 DumpMIDIMultiTrackWithPauses(recorder.GetMultiTrack()); //in functions.cpp
             else {
@@ -197,8 +239,7 @@ int main( int argc, char **argv ) {
                 cout << "Invalid port number" << endl;
             else {
                 sequencer.SetTrackOutPort(track, port);
-                cout << "Assigned out port n. " << sequencer.GetTrackPort(track)
-                     << " to track " << track << endl;
+                cout << "Assigned out port n. " << port << " to track " << track << endl;
             }
         }
         else if (command == "thru") {               // toggles MIDI thru on and off

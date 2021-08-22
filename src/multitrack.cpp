@@ -183,6 +183,7 @@ bool MIDIMultiTrack::InsertTrack(int trk_num) {
 
 
 bool MIDIMultiTrack::DeleteTrack(int trk_num) {
+    if (trk_num == -1) trk_num = tracks.size() - 1;
     if (!IsValidTrackNumber(trk_num)) return false;
     delete tracks[trk_num];
     tracks.erase(tracks.begin() + trk_num);

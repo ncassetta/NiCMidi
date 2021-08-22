@@ -370,7 +370,6 @@ void MIDIRecorder::TickProc(tMsecs sys_time) {
 
 
 
-/*
 
 ////////////////////////////////////////////////////////////////////////////
 //                      class MIDISequencerState                          //

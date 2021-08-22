@@ -310,6 +310,8 @@ MIDISequencer::MIDISequencer (MIDIMultiTrack *m, MIDISequencerGUINotifier *n) :
     MIDITickComponent(PR_SEQ, StaticTickProc),
     tempo_scale (100), repeat_play_mode(false),
     repeat_start_meas(0), repeat_end_meas(0),
+    time_shift_mode(false),
+    auto_stop(true),
     track_processors(m->GetNumTracks(), 0),
     //time_shifts(m->GetNumTracks(), 0),
     //track_ports(m->GetNumTracks(), 0),
@@ -350,6 +352,7 @@ void MIDISequencer::Reset() {
     }
     tempo_scale = 100;
     SetTimeShiftMode(false);
+    auto_stop = true;
     bool notifier_mode = false;
     if(state.notifier) {
         notifier_mode = state.notifier->GetEnable();
@@ -412,36 +415,12 @@ void MIDISequencer::SetTempoScale(unsigned int scale) {
 }
 
 
-void MIDISequencer::SetTrackTimeShift(unsigned int trk_num, int offset) {
-    if (!state.multitrack->IsValidTrackNumber(trk_num))
-        return;
-    char channel = state.multitrack->GetTrack(trk_num)->GetChannel();
+void MIDISequencer::SetTimeShiftMode(bool f) {
     proc_lock.lock();
-
-    if (IsPlaying() && channel != -1) {
-        MIDIManager::GetOutDriver(GetTrackOutPort(trk_num))->AllNotesOff(channel);
-        GetTrackState(trk_num)->note_matrix.Reset();
-    }
-    state.multitrack->GetTrack(trk_num)->SetTimeShift(offset);
-    //time_shifts[trk_num] = offset;
-    //GoToTime(GetCurrentMIDIClockTime());      // TODO: this should sync the iterator, but provokes a AllNotesOff
-                                                // on all channels, so I eliminated it. Is this correct?
-    proc_lock.unlock();
-}
-
-
-void MIDISequencer::SetTrackOutPort(unsigned int trk_num, unsigned int port) {
-    if (!state.multitrack->IsValidTrackNumber(trk_num) || !MIDIManager::IsValidOutPortNumber(port))
-        return;
-    char channel = state.multitrack->GetTrack(trk_num)->GetChannel();
-    proc_lock.lock();
-    if (IsPlaying() && port != GetTrackOutPort(trk_num) && channel != -1) {
-        MIDIManager::GetOutDriver(GetTrackOutPort(trk_num))->AllNotesOff(channel);
-        GetTrackState(trk_num)->note_matrix.Reset();
-    }
-    //port %= MIDIManager::GetNumMIDIOuts();        already controlled
-    state.multitrack->GetTrack(trk_num)->SetOutPort(port);
-    //track_ports[trk_num] = port;
+    time_shift_mode = f;
+    if (!IsPlaying())
+        state.iterator.SetTimeShiftMode(f);
+    UpdateStatus();
     proc_lock.unlock();
 }
 
@@ -457,11 +436,55 @@ void MIDISequencer::SetState(MIDISequencerState* s) {
 }
 
 
-void MIDISequencer::SetProcessor(unsigned int trk_num, MIDIProcessor* p) {
+void MIDISequencer::SetAutoStop(bool f) {
+    proc_lock.lock();
+    auto_stop = f;
+    proc_lock.unlock();
+}
+
+
+bool MIDISequencer::SetTrackOutPort(unsigned int trk_num, unsigned int port) {
+    if (!state.multitrack->IsValidTrackNumber(trk_num) || !MIDIManager::IsValidOutPortNumber(port))
+        return false;
+    char channel = state.multitrack->GetTrack(trk_num)->GetChannel();
+    proc_lock.lock();
+    if (IsPlaying() && port != GetTrackOutPort(trk_num) && channel != -1) {
+        MIDIManager::GetOutDriver(GetTrackOutPort(trk_num))->AllNotesOff(channel);
+        GetTrackState(trk_num)->note_matrix.Reset();
+    }
+    //port %= MIDIManager::GetNumMIDIOuts();        already controlled
+    state.multitrack->GetTrack(trk_num)->SetOutPort(port);
+    //track_ports[trk_num] = port;
+    proc_lock.unlock();
+    return true;
+}
+
+
+bool MIDISequencer::SetTrackProcessor(unsigned int trk_num, MIDIProcessor* p) {
     if (!state.multitrack->IsValidTrackNumber(trk_num))
-        return;
+        return false;
     Stop();
     track_processors[trk_num] = p;
+    return true;
+}
+
+
+bool MIDISequencer::SetTrackTimeShift(unsigned int trk_num, int offset) {
+    if (!state.multitrack->IsValidTrackNumber(trk_num))
+        return false;
+    char channel = state.multitrack->GetTrack(trk_num)->GetChannel();
+    proc_lock.lock();
+
+    if (IsPlaying() && channel != -1) {
+        MIDIManager::GetOutDriver(GetTrackOutPort(trk_num))->AllNotesOff(channel);
+        GetTrackState(trk_num)->note_matrix.Reset();
+    }
+    state.multitrack->GetTrack(trk_num)->SetTimeShift(offset);
+    //time_shifts[trk_num] = offset;
+    //GoToTime(GetCurrentMIDIClockTime());      // TODO: this should sync the iterator, but provokes a AllNotesOff
+                                                // on all channels, so I eliminated it. Is this correct?
+    proc_lock.unlock();
+    return true;
 }
 
 
@@ -486,6 +509,7 @@ bool MIDISequencer::InsertTrack(int trk_num) {
 
 
 bool MIDISequencer::DeleteTrack(int trk_num) {
+    if (trk_num == -1) trk_num = GetNumTracks() - 1;    // if trk_num = -1 (default) append track
     bool ret = false;
     proc_lock.lock();
     char channel = state.multitrack->GetTrack(trk_num)->GetChannel();
@@ -902,14 +926,6 @@ float MIDISequencer::MIDItoMs(MIDIClockTime t) {
 }
 
 
-void MIDISequencer::SetTimeShiftMode(bool f) {
-    time_shift_mode = f;
-    if (!IsPlaying())
-        state.iterator.SetTimeShiftMode(f);
-    UpdateStatus();
-}
-
-
 // Inherited from MIDITICK
 
 void MIDISequencer::Start() {
@@ -956,12 +972,12 @@ void MIDISequencer::TickProc(tMsecs sys_time) {
     //     << " dev_time_offset " << dev_time_offset << std::endl;
 
     proc_lock.lock();
-    /*
+
     static unsigned int times;
     times++;
     if (!(times % 100))
         std::cout << "MIDISequencer::TickProc() " << times << " times" << std::endl;
-    */
+
     // if we are in repeat mode, repeat if we hit end of the repeat region
     if(repeat_play_mode && GetCurrentMeasure() >= repeat_end_meas) {
         // yes we hit the end of our repeat block
@@ -1000,7 +1016,7 @@ void MIDISequencer::TickProc(tMsecs sys_time) {
 
     // auto stop at end of sequence
     if( !(repeat_play_mode && GetCurrentMeasure() >= repeat_end_meas) &&
-        !GetNextEventTimeMs(&next_event_time)) {
+        !GetNextEventTimeMs(&next_event_time) && auto_stop) {
         // no events left
 
         std::thread(StaticStopProc, this).detach();

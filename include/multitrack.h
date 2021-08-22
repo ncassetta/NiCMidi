@@ -125,9 +125,10 @@ class MIDIMultiTrack {
         /// but the corresponding MIDISequencer method (which adjust the MIDISequencer internal values also).
         bool                        InsertTrack(int trk_num = -1);
         /// Deletes the track _trk_num_ and its events. (_trk_num_ must be in the range 0 ... GetNumTracks() - 1).
+        /// If _trk_num_ == -1 deletes the last track.
         /// \return **true** if the track was effectively deleted
         /// \see warning in the InsertTrack() method
-        bool                        DeleteTrack(int trk_num);
+        bool                        DeleteTrack(int trk_num = -1);
         /// Moves a track from the position _from_ to the position _to_. ( _from_ and _to_ must be in the range
         /// 0 ... GetNumTracks() - 1).
         /// \return **true** if the track was effectively moved

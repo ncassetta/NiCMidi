@@ -212,7 +212,7 @@ bool LoadMIDIFile(const char* filename, MIDIMultiTrack* tracks, MIDIFileHeader* 
     MIDIFileReadMultiTrack track_loader (tracks);
     MIDIFileReader reader (&read_stream, &track_loader);
     bool ret = reader.Parse();
-    if (ret && h && reader.ReadHeader()) {
+    if (ret && h) {
         h->format = reader.GetFormat();
         h->ntrks = reader.GetNumberTracks();
         h->division = reader.GetDivision();

@@ -42,7 +42,9 @@
 /// Prints a readable string describing the contents of the given MIDIMessage (or MIDITimedMessage).
 void DumpMIDITimedMessage (MIDITimedMessage* const msg, std::ostream& ost = std::cout);
 /// Prints a list of all the MIDI messages in the given MIDItrack.
-void DumpMIDITrack (MIDITrack* const t, std::ostream& ost = std::cout);
+void DumpMIDITrack (MIDITrack* const trk, std::ostream& ost = std::cout);
+/// Prints the properties of the given MIDItrack.
+void DumpMIDITrackAttr (MIDITrack* const trk, std::ostream& ost = std::cout);
 /// Prints a list of all MIDI messages in the given MIDIMultiTrack, a track at once.
 void DumpAllTracks (MIDIMultiTrack* const mlt, std::ostream& ost = std::cout);
 /// Prints a list of all MIDI messages in the given MIDIMultiTrack in temporal order.

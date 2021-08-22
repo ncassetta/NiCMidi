@@ -121,7 +121,6 @@ class MIDIFileReader {
                                                         unsigned long max_msg_len = 8192);
 
         virtual                         ~MIDIFileReader();
-        void                            Reset();
         virtual	int                     ReadHeader();
         virtual bool                    Parse();
 

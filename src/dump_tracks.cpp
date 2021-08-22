@@ -32,9 +32,27 @@ void DumpMIDITimedMessage (MIDITimedMessage* const msg, std::ostream& ost) {
 }
 
 
-void DumpMIDITrack (MIDITrack* const t, std::ostream& ost) {
-    for (unsigned int i = 0; i < t->GetNumEvents(); ++i)
-        DumpMIDITimedMessage (t->GetEventAddress (i), ost);
+void DumpMIDITrack (MIDITrack* const trk, std::ostream& ost) {
+    for (unsigned int i = 0; i < trk->GetNumEvents(); ++i)
+        DumpMIDITimedMessage (trk->GetEventAddress (i), ost);
+}
+
+
+void DumpMIDITrackAttr(MIDITrack* const trk, std::ostream& ost) {
+    // TODO: complete this (track type names are already in the example files option "Trackinfo")
+    static const char* types[10] = {
+        "EMPTY",
+        "META EVENTS ONLY",
+        "TEXT EVENTS ONLY",
+        "CHANNEL EVENTS ONLY",
+        "CHANNEL AND OTHER EVENTS",
+        "MORE CHANNELS EVENTS",
+        "NOT CLASSIFIED",
+        "COMMON SYSEX ONLY",
+        "RESET SYSEX ONLY",
+        "COMMON AND RESET SYSEX"
+    };
+
 }
 
 

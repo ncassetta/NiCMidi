@@ -33,9 +33,9 @@
 
 #include <atomic>
 #include <vector>
+#include <set>
 
-
-
+/*
 class MIDIMultiTrackCopier {
     public:
                                         MIDIMultiTrackCopier();
@@ -53,6 +53,7 @@ class MIDIMultiTrackCopier {
         MIDIMultiTrack* source;
         std::vector<MIDITrack*> dest;
 };
+*/
 
 /*
 ///
@@ -128,6 +129,43 @@ class MIDIRecorderState : public MIDIProcessor {
 */
 
 
+class RecNotifier: public MIDISequencerGUINotifier {
+    public:
+                                        RecNotifier(MIDISequencer* seq = 0);
+        /// Returns the MIDI note number for the measure click.
+        unsigned char                   GetMeasNote() const                 { return meas_note; }
+        /// Returns the MIDI note number for the ordinary beat click.metronome.
+        unsigned char                   GetBeatNote() const                 { return beat_note; }
+        /// Returns the attached sequencer notifier.
+        MIDISequencerGUINotifier*       GetOtherNotifier() const            { return other_notifier; }
+        /// Sets the MIDI note number for the measure click (the 1st beat of the measure).
+        void                            SetMeasNote(unsigned char note)     { meas_note = note; }
+        /// Sets the MIDI note number for the ordinary beat click.
+        void                            SetBeatNote(unsigned char note)     { beat_note = note; }
+        /// Sets the MIDI out port for the metronome clicks.
+        /// \param port The out MIDI port id number
+        /// \warning This doesn't check if _p_ is a valid port number.
+        void                            SetOutPort(unsigned int p)          { port = p; }
+        /// Sets the MIDI channel for the metronome clicks (channels are numbered 0 ... 15).
+        void                            SetOutChannel(unsigned char ch)     { chan = ch & 0x0f; }
+        /// Remembers the original sequencer notifier.
+        void                            SetOtherNotifier(MIDISequencerGUINotifier* n)
+                                                                            { other_notifier = n; }
+        virtual void                    Notify(const MIDISequencerGUIEvent &ev);
+    private:
+        const unsigned char             DEFAULT_MEAS_NOTE = 67;
+        const unsigned char             DEFAULT_BEAT_NOTE = 60;
+
+        unsigned char                   meas_note;          // The MIDI note number for the measure click (1st note of a measure)
+        unsigned char                   beat_note;          // The MIDI note number for the ordinary beat click
+        unsigned int                    port;               // The out port id
+        unsigned char                   chan;               // The MIDI channel for sound output
+        MIDIMessage                     on_msg;
+        MIDIMessage                     off_msg;
+        MIDISequencerGUINotifier*       other_notifier;
+};
+
+
 ///
 /// A MIDITickComponent which can record MIDI messages incoming from a MIDI in port, putting them into an internal
 /// MIDIMultiTrack. You can select the port, channel and MIDI notes of the metronome clicks; moreover you can have
@@ -138,24 +176,43 @@ class MIDIRecorderState : public MIDIProcessor {
 class MIDIRecorder : public MIDITickComponent {
     public:
         /// The constructor.
-                                        MIDIRecorder(const MIDISequencer* s);
+                                        MIDIRecorder(MIDISequencer* const s);
         /// The destructor
         virtual                         ~MIDIRecorder();
         virtual void                    Reset();
 
         /// Returns a pointer to the internal MIDIMultiTrack.
-        MIDIMultiTrack*                 GetMultiTrack() const           { return multitrack; }
-        /// Returns the recording tempo in bpm.
-        float                           GetTempo() const                { return tempobpm; }
+        MIDIMultiTrack*                 GetMultiTrack() const           { return tracks; }
         /// Returns the start MIDI time of the recording.
         MIDIClockTime                   GetStartRecTime() const         { return rec_start_time; }
         /// Returns the end MIDI time of the recording.
         MIDIClockTime                   GetEndRecTime() const           { return rec_end_time; }
-        /// Sets the recording tempo.
-        /// \param t the tempo in bpm
-        void                            SetTempo(float t);
+        /// Returns the pointer to the track
+        /// \param trk_num The track number
+        MIDITrack*                      GetTrack(int trk_num)           { return tracks->GetTrack(trk_num); }
+        /// Returns the pointer to the track
+        /// \param trk_num The track number
+        const MIDITrack*                GetTrack(int trk_num) const     { return tracks->GetTrack(trk_num); }
 
-        void                            EnableTrack();
+        /// Returns the number of the out port assigned to a track.
+        /// \param trk_num the track number
+        unsigned int                    GetTrackInPort(unsigned int trk_num) const
+                                                                { return tracks->GetTrack(trk_num)->GetInPort(); }
+        /// Returns the recording channel for the given track, or -1 if it is not defined. You can
+        /// force a track to receive a given channel with SetTrackChannel().
+        char                            GetTrackRecChannel(unsigned int trk_num)
+                                                            { return tracks->GetTrack(trk_num)->GetRecChannel(); }
+        /// Sets the MIDI in port for a track. This method is thread-safe, however changing
+        /// a port during playback can lead to unexpected results in recording.
+        /// \param trk_num the track number
+        /// \param port the id number of the port (see MIDIManager::GetOutPorts())
+        /// \return **true** if parameters are valid (and the port has been changed), **false** otherwise.
+        bool                            SetTrackInPort(unsigned int trk_num, unsigned int port);
+        /// Sets the recording channel for the given track.
+        /// \param trk_num the track number
+        /// \param chan the channel:You can specify a number between 0 ... 15 or -1 for any channel.
+        /// \return **true** if parameters are valid (and the channel has been changed), **false** otherwise.
+        bool                            SetTrackRecChannel(unsigned int trk_num, char chan);
         /// Sets the recording start time.
         /// \param t the MIDI clock time
         void                            SetStartRecTime(MIDIClockTime t)   { rec_start_time = t; }
@@ -164,35 +221,37 @@ class MIDIRecorder : public MIDITickComponent {
         void                            SetEndRecTime(MIDIClockTime t)      { rec_start_time = t; }
         void                            SetEndRecTime(unsigned int meas, unsigned int beat = 0);
 
-        /// Enables a MIDI in port in the system for recording.
-        /// \param port the system port id (you can use MIDIManager::GetNumMIDIIns() and
-        /// MIDIManager::GetMIDIInName() for inspecting them).
-        /// \param en_chans if *true* (default) enables recording from all channels, creating a MIDITrack in
-        /// the multitrack for every one, otherwise you must set the recording channel with EnableChannel()
-        void                            EnablePort(unsigned int port, bool en_chans = true);
-        /// Enables a specific MIDI channel for recording, creating a track for it in the internal MIDIMultiTrack.
-        /// \param port the system port id  (see EnablePort()); if it isn't enabled yet, enables it.
-        /// \param ch the MIDI channel (in the range 0...15).
-        void                            EnableChannel(unsigned int port, unsigned int ch);
-        /// Disables a MIDI in port from recording, deleting all tracks associated with it in the internal
-        /// MIDIMultiTrack. If the port is not enabled it does nothing.
-        /// \param port the system port id (see EnablePort())
-        void                            DisablePort(unsigned int port);
-        /// Disables a specific MIDI channel from recording, deleting its track in the internal MIDIMultiTrack.
-        /// \param port the system port id (see EnablePort())
-        /// \param ch the MIDI channel (in the range 0...15).
-        void                            DisableChannel(unsigned int port, unsigned int ch);
-
-        /// Sets the current time to the beginning of the song, updating the internal status. This method is
-        /// thread-safe and can be called during playback. Notifies the GUI a GROUP_ALL event to signify a
-        /// full GUI reset.
-        void                            GoToZero()                      { GoToTime(0); }
-        /// Sets the current time to the given MIDI time, updating the internal status. This is as
-        /// MIDISequencer::GoToTime() but uses a better algorithm and sends to the MIDI out ports all the
-        /// appropriate sysex, patch, pitch bend and control change messages.
-        bool                            GoToTime(MIDIClockTime time_clk);
-        /// Same as GoToTime(), but the time is given in milliseconds.
-        bool                            GoToTimeMs(float time_ms);
+        /// Inserts into the internal MIDIMultiTrack a new empty track with default track parameters (transpose,
+        /// time offset, etc.). This method is thread-safe and can be called during playback.
+        /// \param trk_num the track number (it must be in the range 0 ... GetNumTracks() - 1). If you leave the
+        /// default value the track will be appended as last.
+        /// \return **true** if the track was effectively inserted
+        /// \note If you insert a track in the attached MIDISequencer you **must** call this with the same parameter
+        /// for syncronizing the recorder with its sequencer.If you change the number of tracks of the sequencer in
+        /// a more drastic mode (for example loading a MIDI file) you must call MIDIRecorder::Reset() (which disables
+        /// all tracks for recording).
+        bool                            InsertTrack(int trk_num = -1);
+        /// Deletes a track and all its events from the internal MIDIMultiTrack. This method is thread-safe and can
+        /// be called during playback.
+        /// \param trk_num the track number (must be in the range 0 ... GetNumTracks() - 1). If you leave he default
+        /// value the last track wil be deleted.
+        /// \return **true** if the track was effectively deleted
+        /// \see note to InsertTrack()
+        bool                            DeleteTrack(int trk_num = -1);
+        /// Moves a track from one position to another in the internal MIDIMultiTrack. This method is thread-safe and can
+        /// be called during playback.
+        /// \param from, to the start and destination track numbers (both must be in the range 0 ... GetNumTracks() - 1).
+        /// \return **true** if the track was effectively moved
+        /// \see note to InsertTrack()
+        bool                            MoveTrack(int from, int to);
+        /// Enables a sequencer track for recording. If the track was already enabled it does nothing.
+        /// \param trk_num the track number
+        /// \return **true** if _trk_num_ is valid (and the track has been enabled), **false** otherwise.
+        bool                            EnableTrack(unsigned int trk_num);
+        /// Disables a sequencer track for recording. If the track was not enabled it does nothing.
+        /// \param trk_num the track number
+        /// \return **true** if _trk_num_ is valid (and the track has been enabled), **false** otherwise.
+        bool                            DisableTrack(unsigned int trk_num);
 
         /// Starts the recording from the enabled ports and channels.
         virtual void                    Start();
@@ -200,6 +259,10 @@ class MIDIRecorder : public MIDITickComponent {
         virtual void                    Stop();
 
     protected:
+        /// Internal function used in Start() to set the metronome. You shouldn't use it directly.
+        void                            SetSeqNotifier();
+        /// Internal function used in Stop() to reset the metronome. You shouldn't use it directly.
+        void                            ResetSeqNotifier();
         /// Implements the static method inherited by MIDITickComponent and called at every timer tick.
         /// It only calls the member TickProc().
         static void                     StaticTickProc(tMsecs sys_time, void* pt);
@@ -207,16 +270,17 @@ class MIDIRecorder : public MIDITickComponent {
         virtual void                    TickProc(tMsecs sys_time);
 
         /// \cond EXCLUDED
-        const MIDISequencer*            seq;                // The attached sequencer
-        MIDIMultiTrack*                 multitrack;         // The internal MIDIMultiTrack
-        std::vector<std::vector<MIDITrack*>*> en_ports;     // A vector which keeps track of the corrispondence between
-                                                            // channels and tracks in the multitrack
+        MIDISequencer* const            seq;                // The attached sequencer
+        MIDIMultiTrack*                 tracks;             // The internal MIDIMultiTrack
+        MIDIMultiTrack*                 seq_tracks;         // The sequencer multitrack
+        std::vector<bool>               en_tracks;          // True if the corresponding track isenabled
+        std::set<unsigned int>          en_ports;           // Enabled input ports
 
         tMsecs                          rec_time_offset;    // The time between time 0 and sequencer start
         //tMsecs                          sys_time_offset;    ///< The time between the timer start and the sequencer start
-        float                           tempobpm;           // The recording tempo
         MIDIClockTime                   rec_start_time;     // The MIDIClockTime of the beginning of recording
         MIDIClockTime                   rec_end_time;
+        RecNotifier                     notifier;           // A notifier used as a metronome
         std::atomic<bool>               rec_on;
         /// \endcond
 };
