@@ -58,9 +58,9 @@ void RecNotifier::Notify(const MIDISequencerGUIEvent &ev) {
             off_msg.SetChannel(chan);
             MIDIManager::GetOutDriver(port)->OutputMessage(on_msg);
         }
+        if (other_notifier)
+            other_notifier->Notify(ev);
     }
-    if (other_notifier)
-        other_notifier->Notify(ev);
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -71,7 +71,7 @@ void RecNotifier::Notify(const MIDISequencerGUIEvent &ev) {
 MIDIRecorder::MIDIRecorder(MIDISequencer* const s) :
     MIDITickComponent(PR_POST_SEQ, StaticTickProc),
     seq(s), rec_start_time(0), rec_end_time(TIME_INFINITE),
-    rec_on(false), notifier(s)
+    notifier(s), rec_on(false)
 {
     tracks = new MIDIMultiTrack();
     seq_tracks = s->GetState()->multitrack;
@@ -89,19 +89,25 @@ void MIDIRecorder::Reset() {
     tracks->SetClksPerBeat(seq_tracks->GetClksPerBeat());
     rec_start_time = 0;
     rec_end_time = TIME_INFINITE;
-    en_tracks.resize(tracks->GetNumTracks());
-    en_tracks.assign(tracks->GetNumTracks(), false);
+    en_tracks.resize(0);
 }
 
 
 bool MIDIRecorder::SetTrackInPort(unsigned int trk_num, unsigned int port) {
-    if (!tracks->IsValidTrackNumber(trk_num) || !MIDIManager::IsValidInPortNumber(port))
+    if (!seq_tracks->IsValidTrackNumber(trk_num) || !MIDIManager::IsValidInPortNumber(port))
         return false;
-    proc_lock.lock();
-    if (IsPlaying())
-        tracks->GetTrack(trk_num)->CloseOpenEvents(seq->GetCurrentMIDIClockTime());
-    tracks->GetTrack(trk_num)->SetInPort(port);
-    proc_lock.unlock();
+    if (!IsPlaying())
+        seq_tracks->GetTrack(trk_num)->SetInPort(port);
+    else {
+        proc_lock.lock();
+        if (tracks->IsValidTrackNumber(trk_num)) {
+            tracks->GetTrack(trk_num)->CloseOpenEvents(seq->GetCurrentMIDIClockTime());
+            tracks->GetTrack(trk_num)->SetInPort(port);
+        }
+        else
+            seq_tracks->GetTrack(trk_num)->SetInPort(port);
+        proc_lock.unlock();
+     }
     return true;
 }
 
@@ -109,28 +115,58 @@ bool MIDIRecorder::SetTrackInPort(unsigned int trk_num, unsigned int port) {
 bool MIDIRecorder::SetTrackRecChannel(unsigned int trk_num, char chan) {
     if (!tracks->IsValidTrackNumber(trk_num) || (chan < -1 || chan > 15))
         return false;
-    proc_lock.lock();
-    if (IsPlaying())
-        tracks->GetTrack(trk_num)->CloseOpenEvents(seq->GetCurrentMIDIClockTime());
-    tracks->GetTrack(trk_num)->SetRecChannel(chan);
-    proc_lock.unlock();
+    if (!IsPlaying())
+        seq_tracks->GetTrack(trk_num)->SetRecChannel(chan);
+    else {
+        proc_lock.lock();
+        if (tracks->IsValidTrackNumber(trk_num)) {
+            seq_tracks->GetTrack(trk_num)->CloseOpenEvents(seq->GetCurrentMIDIClockTime());
+            tracks->GetTrack(trk_num)->SetRecChannel(chan);
+        }
+        else
+            seq_tracks->GetTrack(trk_num)->SetRecChannel(chan);
+        proc_lock.unlock();
+    }
     return true;
 }
 
 
+bool MIDIRecorder::SetStartRecTime(MIDIClockTime t) {
+    if (IsPlaying())
+        return false;
+    rec_start_time = t;
+    if (rec_end_time < t)
+        rec_end_time = t;
+    return true;
+}
+
+
+bool MIDIRecorder::SetEndRecTime(MIDIClockTime t) {
+    if (IsPlaying())
+        return false;
+    rec_end_time = t;
+    if (rec_start_time > t)
+        rec_start_time = t;
+    return true;
+}
+
+
+
 bool MIDIRecorder::InsertTrack(int trk_num) {
-    if (!seq->GetMultiTrack()->IsValidTrackNumber(trk_num))
+    if (!seq->InsertTrack(trk_num))
         return false;
     proc_lock.lock();
-    if (tracks->InsertTrack(trk_num))
+    if ((int)en_tracks.size() > trk_num && trk_num != -1){
+        tracks->InsertTrack(trk_num);
         en_tracks.insert(en_tracks.begin() + trk_num, false);
+    }
     proc_lock.unlock();
     return true;
 }
 
 
 bool MIDIRecorder::DeleteTrack(int trk_num) {
-    if (!seq->GetMultiTrack()->IsValidTrackNumber(trk_num))
+    if (!seq->DeleteTrack())
         return false;
     proc_lock.lock();
     if (tracks->DeleteTrack(trk_num))
@@ -141,95 +177,55 @@ bool MIDIRecorder::DeleteTrack(int trk_num) {
 
 
 bool MIDIRecorder::MoveTrack(int from, int to) {
-/*
     if (from == to) return true;                        // nothing to do
+    if (!seq->MoveTrack(from, to))
+        return false;
     proc_lock.lock();
-    if (state.multitrack->MoveTrack(from, to)) {        // checks if from and to are valid
-        MIDIProcessor* temp_processor = track_processors[from];
-        //int temp_offset = time_shifts[from];
-        //int temp_port = track_ports[from];
-        track_processors.erase(track_processors.begin() + from);
-        //time_shifts.erase(time_shifts.begin() + from);
-        //track_ports.erase(track_ports.begin() + from);
-        if (from < to)
-            to--;
-        track_processors.insert(track_processors.begin() + to, temp_processor);
-        //time_shifts.insert(time_shifts.begin() + to, temp_offset);
-        //track_ports.insert(track_ports.begin() + to, temp_port);
-        MIDIClockTime now = state.cur_clock;            // remember current time
-        state.Reset();                                  // reset the state (syncs the iterator)
-        GoToTime(now);                                  // returns to current time
-        if (state.notifier)                             // cause a complete GUI refresh
-            state.notifier->Notify(MIDISequencerGUIEvent::GROUP_ALL);
-        ret = true;
+    bool has_from = tracks->IsValidTrackNumber(from);
+    bool temp_en = false;
+    MIDITrack temp_track;
+    if (has_from) {
+        temp_en = en_tracks[from];
+        temp_track = *tracks->GetTrack(from);
+        en_tracks.erase(en_tracks.begin() + from);
+        tracks->DeleteTrack(from);
+    }
+    if (from < to)
+        to--;
+    bool has_to = tracks->IsValidTrackNumber(to);
+    if (has_to) {
+        en_tracks[to] = temp_en;
+        *tracks->GetTrack(to) = temp_track;
+    }
+
+    else if (temp_en == true) {
+        ResizeTracks(to + 1);
+        en_tracks[to] = temp_en;
+        *tracks->GetTrack(to) = temp_track;
     }
     proc_lock.unlock();
-    return ret;
-*/
     return true;
 }
 
 
 bool MIDIRecorder::EnableTrack(unsigned int trk_num) {
-    if (!seq->GetMultiTrack()->IsValidTrackNumber(trk_num))
+    if (!seq->GetMultiTrack()->IsValidTrackNumber(trk_num) || IsPlaying())
         return false;
-    if (tracks->IsValidTrackNumber(trk_num))
+    // if the recorder multitrack doesn't have enough tracks add them
+    if (!tracks->IsValidTrackNumber(trk_num))
+        ResizeTracks(trk_num + 1);
+    else
         tracks->GetTrack(trk_num)->Clear();
-    else {
-        while (tracks->GetNumTracks() <= trk_num) {
-            tracks->InsertTrack();
-            en_tracks.push_back(false);
-        }
-    }
     en_tracks[trk_num] = true;
-    MIDITrack* dest = tracks->GetTrack(trk_num);
-    MIDITrack* src = seq_tracks->GetTrack(trk_num);
-    unsigned int in_port = src->GetInPort();
-    dest->SetInPort(in_port);
-    en_ports.insert(in_port);
-    for (unsigned int i = 0; i < src->GetNumEvents(); i++)
-        if (!src->GetEvent(i).IsNote())
-            dest->InsertEvent(src->GetEvent(i));
-    dest->SetRecChannel(dest->GetChannel());
     return true;
-/*
-    if (en_ports[port] != 0)
-        return;
-    if (multitrack->GetNumTracks() == 0)
-        multitrack->InsertTrack();
-    std::vector<MIDITrack*> *vp = new std::vector<MIDITrack*>(16);
-    en_ports[port] = vp;
-    for (unsigned int i = 0; i < 16; i++) {
-        if (en_chans) {
-            multitrack->InsertTrack();
-            (*en_ports[port])[i] = multitrack->GetTrack(multitrack->GetNumTracks() - 1);
-        }
-
-        else
-            (*en_ports[port])[i] = 0;
-    }
-*/
 }
 
 
 bool MIDIRecorder::DisableTrack(unsigned int trk_num) {
-    if (!tracks->IsValidTrackNumber(trk_num))
+    if (!tracks->IsValidTrackNumber(trk_num) || IsPlaying())
         return false;
-    en_tracks[trk_num] = false;
-    en_ports.clear();
-    int max_enabled = -1;
-    for (unsigned int i = 0; i < en_tracks.size(); i++)
-        if (en_tracks[i] == true) {
-            max_enabled = i;
-            en_ports.insert(tracks->GetTrack(i)->GetInPort());
-        }
-    if (max_enabled < (int)trk_num) {
-        while ((int)tracks->GetNumTracks() > max_enabled + 1)
-            tracks->DeleteTrack();
-        en_tracks.resize(max_enabled + 1);
-    }
-    else
-        tracks->GetTrack(trk_num)->Clear();
+    en_tracks[trk_num] = 0;
+    ResizeTracks(tracks->GetNumTracks());
     return true;
 }
 
@@ -244,11 +240,13 @@ void MIDIRecorder::Start() {
     if (!IsPlaying()) {
         std::cout << "\t\tEntered in MIDIRecorder::Start() ..." << std::endl;
         MIDIManager::OpenInPorts();
-        tracks->ClearTracks();
+        for (unsigned int i = 0; i < en_tracks.size(); i++)
+            if (en_tracks[i])
+                PrepareTrack(i);
         SetSeqNotifier();
         dev_time_offset = 0;
         rec_on.store(true);
-        seq->SetAutoStop(false);
+        seq->SetPlayMode(MIDISequencer::PLAY_UNBOUNDED);
         seq->Start();
         MIDITickComponent::Start();
         std::cout << "\t\t ... Exiting from MIDIRecorder::Start()" << std::endl;
@@ -261,11 +259,34 @@ void MIDIRecorder::Stop() {
         std::cout << "\t\tEntered in MIDIRecorder::Stop() ..." << std::endl;
         rec_on.store(false);
         MIDITickComponent::Stop();
-        seq->Stop();
-        seq->SetAutoStop(true);
-        ResetSeqNotifier();
         MIDIManager::CloseInPorts();
+        seq->Stop();
+        ResetSeqNotifier();
+        for (unsigned int i = 0; i < en_tracks.size(); i++)
+            if (en_tracks[i])
+                *seq->GetMultiTrack()->GetTrack(i) = *tracks->GetTrack(i);
+        seq->UpdateStatus();
+        seq->SetPlayMode(MIDISequencer::PLAY_BOUNDED);
         std::cout << "\t\t ... Exiting from MIDIRecorder::Stop()" << std::endl;
+    }
+}
+
+
+void MIDIRecorder::ResizeTracks(unsigned int new_size) {
+    if (new_size <= en_tracks.size()) {
+        int max_enabled = -1;
+        for (unsigned int i = 0; i < new_size; i++)
+            if (en_tracks[i])
+                max_enabled = i;
+        if (max_enabled < (int)en_tracks.size() - 1)
+            while ((int)tracks->GetNumTracks() > max_enabled + 1)
+                tracks->DeleteTrack();
+        en_tracks.resize(max_enabled + 1);
+    }
+    else {
+        while (tracks->GetNumTracks() < new_size)
+            tracks->InsertTrack();
+        en_tracks.resize(new_size, false);
     }
 }
 
@@ -280,6 +301,48 @@ void MIDIRecorder::ResetSeqNotifier() {
     seq->GetState()->notifier = notifier.GetOtherNotifier();
 }
 
+
+void MIDIRecorder::PrepareTrack(unsigned int trk_num) {
+    bool has_prog, has_vol = false;
+    MIDITrack* track = tracks->GetTrack(trk_num);
+    MIDITimedMessage* msg_ptr;
+
+    // copy the sequencer track into the recorder multitrack
+    *track = *seq_tracks->GetTrack(trk_num);
+    // truncate notes, pedaland pitch bend at rec_start_time
+    if (rec_start_time> 0)
+        track->CloseOpenEvents(rec_start_time - 1);
+    // truncate notes, pedal and pitch bend at rec_end_time (so we
+    // don't leave note off messages after rec_end_time)
+    if (rec_end_time <= track->GetEndTime())
+        track->CloseOpenEvents(rec_end_time - 1);
+    // delete all channel events in the recording area
+    // start at i = 1 because the i-- at the line below
+    for (unsigned int i = 1; i <= track->GetNumEvents(); i++) {
+        msg_ptr = track->GetEventAddress(i - 1);
+        if (msg_ptr->GetTime() >= rec_end_time)
+            break;
+        if (msg_ptr->GetTime() >= rec_start_time) {
+            if (msg_ptr->IsProgramChange() && !has_prog) {
+                has_prog = true;
+                continue;
+            }
+            else if (msg_ptr->IsVolumeChange() && !has_vol) {
+                has_vol = true;
+                continue;
+            }
+            if (msg_ptr->IsChannelMsg() && track->DeleteEvent(*msg_ptr))
+                i--;
+        }
+        else {
+            if (msg_ptr->IsProgramChange() && !has_prog)
+                has_prog = true;
+            else if (msg_ptr->IsVolumeChange() && !has_vol)
+                has_vol = true;
+        }
+    }
+    en_ports.insert(track->GetInPort());
+}
 
 
 void MIDIRecorder::StaticTickProc(tMsecs sys_time, void* pt) {

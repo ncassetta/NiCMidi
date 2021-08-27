@@ -118,13 +118,12 @@ void PrintCurrentStatus() {
 int main(int argc, char **argv) {
     MIDITimedMessage msg;
     MIDITrack* trk = multitrack->GetTrack(cur_pos.gettrack());
-    MIDIClockTime last_note_length = 120;
+    MIDIClockTime last_note_length = multitrack->GetClksPerBeat();
     int last_note_vel = 100;
     int event_num;
 
     *filename = 0;
-    multitrack->SetClksPerBeat(120);
-    cur_pos.setstep (120);
+    cur_pos.setstep (multitrack->GetClksPerBeat());
     cout << "Step sequencer example for jdksmidi library" << endl <<
             "Copyright 2014 - 2020 Nicola Cassetta" << endl << endl;
     PrintResolution();

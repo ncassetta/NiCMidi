@@ -114,6 +114,8 @@ class MIDISequencerState : public MIDIProcessor {
         /// This is the process function inherited from MIDIProcessor. When you get a MIDI message
         /// from the sequencer, it is processed by the state, which updates its parameters and
         /// notifies the GUI if required.
+        /// \return **true** if _msg_ is a real MIDI message, **false** if it is a service message
+        /// (a NoOp or beat marker).
         bool                    Process( MIDITimedMessage* msg );
         /// Notifies the GUI when something happens (a parameter was changed,
         /// current time is moved, etc.)
@@ -131,9 +133,11 @@ class MIDISequencerState : public MIDIProcessor {
         unsigned int            cur_beat;           ///< The current beat in the measure (1st beat is 0)
         unsigned int            cur_measure;        ///< The current measure (1st measure is 0)
         MIDIClockTime           beat_length;        ///< The duration of a beat
+        unsigned int            number_of_beats;    ///< Number of beats in the measure
         MIDIClockTime           next_beat_time;     ///< The MIDI time of the next beat (for internal use)
 
         float                   tempobpm;           ///< The current tempo in beats per minute
+        unsigned int            tempo_scale;        ///< The tempo scale in percentage (100 = true time)
         char                    timesig_numerator;  ///< The numerator of current time signature
         char                    timesig_denominator;///< The denominator of current time signature
         char                    keysig_sharpflat;   ///< The current key signature accidents (
@@ -143,6 +147,9 @@ class MIDISequencerState : public MIDIProcessor {
                                 track_states;       ///< A track state for every track
         int                     last_event_track;   ///< Internal use
         MIDIClockTime           last_beat_time;     ///< Internal use
+        double                  ms_per_clock;       ///< Internal use
+        double                  last_time_ms;       ///< Internal use
+        MIDIClockTime           last_tempo_change;  ///< Internal use
         static int              metronome_mode;     ///< Flag affecting how metronome beat is calculated
 };
 
@@ -215,13 +222,13 @@ class MIDISequencer : public MIDITickComponent {
         /// Returns the number of tracks of the multitrack.
         unsigned int                    GetNumTracks() const	{ return state.multitrack->GetNumTracks(); }
         /// Returns current tempo scale in percentage (100 = no scaling, 200 = twice faster, etc.).
-        unsigned int                    GetTempoScale() const   { return tempo_scale; }
+        unsigned int                    GetTempoScale() const   { return state.tempo_scale; }
         /// Returns current tempo (BPM) without scaling.
         float                           GetTempoWithoutScale() const
                                                                 { return state.tempobpm; }
         /// Returns current tempo (BPM) taking into account scaling (this is the true actual tempo).
         float                           GetTempoWithScale() const
-                                                                { return state.tempobpm * tempo_scale * 0.01; }
+                                                                { return state.tempobpm * state.tempo_scale * 0.01; }
         /// Returns the repeat play (loop) status on/off.
         bool                            GetRepeatPlay() const   { return repeat_play_mode; }
         /// Returns the repeat play (loop) start measure.
@@ -240,8 +247,8 @@ class MIDISequencer : public MIDITickComponent {
         /// Returns a pointer to the current MIDISequencerState (i.e\. the global sequencer state at
         /// current time). You can easily jump from a time to another saving and retrieving sequencer states.
         const MIDISequencerState*       GetState() const        { return &state; }
-        /// Returns the auto stop state.
-        bool                            GetAutoStop()           { return auto_stop; }
+        /// Returns the play mode state (see SetPlayMode()).
+        bool                            GetPlayMode()           { return play_mode; }
         /// Returns a pointer to the MIDISequencerTrackState for a track.
         /// \param trk_num the track number
         MIDISequencerTrackState*        GetTrackState(unsigned int trk_num)
@@ -282,38 +289,43 @@ class MIDISequencer : public MIDITickComponent {
         /// with 0). If you set an end measure lesser or equal to the start the loop is automatically disabled. If
         /// you leave the default values the measures are left unchanged (useful if you only want to turn on or off the
         /// loop).
-        void                            SetRepeatPlay(int on_off, int start_meas = -1, int end_meas = -1);
+        virtual void                    SetRepeatPlay(int on_off, int start_meas = -1, int end_meas = -1);
         /// Sets the global tempo scale.
         /// \param scale the percentage: 100 = no scaling, 200 = twice faster, 50 = twice slower, etc.).
-        void                            SetTempoScale(unsigned int scale);
+        virtual void                    SetTempoScale(unsigned int scale);
         /// Sets the time shifting of events on and off. If you are editing the multitrack events you probably
         /// want to see the original (not shifted) MIDI time of events, while during playback you want them
         /// shifted. So you can turn time shifting on and off (and all the time related methods of the sequencer
         /// will return the shifted or the original time of events). The Start() method sets time shifting on,
         /// while the Stop() resets it to your choice, so usually if you can leave time shifting off.
-        void                            SetTimeShiftMode(bool f);
+        virtual void                    SetTimeShiftMode(bool f);
         /// Copies a given MIDISequencerState into the internal sequencer state. This method is thread-safe and
         /// can be called during playback. Notifies the GUI a GROUP_ALL event to signify a full GUI reset.
         /// \param s a pointer to the new state.
         /// \note  You can save and restore the sequencer states for quickly jumping from a time to another;
         /// however you should avoid to save a state, edit the multitrack events and then restore the old state,
         /// because you can get inconsistent state parameters.
-        void                            SetState(MIDISequencerState* s);
-        /// Sets the auto stop state on or off.
-        void                            SetAutoStop(bool f);
+        virtual void                    SetState(MIDISequencerState* s);
+        /// Sets the play mode.
+        /// \param mode an enum value with the following meaning:
+        /// + PLAY_BOUNDED: The sequencer auto stops after the last event. You cannot set the 'now' time after it
+        /// + PLAY_UNBOUNDED: The sequencer doesn't stops after last event, but continues playing sending only beat
+        /// markers events.
+        /// \note The play mode affects the behavior of the methods TODO:
+        virtual void                    SetPlayMode(int mode);
         /// Sets the MIDI out port for a track. This method is thread-safe and can be called during playback
         /// (in this case the sequencer will send a MIDI AllNotesOff message to the old port).
         /// \param trk_num the track number
         /// \param port the id number of the port (see MIDIManager::GetOutPorts())
         /// \return **true** if parameters are valid (and the port has been changed), **false** otherwise.
-        bool                            SetTrackOutPort(unsigned int trk_num, unsigned int port);
+        virtual bool                    SetTrackOutPort(unsigned int trk_num, unsigned int port);
         /// Sets a MIDIProcessor for the given track. This can't be done while the sequencer is playing
         /// so it stops it.
         /// \param trk_num the track number
         /// \param p a pointer to a MIDIProcessor; calling this with _p_ = 0 sets the track to no processor
         /// \note the Reset() method deletes all processors set by this method.
         /// \return **true** if _trk_num_ is valid (and the processor has been changed), **false** otherwise.
-        bool                            SetTrackProcessor(unsigned int trk_num, MIDIProcessor* p);
+        virtual bool                    SetTrackProcessor(unsigned int trk_num, MIDIProcessor* p);
         /// Sets the time shift offset (in MIDI ticks) for a track. The offset can be positive or negative; events
         /// shifted include all channel messages and sysex messages (others remain at their time).
         /// If you select a negative offset, be sure not to have shifted events at lesser time than the offset
@@ -322,7 +334,7 @@ class MIDISequencer : public MIDITickComponent {
         /// \param trk_num the track number
         /// \param offset the offset in MIDI ticks
         /// \return **true** if _trk_num_ is valid (and the offset has been changed), **false** otherwise.
-        bool                            SetTrackTimeShift(unsigned int trk_num, int offset);
+        virtual bool                    SetTrackTimeShift(unsigned int trk_num, int offset);
 
         /// Inserts into the internal MIDIMultiTrack a new empty track with default track parameters (transpose,
         /// time offset, etc.). This method is thread-safe and can be called during playback. Notifies the GUI a
@@ -334,7 +346,7 @@ class MIDISequencer : public MIDITickComponent {
         /// iterator and the sequencer internal arrays. If you change the number of tracks directly in the
         /// multitrack (for example when loading a MIDI file) you must then call MIDISequencer::Reset() for
         /// updating the sequencer parameters, but this will reset all track parameters to the default.
-        bool                            InsertTrack(int trk_num = -1);
+        virtual bool                    InsertTrack(int trk_num = -1);
         /// Deletes a track and all its events from the internal MIDIMultiTrack. This method is thread-safe and can
         /// be called during playback (in this case the sequencer will send a MIDI AllNotesOff message to the old track
         /// port). Notifies the GUI a GROUP_ALL event to signify a full GUI reset.
@@ -342,31 +354,31 @@ class MIDISequencer : public MIDITickComponent {
         /// value the last track wil be deleted.
         /// \return **true** if the track was effectively deleted
         /// \see note to InsertTrack()
-        bool                            DeleteTrack(int trk_num = -1);
+        virtual bool                    DeleteTrack(int trk_num = -1);
         /// Moves a track from one position to another in the internal MIDIMultiTrack. This method is thread-safe and can
         /// be called during playback (in this case the sequencer will send a MIDI AllNotesOff message to the involved
         /// ports). Notifies the GUI a GROUP_ALL event to signify a full GUI reset.
         /// \param from, to the start and destination track numbers (both must be in the range 0 ... GetNumTracks() - 1).
         /// \return **true** if the track was effectively moved
         /// \see note to InsertTrack()
-        bool                            MoveTrack(int from, int to);
+        virtual bool                    MoveTrack(int from, int to);
         /// Sets the current time to the beginning of the song, updating the internal status. This method is
         /// thread-safe and can be called during playback. Notifies the GUI a GROUP_ALL event to signify a
         /// full GUI reset.
-        void                            GoToZero();
+        virtual void                    GoToZero();
         /// Sets the current time to a given the MIDI time, updating the internal status. This method is thread-safe
         /// and can be called during playback. Notifies the GUI a GROUP_ALL event to signify a full GUI reset
         /// \param time_clk the new time in MIDI ticks
         /// \return **true** if the new time is effectively reached, **false** otherwise (_time_clk_ is after
         /// the end of the song: in this case the sequencer is leaved in its original state)
-        bool                            GoToTime (MIDIClockTime time_clk);
+        virtual bool                    GoToTime (MIDIClockTime time_clk);
         /// Same as GoToTime(), but the time is given in milliseconds.
         /// \return see GoToTime()
-        bool                            GoToTimeMs (float time_ms);
+        virtual bool                    GoToTimeMs (float time_ms);
         /// Sets the current time to the given measure and beat, updating the internal status. This method is
         /// thread-safe and can be called during playback. Notifies the GUI a GROUP_ALL event to signify a GUI reset
         /// \return see GoToTime()
-        bool                            GoToMeasure (unsigned int measure, unsigned int beat = 0);
+        virtual bool                    GoToMeasure (unsigned int measure, unsigned int beat = 0);
         /// Gets the next event (respect current position). This queries the state for the next event in the
         /// multitrack, then processes it with the corresponding track processor (if you have set it with
         /// SetProcessor)) and updates the state. Moreover it notifies the GUI with appropriate messages. If
@@ -375,32 +387,34 @@ class MIDISequencer : public MIDITickComponent {
         /// \param[out] msg will return the MIDI event
         /// \return **true** if there is effectively a next event (and the parameters are valid), **false** otherwise
         /// (parameters are undefined and the sequencer is leaved in its original state)
-        bool                            GetNextEvent (int *trk_num, MIDITimedMessage *msg);
+        virtual bool                    GetNextEvent (int *trk_num, MIDITimedMessage *msg);
         /// Gets the time of the next event (it can be different from current time if at current time there
         /// are not events).
         /// \param[out] time_clk: will return the requested time in MIDI ticks from the beginning
         /// \return **true** if there is effectively a next event (and *time_clk is a valid time), **false** if we are at
         /// the end of the song (*time_clk is undefined)
-        bool                            GetNextEventTime (MIDIClockTime *time_clk);
+        virtual bool                    GetNextEventTime (MIDIClockTime *time_clk);
         /// Same of GetNextEventTime(), but time is returned in milliseconds from the beginning.
-        bool                            GetNextEventTimeMs (float *time_ms);
+        virtual bool                    GetNextEventTimeMs (float *time_ms);
         /// Converts a time from MIDI ticks into milliseconds, taking into account all tempo changes from the
         /// beginning of the song to the given time.
         /// \param time_clk the time to convert
         float                           MIDItoMs(MIDIClockTime time_clk);  // new : added by me
+        /// TODO
+        MIDIClockTime                   MeasToMIDI(unsigned int meas, unsigned int beat = 0, unsigned int offset = 0);
         /// This is equivalent of GoToTime(state.cur_clock) and should be used to update the sequencer
         /// state after an edit in the multitrack (adding, deleting or editing events, for changes in the track
         /// structure see InsertTrack(), DeleteTrack() and MoveTrack()). If you have edited the multitrack, call
         /// this before moving time, getting events or playing.
-        void                            UpdateStatus()  { GoToTime(state.cur_clock); }
+        virtual void                    UpdateStatus()  { GoToTime(state.cur_clock); }
 
         // Inherited from MIDITICK
         /// Starts the sequencer playing from the current time.
-        virtual void Start();
+        virtual void                    Start();
         /// Stops the sequencer playing.
-        virtual void Stop();
+        virtual void                    Stop();
         /// This is an alias of Start().
-        virtual void Play()         { Start(); }
+        virtual void                    Play()         { Start(); }
 
         /// Values for the SetMetronomeMode() method.
         enum {
@@ -420,6 +434,12 @@ class MIDISequencer : public MIDITickComponent {
         /// Don't use this while the sequencer is playing.
         static void                     SetMetronomeMode(int mode)
                                                         { MIDISequencerState::metronome_mode = mode; }
+
+        /// Values for the play mode.
+        enum {
+            PLAY_BOUNDED,                   ///< See SetPlayMode()
+            PLAY_UNBOUNDED                  ///< See SetPlayMode()
+        };
     protected:
         /// Implements the static method inherited by MIDITickComponent and called at every timer tick.
         /// It only calls the member TickProc().
@@ -435,12 +455,11 @@ class MIDISequencer : public MIDITickComponent {
 
         MIDITimedMessage                beat_marker_msg;    // Used by the sequencer to send beat marker messages
 
-        unsigned int                    tempo_scale;        // The tempo scale in percentage (100 = true time)
         bool                            repeat_play_mode;   // Enables the repeat play mode
         unsigned int                    repeat_start_meas;  // The loop start measure
         unsigned int                    repeat_end_meas;    // The loop end measure
         bool                            time_shift_mode;    // The time shift on/off (during playback time shift is always on)
-        bool                            auto_stop;          // Auto sop mode on/off
+        bool                            play_mode;          // Auto stop mode on/off
 
         std::vector<MIDIProcessor*>     track_processors;   // A MIDIProcessor for every track
         //std::vector<int>                time_shifts;        // A time shift (in MIDI ticks) for every track

@@ -114,12 +114,16 @@ class  MIDITrack {
         /// Returns the track channel (-1 if the track has not type TYPE_CHAN or TYPE_IRREG_CHAN).
         /// \note This is **not** const, because it may call Analyze(), causing an update of the track status.
         char                        GetChannel();
-        /// Returns the channel for recording (-1 for all channels).
-        char                        GetRecChannel()                     { return rec_chan; }
+        /// Returns the entire status bitfield, so you can test individual properties of the track with an AND
+        /// with one of its bits.
+        /// \note This is **not** const, because it may call Analyze(), causing an update of the track status.
+        int                         GetStatus();
         /// Returns the track type (one of \ref TYPE_MAIN, \ref TYPE_TEXT, \ref TYPE_CHAN, \ref TYPE_IRREG_CHAN,
         /// \ref TYPE_MIXED_CHAN, \ref TYPE_UNKNOWN, \ref TYPE_SYSEX, \ref TYPE_RESET_SYSEX, \ref TYPE_BOTH_SYSEX).
         /// \note This is **not** const, because it may call Analyze(), causing an update of the track status.
         char                        GetType();
+        /// Returns the channel for recording (-1 for all channels).
+        char                        GetRecChannel()                     { return rec_chan; }
         /// Returns the track time shift in MIDI ticks.
         int                         GetTimeShift() const                { return time_shift; }
         /// Returns **true** if the track contains MIDI SysEx messages.
@@ -358,7 +362,7 @@ class MIDITrackIterator {
         /// Returns the next event in the track.
         /// \param *msg a pointer to the event in the MidiMultiTrack
         /// \return **true** if there is effectively a next event (we aren't at the end of the
-        /// track), **false** otherwise (and **msg doesn't contain valid value).
+        /// track), **false** otherwise (and **msg doesn't contain a valid value).
         bool                        GetNextEvent(MIDITimedMessage** msg);
         /// Gets the time of the next event in the track (it can be different from current time if
         /// at current time there are not events).

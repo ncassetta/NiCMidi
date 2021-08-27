@@ -153,7 +153,7 @@ class RecNotifier: public MIDISequencerGUINotifier {
                                                                             { other_notifier = n; }
         virtual void                    Notify(const MIDISequencerGUIEvent &ev);
     private:
-        const unsigned char             DEFAULT_MEAS_NOTE = 67;
+        const unsigned char             DEFAULT_MEAS_NOTE = 68;
         const unsigned char             DEFAULT_BEAT_NOTE = 60;
 
         unsigned char                   meas_note;          // The MIDI note number for the measure click (1st note of a measure)
@@ -175,51 +175,61 @@ class RecNotifier: public MIDISequencerGUINotifier {
 ///
 class MIDIRecorder : public MIDITickComponent {
     public:
-        /// The constructor.
+        /// The constructor. It binds the recorder to the given MIDISequencer.
                                         MIDIRecorder(MIDISequencer* const s);
-        /// The destructor
+        /// The destructor.
         virtual                         ~MIDIRecorder();
+        /// It sets all tracks to not enable state, empties the internal multitrack and
+        /// sets the start and end recording times to 0 ... TiME_iNFiNiTE.
         virtual void                    Reset();
-
         /// Returns a pointer to the internal MIDIMultiTrack.
         MIDIMultiTrack*                 GetMultiTrack() const           { return tracks; }
         /// Returns the start MIDI time of the recording.
         MIDIClockTime                   GetStartRecTime() const         { return rec_start_time; }
         /// Returns the end MIDI time of the recording.
         MIDIClockTime                   GetEndRecTime() const           { return rec_end_time; }
-        /// Returns the pointer to the track
+        /// Returns the pointer to a track of the internal multitrack.
         /// \param trk_num The track number
         MIDITrack*                      GetTrack(int trk_num)           { return tracks->GetTrack(trk_num); }
-        /// Returns the pointer to the track
+        /// Returns the pointer to a track of the internal multitrack.
         /// \param trk_num The track number
         const MIDITrack*                GetTrack(int trk_num) const     { return tracks->GetTrack(trk_num); }
-
-        /// Returns the number of the out port assigned to a track.
+        /// Returns the number of the in port assigned to a track.
         /// \param trk_num the track number
         unsigned int                    GetTrackInPort(unsigned int trk_num) const
                                                                 { return tracks->GetTrack(trk_num)->GetInPort(); }
-        /// Returns the recording channel for the given track, or -1 if it is not defined. You can
+        /// Returns the recording channel for the given track, or -1 for any channel. You can
         /// force a track to receive a given channel with SetTrackChannel().
         char                            GetTrackRecChannel(unsigned int trk_num)
                                                             { return tracks->GetTrack(trk_num)->GetRecChannel(); }
         /// Sets the MIDI in port for a track. This method is thread-safe, however changing
-        /// a port during playback can lead to unexpected results in recording.
+        /// a port during recording can lead to unexpected results.
         /// \param trk_num the track number
         /// \param port the id number of the port (see MIDIManager::GetOutPorts())
         /// \return **true** if parameters are valid (and the port has been changed), **false** otherwise.
         bool                            SetTrackInPort(unsigned int trk_num, unsigned int port);
-        /// Sets the recording channel for the given track.
+        /// Sets the recording channel for the given track. This method is thread-safe, however
+        /// changing the channel during recording can lead to unexpected results.
         /// \param trk_num the track number
         /// \param chan the channel:You can specify a number between 0 ... 15 or -1 for any channel.
         /// \return **true** if parameters are valid (and the channel has been changed), **false** otherwise.
         bool                            SetTrackRecChannel(unsigned int trk_num, char chan);
-        /// Sets the recording start time.
-        /// \param t the MIDI clock time
-        void                            SetStartRecTime(MIDIClockTime t)   { rec_start_time = t; }
-        void                            SetStartRecTime(unsigned int meas, unsigned int beat = 0);
-
-        void                            SetEndRecTime(MIDIClockTime t)      { rec_start_time = t; }
-        void                            SetEndRecTime(unsigned int meas, unsigned int beat = 0);
+        /// Sets the recording start time. If the recording end time is less than _t_ it sets it to _t_.
+        /// You cannot change the time while recording.
+        /// \param t the MIDI clock time to assign
+        /// \return **true** if the start time has been changed, **false** otherwise.
+        bool                            SetStartRecTime(MIDIClockTime t);
+        /// Sets the recording start time, giving the measure and beat. See SetTrackRecChannel(MIDIClockTime).
+        bool                            SetStartRecTime(unsigned int meas, unsigned int beat = 0)
+                                                            { return SetStartRecTime(seq->MeasToMIDI(meas, beat)); }
+        /// Sets the recording end time. If the recording start time is greater than _t_ it sets it to _t_.
+        /// You cannot change the time while recording.
+        /// \param t the MIDI clock time to assign
+        /// \return **true** if the start time has been changed, **false** otherwise.
+        bool                            SetEndRecTime(MIDIClockTime t);
+        /// Sets the recording end time, giving the measure and beat. See SetTrackRecChannel(MIDIClockTime).
+        bool                            SetEndRecTime(unsigned int meas, unsigned int beat = 0)
+                                                            { return SetEndRecTime(seq->MeasToMIDI(meas, beat)); }
 
         /// Inserts into the internal MIDIMultiTrack a new empty track with default track parameters (transpose,
         /// time offset, etc.). This method is thread-safe and can be called during playback.
@@ -259,10 +269,17 @@ class MIDIRecorder : public MIDITickComponent {
         virtual void                    Stop();
 
     protected:
-        /// Internal function used in Start() to set the metronome. You shouldn't use it directly.
+        /// Internal function. It is used to resize the internal multitrack according to the
+        /// number of enabled tracks.
+        void                            ResizeTracks(unsigned int max_num);
+        /// Internal function. It is used in Start() to put an hook to the metronome in the
+        /// sequencer notifier.
         void                            SetSeqNotifier();
-        /// Internal function used in Stop() to reset the metronome. You shouldn't use it directly.
+        /// Internal function. It is used in Stop() to reset the hook in the sequencer notifier.
         void                            ResetSeqNotifier();
+        /// Internal function. It copies an enabled sequencer track in the recorder multitrack,
+        /// deleting the channel events.
+        void                            PrepareTrack(unsigned int trk_num);
         /// Implements the static method inherited by MIDITickComponent and called at every timer tick.
         /// It only calls the member TickProc().
         static void                     StaticTickProc(tMsecs sys_time, void* pt);

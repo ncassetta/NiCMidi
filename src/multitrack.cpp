@@ -182,6 +182,15 @@ bool MIDIMultiTrack::InsertTrack(int trk_num) {
 }
 
 
+bool MIDIMultiTrack::InsertTrack(const MIDITrack* trk, int trk_num) {
+    if (trk_num == -1) trk_num = tracks.size();                 // if trk_num = -1 (default) append track
+    if (trk_num < 0 || (unsigned)trk_num > tracks.size()) return false;
+    tracks.insert(tracks.begin() + trk_num, new MIDITrack);
+    *tracks[trk_num] = *trk;
+    return true;
+}
+
+
 bool MIDIMultiTrack::DeleteTrack(int trk_num) {
     if (trk_num == -1) trk_num = tracks.size() - 1;
     if (!IsValidTrackNumber(trk_num)) return false;
@@ -338,26 +347,25 @@ void MIDIMultiTrack::EditReplace(MIDIClockTime start, int tr_start, int times, b
 MIDIMultiTrackIteratorState::MIDIMultiTrackIteratorState(int n_tracks) :
         time_shift_mode(false) {
     SetNumTracks(n_tracks);
-    Reset();
 }
 
 
 void MIDIMultiTrackIteratorState::SetNumTracks(int n) {
-    if (n != num_tracks) {
-        num_tracks = n;
-        next_event_number.resize(n);
-        next_event_time.resize(n);
-    }
+    num_tracks = n;
+    next_event_number.resize(n);
+    next_event_time.resize(n);
+    enabled.resize(n);
     Reset();
 }
 
 
 void MIDIMultiTrackIteratorState::Reset() {
     cur_time = 0;
-    cur_event_track = 0;
+    cur_event_track = -1;
     for(int i = 0; i < num_tracks; ++i) {
         next_event_number[i] = 0;
         next_event_time[i] = TIME_INFINITE;
+        enabled[i] = true;
     }
 }
 
@@ -371,7 +379,7 @@ int MIDIMultiTrackIteratorState::FindTrackOfFirstEvent() {
         int i = (j + cur_event_track + 1) % num_tracks;
 
     // skip any tracks that have a current event number less than 0 - these are finished already
-        if(next_event_number[i] >= 0 && next_event_time[i] < minimum_time) {
+        if(next_event_number[i] >= 0 && enabled[i] && next_event_time[i] < minimum_time) {
             minimum_time = next_event_time[i];
             minimum_time_track = i;
             if (minimum_time == cur_time)
@@ -416,9 +424,10 @@ void MIDIMultiTrackIterator::Reset() {
 }
 
 
-void MIDIMultiTrackIterator::SetTimeShiftMode(bool f) {
-    state.time_shift_mode = f;
-    //std::cout << "Time shift mode " << (f ? "on" : "off") << std::endl;
+void MIDIMultiTrackIterator::SetEnable(unsigned int trk_num, bool f) {
+    state.enabled[trk_num] = f;
+    state.next_event_time[trk_num] = 0;
+    state.FindTrackOfFirstEvent();
 }
 
 
@@ -526,8 +535,7 @@ MIDIClockTime MIDIMultiTrackIterator::GetShiftedTime(const MIDITimedMessage* msg
 void MIDIEditMultiTrack::CopyAll(MIDIMultiTrack* m) {
     Reset();
     for (unsigned int i = 0; i < m->GetNumTracks(); i++) {
-        InsertTrack(i);
-        *GetTrack(i) = *(m->GetTrack(i));
+        InsertTrack(m->GetTrack(i), i);
     }
 }
 

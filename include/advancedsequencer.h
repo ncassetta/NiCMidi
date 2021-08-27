@@ -124,15 +124,15 @@ class AdvancedSequencer : public MIDISequencer {
         /// Loads a MIDIFile into the internal MIDIMultiTrack. It can change the MIDIMultiTrack::clks_per_beat
         /// parameter according to the file signature. You can then play the MIDI content with the Play() method.
         /// \param fname the file name.
-        bool                Load(const char *fname);
+        virtual bool        Load(const char *fname);
         /// Copies the content of an external MIDIMultiTrack into the sequencer. It can change the
         /// MIDIMultiTrack::clks_per_beat parameter according to the multitrack signature. You can then play the
         /// MIDI content with the Play() method.
         /// \param tracks the MIDIMultiTrack to be copied.
-        bool                Load(const MIDIMultiTrack* tracks);
+        virtual bool        Load(const MIDIMultiTrack* tracks);
         /// Clears the contents of the internal MIDIMultiTrack and reset its MIDIMultiTrack::clks_per_beat parameter
         /// to **DEFAULT_CLKS_PER_BEAT** (actually 120).
-        void                UnLoad();
+        virtual void        UnLoad();
 
         /// Returns **true** if the internal MIDIMultiTrack is not empty.
         bool                IsLoaded() const                    { return file_loaded; }
@@ -234,17 +234,17 @@ class AdvancedSequencer : public MIDISequencer {
         /// Sets the current time to the beginning of the song, updating the internal status. This method is
         /// thread-safe and can be called during playback. Notifies the GUI a GROUP_ALL event to signify a
         /// full GUI reset.
-        void                GoToZero()                          { GoToTime(0); }
+        virtual void        GoToZero()                          { GoToTime(0); }
         /// Sets the current time to the given MIDI time, updating the internal status. This is as
         /// MIDISequencer::GoToTime() but uses a better algorithm and sends to the MIDI out ports all the
         /// appropriate sysex, patch, pitch bend and control change messages.
-        bool                GoToTime(MIDIClockTime time_clk);
+        virtual bool        GoToTime(MIDIClockTime time_clk);
         /// Same as GoToTime(), but the time is given in milliseconds.
-        bool                GoToTimeMs(float time_ms);
+        virtual bool        GoToTimeMs(float time_ms);
         /// Sets the current time to the given measure and beat, updating the internal status. This is as
         /// MIDISequencer::GoToMeasure() but uses a better algorithm and sends to the MIDI out ports all the
         /// appropriate sysex, patch, pitch bend and control change messages.
-        bool                GoToMeasure(int measure, int beat = 0);
+        virtual bool        GoToMeasure(int measure, int beat = 0);
 
 
         /// Starts the sequencer playing from the current time.
@@ -264,7 +264,7 @@ class AdvancedSequencer : public MIDISequencer {
         /// deleting or editing events, for changes in the track structure see InsertTrack(), DeleteTrack()
         /// and MoveTrack()). If you have edited the multitrack, call this before moving time, getting events
         /// or playing.
-        void                UpdateStatus();
+        virtual void        UpdateStatus();
 
     protected:
 

@@ -32,6 +32,7 @@
 
 #include "../include/sequencer.h"
 #include "../include/manager.h"
+#include "../include/notifier.h"
 #include "../include/filereadmultitrack.h"  // for LoadMIDIFile()
 #include "functions.h"                      // helper functions for input parsing and output
 
@@ -44,8 +45,10 @@ using namespace std;
 
 // a MIDIMultiTrack
 MIDIMultiTrack tracks;
+// a text notifier
+MIDISequencerGUINotifierText notifier;
 // this ctor creates the sequencer from the given multitrack
-MIDISequencer sequencer(&tracks);
+MIDISequencer sequencer(&tracks, &notifier);
 
 extern string command, par1, par2;          // used by GetCommand() for parsing the user input
 const char helpstring[] =                   // shown by the help command
@@ -59,6 +62,7 @@ const char helpstring[] =                   // shown by the help command
    rew                 : Goes to the beginning (stops the playback)\n\
    goto meas [beat]    : Moves current time to given meas and beat\n\
                          (numbered from 0)\n\
+   playmode u/b        : Sets the play mode (bounded or unbounded)\n\
    dump [trk]          : Prints a dump of all midi events in the file\n\
                          (or in the track trk)\n\
    outport track port  : Sets the MIDI port for the given track\n\
@@ -67,6 +71,7 @@ const char helpstring[] =                   // shown by the help command
    tshift track amt    : Sets the time shift for given track. The amount can\n\
                          be positive or negative.\n\
    trackinfo           : Shows info about all tracks of the file\n\
+   notify  on/off      : Turns on and off the notifier\n\
    b                   : (backward) Moves current time to the previous measure\n\
    f                   : (forward) Moves current time to the next measure\n\
    help                : Prints this help screen\n\
@@ -84,6 +89,7 @@ int main(int argc, char **argv) {
     // you must add the sequencer to the MIDIManager queue (AdvancedSequencer
     // does it by itself
     MIDIManager::AddMIDITick(&sequencer);
+    notifier.SetEnable(false);
     cout << "TYPE help TO GET A LIST OF AVAILABLE COMMANDS" << endl << endl;
     while (command != "quit") {                     // main loop
         GetCommand();                               // gets user input and splits it into command, par1, par2
@@ -154,6 +160,18 @@ int main(int argc, char **argv) {
             else
                 cout << "Invalid position" << endl;
         }
+        else if (command == "playmode") {
+            if (par1 == "u" || par1 == "U") {
+                sequencer.SetPlayMode(MIDISequencer::PLAY_UNBOUNDED);
+                cout << "Set sequencer play mode to UNBOUNDED" << endl;
+            }
+            else if (par1 == "b" || par1 == "B") {
+                sequencer.SetPlayMode(MIDISequencer::PLAY_BOUNDED);
+                cout << "Set sequencer play mode to BOUNDED" << endl;
+            }
+            else
+                cout << "Invalid parameter" << endl;
+        }
         else if (command == "dump") {               // prints a dump of the sequencer contents
             if (par1.size() == 0)
                 DumpMIDIMultiTrackWithPauses(&tracks);
@@ -170,13 +188,11 @@ int main(int argc, char **argv) {
         else if (command == "outport") {            // changes the midi out port
             int track = atoi(par1.c_str());
             int port = atoi(par2.c_str());
-            if (port < 0 || (unsigned)port >= MIDIManager::GetNumMIDIOuts())
-                cout << "Invalid port number" << endl;
-            else {
-                sequencer.SetTrackOutPort(track, port);
+            if (sequencer.SetTrackOutPort(track, port))
                 cout << "Assigned out port n. " << sequencer.GetTrackOutPort(track)
                      << " to track " << track << endl;
-            }
+            else
+                cout << "Invalid parameters" << endl;
         }
         else if (command == "tscale") {             // scales playback tempo
             int scale = atoi(par1.c_str());
@@ -204,6 +220,16 @@ int main(int argc, char **argv) {
                         cout << " (" << (int)trk->GetChannel() << ") ";
                     cout <<"Sysex: " << (trk->HasSysex() ? "Yes " : "No  ") << "Events: " << trk->GetNumEvents() << endl;
                 }
+            }
+        }
+        else if (command == "notify") {
+            if (par1 == "on" || par1 == "ON") {
+                notifier.SetEnable(true);
+                cout << "Notifier on" << endl;
+            }
+            else if (par1 == "off" || par1 == "OFF") {
+                notifier.SetEnable(false);
+                cout << "Notifier off" << endl;
             }
         }
         else if (command == "b") {                  // goes a measure backward

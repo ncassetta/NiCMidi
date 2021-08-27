@@ -181,6 +181,9 @@ bool AdvancedSequencer::Load (const char *fname) {
 
     file_loaded = LoadMIDIFile(fname, state.multitrack, &header);
     Reset();                    // synchronizes the sequencer with the multitrack and goes to 0
+    for (unsigned int i = 0; i < GetNumTracks(); i++)
+        // causes a call to Analyze()
+        GetMultiTrack()->GetTrack(i)->GetStatus();
     //seq->GoToZero();      now called by Reset()
     //ExtractWarpPositions();
     return file_loaded;
@@ -192,6 +195,9 @@ bool AdvancedSequencer::Load (const MIDIMultiTrack* tracks) {
     *state.multitrack = *tracks;
     file_loaded = !state.multitrack->IsEmpty();
     Reset();                    // synchronizes the sequencer with the multitrack and goes to 0
+    for (unsigned int i = 0; i < GetNumTracks(); i++)
+        // causes a call to Analyze()
+        GetMultiTrack()->GetTrack(i)->GetStatus();
     return file_loaded;
 }
 
@@ -581,7 +587,7 @@ bool AdvancedSequencer::GoToMeasure (int measure, int beat) {
 void AdvancedSequencer::Start () {
     // If you call this while already èlaying the sequencer will restart from the
     // loop initial measure (if repeat play is on)
-    if (!file_loaded)
+    if (!file_loaded && play_mode == PLAY_BOUNDED)
         return;
 
     std::cout << "\t\tEntered in AdvancedSequencer::Start() ...\n";
@@ -606,7 +612,7 @@ void AdvancedSequencer::Start () {
 
 
 void AdvancedSequencer::Stop() {
-    if (!file_loaded || !IsPlaying())
+    if (!IsPlaying())
         return;
 
     std::cout << "\t\tEntered in AdvancedSequencer::Stop() ...\n";

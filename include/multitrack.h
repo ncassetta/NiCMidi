@@ -124,6 +124,12 @@ class MIDIMultiTrack {
         /// \warning if you are using the MIDIMultiTrack into a MIDISequencer class don't call this directly
         /// but the corresponding MIDISequencer method (which adjust the MIDISequencer internal values also).
         bool                        InsertTrack(int trk_num = -1);
+        /// Inserts a copy of the given track at position _trk_num_ (_trk_num_ must be in the range
+        /// 0 ...\ GetNumTracks() - 1). If _trk_num_ == -1 appends the track at the end.
+        /// \return **true** if the track was effectively inserted.
+        /// \warning if you are using the MIDIMultiTrack into a MIDISequencer class don't call this directly
+        /// but the corresponding MIDISequencer method (which adjust the MIDISequencer internal values also).
+        bool                        InsertTrack(const MIDITrack* trk, int trk_num = -1);
         /// Deletes the track _trk_num_ and its events. (_trk_num_ must be in the range 0 ... GetNumTracks() - 1).
         /// If _trk_num_ == -1 deletes the last track.
         /// \return **true** if the track was effectively deleted
@@ -200,6 +206,7 @@ class MIDIMultiTrackIteratorState {
         int                         cur_event_track;    // The track of the next event
         std::vector<int>            next_event_number;  // Array holding the next event for every track
         std::vector<MIDIClockTime>  next_event_time;    // Array holding the next event time for every track
+        std::vector<bool>           enabled;            // Array for enabling and disabling tracks
         bool                        time_shift_mode;    // Time shift on/off
         /// \endcond
 };
@@ -240,7 +247,12 @@ class MIDIMultiTrackIterator {
         /// events time remain unchanged).
         /// \return **true** if the function succeeded (it could fail if you try to set the mode on without having
         /// set a vector).
-        void                        SetTimeShiftMode(bool f);
+        void                        SetTimeShiftMode(bool f)            { state.time_shift_mode = f; }
+        /// Enable or disable a track. If you know that a track contains events which you want to ignore you
+        /// can exclude it for more speed.
+        /// \param trk_num the number of the track
+        \\\ \param f **true** for enabling, **false** for disabling.
+        void                        SetEnable(unsigned int trk_num, bool f);
         /// Sets the given MIDIMultiTrackIteratorState as current state.
         void                        SetState(const MIDIMultiTrackIteratorState& s) { state = s; }
         /// Goes to the given time, which becomes the current time, and sets then the current event as the

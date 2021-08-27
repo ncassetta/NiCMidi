@@ -88,6 +88,14 @@ char MIDITrack::GetChannel() {
     return (char)(status & 0xff);
 }
 
+
+int MIDITrack::GetStatus() {
+    if (status & STATUS_DIRTY)
+        Analyze();
+    return status;
+}
+
+
 char MIDITrack::GetType() {
     if (IsEmpty())
         return TYPE_EMPTY;

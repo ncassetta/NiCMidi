@@ -86,7 +86,7 @@ All commands can be given during playback\n";
 //////////////////////////////////////////////////////////////////
 
 
-int main( int argc, char **argv ) {
+int main (int argc, char **argv) {
     MIDIManager::AddMIDITick(&sequencer);
     MIDIManager::AddMIDITick(&recorder);
     text_n.SetSequencer(&sequencer);
@@ -137,10 +137,13 @@ int main( int argc, char **argv ) {
                  << sequencer.GetCurrentBeat() << endl;
         }
         else if(command == "rec") {                 // starts/stops recording
-            if (par1 == "on")
+            if (par1 == "on") {
                 recorder.Start();
-            else {
+                cout << "Recording on" << endl;
+            }
+            else if (par1 == "off") {
                 recorder.Stop();
+                cout << "Recording off" << endl;
                 //sequencer.Load(recorder.GetMultiTrack());
             }
         }

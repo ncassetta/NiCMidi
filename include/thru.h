@@ -73,10 +73,12 @@ class MIDIThru : public MIDITickComponent {
         int                     GetOutChannel() const            { return (int)out_channel; }
         /// Selects the hardware in port from which messages will be received.
         /// This can be done even if thru is already enabled.
-        virtual void            SetInPort(unsigned int port);
+        /// \return **true** if _port_ is a valid port number, **false** otherwise.
+        virtual bool            SetInPort(unsigned int port);
         /// Selects the hardware out port to whom messages will be sent.
         /// This can be done even if thru is already enabled.
-        virtual void            SetOutPort(unsigned int port);
+        /// \return **true** if _port_ is a valid port number, **false** otherwise.
+        virtual bool            SetOutPort(unsigned int port);
         /// Sets the out processor, which can manipulate messages arrived to the in port before they are sent
         /// to the out port (see MIDIProcessor).
         /// If you want to eliminate a processor already set, call it with 0 as parameter (this only sets the processor
@@ -85,11 +87,13 @@ class MIDIThru : public MIDITickComponent {
         /// Sets the channel for incoming thru messages.
         /// \param chan 0 ... 15: the thru will accept only messages with a specific channel; -1: the thru will
         /// accept all messages coming from the in port (this is the default). Non channel messages are always received.
-        virtual void            SetInChannel(char chan);
+        /// \return **true** if _chan_ is a valid channel number, **false** otherwise.
+        virtual bool            SetInChannel(char chan);
         /// Sets the channel for outgoing thru messages.
         /// \param chan 0 ... 15: the thru will redirect all messages to a specific channel; -1: the thru will leave
         /// channel messages unchanged (this is the default).
-        virtual void            SetOutChannel(char chan);
+        /// \return **true** if _chan_ is a valid channel number, **false** otherwise
+        virtual bool            SetOutChannel(char chan);
         /// Starts the MIDI thru.
         virtual void            Start();
         /// Stops the MIDI thru.

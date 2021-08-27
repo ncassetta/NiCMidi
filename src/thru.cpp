@@ -55,11 +55,11 @@ void MIDIThru::Reset() {
 }
 
 
-void MIDIThru::SetInPort(unsigned int port) {
+bool MIDIThru::SetInPort(unsigned int port) {
     if (!MIDIManager::IsValidInPortNumber(port))
-        return;                                     // avoids out of range errors
+        return false;                               // avoids out of range errors
     if (port == in_port)
-        return;                                     // trying to assign same ports: nothing to do
+        return true;                                // trying to assign same ports: nothing to do
 
     if (IsPlaying()) {
         proc_lock.lock();
@@ -71,14 +71,15 @@ void MIDIThru::SetInPort(unsigned int port) {
     }
     else
         in_port = port;
+    return true;
 }
 
 
-void MIDIThru::SetOutPort(unsigned int port) {
+bool MIDIThru::SetOutPort(unsigned int port) {
     if (!MIDIManager::IsValidOutPortNumber(port))
-        return;                                     // avoids out of range errors
+        return false;                               // avoids out of range errors
     if (port == out_port)
-        return;                                     // trying to assign same ports: nothing to do
+        return true;                                     // trying to assign same ports: nothing to do
 
     if (IsPlaying()) {
         proc_lock.lock();
@@ -90,6 +91,7 @@ void MIDIThru::SetOutPort(unsigned int port) {
     }
     else
         out_port = port;
+    return true;
 }
 
 
@@ -105,7 +107,9 @@ void MIDIThru::SetProcessor(MIDIProcessor* proc) {
 }
 
 
-void MIDIThru::SetInChannel(char chan) {
+bool MIDIThru::SetInChannel(char chan) {
+    if (chan < -1 || chan > 15)                     // avoids out of range errors
+        return false;
     if (IsPlaying()) {
         proc_lock.lock();
         SilentOut();
@@ -114,10 +118,14 @@ void MIDIThru::SetInChannel(char chan) {
     }
     else
         in_channel = chan;
+    return true;
 }
 
 
-void MIDIThru::SetOutChannel(char chan) {
+bool MIDIThru::SetOutChannel(char chan) {
+    if (chan < -1 || chan > 15)                     // avoids out of range errors
+        return false;
+
     if (IsPlaying()) {
         proc_lock.lock();
         SilentOut();
@@ -126,6 +134,7 @@ void MIDIThru::SetOutChannel(char chan) {
     }
     else
         out_channel = chan;
+    return true;
 }
 
 

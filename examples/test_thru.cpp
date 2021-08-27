@@ -107,29 +107,21 @@ int main( int argc, char **argv ) {
             int port = atoi(par1.c_str());
             int chan = -1;                              // all channels
             if (par2.length() > 0)
-                chan = atoi(par2.c_str()) & 0x0f;
-            if (port < 0 || (unsigned)port >= MIDIManager::GetNumMIDIOuts())
-                cout << "Invalid port number" << endl;
-            else {
-                thru.SetOutPort(port);
-                thru.SetOutChannel(chan);
-                cout << "Out port for MIDI thru:\n" << MIDIManager::GetMIDIOutName(thru.GetOutPort())
-                     << "\tChan: " << thru.GetOutChannel() << endl;
-            }
+                chan = atoi(par2.c_str());
+            if (thru.SetOutPort(port) && thru.SetOutChannel(chan))
+                cout << "Out port for MIDI thru:\n" << port << "\tChan: " << chan << endl;
+            else
+                cout << "Invalid parameters";
         }
         else if (command == "inport") {             // changes the midi in port
             int port = atoi(par1.c_str());
             int chan = -1;
             if (par2.length() > 0)
-                chan = atoi(par2.c_str()) & 0x0f;
-            if (port < 0 || (unsigned)port >= MIDIManager::GetNumMIDIIns())
-                cout << "Invalid port number" << endl;
-            else {
-                thru.SetInPort(port);
-                thru.SetInChannel(chan);
-                cout << "In port for MIDI thru:\n" << MIDIManager::GetMIDIInName(thru.GetInPort())
-                     << "\tChan: " << thru.GetInChannel() << endl;
-            }
+                chan = atoi(par2.c_str());
+            if (thru.SetInPort(port) && thru.SetInChannel(chan))
+                cout << "In port for MIDI thru:\n" << port << "\tChan: " << chan << endl;
+            else
+                cout << "Invalid parameters";
         }
         else if (command == "thru") {               // sets the MIDI thru on and off
             if (par1 == "on") {

@@ -74,11 +74,12 @@ MIDISequencerState::~MIDISequencerState() {
 MIDISequencerState::MIDISequencerState(const MIDISequencerState& s) :
     notifier(s.notifier), multitrack(s.multitrack), iterator(s.iterator),
     cur_clock(s.cur_clock), cur_time_ms(s.cur_time_ms), cur_beat(s.cur_beat),
-    cur_measure(s.cur_measure), beat_length(s.beat_length), next_beat_time(s.next_beat_time),
-    tempobpm(s.tempobpm), timesig_numerator(s.timesig_numerator),
+    cur_measure(s.cur_measure), beat_length(s.beat_length), number_of_beats(s.number_of_beats),
+    next_beat_time(s.next_beat_time), tempobpm(s.tempobpm), tempo_scale(100), timesig_numerator(s.timesig_numerator),
     timesig_denominator(s.timesig_denominator), keysig_sharpflat(s.keysig_sharpflat),
     keysig_mode(s. keysig_mode), marker_text(s.marker_text), last_event_track(s.last_event_track),
-    last_beat_time(s.last_beat_time)
+    last_beat_time(s.last_beat_time), ms_per_clock(s.ms_per_clock), last_time_ms(s.last_time_ms),
+    last_tempo_change(s.last_tempo_change)
 {
     track_states.resize(multitrack->GetNumTracks());
     for (unsigned int i = 0; i < track_states.size(); i++)
@@ -95,8 +96,10 @@ const MIDISequencerState& MIDISequencerState::operator= (const MIDISequencerStat
     cur_beat = s.cur_beat;
     cur_measure = s.cur_measure;
     beat_length = s.beat_length;
+    number_of_beats = s.number_of_beats;
     next_beat_time = s.next_beat_time;
     tempobpm = s.tempobpm;
+    tempo_scale = s.tempo_scale;
     timesig_numerator = s.timesig_numerator;
     timesig_denominator = s.timesig_denominator;
     keysig_sharpflat = s.keysig_sharpflat;
@@ -110,6 +113,9 @@ const MIDISequencerState& MIDISequencerState::operator= (const MIDISequencerStat
         track_states[i] = new MIDISequencerTrackState(*s.track_states[i]);
     last_event_track = s.last_event_track;
     last_beat_time = s.last_beat_time;
+    ms_per_clock = s.ms_per_clock;
+    last_time_ms = s.last_time_ms;
+    last_tempo_change = s.last_tempo_change;
 
     return *this;
 }
@@ -123,7 +129,8 @@ void MIDISequencerState::Reset() {
     cur_measure = 0;
     beat_length = next_beat_time = multitrack->GetClksPerBeat();
     tempobpm = MIDI_DEFAULT_TEMPO;
-    timesig_numerator = MIDI_DEFAULT_TIMESIG_NUMERATOR;
+    tempo_scale = 100;
+    timesig_numerator = number_of_beats = MIDI_DEFAULT_TIMESIG_NUMERATOR;
     timesig_denominator = MIDI_DEFAULT_TIMESIG_DENOMINATOR;
     keysig_sharpflat = MIDI_DEFAULT_KEYSIG_KEY;
     keysig_mode = MIDI_DEFAULT_KEYSIG_MODE;
@@ -140,40 +147,39 @@ void MIDISequencerState::Reset() {
             track_states[i]->Reset();
     last_event_track = -1;
     last_beat_time = 0;
+    ms_per_clock = 6000000.0 / (MIDI_DEFAULT_TEMPO * tempo_scale * multitrack->GetClksPerBeat());
+    last_time_ms = 0;
+    last_tempo_change = 0;
 }
 
 
 bool MIDISequencerState::Process( MIDITimedMessage *msg ) {
-    MIDISequencerTrackState* const t_state = track_states[last_event_track];
-
     // is the event a NoOp?
     if(msg->IsNoOp())
         return false;                           // ignore event.
 
+    // set new time
+    if (msg->GetTime() != cur_clock) {
+        cur_clock = msg->GetTime();
+        cur_time_ms = last_time_ms + (cur_clock - last_tempo_change) * ms_per_clock;
+    }
+
     // is the event a beat marker?
-    else if (msg->IsBeatMarker()) {
+    if (msg->IsBeatMarker()) {
         // update our beat count
-        int new_beat = cur_beat;
-        int new_measure = cur_measure;
         if ( last_beat_time != next_beat_time ) {               // if at start, we must not upgrade beat count
             // upgrade beat number
-            new_beat++;
-            int number_of_beats = multitrack->GetClksPerBeat() *// quarter length in MIDI ticks
-                                  timesig_numerator *           // number of symbolic beats
-                                  4 / timesig_denominator /     // length of a symbolic beat in quarters
-                                  beat_length;                  // beat length in MIDI ticks
-            if(new_beat >= number_of_beats) {
+            cur_beat++;
+            if(cur_beat >= number_of_beats) {
                 // upgrade measure number
-                new_beat = 0;
-                ++new_measure;
+                cur_beat = 0;
+                ++cur_measure;
             }
         }
 
         // set the status parameters
         last_beat_time = cur_clock;
         next_beat_time += beat_length;
-        cur_beat = new_beat;
-        cur_measure = new_measure;
 
         // now notify the GUI that the beat number (and eventually the measure) is changed
         if(cur_beat == 0)
@@ -185,6 +191,7 @@ bool MIDISequencerState::Process( MIDITimedMessage *msg ) {
 
     // is the event a MIDI channel message?
     else if(msg->IsChannelMsg()) {
+        MIDISequencerTrackState* const t_state = track_states[last_event_track];
         if( msg->GetType()==PITCH_BEND )        // is it a bender event?
             // yes, remember the bender wheel value
              t_state->bender_value = msg->GetBenderValue();
@@ -225,8 +232,12 @@ bool MIDISequencerState::Process( MIDITimedMessage *msg ) {
 
     // is the event a meta-event?
     else if(msg->IsMetaEvent()) {
+        MIDISequencerTrackState* const t_state = track_states[last_event_track];    // needed in META TRACK NAME
         if(msg->IsTempo()) {                    // is it a tempo event?
             tempobpm = msg->GetTempo();
+            ms_per_clock = 6000000.0 / (tempobpm * tempo_scale * multitrack->GetClksPerBeat());
+            last_time_ms = cur_time_ms;
+            last_tempo_change = cur_clock;
             //if(tempobpm < 1 )
             //tempobpm=MIDI_DEFAULT_TEMPO;
             Notify(MIDISequencerGUIEvent::GROUP_CONDUCTOR,
@@ -251,6 +262,10 @@ bool MIDISequencerState::Process( MIDITimedMessage *msg ) {
             }
             // adjust the next beat time (this was set according to the old value)
             next_beat_time = next_beat_time + beat_length - old_beat_length;
+            number_of_beats = multitrack->GetClksPerBeat() *    // quarter length in MIDI ticks
+                              timesig_numerator *               // number of symbolic beats
+                              4 / timesig_denominator /         // length of a symbolic beat in quarters
+                              beat_length;                      // beat length in MIDI ticks
 
             // notify the GUI of the timesig change
             Notify(MIDISequencerGUIEvent::GROUP_CONDUCTOR,
@@ -308,10 +323,10 @@ void MIDISequencerState::NotifyTrack(int item) const {
 
 MIDISequencer::MIDISequencer (MIDIMultiTrack *m, MIDISequencerGUINotifier *n) :
     MIDITickComponent(PR_SEQ, StaticTickProc),
-    tempo_scale (100), repeat_play_mode(false),
+    repeat_play_mode(false),
     repeat_start_meas(0), repeat_end_meas(0),
     time_shift_mode(false),
-    auto_stop(true),
+    play_mode(PLAY_BOUNDED),
     track_processors(m->GetNumTracks(), 0),
     //time_shifts(m->GetNumTracks(), 0),
     //track_ports(m->GetNumTracks(), 0),
@@ -350,9 +365,8 @@ void MIDISequencer::Reset() {
         state.multitrack->GetTrack(i)->SetTimeShift(0);
         //track_ports[i] = 0;
     }
-    tempo_scale = 100;
     SetTimeShiftMode(false);
-    auto_stop = true;
+    play_mode = PLAY_BOUNDED;
     bool notifier_mode = false;
     if(state.notifier) {
         notifier_mode = state.notifier->GetEnable();
@@ -375,8 +389,9 @@ MIDIClockTime MIDISequencer::GetCurrentMIDIClockTime() const {
     MIDIClockTime time = state.cur_clock;
     if (IsPlaying()) {
         float ms_offset = GetCurrentTimeMs() - state.cur_time_ms;
-        float ms_per_clock = 60000.0 / (GetTempoWithScale() * state.multitrack->GetClksPerBeat());
-        time += (MIDIClockTime)(ms_offset / ms_per_clock);
+        //float ms_per_clock = 60000.0 / (GetTempoWithScale() * state.multitrack->GetClksPerBeat());
+        // now calculated by the state
+        time += (MIDIClockTime)(ms_offset / state.ms_per_clock);
     }
     return time;
 }
@@ -406,7 +421,7 @@ void MIDISequencer::SetRepeatPlay(int on_off, int start_meas, int end_meas) {
 
 void MIDISequencer::SetTempoScale(unsigned int scale) {
     proc_lock.lock();
-    tempo_scale = scale;
+    state.tempo_scale = scale;
     if (IsPlaying()) {
         dev_time_offset = state.cur_time_ms = MIDItoMs(state.cur_clock);
         sys_time_offset = MIDITimer::GetSysTimeMs();
@@ -436,9 +451,14 @@ void MIDISequencer::SetState(MIDISequencerState* s) {
 }
 
 
-void MIDISequencer::SetAutoStop(bool f) {
+void MIDISequencer::SetPlayMode(int mode) {
     proc_lock.lock();
-    auto_stop = f;
+    play_mode = mode;
+    MIDIClockTime cur_time = 0;
+    // if we have set bounded play and are after the last event
+    // we must go to last event time
+    if (play_mode == PLAY_BOUNDED && !GetNextEventTime(&cur_time))
+        GoToTime(state.multitrack->GetEndTime());
     proc_lock.unlock();
 }
 
@@ -586,7 +606,7 @@ void MIDISequencer::GoToZero() {
     }
     if (IsPlaying()) {
         // update real time parameters
-        dev_time_offset = state.cur_time_ms = MIDItoMs(state.cur_clock);
+        dev_time_offset = 0.0;
         sys_time_offset = MIDITimer::GetSysTimeMs();
         MIDIManager::AllNotesOff();
     }
@@ -632,8 +652,9 @@ bool MIDISequencer::GoToTime(MIDIClockTime time_clk) {
             state.iterator.SetState(istate);    // restore the iterator state, so ev is the next event
         }
         else {                          // next event is after time_clk : set cur_time to time_clk
+            MIDIClockTime offset = time_clk - state.cur_clock;
             state.cur_clock = time_clk;
-            state.cur_time_ms = MIDItoMs(time_clk);
+            state.cur_time_ms += offset * state.ms_per_clock;
         }
     }
 
@@ -643,7 +664,7 @@ bool MIDISequencer::GoToTime(MIDIClockTime time_clk) {
         ScanEventsAtThisTime();
         if (IsPlaying()) {
             // update real time parameters
-            dev_time_offset = state.cur_time_ms = MIDItoMs(state.cur_clock);
+            dev_time_offset = state.cur_time_ms;
             sys_time_offset = MIDITimer::GetSysTimeMs();
             MIDIManager::AllNotesOff();
         }
@@ -684,7 +705,6 @@ bool MIDISequencer::GoToTimeMs(float time_ms) {
     float t;
     int trk;
     MIDITimedMessage msg;
-    float tscale = tempo_scale * 0.01;
 
     while (state.cur_time_ms < time_ms) {
         if (!GetNextEventTimeMs(&t)) {  // no other events: we can't reach time_clk and return false
@@ -700,10 +720,10 @@ bool MIDISequencer::GoToTimeMs(float time_ms) {
             state.iterator.SetState(istate);    // restore the iterator state, so ev is the next event
         }
         else {                          // next event is after time_clk : set cur_time to time_clk
-            float delta_t_ms = t - time_ms;
-            float ms_per_clock = 6000000.0 / (state.tempobpm *    // see MIDIToMs()
-                    tscale * state.multitrack->GetClksPerBeat());
-            state.cur_clock += (MIDIClockTime)(delta_t_ms / ms_per_clock);
+            float offset_ms = time_ms - state.cur_time_ms;
+            //float ms_per_clock = 6000000.0 / (state.tempobpm *    // see MIDIToMs()
+            //        tscale * state.multitrack->GetClksPerBeat());
+            state.cur_clock += (MIDIClockTime)(offset_ms / state.ms_per_clock);
             state.cur_time_ms = time_ms;
         }
     }
@@ -714,7 +734,7 @@ bool MIDISequencer::GoToTimeMs(float time_ms) {
         ScanEventsAtThisTime();
         if (IsPlaying()) {
             // update real time parameters
-            dev_time_offset = state.cur_time_ms = MIDItoMs(state.cur_clock);
+            dev_time_offset = state.cur_time_ms;
             sys_time_offset = MIDITimer::GetSysTimeMs();
             MIDIManager::AllNotesOff();
         }
@@ -778,7 +798,7 @@ bool MIDISequencer::GoToMeasure (unsigned int measure, unsigned int beat) {
         ScanEventsAtThisTime();
         if (IsPlaying()) {
             // update real time parameters
-            dev_time_offset = state.cur_time_ms = MIDItoMs(state.cur_clock);
+            dev_time_offset = state.cur_time_ms;
             sys_time_offset = MIDITimer::GetSysTimeMs();
             MIDIManager::AllNotesOff();
         }
@@ -801,16 +821,15 @@ bool MIDISequencer::GetNextEvent(int *trk_num, MIDITimedMessage *msg) {
 
     proc_lock.lock();
     // ask the iterator for the current event time
-    if( state.iterator.GetNextEventTime(&t) ) {
+    if (state.iterator.GetNextEventTime(&t)) {
+        // now auto set by state
         // move current time forward one event
-        MIDIClockTime new_clock;
-        GetNextEventTime(&new_clock);
-        double new_time_ms = MIDItoMs(new_clock);
-
-        // must set cur_clock AFTER GetNextEventTimeMs() is called
-        // since GetNextEventTimeMs() uses cur_clock to calculate
-        state.cur_clock = new_clock;
-        state.cur_time_ms = new_time_ms;
+        //MIDIClockTime new_clock;
+        //GetNextEventTime(&new_clock);
+        //if (new_clock != state.cur_clock) {
+        //    state.cur_time_ms = MIDItoMs(new_clock);
+        //    state.cur_clock = new_clock;
+        //}
 
         // is the next beat marker before this event?
         if(state.next_beat_time <= t) {
@@ -821,7 +840,6 @@ bool MIDISequencer::GetNextEvent(int *trk_num, MIDITimedMessage *msg) {
             // put current info into beat marker message
             beat_marker_msg.SetTime(state.next_beat_time);
             *msg = beat_marker_msg;
-
             state.Process(msg);
         }
         else    {   // this event comes before the next beat
@@ -840,6 +858,30 @@ bool MIDISequencer::GetNextEvent(int *trk_num, MIDITimedMessage *msg) {
         }
         ret = true;
     }
+    // we are after the last event, but must continue to play sending
+    // only beat markers
+    else if (play_mode == PLAY_UNBOUNDED) {
+        // move current time forward one event
+        //MIDIClockTime new_clock;
+        //GetNextEventTime(&new_clock);
+        //double new_time_ms = MIDItoMs(new_clock);
+
+        // must set cur_clock AFTER GetNextEventTimeMs() is called
+        // since GetNextEventTimeMs() uses cur_clock to calculate
+        //state.cur_clock = new_clock;
+        //state.cur_time_ms = new_time_ms;
+
+        // the event is surely a beat marker
+        // say this event came on track 0, the conductor track
+        state.last_event_track = *trk_num = 0;
+
+        // put current info into beat marker message
+        beat_marker_msg.SetTime(state.next_beat_time);
+        *msg = beat_marker_msg;
+
+        state.Process(msg);
+        //ret = true;
+    }
     proc_lock.unlock();
     return ret;
 }
@@ -857,6 +899,8 @@ bool MIDISequencer::GetNextEventTime(MIDIClockTime *time_clk) {
             // ok, the next event is a beat - return the next beat time
             *time_clk = state.next_beat_time;
     }
+    else if (play_mode == PLAY_UNBOUNDED)
+        *time_clk = state.next_beat_time;
     proc_lock.unlock();
     return ret;
 }
@@ -867,16 +911,17 @@ bool MIDISequencer::GetNextEventTimeMs(float *time_ms) {
     proc_lock.lock();
     bool ret = GetNextEventTime(&t);
 
-    if(ret)
-        *time_ms = MIDItoMs(t);
+    if(ret || play_mode == PLAY_UNBOUNDED) {
+        MIDIClockTime offset = t - state.cur_clock;
+        *time_ms = state.cur_time_ms + offset * state.ms_per_clock;
+    }
     proc_lock.unlock();
     return ret;
 }
 
-
+/*
 float MIDISequencer::MIDItoMs(MIDIClockTime t) {
     proc_lock.lock();
-    MIDITrack* track = state.multitrack->GetTrack(0);
     int ev_num = 0;
     MIDIClockTime base_t = 0, delta_t = 0, now_t = 0;
     double ms_time = 0.0;
@@ -885,7 +930,12 @@ float MIDISequencer::MIDItoMs(MIDIClockTime t) {
     // it wil be changed (see below) at first tempo change message
     float ms_per_clock = 6000000.0 / (MIDI_DEFAULT_TEMPO * (float)tempo_scale *
                                        state.multitrack->GetClksPerBeat());
-
+    // if the multitrack has no tracks it is sufficient a multiplication
+    if (state.multitrack->GetNumTracks() == 0) {
+        proc_lock.unlock();
+        return ms_per_clock * t;
+    }
+    MIDITrack* track = state.multitrack->GetTrack(0);
     while (now_t < t) {
         if (!track->IsValidEventNum(ev_num) || track->GetEventAddress(ev_num)->GetTime() >= t) {
             // next message doesn't exists or is at t or after t
@@ -924,6 +974,180 @@ float MIDISequencer::MIDItoMs(MIDIClockTime t) {
     proc_lock.unlock();
     return ms_time;
 }
+*/
+
+
+float MIDISequencer::MIDItoMs(MIDIClockTime t) {
+    if (t == 0)
+        return 0.0;
+    MIDIMultiTrackIterator iter(state.multitrack);
+    proc_lock.lock();
+    for (unsigned int i = 0; i < GetNumTracks(); i++) {
+        int trk_status = GetMultiTrack()->GetTrack(i)->GetStatus();
+        if (!(trk_status & MIDITrack::HAS_MAIN_META))
+            iter.SetEnable(i, false);
+    }
+    MIDIClockTime last_tempo_t = 0, delta_t = 0, now_t = 0;
+    double ms_time = 0.0;
+    int trk_num;
+    MIDITimedMessage* msg;
+    // we initialize this variable in the case of no tempo signature at the beginning
+    // it wil be changed (see below) at first tempo change message
+    double ms_per_clock = 6000000.0 / (MIDI_DEFAULT_TEMPO * (float)state.tempo_scale *
+                                       GetClksPerBeat());
+
+    while (iter.GetNextEvent(&trk_num, &msg)) {
+        now_t = msg->GetTime();
+        // calculate delta_time in MIDI clocks
+        delta_t = now_t - last_tempo_t;
+        double delta_ms = delta_t * ms_per_clock;
+        if (ms_time + delta_ms >= t)
+            break;
+
+        // if we have a tempo change must calculate the time
+        // in msecs between the last tempo change and now
+        if (msg->IsTempo()) {
+            // and add it in msecs to ms_time
+            ms_time += delta_ms;
+            last_tempo_t = now_t;
+
+            // calculate new milliseconds per clock: this comes from
+            //  -true_bpm = old_tempo * tempo_scale / 100
+            //  -clocks_per_sec = true_bpm * clks_per_beat / 60
+            //  -clocks_per_ms = clocks_per_sec / 1000
+            //  -ms_per_clock = 1 / clocks_per_ms
+            ms_per_clock = 6000000.0 / (msg->GetTempo() *
+                           (double)state.tempo_scale * GetClksPerBeat());
+        }
+    }
+    proc_lock.unlock();
+    ms_time += (t - last_tempo_t) * ms_per_clock;
+    return ms_time;
+}
+
+
+
+/*
+MIDIClockTime MIDISequencer::MeasToMIDI(unsigned int meas, unsigned int beat, unsigned int offset) {
+    unsigned int t_meas = 0, t_beat = 0;
+    MIDIClockTime delta_t = 0, now_t = 0,  last_timesig_t = 0;
+    MIDIClockTime time = 0;
+    int trk_num;
+    MIDITimedMessage* msg;
+    // we initialize this variables in the case of no tempo signature at the beginning
+    // they will be changed (see below) at first time change message
+    MIDIClockTime clks_per_beat = GetClksPerBeat();
+    MIDIClockTime clks_per_meas = clks_per_beat * MIDI_DEFAULT_TIMESIG_NUMERATOR;
+
+    proc_lock.lock();
+    // if the multitrack has no tracks it is sufficient a multiplication
+    if (state.multitrack->GetNumTracks() == 0)
+        return meas * clks_per_meas + beat * clks_per_beat + offset;
+    MIDIMultiTrackIterator iter(state.multitrack);
+    while (t_meas < meas || (t_meas == meas && t_beat < beat)) {
+        if (!iter.GetNextEvent(&trk_num, &msg)) {
+            time += delta_t;
+            break;
+        }
+        now_t = msg->GetTime();
+        delta_t = now_t - last_timesig_t;
+        if (delta_t >= clks_per_meas) {
+            unsigned int new_measures = delta_t / clks_per_meas;
+            t_meas += new_measures;
+            delta_t -= (clks_per_meas * new_measures);
+            time = last_timesig_t = now_t;
+        }
+        if (msg->IsTimeSig()) {
+            // now we must calculate the new values for
+            // clks_per_meas and clks_per_beat
+            int metro_mode = MIDISequencerState::metronome_mode;
+            unsigned char num = msg->GetTimeSigNumerator();
+            unsigned char den = msg->GetTimeSigDenominator();
+            // in this mode the metronome length follows the MIDI message setting
+            if (metro_mode == MIDISequencer::FOLLOW_MIDI_TIMESIG_MESSAGE)
+                clks_per_beat = msg->GetSysEx()->GetData(2) * GetClksPerBeat() / 24;
+            else {
+                // in this mode the metronome beat follows the timesig denominator
+                clks_per_beat = GetClksPerBeat() * 4 / den;
+                if (metro_mode == MIDISequencer::FOLLOW_THEORETIC_VALUE && !(num % 3) && num != 3)
+                    // in this mode the metronome is multiplied by 3 if this i s a compound time
+                    clks_per_beat *= 3;
+            }
+            clks_per_meas = GetClksPerBeat() *      // quarter length in MIDI ticks
+                            num *                   // number of symbolic beats
+                            4 / den;                // length of a symbolic beat in quarters
+        }
+    }
+    proc_lock.unlock();
+    return time;
+}
+*/
+
+
+
+MIDIClockTime MIDISequencer::MeasToMIDI(unsigned int meas, unsigned int beat, unsigned int offset) {
+
+    MIDIMultiTrackIterator iter(state.multitrack);
+    proc_lock.lock();
+    for (unsigned int i = 0; i < GetNumTracks(); i++) {
+        int trk_status = GetMultiTrack()->GetTrack(i)->GetStatus();
+        if (!(trk_status & MIDITrack::HAS_MAIN_META))
+            iter.SetEnable(i, false);
+    }
+    unsigned int t_meas = 0;
+    MIDIClockTime last_timesig_t = 0, delta_t = 0, now_t = 0;
+    MIDIClockTime time = 0;
+    int trk_num;
+    MIDITimedMessage* msg;
+    // we initialize this variables in the case of no tempo signature at the beginning
+    // they will be changed (see below) at first time change message
+    MIDIClockTime clks_per_beat = GetClksPerBeat();
+    MIDIClockTime clks_per_meas = clks_per_beat * MIDI_DEFAULT_TIMESIG_NUMERATOR;
+
+    proc_lock.lock();
+    while (iter.GetNextEvent(&trk_num, &msg)) {
+        now_t = msg->GetTime();
+        // calculate the delta time from the last time change
+        delta_t = now_t - last_timesig_t;
+        if (delta_t >= clks_per_meas) {
+            unsigned int new_measures = delta_t / clks_per_meas;
+            if (t_meas + new_measures >= meas)
+                break;
+            t_meas += new_measures;
+            delta_t -= (clks_per_meas * new_measures);
+            time = last_timesig_t = now_t;
+        }
+        if (msg->IsTimeSig()) {
+            // now we must calculate the new values for
+            // clks_per_meas and clks_per_beat
+            int metro_mode = MIDISequencerState::metronome_mode;
+            unsigned char num = msg->GetTimeSigNumerator();
+            unsigned char den = msg->GetTimeSigDenominator();
+            // in this mode the metronome length follows the MIDI message setting
+            if (metro_mode == MIDISequencer::FOLLOW_MIDI_TIMESIG_MESSAGE)
+                clks_per_beat = msg->GetSysEx()->GetData(2) * GetClksPerBeat() / 24;
+            else {
+                // in this mode the metronome beat follows the timesig denominator
+                clks_per_beat = GetClksPerBeat() * 4 / den;
+                if (metro_mode == MIDISequencer::FOLLOW_THEORETIC_VALUE && !(num % 3) && num != 3)
+                    // in this mode the metronome is multiplied by 3 if this i s a compound time
+                    clks_per_beat *= 3;
+            }
+            clks_per_meas = GetClksPerBeat() *      // quarter length in MIDI ticks
+                            num *                   // number of symbolic beats
+                            4 / den;                // length of a symbolic beat in quarters
+        }
+    }
+    proc_lock.unlock();
+    time += (clks_per_meas * (meas - t_meas) + clks_per_beat * beat + offset);
+    return time;
+}
+
+
+
+
+
+
 
 
 // Inherited from MIDITICK
@@ -973,20 +1197,18 @@ void MIDISequencer::TickProc(tMsecs sys_time) {
 
     proc_lock.lock();
 
-    static unsigned int times;
-    times++;
-    if (!(times % 100))
-        std::cout << "MIDISequencer::TickProc() " << times << " times" << std::endl;
+    //static unsigned int times;
+    //times++;
+    //if (!(times % 100))
+    //     std::cout << "MIDISequencer::TickProc() " << times << " times" << std::endl;
 
     // if we are in repeat mode, repeat if we hit end of the repeat region
     if(repeat_play_mode && GetCurrentMeasure() >= repeat_end_meas) {
         // yes we hit the end of our repeat block
         // shut off all notes on
         MIDIManager::AllNotesOff();
-
         // now move the sequencer to our start position
         GoToMeasure(repeat_start_meas);
-
         // our current raw system time is now the new system time offset
         sys_time_offset = sys_time;
         // sys_time = 0;
@@ -995,36 +1217,30 @@ void MIDISequencer::TickProc(tMsecs sys_time) {
         // time in milliseconds of the sequence start point
          dev_time_offset = (tMsecs)GetCurrentTimeMs();
     }
-
     // find all events that exist before or at this time,
     // but only if we have space in the output queue to do so!
     // also limit ourselves to 100 midi events max.
     int output_count = 100;
     tMsecs cur_time = sys_time - sys_time_offset + dev_time_offset;
-
     while(
-        GetNextEventTimeMs(&next_event_time)
+        (GetNextEventTimeMs(&next_event_time) || play_mode == PLAY_UNBOUNDED)
         && next_event_time <= cur_time
         && (--output_count) > 0 ) {
-
         // found an event! get it!
         if(GetNextEvent(&msg_track, &msg) && !msg.IsMetaEvent())
-
             // tell the driver the send this message now
             MIDIManager::GetOutDriver(GetTrackOutPort(msg_track))->OutputMessage(msg);
     }
-
     // auto stop at end of sequence
-    if( !(repeat_play_mode && GetCurrentMeasure() >= repeat_end_meas) &&
-        !GetNextEventTimeMs(&next_event_time) && auto_stop) {
+    MIDIClockTime tmp;
+    if (!(repeat_play_mode && GetCurrentMeasure() >= repeat_end_meas) &&
+        !GetNextEventTime(&tmp) && (play_mode == PLAY_BOUNDED)) {
         // no events left
-
         std::thread(StaticStopProc, this).detach();
         std::cout << "Stopping the sequencer: StaticStopProc called" << std::endl;
     }
     proc_lock.unlock();
 }
-
 
 
 void MIDISequencer::ScanEventsAtThisTime() {
