@@ -30,7 +30,7 @@
 MIDIThru::MIDIThru() : MIDITickComponent(PR_PRE_SEQ, StaticTickProc), in_port(0), out_port(0), in_channel(-1),
                                          out_channel(-1), processor(0)
 {
-    std::cout << "MIDIThru constructor" << std::endl;
+    //std::cout << "MIDIThru constructor" << std::endl;
     //check if in and out ports exist
     if (!MIDIManager::IsValidInPortNumber(0) || !MIDIManager::IsValidOutPortNumber(0))
         throw RtMidiError("MIDIThru needs almost a MIDI in and out port in the system\n", RtMidiError::INVALID_DEVICE);
@@ -38,7 +38,7 @@ MIDIThru::MIDIThru() : MIDITickComponent(PR_PRE_SEQ, StaticTickProc), in_port(0)
 
 
 MIDIThru::~MIDIThru() {
-    std::cout << "MIDIThru destructor" << std::endl;
+    //std::cout << "MIDIThru destructor" << std::endl;
     Stop();
 }
 
@@ -79,7 +79,7 @@ bool MIDIThru::SetOutPort(unsigned int port) {
     if (!MIDIManager::IsValidOutPortNumber(port))
         return false;                               // avoids out of range errors
     if (port == out_port)
-        return true;                                     // trying to assign same ports: nothing to do
+        return true;                                // trying to assign same ports: nothing to do
 
     if (IsPlaying()) {
         proc_lock.lock();
@@ -174,13 +174,12 @@ void MIDIThru::StaticTickProc(tMsecs sys_time, void* pt) {
 void MIDIThru::TickProc(tMsecs sys_time_)
 {
     proc_lock.lock();
-/*
-    static unsigned int times = 0;
 
-    if (times % 1000 == 0)
-        std::cout << "MIDIThru::TickProc() called " << times * 1000 << " times\n";
+    static unsigned int times = 0;
     times++;
-*/
+    if (!(times % 100))
+        std::cout << "MIDIThru::TickProc() called " << times << " times\n";
+
     MIDIRawMessage rmsg;
     MIDITimedMessage msg;
     MIDIInDriver* in_driver = MIDIManager::GetInDriver(in_port);

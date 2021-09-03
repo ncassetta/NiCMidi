@@ -123,6 +123,13 @@ class MIDISequencerState : public MIDIProcessor {
         /// These are used for notifying the GUI when something happens (a parameter was changed,
         /// current time is moved, etc.)
         void                    NotifyTrack(int item) const;
+        /// Sets the cur time to the given time. This assumes t > cur_time and **no events in the interval**.
+        /// It is used, for example, by the sequencer when it must go to a time with no event, or
+        /// after the end time in UNBOUNDED mode.
+        /// \warning this doesn't check anything and doesn't process any event.
+        void                    GoForwardNoEvent(MIDIClockTime t);
+
+
 
         MIDISequencerGUINotifier* notifier;         ///< The notifier
         MIDIMultiTrack*         multitrack;         ///< The MIDIMultiTrack holding MIDI messages
@@ -289,7 +296,9 @@ class MIDISequencer : public MIDITickComponent {
         /// with 0). If you set an end measure lesser or equal to the start the loop is automatically disabled. If
         /// you leave the default values the measures are left unchanged (useful if you only want to turn on or off the
         /// loop).
-        virtual void                    SetRepeatPlay(int on_off, int start_meas = -1, int end_meas = -1);
+        /// \return **true** if parameters are valid (and the mode has been changed), **false** otherwise (the mode
+        /// has been set to **false**).
+        virtual bool                    SetRepeatPlay(int on_off, int start_meas = -1, int end_meas = -1);
         /// Sets the global tempo scale.
         /// \param scale the percentage: 100 = no scaling, 200 = twice faster, 50 = twice slower, etc.).
         virtual void                    SetTempoScale(unsigned int scale);
@@ -297,7 +306,7 @@ class MIDISequencer : public MIDITickComponent {
         /// want to see the original (not shifted) MIDI time of events, while during playback you want them
         /// shifted. So you can turn time shifting on and off (and all the time related methods of the sequencer
         /// will return the shifted or the original time of events). The Start() method sets time shifting on,
-        /// while the Stop() resets it to your choice, so usually if you can leave time shifting off.
+        /// while the Stop() resets it to your choice, so usually you can leave time shifting off.
         virtual void                    SetTimeShiftMode(bool f);
         /// Copies a given MIDISequencerState into the internal sequencer state. This method is thread-safe and
         /// can be called during playback. Notifies the GUI a GROUP_ALL event to signify a full GUI reset.
@@ -311,7 +320,8 @@ class MIDISequencer : public MIDITickComponent {
         /// + PLAY_BOUNDED: The sequencer auto stops after the last event. You cannot set the 'now' time after it
         /// + PLAY_UNBOUNDED: The sequencer doesn't stops after last event, but continues playing sending only beat
         /// markers events.
-        /// \note The play mode affects the behavior of the methods TODO:
+        /// \note The play mode affects the behavior of the methods GetNextEvent(), GetNextEventTime(), GetNextEventTimeMs(),
+        /// GoToTime(), GoToTimeMs(), GoToMeasure().
         virtual void                    SetPlayMode(int mode);
         /// Sets the MIDI out port for a track. This method is thread-safe and can be called during playback
         /// (in this case the sequencer will send a MIDI AllNotesOff message to the old port).
@@ -370,7 +380,8 @@ class MIDISequencer : public MIDITickComponent {
         /// and can be called during playback. Notifies the GUI a GROUP_ALL event to signify a full GUI reset
         /// \param time_clk the new time in MIDI ticks
         /// \return **true** if the new time is effectively reached, **false** otherwise (_time_clk_ is after
-        /// the end of the song: in this case the sequencer is leaved in its original state)
+        /// the end of the song and the play mode is set to PLAY_BOUNDED: in this case the sequencer is leaved
+        ///in its original state)
         virtual bool                    GoToTime (MIDIClockTime time_clk);
         /// Same as GoToTime(), but the time is given in milliseconds.
         /// \return see GoToTime()
@@ -386,13 +397,20 @@ class MIDISequencer : public MIDITickComponent {
         /// \param[out] trk_num will return the track number of the next event
         /// \param[out] msg will return the MIDI event
         /// \return **true** if there is effectively a next event (and the parameters are valid), **false** otherwise
-        /// (parameters are undefined and the sequencer is leaved in its original state)
+        ///
+        /// \return **true** if there is effectively a next event (we are not at the end of the song or the
+        /// play mode is set to PLAY_UNBOUNDED) , **false** otherwise (in this case *trk_num and *msg are
+        /// undefined and the sequencer is leaved in its original state).
+        /// \note if we set the play mode to PLAY_UNBOUNDED and go beyond the end of song this will return
+        /// the next beat event (on track 0).
         virtual bool                    GetNextEvent (int *trk_num, MIDITimedMessage *msg);
         /// Gets the time of the next event (it can be different from current time if at current time there
         /// are not events).
         /// \param[out] time_clk: will return the requested time in MIDI ticks from the beginning
-        /// \return **true** if there is effectively a next event (and *time_clk is a valid time), **false** if we are at
-        /// the end of the song (*time_clk is undefined)
+        /// \return **true** if there is effectively a next event (we are not at the end of the song or the
+        /// play mode is set to PLAY_UNBOUNDED) , **false** otherwise (in this case *time_clk is undefined).
+        /// \note if we set the play mode to PLAY_UNBOUNDED and go beyond the end of song this will return
+        /// the time of the next beat.
         virtual bool                    GetNextEventTime (MIDIClockTime *time_clk);
         /// Same of GetNextEventTime(), but time is returned in milliseconds from the beginning.
         virtual bool                    GetNextEventTimeMs (float *time_ms);
@@ -459,7 +477,7 @@ class MIDISequencer : public MIDITickComponent {
         unsigned int                    repeat_start_meas;  // The loop start measure
         unsigned int                    repeat_end_meas;    // The loop end measure
         bool                            time_shift_mode;    // The time shift on/off (during playback time shift is always on)
-        bool                            play_mode;          // Auto stop mode on/off
+        char                            play_mode;          // PLAY_BOUNDED or PLAY_UNBOUNDED
 
         std::vector<MIDIProcessor*>     track_processors;   // A MIDIProcessor for every track
         //std::vector<int>                time_shifts;        // A time shift (in MIDI ticks) for every track

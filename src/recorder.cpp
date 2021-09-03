@@ -32,31 +32,36 @@
 RecNotifier::RecNotifier(MIDISequencer* seq) :
     MIDISequencerGUINotifier(seq),
     meas_note(DEFAULT_MEAS_NOTE), beat_note(DEFAULT_BEAT_NOTE),
-    port(0), chan(9) {
+    port(0), chan(9), num_beats(1), other_notifier(0) {
     on_msg.SetNoteOn(chan, 0, 100);
     off_msg.SetNoteOn(chan, 0, 0);
 }
 
 void RecNotifier::Notify(const MIDISequencerGUIEvent &ev) {
-// reworked with an unique call to ost <<, so that there's no trouble with
-// cout call in other threads. (Crashed???)
-    if (sequencer == 0) return;
     if (en) {               // Metronome enabled
         if (ev.GetGroup() == MIDISequencerGUIEvent::GROUP_TRANSPORT) {
-            MIDIManager::GetOutDriver(port)->OutputMessage(off_msg);
             if (ev.GetItem() == MIDISequencerGUIEvent::GROUP_TRANSPORT_MEASURE) {
+                MIDIManager::GetOutDriver(port)->OutputMessage(off_msg);
                 on_msg.SetNote(meas_note);
                 off_msg.SetNote(meas_note);
-                std::cout << "Meas" << std::endl;
+                on_msg.SetChannel(chan);
+                off_msg.SetChannel(chan);
+                MIDIManager::GetOutDriver(port)->OutputMessage(on_msg);
+                num_beats = 0;
+                //std::cout << "Meas" << std::endl;
             }
             else if (ev.GetItem() == MIDISequencerGUIEvent::GROUP_TRANSPORT_BEAT) {
-                on_msg.SetNote(beat_note);
-                off_msg.SetNote(beat_note);
-                std::cout << "Beat" << std::endl;
+                if (num_beats != 0) {
+                    MIDIManager::GetOutDriver(port)->OutputMessage(off_msg);
+                    on_msg.SetNote(beat_note);
+                    off_msg.SetNote(beat_note);
+                    //std::cout << "Beat" << std::endl;
+                    on_msg.SetChannel(chan);
+                    off_msg.SetChannel(chan);
+                    MIDIManager::GetOutDriver(port)->OutputMessage(on_msg);
+                }
+                num_beats++;
             }
-            on_msg.SetChannel(chan);
-            off_msg.SetChannel(chan);
-            MIDIManager::GetOutDriver(port)->OutputMessage(on_msg);
         }
         if (other_notifier)
             other_notifier->Notify(ev);
@@ -71,7 +76,9 @@ void RecNotifier::Notify(const MIDISequencerGUIEvent &ev) {
 MIDIRecorder::MIDIRecorder(MIDISequencer* const s) :
     MIDITickComponent(PR_POST_SEQ, StaticTickProc),
     seq(s), rec_start_time(0), rec_end_time(TIME_INFINITE),
-    notifier(s), rec_on(false)
+    rec_mode(REC_OVER), notifier(s),
+    old_seq_mode(MIDISequencer::PLAY_BOUNDED),
+    rec_on(false)
 {
     tracks = new MIDIMultiTrack();
     seq_tracks = s->GetState()->multitrack;
@@ -80,6 +87,11 @@ MIDIRecorder::MIDIRecorder(MIDISequencer* const s) :
 
 MIDIRecorder::~MIDIRecorder() {
     Stop();
+    while (!undo_stack.empty()) {
+        MIDIMultiTrack* t = undo_stack.top();
+        undo_stack.pop();
+        delete t;
+    }
     delete tracks;
 }
 
@@ -90,6 +102,9 @@ void MIDIRecorder::Reset() {
     rec_start_time = 0;
     rec_end_time = TIME_INFINITE;
     en_tracks.resize(0);
+    if (seq->GetState()->notifier)
+        seq->GetState()->Notify(MIDISequencerGUIEvent::GROUP_RECORDER,
+                                MIDISequencerGUIEvent::GROUP_RECORDER_RESET);
 }
 
 
@@ -101,7 +116,7 @@ bool MIDIRecorder::SetTrackInPort(unsigned int trk_num, unsigned int port) {
     else {
         proc_lock.lock();
         if (tracks->IsValidTrackNumber(trk_num)) {
-            tracks->GetTrack(trk_num)->CloseOpenEvents(seq->GetCurrentMIDIClockTime());
+            tracks->GetTrack(trk_num)->CloseOpenEvents(rec_start_time, seq->GetCurrentMIDIClockTime());
             tracks->GetTrack(trk_num)->SetInPort(port);
         }
         else
@@ -120,7 +135,7 @@ bool MIDIRecorder::SetTrackRecChannel(unsigned int trk_num, char chan) {
     else {
         proc_lock.lock();
         if (tracks->IsValidTrackNumber(trk_num)) {
-            seq_tracks->GetTrack(trk_num)->CloseOpenEvents(seq->GetCurrentMIDIClockTime());
+            seq_tracks->GetTrack(trk_num)->CloseOpenEvents(rec_start_time, seq->GetCurrentMIDIClockTime());
             tracks->GetTrack(trk_num)->SetRecChannel(chan);
         }
         else
@@ -128,6 +143,17 @@ bool MIDIRecorder::SetTrackRecChannel(unsigned int trk_num, char chan) {
         proc_lock.unlock();
     }
     return true;
+}
+
+
+bool MIDIRecorder::SetRecMode(int mode) {
+    if (IsPlaying())
+        return false;
+    if (mode == REC_MERGE || mode == REC_OVER) {
+        rec_mode = mode;
+        return true;
+    }
+    return false;
 }
 
 
@@ -230,6 +256,18 @@ bool MIDIRecorder::DisableTrack(unsigned int trk_num) {
 }
 
 
+void MIDIRecorder::UndoRec() {
+    const MIDIMultiTrack* undo_tracks = undo_stack.top();
+    for (unsigned int i = 0; i < undo_tracks->GetNumTracks(); i++)
+        if (!undo_tracks->GetTrack(i)->IsEmpty())
+            *tracks->GetTrack(i) = *undo_tracks->GetTrack(i);
+    undo_stack.pop();
+    if (seq->GetState()->notifier)
+        seq->GetState()->Notify(MIDISequencerGUIEvent::GROUP_ALL);
+    delete undo_tracks;
+}
+
+
 
 
 
@@ -240,14 +278,22 @@ void MIDIRecorder::Start() {
     if (!IsPlaying()) {
         std::cout << "\t\tEntered in MIDIRecorder::Start() ..." << std::endl;
         MIDIManager::OpenInPorts();
-        for (unsigned int i = 0; i < en_tracks.size(); i++)
-            if (en_tracks[i])
+        MIDIMultiTrack* undo_multi = new MIDIMultiTrack(en_tracks.size(), seq_tracks->GetClksPerBeat());
+        for (unsigned int i = 0; i < en_tracks.size(); i++) {
+            if (en_tracks[i]) {
+                undo_multi->SetTrack(seq_tracks->GetTrack(i), i);
                 PrepareTrack(i);
+                if (rec_mode == REC_OVER)
+                    seq_tracks->SetTrack(tracks->GetTrack(i), i);
+            }
+        }
+        undo_stack.push(undo_multi);
+        rec_on.store(false);            // will be set to true by the static StaticProc()
         SetSeqNotifier();
-        dev_time_offset = 0;
-        rec_on.store(true);
+        old_seq_mode = seq->GetPlayMode();
         seq->SetPlayMode(MIDISequencer::PLAY_UNBOUNDED);
         seq->Start();
+        SetDevOffset(seq->GetDevOffset());
         MIDITickComponent::Start();
         std::cout << "\t\t ... Exiting from MIDIRecorder::Start()" << std::endl;
     }
@@ -257,16 +303,25 @@ void MIDIRecorder::Start() {
 void MIDIRecorder::Stop() {
     if (IsPlaying()) {
         std::cout << "\t\tEntered in MIDIRecorder::Stop() ..." << std::endl;
-        rec_on.store(false);
+        if (rec_on.load() == true) {
+            MIDISequencerGUIEvent ev = MIDISequencerGUIEvent(MIDISequencerGUIEvent::GROUP_RECORDER,
+                                                             0,
+                                                             MIDISequencerGUIEvent::GROUP_RECORDER_STOP);
+            notifier.Notify(ev);
+            rec_on.store(false);
+        }
         MIDITickComponent::Stop();
         MIDIManager::CloseInPorts();
         seq->Stop();
         ResetSeqNotifier();
-        for (unsigned int i = 0; i < en_tracks.size(); i++)
-            if (en_tracks[i])
-                *seq->GetMultiTrack()->GetTrack(i) = *tracks->GetTrack(i);
+        for (unsigned int i = 0; i < en_tracks.size(); i++) {
+            if (en_tracks[i]) {
+                tracks->GetTrack(i)->CloseOpenEvents(rec_start_time, rec_end_time);
+                seq_tracks->SetTrack(tracks->GetTrack(i), i);
+            }
+        }
         seq->UpdateStatus();
-        seq->SetPlayMode(MIDISequencer::PLAY_BOUNDED);
+        seq->SetPlayMode(old_seq_mode);
         std::cout << "\t\t ... Exiting from MIDIRecorder::Stop()" << std::endl;
     }
 }
@@ -310,12 +365,12 @@ void MIDIRecorder::PrepareTrack(unsigned int trk_num) {
     // copy the sequencer track into the recorder multitrack
     *track = *seq_tracks->GetTrack(trk_num);
     // truncate notes, pedaland pitch bend at rec_start_time
-    if (rec_start_time> 0)
-        track->CloseOpenEvents(rec_start_time - 1);
+    if (rec_start_time > 0)
+        track->CloseOpenEvents(0, rec_start_time);
     // truncate notes, pedal and pitch bend at rec_end_time (so we
     // don't leave note off messages after rec_end_time)
     if (rec_end_time <= track->GetEndTime())
-        track->CloseOpenEvents(rec_end_time - 1);
+        track->CloseOpenEvents(rec_start_time, rec_end_time);
     // delete all channel events in the recording area
     // start at i = 1 because the i-- at the line below
     for (unsigned int i = 1; i <= track->GetNumEvents(); i++) {
@@ -352,46 +407,72 @@ void MIDIRecorder::StaticTickProc(tMsecs sys_time, void* pt) {
 
 
 void MIDIRecorder::TickProc(tMsecs sys_time) {
-    if (!rec_on.load())
-        return;
-
     proc_lock.lock();
+
+    static unsigned int times;
+    times++;
+    if (!(times % 100))
+        std::cout << "MIDIRecorder::TickProc() " << times << " times" << std::endl;
+
     MIDIClockTime cur_time = seq->GetCurrentMIDIClockTime();
-    if (cur_time < rec_start_time || cur_time > rec_end_time) {
-        proc_lock.unlock();
-        return;
-    }
-    MIDIRawMessage rmsg;
-
-    //tMsecs cur_time = sys_time - sys_time_offset + rec_time_offset;
-    //float clocks_per_ms = (tempobpm * multitrack->GetClksPerBeat()) / 60000.0;
-
-    for (unsigned int i = 0; i < MIDIManager::GetNumMIDIIns(); i++) {
-        if (en_ports.count(i) == 0)
-            continue;
-        MIDIInDriver* port = MIDIManager::GetInDriver(i);
-        port->LockQueue();
-        for (unsigned int j = 0, out_count = 0; j < port->GetQueueSize() && out_count < 100; j++, out_count++) {
-            port->ReadMessage(rmsg, j);
-            //msg_time = (MIDIClockTime)((rmsg.timestamp - sys_time_offset + rec_time_offset) * clocks_per_ms);
-            MIDITimedMessage msg(rmsg.msg);
-            msg.SetTime(cur_time);
-            if (msg.IsChannelMsg()) {
-                char ch1 = msg.GetChannel();
-                for (i = 0; i < tracks->GetNumTracks(); i++) {
-                    if (!en_tracks[i]) continue;
-                    char ch2 = tracks->GetTrack(i)->GetRecChannel();
-                    if (ch1 == ch2 || ch2 == -1)
-                        tracks->InsertEvent(i, msg);
-                }
-                //if ((*en_ports[i])[ch] != 0)
-                //    (*en_ports[i])[ch]->PushEvent(msg);
-                // std::cout << "Added MIDI channel message to track " << std::endl;
-            }
-            else
-                tracks->GetTrack(0)->PushEvent(msg);
+    // we are recording
+    if (cur_time >= rec_start_time && cur_time < rec_end_time) {    // TODO or <= rec_end_rime ??
+        // if this is the first time send a message to the GUI
+        if (rec_on.load() == false) {
+            MIDISequencerGUIEvent ev(MIDISequencerGUIEvent::GROUP_RECORDER,
+                                     0,
+                                     MIDISequencerGUIEvent::GROUP_RECORDER_START);
+            notifier.Notify(ev);
+            rec_on.store(true);
         }
-        port->UnlockQueue();
+        MIDIRawMessage rmsg;
+
+        //tMsecs cur_time = sys_time - sys_time_offset + rec_time_offset;
+        //float clocks_per_ms = (tempobpm * multitrack->GetClksPerBeat()) / 60000.0;
+
+        // collect messages incoming from MIDI in ports
+        for (unsigned int i = 0; i < MIDIManager::GetNumMIDIIns(); i++) {
+            if (en_ports.count(i) == 0)
+                continue;
+            MIDIInDriver* port = MIDIManager::GetInDriver(i);
+            port->LockQueue();
+            for (unsigned int j = 0, out_count = 0; j < port->GetQueueSize() && out_count < 100; j++, out_count++) {
+                port->ReadMessage(rmsg, j);
+                MIDITimedMessage msg(rmsg.msg);
+                msg.SetTime(cur_time);
+                if (msg.IsChannelMsg()) {
+                    // search among the tracks which can accept the message
+                    char ch1 = msg.GetChannel();
+                    for (i = 0; i < tracks->GetNumTracks(); i++) {
+                        if (!en_tracks[i]) continue;
+                        char ch2 = tracks->GetTrack(i)->GetRecChannel();
+                        if (ch1 == ch2 || ch2 == -1) {
+                            // insert the event into the track
+                            tracks->InsertEvent(i, msg);
+                            // tell the driver to send this message
+                            MIDIManager::GetOutDriver(tracks->GetTrack(i)->GetOutPort())->OutputMessage(msg);
+                        }
+                    }
+                    //if ((*en_ports[i])[ch] != 0)
+                    //    (*en_ports[i])[ch]->PushEvent(msg);
+                    // std::cout << "Added MIDI channel message to track " << std::endl;
+                }
+                else
+                    tracks->GetTrack(0)->PushEvent(msg);
+            }
+            port->UnlockQueue();
+        }
+    }
+    // we are after the rec end time
+    else if (cur_time >= rec_end_time) {
+        // if this is the first time send a message to the GUI
+        if (rec_on.load() == true) {
+            MIDISequencerGUIEvent ev(MIDISequencerGUIEvent::GROUP_RECORDER,
+                                     0,
+                                     MIDISequencerGUIEvent::GROUP_RECORDER_STOP);
+            notifier.Notify(ev);
+            rec_on.store(false);
+        }
     }
     proc_lock.unlock();
 }

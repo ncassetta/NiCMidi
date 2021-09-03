@@ -79,9 +79,10 @@ class MIDISequencerGUIEvent {
         /// Main groups
         enum {
             GROUP_ALL = 0,              ///< Generic group: used by the MIDISequencer to request a full GUI reset
-            GROUP_CONDUCTOR,            ///< Conductor group
-            GROUP_TRANSPORT,            ///< Transport group
-            GROUP_TRACK,                ///< Track group (the subgroup is the track of the event)
+            GROUP_CONDUCTOR,            ///< Conductor events (time, tempo, etc)
+            GROUP_TRANSPORT,            ///< Transport events (start, stop, etc)
+            GROUP_TRACK,                ///< Track events (the subgroup is the track of the event)
+            GROUP_RECORDER,             ///< Recorder events
             GROUP_USER                  ///< User defined group
         };
 
@@ -115,9 +116,17 @@ class MIDISequencerGUIEvent {
             GROUP_TRACK_USER            ///< User defined item
         };
 
+        /// Items in recorder group
+        enum {
+            GROUP_RECORDER_RESET,       ///< Recorder reset
+            GROUP_RECORDER_START,       ///< Recording start
+            GROUP_RECORDER_STOP,        ///< Recording stop
+            GROUP_RECORDER_USER         ///< User defined item
+        };
+
         /// Item in user group
         enum {
-            GROUP_USER_USER =0          ///< User defined item
+            GROUP_USER_USER = 0         ///< User defined item
         };
 
         /// An array of strings with readable group names.
@@ -128,6 +137,8 @@ class MIDISequencerGUIEvent {
         static const char transport_items_names[][10];
         /// An array of strings with readable track group items names.
         static const char track_items_names[][10];
+        /// An array of strings with readable recording group items names.
+        static const char recording_items_names[][10];
         /// An array of strings with readable user group item names.
         static const char user_items_names[][10];
 
@@ -182,14 +193,23 @@ class MIDISequencerGUINotifierText : public MIDISequencerGUINotifier {
         /// \param seq the sequencer from which messages originate
         /// \param os the std::ostream which will print the messages
                         MIDISequencerGUINotifierText(const MIDISequencer* seq = 0, std::ostream& os = std::cout) :
-                                MIDISequencerGUINotifier(seq), ost(os)   {}
+                                MIDISequencerGUINotifier(seq), start_from(0), ost(os)   {}
+
+        /// Gets the numbering of measures and beats. See SetStartFromone().
+        /// \return 0 or 1.
+        char            GetStartFrom() const             { return start_from; }
+        /// Sets the numbering of measures and beats (starting from 0 or from 1)
+        /// \param f 0 or 1.
+        /// \return **true** if the parameter is correct, **false** otherwise
+        bool            SetStartFrom(char f);
 
         /// Notifies the event _ev_, printing to it a readable event description.
         virtual void    Notify(const MIDISequencerGUIEvent &ev);
 
     protected:
         /// \cond EXCLUDED
-        std::ostream& ost;
+        char            start_from;
+        std::ostream&   ost;
         /// \endcond
 };
 

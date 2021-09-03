@@ -232,11 +232,12 @@ class  MIDITrack {
                                                     // deletes events leaving subsequents unchanged
         void                        ReplaceInterval(MIDIClockTime start, MIDIClockTime length,
                                                    bool sysex, const MIDITrack* src);
-        /// Cuts note and pedal events at the time _t_. All sounding notes and held pedals are truncated (the
-        /// corresponding off events after the time are deleted) and the pitch bend is reset. This function is
-        /// intended for "slicing" a track in cut, copy and paste editing.
+        /// Cuts note and pedal events (searching to the time _from_) at the time _to_. All sounding notes and
+        /// held pedals are truncated (the corresponding off events after the time are deleted) and the pitch
+        /// bend is reset. Events at time _to_ are **not** truncated. This function is intended for "slicing"
+        /// a track in cut, copy and paste editing.
         // TODO: restored old version: test this (involves even interval methods)
-        void                        CloseOpenEvents(MIDIClockTime t);
+        void                        CloseOpenEvents(MIDIClockTime from, MIDIClockTime to);
 
         /// Finds an event in the track matching a given event.
         /// \param[in] msg the event to look for

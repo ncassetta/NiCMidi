@@ -52,7 +52,7 @@ void Metronome::Reset() {
     subd_note = new_subd_note = DEFAULT_SUBD_NOTE;
     subd_type = new_subd_type = 0;
     timesig_numerator = new_timesig_numerator = 0;
-    timesig_denominator = new_timesig_denominator = MIDI_DEFAULT_TIMESIG_DENOMINATOR;
+    //timesig_denominator = new_timesig_denominator = MIDI_DEFAULT_TIMESIG_DENOMINATOR;
     tempobpm = new_tempobpm = (float)MIDI_DEFAULT_TEMPO;
     tempo_scale = new_tempo_scale = 100;
 
@@ -73,28 +73,31 @@ float Metronome::GetCurrentTimeMs() const {
 }
 
 
-void Metronome::SetTempo(float t) {
-    if (t >= 1.0 && t <= 300.0) {
-        new_tempobpm = t;
-        if (!IsPlaying())
-            UpdateValues();
-    }
-}
-
-
-void Metronome::SetTempoScale(unsigned int scale) {
-    if (tempo_scale >= 1)
-        new_tempo_scale = scale;
+bool Metronome::SetTempo(float t) {
+    if (t < 1.0 || t > 300.0)
+        return false;
+    new_tempobpm = t;
     if (!IsPlaying())
         UpdateValues();
+    return true;
 }
 
 
-void Metronome::SetOutPort(unsigned int port) {
+bool Metronome::SetTempoScale(unsigned int scale) {
+    if (scale == 0 || scale > 500)
+        return false;
+    new_tempo_scale = scale;
+    if (!IsPlaying())
+        UpdateValues();
+    return true;
+}
+
+
+bool Metronome::SetOutPort(unsigned int port) {
     if (!MIDIManager::IsValidOutPortNumber(port))
-        return;                                             // avoids out of range errors
+        return false;                                       // avoids out of range errors
     if (port == out_port)                                   // trying to assign same ports: nothing to do
-        return;
+        return true;
     if (IsPlaying()) {
         proc_lock.lock();
         MIDIManager::GetOutDriver(out_port)->AllNotesOff(chan);
@@ -105,13 +108,17 @@ void Metronome::SetOutPort(unsigned int port) {
     }
     else
         out_port = port;
+    return true;
 }
 
 
-void Metronome::SetOutChannel(unsigned char ch) {
+bool Metronome::SetOutChannel(unsigned char ch) {
+    if (ch > 15)                                          // avoids out of range errors
+        return false;
     new_chan = ch;
     if (!IsPlaying())
         UpdateValues();
+    return true;
 }
 
 
@@ -136,12 +143,13 @@ void Metronome::SetSubdNote(unsigned char note) {
 }
 
 
-void Metronome::SetSubdType(unsigned char type) {
+bool Metronome::SetSubdType(unsigned char type) {
     if (type == 1 || type > 6)
-        return;
+        return false;
     new_subd_type = type;
     if (!IsPlaying())
         UpdateValues();
+    return true;
     /*
     beat_length = subd_on ? QUARTER_LENGTH / subd_type : QUARTER_LENGTH;
     msecs_per_beat = 60000.0 / (tempobpm * (subd_on ? subd_type : 1));
@@ -174,11 +182,13 @@ void Metronome::SetTimeSigNumerator(unsigned char n) {
 
 */
 
+/*
 void Metronome::SetTimeSigDenominator(unsigned char d) {
     new_timesig_denominator = d;
     if (!IsPlaying())
         UpdateValues();
 }
+*/
 
 
 // Inherited from MIDITICK

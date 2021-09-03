@@ -95,7 +95,8 @@ class MIDIMultiTrack {
         bool                        IsValidTrackNumber(int trk_num) const
                                                                     { return (0 <= trk_num && (unsigned)trk_num < tracks.size()); }
         /// Returns **true** if there are no events in the tracks and the end time is 0.
-        bool                        IsEmpty() const                 { return (GetNumEvents() == 0 && GetEndTime() == 0); }
+        bool                        IsEmpty() const                 { return (GetNumEvents() == GetNumTracks() &&
+                                                                              GetEndTime() == 0); }
 
         /// Changes the value of the clock per beat parameter for the tracks, updating the times of all MIDI
         /// events. This may lead to loss in precision or rounding error if the new clocks per beat
@@ -140,7 +141,13 @@ class MIDIMultiTrack {
         /// \return **true** if the track was effectively moved
         /// \see warning in the InsertTrack() method
         bool                        MoveTrack(int from, int to);
-
+        /// Copies the track _trk_ into the position _trk_num_ of the MIDIMultiTrack. Old content is overwritten, and
+        /// _trk_num_ must be in the range 0 ... GetNumTracks() - 1).
+        /// \return **true** if the track was effectively moved.
+        /// \warning this can be used for fast copying of tracks (for example in undo/redo), however if you are using
+        /// the multitrack into a MIDISequencer class don't forget to call MIDISequencer::UpdateStatus() which updates
+        /// the attached MIDIMultiTrackIterator status.
+        bool                        SetTrack(const MIDITrack* trk, int trk_num);
         /// Inserts the event _msg_ in the track _trk_num_. See MIDITrack::InsertEvent() for details.
         /// \return **true** if the event was effectively inserted
         bool                        InsertEvent(int trk_num,  const MIDITimedMessage& msg, tInsMode _ins_mode = INSMODE_DEFAULT);
@@ -251,7 +258,7 @@ class MIDIMultiTrackIterator {
         /// Enable or disable a track. If you know that a track contains events which you want to ignore you
         /// can exclude it for more speed.
         /// \param trk_num the number of the track
-        \\\ \param f **true** for enabling, **false** for disabling.
+        /// \param f **true** for enabling, **false** for disabling.
         void                        SetEnable(unsigned int trk_num, bool f);
         /// Sets the given MIDIMultiTrackIteratorState as current state.
         void                        SetState(const MIDIMultiTrackIteratorState& s) { state = s; }

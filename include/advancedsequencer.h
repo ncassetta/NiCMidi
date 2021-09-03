@@ -210,27 +210,35 @@ class AdvancedSequencer : public MIDISequencer {
         /// Sets a name for the content of sequencer.
         void                SetFileName(std::string& fname)     { header.filename = fname; }
         /// Enables or disables the embedded MIDIthru. This has no effect if the thru is not present.
-        void                SetMIDIThruEnable(bool on_off);
+        /// \return **true** if the thru has been enabled/disabled, **false** otherwise.
+        bool                SetMIDIThruEnable(bool on_off);
         /// Sets the out channel for MIDIthru. This has no effect if the thru is not present.
-        void                SetMIDIThruChannel(int chan);
+        /// \return **true** if the channel has been set, **false** otherwise.
+        bool                SetMIDIThruChannel(char chan);
         /// Sets a transpose amount in semitones for the messages coming from the MIDIThru (see MIDIProcessorTransposer).
         /// This has no effect if the thru is not present.
-        void                SetMIDIThruTranspose (int amt);
+        /// \return **true** if the transpose has been set, **false** otherwise.
+        bool                SetMIDIThruTranspose (char amt);
         /// Soloes the given track muting all others.
-        void                SetTrackSolo(unsigned int trk_num);
+        /// \return **true** if _trk_num is a valid track number, **false** otherwise.
+        bool                SetTrackSolo(unsigned int trk_num);
         /// Unsoloes the soloed track unmuting all others.
         void                UnSoloTrack();
-        /// Mute/unmute the given track (it has no effect on others).
-        void                SetTrackMute(unsigned int trk_num, bool f);
+        /// Mutes/unmutes the given track (it has no effect on others).
+        /// \return **true** if _trk_num is a valid track number, **false** otherwise.
+        bool                SetTrackMute(unsigned int trk_num, bool f);
         /// Unmutes all muted tracks (this has no effect on tracks muted by SoloTrack()).
         void                UnmuteAllTracks();
         /// Sets a track velocity scale in percentage for the given track.
-        void                SetTrackVelocityScale(unsigned int trk_num, unsigned int scale);
-        /// Sets a channel for the given track (all chennel messages in it will be output on given channel,
-        /// regardless their original channel).
-        void                SetTrackRechannelize(unsigned int trk_num, int chan);
+        /// \return **true** if _trk_num is a valid track number, **false** otherwise.
+        bool                SetTrackVelocityScale(unsigned int trk_num, unsigned int scale);
+        /// Sets a channel for the given track (all channel messages in it will be output on given channel,
+        /// regardless their original channel). Calling this with _chan_ = -1 disables the rechannelizing.
+        /// \return **true** if _trk_num is a valid track number, **false** otherwise.
+        bool                SetTrackRechannelize(unsigned int trk_num, char chan);
         /// Sets a transpose amount in semitones for the given track (see MIDIProcessorTransposer).
-        void                SetTrackTranspose(unsigned int trk_num, int trans);
+        /// \return **true** if _trk_num is a valid track number, **false** otherwise.
+        bool                SetTrackTranspose(unsigned int trk_num, char amt);
         /// Sets the current time to the beginning of the song, updating the internal status. This method is
         /// thread-safe and can be called during playback. Notifies the GUI a GROUP_ALL event to signify a
         /// full GUI reset.
@@ -258,8 +266,10 @@ class AdvancedSequencer : public MIDISequencer {
         void                OutputMessage(MIDITimedMessage& msg, unsigned int port);
         /// Sets the parameters of the given SMPTE according to the loaded content. If the loaded
         /// file contains a MIDI SMPTE offset message, sets the parameters according to the offset and
-        /// the frame rate of the message, otherwise set it to standard values (offset=0, frame=30FPS)
-        void                SetSMPTE(SMPTE* s);
+        /// the frame rate of the message, otherwise set it to standard values (offset=0, frame=30FPS).
+        /// \warning You cannot call this while the sequencer is playing.
+        /// \return **true** if the SMPTE has been set, **false** otherwise.
+        bool                SetSMPTE(SMPTE* s);
         /// This should be used to update the sequencer state after editing the multitrack (adding,
         /// deleting or editing events, for changes in the track structure see InsertTrack(), DeleteTrack()
         /// and MoveTrack()). If you have edited the multitrack, call this before moving time, getting events
@@ -287,7 +297,7 @@ class AdvancedSequencer : public MIDISequencer {
         MIDIProcessorTransposer*            thru_transposer;    // Transposes thru note messages while playing
         int                                 num_measures;       // Number of measures
         MIDIFileHeader                      header;             // Stores the loaded file parameters
-        bool                                file_loaded;        // True if the multitrack is not empty
+        int                                 file_loaded;        // True if the multitrack is not empty
 
         std::vector<MIDISequencerState>     warp_positions;     // Vector of MIDISequencerState objects for fast time moving
         /// \endcond

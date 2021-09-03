@@ -70,7 +70,8 @@ const char helpstring[] =                   // shown by the help command
                          (ex. 200 = twice faster, 50 = twice slower)\n\
    tshift track amt    : Sets the time shift for given track. The amount can\n\
                          be positive or negative.\n\
-   trackinfo           : Shows info about all tracks of the file\n\
+   trackinfo [v]       : Shows info about all tracks of the file. If you\n\
+                         add the v the info are more complete.\n\
    notify  on/off      : Turns on and off the notifier\n\
    b                   : (backward) Moves current time to the previous measure\n\
    f                   : (forward) Moves current time to the next measure\n\
@@ -115,7 +116,7 @@ int main(int argc, char **argv) {
             if (MIDIManager::GetNumMIDIOuts()) {
                 cout << "MIDI OUT PORTS:" << endl;
                 for (unsigned int i = 0; i < MIDIManager::GetNumMIDIOuts(); i++)
-                    cout << i << ": " << MIDIManager::GetMIDIOutName( i ) << endl;
+                    cout << i << ": " << MIDIManager::GetMIDIOutName(i) << endl;
             }
             else
                 cout << "NO MIDI OUT PORTS" << endl;
@@ -129,8 +130,10 @@ int main(int argc, char **argv) {
             int beg = atoi(par1.c_str());
             int end = atoi(par2.c_str());
             if (!(beg == 0 && end == 0)) {
-                sequencer.SetRepeatPlay(true, beg, end);
-                cout << "Repeat play set from measure " << beg << " to measure " << end << endl;
+                if (sequencer.SetRepeatPlay(true, beg, end))
+                    cout << "Repeat play set from measure " << beg << " to measure " << end << endl;
+                else
+                    cout << "Invalid parameters: repeat play cleared" << endl;
             }
             else {
                 sequencer.SetRepeatPlay(false, 0, 0);
@@ -207,20 +210,8 @@ int main(int argc, char **argv) {
             cout << "Track " << track << " time shifted by " << amount << " MIDI ticks" << endl;
         }
         else if (command == "trackinfo") {          // prints info about tracks
-            for (unsigned int i = 0; i < tracks.GetNumTracks(); i++) {
-                MIDITrack* trk = tracks.GetTrack(i);
-                cout << "Track " << i << ": " << sequencer.GetState()->track_states[i]->track_name << endl;
-                if (trk->IsEmpty())
-                    cout << "EMPTY" << endl;
-                else {
-                    cout << "Type: " << TRACK_TYPES[trk->GetType() - MIDITrack::TYPE_MAIN];
-                    if (trk->GetChannel() == -1)
-                        cout << "     ";
-                    else
-                        cout << " (" << (int)trk->GetChannel() << ") ";
-                    cout <<"Sysex: " << (trk->HasSysex() ? "Yes " : "No  ") << "Events: " << trk->GetNumEvents() << endl;
-                }
-            }
+            bool verbose = (par1 == "v");
+            DumpAllTracksAttr(&tracks, verbose);
         }
         else if (command == "notify") {
             if (par1 == "on" || par1 == "ON") {
@@ -234,10 +225,9 @@ int main(int argc, char **argv) {
         }
         else if (command == "b") {                  // goes a measure backward
             int meas = sequencer.GetCurrentMeasure();
-            if (meas > 0)
-                sequencer.GoToMeasure(--meas);
-            cout << "Actual position: " << sequencer.GetCurrentMeasure() << ":"
-                 << sequencer.GetCurrentBeat() << endl;
+            if (sequencer.GoToMeasure(--meas))
+                cout << "Actual position: " << sequencer.GetCurrentMeasure() << ":"
+                     << sequencer.GetCurrentBeat() << endl;
         }
         else if (command == "f") {                  // goes a measure forward
             int meas = sequencer.GetCurrentMeasure();

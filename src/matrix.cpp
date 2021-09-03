@@ -24,14 +24,17 @@
 
 
 #include "../include/matrix.h"
+#include "../include/dump_tracks.h"
 
 
 MIDIMatrix::MIDIMatrix() {
-    for(int channel = 0; channel < 16; channel++) {
-        channel_count[channel] = 0;
-        hold_pedal[channel] = false;
+        for(int chan = 0; chan < 16; chan++) {
+        channel_count[chan] = 0;
+        min_note[chan] = 127;
+        max_note[chan] = 0;
+        hold_pedal[chan] = false;
         for(unsigned char note = 0; note < 128; note++)
-            note_on_count[channel][note] = 0;
+            note_on_count[chan][note] = 0;
     }
     total_count = 0;
 }
@@ -41,64 +44,93 @@ bool MIDIMatrix::Process(MIDITimedMessage* msg) {
     bool ret = false;
 
     if(msg->IsChannelMsg()) {
-        int channel = msg->GetChannel();
-        int note = msg->GetNote();
+        int chan = msg->GetChannel();
 
         if(msg->IsAllNotesOff()) {
-            ClearChannel(channel);
+            ClearChannel(chan);
             ret = true;
         }
         else if(msg->IsNoteOn()) {
-            IncNoteCount(channel, note);
+            unsigned char note = msg->GetNote();
+            IncNoteCount(chan, note);
+            if (note < min_note[chan])
+                min_note[chan] = note;
+            if (note > max_note[chan])
+                max_note[chan] = note;
             ret = true;
         }
         else if(msg->IsNoteOff()) {
-            DecNoteCount(channel, note);
+            unsigned char note = msg->GetNote();
+            DecNoteCount(chan, note);
+            if (channel_count[chan] == 0) {
+                min_note[chan] = 127;
+                max_note[chan] = 0;
+            }
+            else {
+                if (note == min_note[chan] && note_on_count[chan][note] == 0) {
+                    for (unsigned char i = note + 1; i <= max_note[chan]; i++) {
+                        if (note_on_count[chan][i] > 0) {
+                            min_note[chan] = i;
+                            break;
+                        }
+                    }
+                }
+                if (note == max_note[chan] && note_on_count[chan][note] == 0) {
+                    for (unsigned char i = note - 1; i >= min_note[chan]; i--) {
+                        if (note_on_count[chan][i] > 0) {
+                            max_note[chan] = i;
+                            break;
+                        }
+                    }
+                }
+            }
             ret = true;
         }
         else if(msg->IsPedalOn()) {
-            hold_pedal[channel] = true;
+            hold_pedal[chan] = true;
             ret = true;
         }
         else if(msg->IsPedalOff()) {
-            hold_pedal[channel] = false;
+            hold_pedal[chan] = false;
             ret = true;
         }
         else
             OtherMessage(msg);
     }
+    //CheckMIDIMatrix(*this);
     return ret;
 }
 
 
 void MIDIMatrix::Reset() {
-    for(int channel = 0; channel < 16; ++channel)
-        ClearChannel(channel);
+    for(int chan = 0; chan < 16; ++chan)
+        ClearChannel(chan);
     total_count = 0;
 }
 
 
-void MIDIMatrix::DecNoteCount(int channel, int note) {
-    if(note_on_count[channel][note] > 0) {
-      --note_on_count[channel][note];
-      --channel_count[channel];
+void MIDIMatrix::DecNoteCount(int chan, int note) {
+    if(note_on_count[chan][note] > 0) {
+      --note_on_count[chan][note];
+      --channel_count[chan];
       --total_count;
     }
 }
 
 
-void MIDIMatrix::IncNoteCount(int channel, int note) {
-    ++note_on_count[channel][note];
-    ++channel_count[channel];
+void MIDIMatrix::IncNoteCount(int chan, int note) {
+    ++note_on_count[chan][note];
+    ++channel_count[chan];
     ++total_count;
 }
 
 
-void MIDIMatrix::ClearChannel(int channel) {
-    for(int note = 0; note < 128; ++note) {
-      total_count -= note_on_count[channel][note];
-      note_on_count[channel][note] = 0;
-    }
-    channel_count[channel] = 0;
-    hold_pedal[channel] = 0;
+void MIDIMatrix::ClearChannel(int chan) {
+    for(int note = 0; note < 128; ++note)
+        note_on_count[chan][note] = 0;
+    min_note[chan] = 127;
+    max_note[chan] = 0;
+    total_count -= channel_count[chan];
+    channel_count[chan] = 0;
+    hold_pedal[chan] = 0;
 }

@@ -31,6 +31,7 @@
 #include "../include/advancedsequencer.h"
 #include "../include/recorder.h"
 #include "../include/manager.h"
+#include "../include/filewritemultitrack.h"
 #include "functions.h"                  // helper functions for input parsing and output
 
 
@@ -46,38 +47,45 @@ AdvancedSequencer sequencer(&text_n);       // an AdvancedSequencer (without GUI
 MIDIRecorder recorder(&sequencer);          // a MIDIRecorder
 
 extern string command, par1, par2;          // used by GetCommand() for parsing the user input
+char filename[200];                         // used for saving files
 
 const char helpstring[] =                   // shown by the help command
 "\nAvailable commands:\n\
-   load filename       : Loads the file into the sequencer\n\
-   save filename       : Save the current multitrack into a file\n\
-   ports               : Enumerates MIDI In and OUT ports\n\
-   play                : Starts playback from current time\n\
-   stop                : Stops playback\n\
-   rec on/off          : Enable/disable recording\n\
-   addtrack [n]        : Insert a new track (if n is not given appends\n\
-                         it)\n\
-   deltrack [n]        : Deletes a track (if n is not given deletes the\n\
-                         last track)\n\
-   enable trk [chan]   : Enable track trk for recording (if you don't specify\n\
-                         the channel this will be the track channel if the\n\
-                         track is a channel track or all channels\n\
-   disable trk         : Disable track trk for recording\n\
-   rew                 : Goes to the beginning (stops the playback)\n\
-   goto meas [beat]    : Moves current time to given meas and beat\n\
-                         (numbered from 0)\n\
-   dumps [trk]         : Prints a dump of all midi events in the sequencer\n\
-                         (or in its track trk)\n\
-   dumpr [trk]         : Prints a dump of all midi events in the recorder\n\
-                         (or in its track trk)\n\
-   outport track port  : Sets the MIDI port for the given track\n\
-   thru on/off         : Sets the MIDI thru on and off.\n\
-   trackinfo           : Shows info about all tracks of the file\n\
-   b                   : (backward) Moves current time to the previous measure\n\
-   f                   : (forward) Moves current time to the next measure\n\
-   help                : Prints this help screen\n\
-   quit                : Exits\n\
-All commands can be given during playback\n";
+   load filename          : Loads the file into the sequencer\n\
+   save filename          : Save the current multitrack into a file\n\
+   ports                  : Enumerates MIDI In and OUT ports\n\
+   play                   : Starts playback from current time\n\
+   stop                   : Stops playback\n\
+   rec on/off             : Enable/disable recording\n\
+   addtrack [n]           : Insert a new track (if n is not given appends\n\
+                            it)\n\
+   deltrack [n]           : Deletes a track (if n is not given deletes the\n\
+                            last track)\n\
+   enable trk [chan]      : Enable track trk for recording (if you don't specify\n\
+                            the channel this will be the track channel if the\n\
+                            track is a channel track or all channels\n\
+   disable trk            : Disable track trk for recording\n\
+   startrec [meas] [beat] : Sets the recording start time from meas and beat. If\n\
+                            you don't specify anything from 0.\n\
+   endrec[meas] [beat]    : Sets the recording end time to meas and beat. If you\n\
+                            don't specify anything to infinite.\n\
+   rew                    : Goes to the beginning (stops the playback)\n\
+   goto meas [beat]       : Moves current time to given meas and beat\n\
+                            (numbered from 0)\n\
+   dumps [trk]            : Prints a dump of all midi events in the sequencer\n\
+                            (or in its track trk)\n\
+   dumpr [trk]            : Prints a dump of all midi events in the recorder\n\
+                            (or in its track trk)\n\
+   outport track port     : Sets the MIDI port for the given track\n\
+   thru on/off            : Sets the MIDI thru on and off.\n\
+   trackinfo [v]          : Shows info about all tracks of the file. If you\n\
+                            add the v the info are more complete.\n\
+   b                      : (backward) Moves current time to the previous measure\n\
+   f                      : (forward) Moves current time to the next measure\n\
+   help                   : Prints this help screen\n\
+   quit                   : Exits\n\
+The recording related commands can be given only when the sequencer is stopped,\n\
+other commands even during playback\n";
 
 
 
@@ -103,25 +111,28 @@ int main (int argc, char **argv) {
                 cout << "Error loading file" << endl;
         }
         else if(command == "save") {                // save the multitrack contents
-            /*
-            if (sequencer.Load(par1.c_str()))
-                cout << "Loaded file " << par1 << endl;
-            else
-                cout << "Error loading file" << endl;
-            */
+            strcpy (filename, par1.c_str());
+            if (strlen(filename) == 0)
+                cout << "File name not defined" << endl;
+            else {
+                if (WriteMIDIFile(filename, 1, sequencer.GetMultiTrack()))
+                    cout << "File saved" << endl;
+                else
+                    cout << "Error writing file" << endl;
+            }
         }
         else if (command == "ports") {              // enumerates the midi ports
             if (MIDIManager::GetNumMIDIIns()) {
                 cout << "MIDI IN PORTS:" << endl;
                 for (unsigned int i = 0; i < MIDIManager::GetNumMIDIIns(); i++)
-                    cout << i << ": " << MIDIManager::GetMIDIInName( i ) << endl;
+                    cout << i << ": " << MIDIManager::GetMIDIInName(i) << endl;
             }
             else
                 cout << "NO MIDI IN PORTS" << endl;
             if (MIDIManager::GetNumMIDIOuts()) {
                 cout << "MIDI OUT PORTS:" << endl;
                 for (unsigned int i = 0; i < MIDIManager::GetNumMIDIOuts(); i++)
-                    cout << i << ": " << MIDIManager::GetMIDIOutName( i ) << endl;
+                    cout << i << ": " << MIDIManager::GetMIDIOutName(i) << endl;
             }
             else
                 cout << "NO MIDI OUT PORTS" << endl;
@@ -194,6 +205,29 @@ int main (int argc, char **argv) {
                 cout << "Disabled track " << par1 << " for recording" << endl;
             }
         }
+        else if (command == "recstart") {           // sets the recording start time
+            int measure = atoi(par1.c_str());
+            int beat = atoi(par2.c_str());
+            MIDIClockTime t = sequencer.MeasToMIDI(measure, beat);
+            recorder.SetStartRecTime(t);
+            cout << "Set starting rec time to " << t << endl;
+        }
+        else if (command == "recend") {           // sets the recording end time
+            if (par1.size() == 0 && par2.size() == 0) {
+                recorder.SetEndRecTime(TIME_INFINITE);
+                cout << "Reset end rec time" << endl;
+            }
+            else {
+                int measure = atoi(par1.c_str());
+                int beat = atoi(par2.c_str());
+                MIDIClockTime t = sequencer.MeasToMIDI(measure, beat);
+                recorder.SetEndRecTime(t);
+                cout << "Set end rec time to " << t << endl;
+            }
+        }
+        else if (command == "undo") {               // discard last recording
+            recorder.UndoRec();
+        }
         else if (command == "rew") {                // stops and rewinds to time 0
             sequencer.GoToZero();
             cout << "Rewind to 0:0" << endl;
@@ -260,20 +294,8 @@ int main (int argc, char **argv) {
             }
         }
         else if (command == "trackinfo") {          // prints info about tracks
-            for (unsigned int i = 0; i < sequencer.GetNumTracks(); i++) {
-                MIDITrack* trk = sequencer.GetMultiTrack()->GetTrack(i);
-                cout << "Track " << i << ": " << sequencer.GetTrackName(i) << endl;
-                if (trk->IsEmpty())
-                    cout << "EMPTY" << endl;
-                else {
-                    cout << "Type: " << TRACK_TYPES[trk->GetType() - MIDITrack::TYPE_MAIN];
-                    if (trk->GetChannel() == -1)
-                        cout << "     ";
-                    else
-                        cout << " (" << (int)trk->GetChannel() << ") ";
-                    cout <<"Sysex: " << (trk->HasSysex() ? "Yes " : "No  ") << "Events: " << trk->GetNumEvents() << endl;
-                }
-            }
+            bool verbose = (par1 == "v");
+            DumpAllTracksAttr(sequencer.GetMultiTrack(), verbose);
         }
         else if (command == "b") {                  // goes a measure backward
             int meas = sequencer.GetCurrentMeasure();

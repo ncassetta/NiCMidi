@@ -340,7 +340,7 @@ void MIDIInDriver::HardwareMsgIn(double time,
 
     MIDIInDriver* drv = static_cast<MIDIInDriver*>(p);
 
-    std::cout << drv->GetPortName() << " callback executed\n";
+    std::cout << drv->GetPortName() << " callback executed   ";
 
     if (!drv->port->isPortOpen() || msg_bytes->size() == 0)
         return;
@@ -370,7 +370,9 @@ void MIDIInDriver::HardwareMsgIn(double time,
         drv->in_queue.PutMessage(MIDIRawMessage(msg,
                                                 MIDITimer::GetSysTimeMs(),
                                                 drv->port_id));
-        std::cout << "Callback executed! Queue size: " << drv->in_queue.GetLength() << std::endl;
+        std::cout << "Got message, queue size: " << drv->in_queue.GetLength() << std::endl;
     }
+    else
+        std::cout << "No message, queue size: " << drv->in_queue.GetLength() << std::endl;
     drv->in_mutex.unlock();
 }

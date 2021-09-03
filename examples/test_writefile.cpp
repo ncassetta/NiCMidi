@@ -199,18 +199,24 @@ int main( int argc, char **argv ) {
         MIDITimer::Wait(50);
     cout << "    Stop\n";
 
-    cout << "\n\nNow choose the name of your MIDI file (type the .mid too) ...\n";
-    char filename[1024];
-    cin >> filename;
-    cout << "... and the MIDI file format (0 = All in one track, 1 = Separate tracks)\n";
-    int format;
-    cin >> format;
+    cout << "Enter \"y\" if you want to save the file, something else to exit";
+    char ch;
+    cin >> ch;
 
-    // the last parameter strips out (in case of MIDI format 1) the unused tracks
-    if (WriteMIDIFile(filename, format, tracks, true))
-        cout << "MIDI file " << filename << " saved\n";
-    else
-        cout << "Error writing the file\n";
+    if (tolower(ch) == 'y') {
+        cout << "\n\nNow choose the name of your MIDI file (type the .mid too) ...\n";
+        char filename[1024];
+        cin >> filename;
+        cout << "... and the MIDI file format (0 = All in one track, 1 = Separate tracks)\n";
+        int format;
+        cin >> format;
+
+        // the last parameter strips out (in case of MIDI format 1) the unused tracks
+        if (WriteMIDIFile(filename, format, tracks, true))
+            cout << "MIDI file " << filename << " saved\n";
+        else
+            cout << "Error writing the file\n";
+    }
 
     // Try to load the file you have created into your favourite sequencer!
 

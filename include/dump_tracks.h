@@ -32,6 +32,7 @@
 
 #include <iostream>
 #include "multitrack.h"
+#include "matrix.h"
 
 
 /// \addtogroup GLOBALS
@@ -43,12 +44,24 @@
 void DumpMIDITimedMessage (MIDITimedMessage* const msg, std::ostream& ost = std::cout);
 /// Prints a list of all the MIDI messages in the given MIDItrack.
 void DumpMIDITrack (MIDITrack* const trk, std::ostream& ost = std::cout);
-/// Prints the properties of the given MIDItrack.
-void DumpMIDITrackAttr (MIDITrack* const trk, std::ostream& ost = std::cout);
+/// Prints the main properties of the given MIDItrack.
+/// \return Actually this always returns 3, the number of written text lines
+int DumpMIDITrackAttr (MIDITrack* const trk, int num, std::ostream& ost = std::cout);
+/// Prints all the properties of the given MIDItrack.
+/// \return The number of text lines written, which depends from the track attributes.
+int DumpMIDITrackAttrVerbose (MIDITrack* const trk, int num, std::ostream& ost = std::cout);
 /// Prints a list of all MIDI messages in the given MIDIMultiTrack, a track at once.
 void DumpAllTracks (MIDIMultiTrack* const mlt, std::ostream& ost = std::cout);
 /// Prints a list of all MIDI messages in the given MIDIMultiTrack in temporal order.
-void DumpMIDIMultiTrack (MIDIMultiTrack*const mlt, std::ostream& ost = std::cout);
+void DumpMIDIMultiTrack (MIDIMultiTrack* const mlt, std::ostream& ost = std::cout);
+///@}
+///@}
+
+/// \addtogroup GLOBALS
+///@{
+/// \name Helper function for checking a MIDIMatrix content
+///@{
+void CheckMIDIMatrix(const MIDIMatrix& matrix, std::ostream& ost = std::cout);
 ///@}
 ///@}
 

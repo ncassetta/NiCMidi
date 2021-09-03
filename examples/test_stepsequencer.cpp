@@ -124,8 +124,8 @@ int main(int argc, char **argv) {
 
     *filename = 0;
     cur_pos.setstep (multitrack->GetClksPerBeat());
-    cout << "Step sequencer example for jdksmidi library" << endl <<
-            "Copyright 2014 - 2020 Nicola Cassetta" << endl << endl;
+    cout << "Step sequencer example for NiCMidi library" << endl <<
+            "Copyright 2014 - 2021 Nicola Cassetta" << endl << endl;
     PrintResolution();
     cout << endl << "TYPE help TO GET A LIST OF AVAILABLE COMMANDS" << endl << endl;
 
@@ -170,7 +170,7 @@ int main(int argc, char **argv) {
         else if (command == "stop")                 // stops playback
             sequencer.Stop();
 
-        else if ( command == "rew") {               // rewind
+        else if (command == "rew") {                // rewind
             cur_pos.rewind();
             sequencer.GoToZero();
         }
@@ -178,12 +178,10 @@ int main(int argc, char **argv) {
         else if (command == "goto") {               // goes to meas and beat
             int measure = atoi(par1.c_str()) - 1;
             int beat = (par2.length() == 0 ? 0 : atoi(par2.c_str()) - 1);
-            if (measure < 0 || measure > sequencer.GetNumMeasures() - 1)
-                cout << "Invalid position" << endl;
-            else {
-                sequencer.GoToMeasure(measure, beat);
+            if (sequencer.GoToMeasure(measure, beat))
                 cur_pos.settime(sequencer.GetCurrentMIDIClockTime());
-            }
+            else
+                cout << "Invalid position" << endl;
         }
 
         else if (command == "dump") {               // prints a dump of the sequencer contents

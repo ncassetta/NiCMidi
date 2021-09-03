@@ -377,7 +377,7 @@ void MIDITrack::PushEvent(const MIDITimedMessage& msg) {
 void MIDITrack::InsertInterval(MIDIClockTime start, MIDIClockTime length, const MIDITrack* src) {
     if (length == 0) return;
 
-    CloseOpenEvents(start);                             // truncate notes, pedal, bender at start
+    CloseOpenEvents(0, start);                          // truncate notes, pedal, bender at start
     int start_n;
     if (FindEventNumber(start, &start_n)) {             // there are events after start time
         for (unsigned int i = start_n; i < events.size(); i++)
@@ -393,7 +393,7 @@ void MIDITrack::InsertInterval(MIDIClockTime start, MIDIClockTime length, const 
                                                         // already present
         InsertEvent(msg);
     }
-    CloseOpenEvents(start + length);                    // truncate at end
+    CloseOpenEvents(start, start + length);             // truncate at end
 }
 
 
@@ -405,9 +405,9 @@ MIDITrack* MIDITrack::MakeInterval(MIDIClockTime start, MIDIClockTime end, MIDIT
     interval->SetEndTime(end - start);
 
     MIDITrack edittrack(*this);                     // copy original track to make edits on it;
-    edittrack.CloseOpenEvents(start);               // truncate open events BEFORE start (so delete
+    edittrack.CloseOpenEvents(0, start);            // truncate open events BEFORE start (so delete
                                                     // note off, etc in edit track)
-    edittrack.CloseOpenEvents(end);                 // truncate at end
+    edittrack.CloseOpenEvents(start, end);          // truncate at end
 
     int ev_num;                                     // now copy edittrack events to interval
     edittrack.FindEventNumber(start, &ev_num);      // an event surely exists
@@ -446,9 +446,9 @@ void MIDITrack::ClearInterval(MIDIClockTime start, MIDIClockTime end) {
         end = GetEndTime();                         // adjust end time
     if (end <= start) return;                       // nothing to do
 
-    CloseOpenEvents(start);                         // truncate open events BEFORE start (so delete
+    CloseOpenEvents(0, start);                      // truncate open events BEFORE start (so delete
                                                     // note off, etc in edit track)
-    CloseOpenEvents(end);                           // truncate at end
+    CloseOpenEvents(start, end);                    // truncate at end
     int ev_num;
     int ev_to_remove = 0;
     FindEventNumber(start, &ev_num);                // an event surely exists
@@ -481,29 +481,34 @@ void MIDITrack::ReplaceInterval(MIDIClockTime start, MIDIClockTime length, bool 
         msg.AddTime(start);
         InsertEvent(msg);
     }
-    CloseOpenEvents(start + length);                // truncate at end
+    CloseOpenEvents(start, start + length);         // truncate at end
 }
 
 
 /* This is the old function, more complicated, but working even on tracks with mixed
    MIDI channels
 */
-void MIDITrack::CloseOpenEvents(MIDIClockTime t) {
-    if (t == 0 || t >= GetEndTime()) return;        // there aren't open events at beginning or end
+void MIDITrack::CloseOpenEvents(MIDIClockTime from, MIDIClockTime to) {
+    if (to == 0 || to >= GetEndTime()) return;      // there aren't open events at beginning or end
 
     MIDIMatrix matrix;
     int pitchbend[16];
     MIDITimedMessage msg;
     unsigned int ev_num = 0;
+    for (int i = 0; i < 16; i++)
+        pitchbend[i] = 0;
+    // ignore events before from
+    while (ev_num < GetNumEvents() - 1 && GetEvent(ev_num + 1).GetTime() < from)
+        ev_num++;
     // scan events before current time, remembering notes, pedal and pitch bend
-    while (ev_num < GetNumEvents() && (msg = GetEvent(ev_num)).GetTime() < t) {
+    while (ev_num < GetNumEvents() && (msg = GetEvent(ev_num)).GetTime() < to) {
         matrix.Process(&msg);
         if (msg.IsPitchBend())
             pitchbend[msg.GetChannel()] = msg.GetBenderValue();
         ev_num++;
     }
     // now scan events at current time, closing open notes, pedal and pitch bend
-    while (ev_num < GetNumEvents() && (msg = GetEvent(ev_num)).GetTime() == t) {
+    while (ev_num < GetNumEvents() && (msg = GetEvent(ev_num)).GetTime() == to) {
         if (msg.IsNoteOff() || msg.IsPedalOff())
             matrix.Process (&msg);
         if (msg.IsPitchBend() && msg.GetBenderValue() == 0)
@@ -515,13 +520,14 @@ void MIDITrack::CloseOpenEvents(MIDIClockTime t) {
         // get the number of notes on of the channel
         int note_count = matrix.GetChannelCount(ch);
         // search which notes are on
-        for (int note = 0; note < 0x7f && note_count > 0; note++) {
+        for (int note = matrix.GetMinNoteOn(ch); note_count > 0 && note <= matrix.GetMaxNoteOn(ch); note++) {
             // if the note is on ... (i should normally be 1)
             for (int i = matrix.GetNoteCount(ch, note); i > 0; i--) {
                 msg.SetNoteOff(ch, note, 0);
-                msg.SetTime(t);
-                InsertEvent(msg);               // ... insert a note off at time t
-                ev_num++;                       // and adjust ev_num
+                msg.SetTime(to);
+                InsertEvent(msg);               // ... insert a note off at time to
+                ev_num++;                       // ... adjust ev_num ...
+                note_count--;                   // ... and decrease note_count
                 // now search the corresponding note off after t ...
                 for (unsigned int j = ev_num; j < GetNumEvents(); j++) {
                     msg = GetEvent(j);
@@ -530,17 +536,17 @@ void MIDITrack::CloseOpenEvents(MIDIClockTime t) {
                         break;
                     }
                 }
-                note_count--;
+
             }
         }
 
         if (matrix.GetHoldPedal(ch)) {
             msg.SetControlChange(ch, C_DAMPER, 0);
-            msg.SetTime(t);
+            msg.SetTime(to);
             InsertEvent(msg);
             ev_num++;
             for (unsigned int j = ev_num; j < GetNumEvents(); j++) {
-                // search the corresponding pedal off after t ...
+                // search the corresponding pedal off after to ...
                 msg = GetEvent(j);
                 if (msg.IsPedalOff() && msg.GetChannel() == ch) {
                     DeleteEvent(msg);           // ... and delete it
@@ -551,11 +557,11 @@ void MIDITrack::CloseOpenEvents(MIDIClockTime t) {
 
         if (pitchbend[ch]) {
             msg.SetPitchBend(ch, 0);
-            msg.SetTime(t);
+            msg.SetTime(to);
             InsertEvent(msg);
             ev_num++;
             for (unsigned int j = ev_num; j < GetNumEvents(); j++) {
-                // search other pitch bend messages after t until we find a o value ...
+                // search other pitch bend messages after to until we find a 0 value ...
                 msg = GetEvent(j);
                 if (msg.IsPitchBend() && msg.GetChannel() == ch) {
                     if (msg.GetBenderValue() != 0)

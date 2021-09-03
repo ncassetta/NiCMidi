@@ -168,9 +168,11 @@ void AdvancedSequencer::Reset() {
     Stop();
     MIDITimer::Wait(500);       // pauses for 0.5 sec (TROUBLE WITHOUT THIS!!!! I DON'T KNOW WHY) TODO: eliminate this?
     MIDISequencer::Reset();     // syncronize the num of tracks and reset track processors (now calls GoToZero())
-    //GoToZero();
-    for (unsigned  int i = 0; i < GetNumTracks(); ++i)  // MIDISequencer::Reset() deletes the processors
+    for (unsigned  int i = 0; i < GetNumTracks(); ++i) {    // MIDISequencer::Reset() deletes the processors
         track_processors[i] = new MIDISequencerTrackProcessor;
+        // causes a call to Analyze()
+        GetMultiTrack()->GetTrack(i)->GetStatus();
+    }
     ExtractWarpPositions();
 }
 
@@ -179,25 +181,19 @@ bool AdvancedSequencer::Load (const char *fname) {
     Stop();
     //state.multitrack->Reset();    this is done by LoadMIDIFile
 
-    file_loaded = LoadMIDIFile(fname, state.multitrack, &header);
+    bool load = LoadMIDIFile(fname, state.multitrack, &header);
     Reset();                    // synchronizes the sequencer with the multitrack and goes to 0
-    for (unsigned int i = 0; i < GetNumTracks(); i++)
-        // causes a call to Analyze()
-        GetMultiTrack()->GetTrack(i)->GetStatus();
-    //seq->GoToZero();      now called by Reset()
-    //ExtractWarpPositions();
-    return file_loaded;
+    UpdateStatus();             // sets file_loaded and calls ExtractWarpPositions()
+    return load;                // file_loaded could be true if load fails and a file was already loaded
 }
 
 
 bool AdvancedSequencer::Load (const MIDIMultiTrack* tracks) {
     Stop();
     *state.multitrack = *tracks;
-    file_loaded = !state.multitrack->IsEmpty();
+    //file_loaded = !state.multitrack->IsEmpty();   this is done by Reset
     Reset();                    // synchronizes the sequencer with the multitrack and goes to 0
-    for (unsigned int i = 0; i < GetNumTracks(); i++)
-        // causes a call to Analyze()
-        GetMultiTrack()->GetTrack(i)->GetStatus();
+    UpdateStatus();             // sets file_loaded and calls ExtractWarpPositions()
     return file_loaded;
 }
 
@@ -205,10 +201,8 @@ bool AdvancedSequencer::Load (const MIDIMultiTrack* tracks) {
 void AdvancedSequencer::UnLoad() {
     Stop();
     state.multitrack->Reset();
-    file_loaded = false;
+    //file_loaded = false;      // done by reset
     Reset();
-    //seq->GoToZero();      now called by Reset()
-    //ExtractWarpPositions();	idem
 }
 
 
@@ -342,30 +336,29 @@ int AdvancedSequencer::GetTrackTimeShift (unsigned int trk_num) const {
 }
 
 
-void AdvancedSequencer::SetMIDIThruEnable(bool on_off) {
+bool AdvancedSequencer::SetMIDIThruEnable(bool on_off) {
     if (!thru)
-        return;
+        return false;
     if (on_off)
         thru->Start();
-    else {
+    else
         thru->Stop();            // calls AllNotesOff() on thru out channel
-    }
+    return true;
 }
 
 
-void AdvancedSequencer::SetMIDIThruChannel (int chan) {
-    if (thru) {
-        thru->SetOutChannel(chan);
-        MIDIManager::AllNotesOff();
-    }
+bool AdvancedSequencer::SetMIDIThruChannel (char chan) {
+    return (thru != 0 && thru->SetOutChannel(chan));
 }
 
 
-void AdvancedSequencer::SetMIDIThruTranspose (int amt) {
+bool AdvancedSequencer::SetMIDIThruTranspose (char amt) {
     if (thru_transposer) {
         thru_transposer->SetAllTranspose (amt);
         MIDIManager::AllNotesOff();
+        return true;
     }
+    return false;
 }
 
 
@@ -375,9 +368,9 @@ void AdvancedSequencer::SetMIDIThruTranspose (int amt) {
  */
 
 
-void AdvancedSequencer::SetTrackSolo (unsigned int trk_num) {   // unsoloing done by UnSoloTrack()
+bool AdvancedSequencer::SetTrackSolo (unsigned int trk_num) {   // unsoloing done by UnSoloTrack()
     if (!file_loaded || !state.multitrack->IsValidTrackNumber(trk_num))
-        return;
+        return false;
     proc_lock.lock();
     for (unsigned int i = 0; i < GetNumTracks(); ++i ) {
         if(i == trk_num) {
@@ -396,6 +389,7 @@ void AdvancedSequencer::SetTrackSolo (unsigned int trk_num) {   // unsoloing don
         }
     }
     proc_lock.unlock();
+    return true;
 }
 
 
@@ -414,9 +408,9 @@ void AdvancedSequencer::UnSoloTrack()  {
 }
 
 
-void AdvancedSequencer::SetTrackMute (unsigned int trk_num, bool f) {
+bool AdvancedSequencer::SetTrackMute (unsigned int trk_num, bool f) {
     if (!file_loaded || !state.multitrack->IsValidTrackNumber(trk_num))
-        return;
+        return false;
     proc_lock.lock();
     GetTrackProcessor(trk_num)->mute = f;
     int channel = GetTrackChannel(trk_num);
@@ -430,6 +424,7 @@ void AdvancedSequencer::SetTrackMute (unsigned int trk_num, bool f) {
             CatchEventsBefore(trk_num);
     }
     proc_lock.unlock();
+    return true;
 }
 
 
@@ -446,18 +441,19 @@ void AdvancedSequencer::UnmuteAllTracks() {
 }
 
 
-void AdvancedSequencer::SetTrackVelocityScale (unsigned int trk_num, unsigned int scale) {
+bool AdvancedSequencer::SetTrackVelocityScale (unsigned int trk_num, unsigned int scale) {
     if (!file_loaded || !state.multitrack->IsValidTrackNumber(trk_num))
-        return;
+        return false;
     proc_lock.lock();
     ((MIDISequencerTrackProcessor *)track_processors[trk_num])->velocity_scale = scale;
     proc_lock.unlock();
+    return true;
 }
 
 
-void AdvancedSequencer::SetTrackRechannelize (unsigned int trk_num, int chan) {
+bool AdvancedSequencer::SetTrackRechannelize (unsigned int trk_num, char chan) {
     if (!file_loaded || !state.multitrack->IsValidTrackNumber(trk_num))
-        return;
+        return false;
     proc_lock.lock();
     if (IsPlaying() && GetTrackChannel(trk_num) != chan && !(GetTrackChannel(trk_num) == -1)) {
         MIDIManager::GetOutDriver(GetTrackOutPort(trk_num))->AllNotesOff(GetTrackChannel(trk_num));
@@ -465,19 +461,21 @@ void AdvancedSequencer::SetTrackRechannelize (unsigned int trk_num, int chan) {
     }
     GetTrackProcessor(trk_num)->rechannel = chan;
     proc_lock.unlock();
+    return true;
 }
 
 
-void AdvancedSequencer::SetTrackTranspose (unsigned int trk_num, int trans) {
+bool AdvancedSequencer::SetTrackTranspose (unsigned int trk_num, char amt) {
     if (!file_loaded || !state.multitrack->IsValidTrackNumber(trk_num))
-        return;
+        return false;
     proc_lock.lock();
-    if (IsPlaying() && GetTrackTranspose(trk_num) != trans && !(GetTrackChannel(trk_num) == -1)) {
+    if (IsPlaying() && GetTrackTranspose(trk_num) != amt && !(GetTrackChannel(trk_num) == -1)) {
         MIDIManager::GetOutDriver(GetTrackOutPort(trk_num))->AllNotesOff(GetTrackChannel(trk_num));
         GetTrackState(trk_num)->note_matrix.Reset();
     }
-    GetTrackProcessor(trk_num)->transpose = trans;
+    GetTrackProcessor(trk_num)->transpose = amt;
     proc_lock.unlock();
+    return true;
 }
 
 
@@ -646,9 +644,9 @@ void AdvancedSequencer::OutputMessage(MIDITimedMessage& msg, unsigned int port) 
 }
 
 
-void AdvancedSequencer::SetSMPTE(SMPTE* s) {
+bool AdvancedSequencer::SetSMPTE(SMPTE* s) {
     if (!file_loaded || IsPlaying())
-        return;
+        return false;
 
     const MIDIMessage* msg = 0;
 
@@ -687,6 +685,7 @@ void AdvancedSequencer::SetSMPTE(SMPTE* s) {
         s->SetOffset(0);
 
     }
+    return true;
 }
 
 
@@ -694,6 +693,7 @@ void AdvancedSequencer::UpdateStatus() {
     proc_lock.lock();
     file_loaded = !GetMultiTrack()->IsEmpty();
     ExtractWarpPositions();
+    GoToTime(state.cur_clock);
     proc_lock.unlock();
 }
 
@@ -721,11 +721,12 @@ void AdvancedSequencer::ExtractWarpPositions() {
 
     // temporarily disable the gui notifier
     bool notifier_mode = false;
-
     if (notifier) {
         notifier_mode = notifier->GetEnable();
         notifier->SetEnable (false);
     }
+    char old_play_mode = play_mode;
+    play_mode = PLAY_BOUNDED;
 
     unsigned int num_warp_positions = 0;
     while (MIDISequencer::GoToMeasure (num_warp_positions * MEASURES_PER_WARP)) {
@@ -750,6 +751,7 @@ void AdvancedSequencer::ExtractWarpPositions() {
 
     GoToTime(cur_time);
 
+    play_mode = old_play_mode;
     // re-enable the gui notifier if it was enabled previously
     if (notifier) {
         notifier->SetEnable (notifier_mode);

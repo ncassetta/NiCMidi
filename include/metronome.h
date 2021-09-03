@@ -88,17 +88,22 @@ class Metronome : public MIDITickComponent {
         /// of a measure will sound with different note and volume.
         unsigned char                   GetTimeSigNumerator() const         { return timesig_numerator; }
         /// TODO: Actually denominator is not implemented.
-        unsigned char                   GetTimeSigDenominator() const       { return timesig_denominator; }
-        /// Sets the musical tempo.
-        void                            SetTempo(float t);
-
+        //unsigned char                   GetTimeSigDenominator() const       { return timesig_denominator; }
+        /// Sets the musical tempo. You can set it between 1.0 bpm and 300.0 bpm.
+        /// \return **true** if _t_ is a valid tempo, **false** otherwise.
+        bool                            SetTempo(float t);
+    // TODO: harmonize these with MIDISequencer equivalent
         /// Sets the tempo scale (scale_ is the percentage: 100 = no scaling, 200 = twice faster, etc.).
-        void                            SetTempoScale(unsigned int scale);
+        /// You can set a scale between 1 and 500 %.
+        /// \return **true** if _scale_ is a valid number, **false** otherwise.
+        bool                            SetTempoScale(unsigned int scale);
         /// Sets the MIDI out port for the metronome clicks.
         /// \param port The out MIDI port id number
-        void                            SetOutPort(unsigned int port);
+        /// \return **true** if _port_ is a valid port number, **false** otherwise.
+        bool                            SetOutPort(unsigned int port);
         /// Sets the MIDI channel for the metronome clicks (channels are numbered 0 ... 15).
-        void                            SetOutChannel(unsigned char ch);
+        /// \return **true** if _ch_ is a valid channel number, **false** otherwise.
+        bool                            SetOutChannel(unsigned char ch);
         /// Sets the MIDI note number for the measure click (the 1st beat of the measure). It is only effective if you
         /// have already set the timesig numerator (see SetTimesigNumerator()).
         void                            SetMeasNote(unsigned char note);
@@ -107,12 +112,13 @@ class Metronome : public MIDITickComponent {
         /// Sets the MIDI note number for the subdivision click.
         void                            SetSubdNote(unsigned char note);
         /// Sets the subdivision type. It can be 0 (subd clicks disabled), 2, 3, 4, 5, 6.
-        void                            SetSubdType(unsigned char type);
+        /// \return **true** if _type_ is a valid subdivision number, **false** otherwise.
+        bool                            SetSubdType(unsigned char type);
         /// Sets the numerator of the current timesig. If it is 0 the measure clicks are disabled, otherwise the 1st click
         /// of a measure will sound with different note and volume.
         void                            SetTimeSigNumerator(unsigned char n);
-        /// TODO: Actually denominator is not implemented
-        void                            SetTimeSigDenominator(unsigned char d);
+        // TODO: Actually this is not implemented: denominator is assumed 4
+        //void                            SetTimeSigDenominator(unsigned char d);
 
         // Inherited from MIDITICK
 
@@ -142,7 +148,8 @@ class Metronome : public MIDITickComponent {
         unsigned char                   subd_note;          // The MIDI note number for subdivision click
         unsigned char                   subd_type;          // Number of subdivisions (can be 2, 3, 4, 5, 6, 0 = disable subd click)
         unsigned char                   timesig_numerator;  // The numerator of current time signature (0 = disable measure click)
-        unsigned char                   timesig_denominator;// The denominator of current time signature (can be 2, 4, 8, 16)
+        // TODO: actually denominator is assumed 4
+        //unsigned char                   timesig_denominator;// The denominator of current time signature (can be 2, 4, 8, 16)
         float                           tempobpm;           // The current tempo in beats per minute
         unsigned int                    tempo_scale;        // The tempo scale in percentage (100 = true time)
 

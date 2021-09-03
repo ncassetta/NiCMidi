@@ -34,6 +34,7 @@
 #include <atomic>
 #include <vector>
 #include <set>
+#include <stack>
 
 /*
 class MIDIMultiTrackCopier {
@@ -162,6 +163,7 @@ class RecNotifier: public MIDISequencerGUINotifier {
         unsigned char                   chan;               // The MIDI channel for sound output
         MIDIMessage                     on_msg;
         MIDIMessage                     off_msg;
+        unsigned char                   num_beats;
         MIDISequencerGUINotifier*       other_notifier;
 };
 
@@ -184,6 +186,9 @@ class MIDIRecorder : public MIDITickComponent {
         virtual void                    Reset();
         /// Returns a pointer to the internal MIDIMultiTrack.
         MIDIMultiTrack*                 GetMultiTrack() const           { return tracks; }
+        /// Returns the recording mode.
+        /// \return One of REC_MERGE, REC_OVER.
+        int                             GetRecMode() const              { return rec_mode; }
         /// Returns the start MIDI time of the recording.
         MIDIClockTime                   GetStartRecTime() const         { return rec_start_time; }
         /// Returns the end MIDI time of the recording.
@@ -214,6 +219,10 @@ class MIDIRecorder : public MIDITickComponent {
         /// \param chan the channel:You can specify a number between 0 ... 15 or -1 for any channel.
         /// \return **true** if parameters are valid (and the channel has been changed), **false** otherwise.
         bool                            SetTrackRecChannel(unsigned int trk_num, char chan);
+        /// Sets the recording mode. This cannot be called during recording.
+        /// \param mode one of REC_MERGE, REC_OVER
+        /// \return **true** if the mode has been changed, **false** otherwise.
+        bool                            SetRecMode(int mode);
         /// Sets the recording start time. If the recording end time is less than _t_ it sets it to _t_.
         /// You cannot change the time while recording.
         /// \param t the MIDI clock time to assign
@@ -262,11 +271,19 @@ class MIDIRecorder : public MIDITickComponent {
         /// \param trk_num the track number
         /// \return **true** if _trk_num_ is valid (and the track has been enabled), **false** otherwise.
         bool                            DisableTrack(unsigned int trk_num);
+        /// Deletes the changes made in the last recording. You can have multiple levels of undo
+        void                            UndoRec();
 
         /// Starts the recording from the enabled ports and channels.
         virtual void                    Start();
         /// Stops the recording from the enabled ports and channels.
         virtual void                    Stop();
+
+        /// Recording mode: You can choose to merge the new with the old track content, or to overwrite it.
+        enum {
+            REC_MERGE,                      ///<    Merge old and new content
+            REC_OVER                        ///<    Overwrite the old content
+        };
 
     protected:
         /// Internal function. It is used to resize the internal multitrack according to the
@@ -296,9 +313,13 @@ class MIDIRecorder : public MIDITickComponent {
         tMsecs                          rec_time_offset;    // The time between time 0 and sequencer start
         //tMsecs                          sys_time_offset;    ///< The time between the timer start and the sequencer start
         MIDIClockTime                   rec_start_time;     // The MIDIClockTime of the beginning of recording
-        MIDIClockTime                   rec_end_time;
+        MIDIClockTime                   rec_end_time;       // The MIDIClockTime of the end of recording
+        char                            rec_mode;           // The recording mode (REC_MERGE or REC_OVER)
         RecNotifier                     notifier;           // A notifier used as a metronome
-        std::atomic<bool>               rec_on;
+        char                            old_seq_mode;       // Internal use
+        std::atomic<bool>               rec_on;             // Internal use
+        std::stack<MIDIMultiTrack*>     undo_stack;         // Stack of multitracks for undo
+
         /// \endcond
 };
 

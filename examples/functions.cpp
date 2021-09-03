@@ -76,9 +76,8 @@ void GetCommand() {
 
 
 
-// shows the content of a MIDIMultiTrack ordered by time, pausing every 80 lines
+// shows the content of a MIDIMultiTrack ordered by time, pausing every 40 lines
 void DumpMIDIMultiTrackWithPauses (MIDIMultiTrack *mlt) {
-    const int PAUSE_LINES = 80;
     MIDIMultiTrackIterator iter(mlt);
     MIDITimedMessage *msg;
     int trk_num;
@@ -90,7 +89,7 @@ void DumpMIDIMultiTrackWithPauses (MIDIMultiTrack *mlt) {
         printf ("Tr %2d - ", trk_num);
         DumpMIDITimedMessage (msg);
         num_lines++;
-        if (num_lines == PAUSE_LINES) {
+        if (num_lines == PAUSE_LINES / 2) {
             printf ("Press <ENTER> to continue or q + <ENTER> to exit ...\n");
             char ch = std::cin.get();
             if (tolower(ch) == 'q')
@@ -103,13 +102,27 @@ void DumpMIDIMultiTrackWithPauses (MIDIMultiTrack *mlt) {
 
 // shows the content of a MIDITrack ordered by time, pausing every 80 lines
 void DumpMIDITrackWithPauses (MIDITrack *trk, int trk_num) {
-    const int PAUSE_LINES = 80;
     int num_lines = 0;
 
     printf ("DUMP OF MIDI TRACK %d\n", trk_num);
     for (unsigned int ev_num = 0; ev_num < trk->GetNumEvents(); ev_num++) {
         DumpMIDITimedMessage (trk->GetEventAddress(ev_num));
         num_lines++;
+        if (num_lines == PAUSE_LINES) {
+            printf ("Press <ENTER> to continue or q + <ENTER> to exit ...\n");
+            char ch = std::cin.get();
+            if (tolower(ch) == 'q')
+                return;
+            num_lines = 0;
+        }
+    }
+}
+
+// shows the attributes of all the tracks of a multitrack, pausing every 80 lines
+void DumpAllTracksAttr(MIDIMultiTrack* mlt, bool v) {
+    int num_lines = 0;
+    for (unsigned int i = 0; i < mlt->GetNumTracks(); i++) {
+        num_lines += (v ? DumpMIDITrackAttrVerbose(mlt->GetTrack(i), i) : DumpMIDITrackAttr(mlt->GetTrack(i), i));
         if (num_lines == PAUSE_LINES) {
             printf ("Press <ENTER> to continue or q + <ENTER> to exit ...\n");
             char ch = std::cin.get();

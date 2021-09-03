@@ -45,12 +45,11 @@ std::thread MIDITimer::bg_thread;
 static MIDITimer dummy;
 
 MIDITimer::MIDITimer() {
-    std::cout << "MIDITimer constructor" << std::endl;
-
+    //std::cout << "MIDITimer constructor" << std::endl;
 }
 
 MIDITimer::~MIDITimer() {
-    std::cout << "MIDITimer destructor" << std::endl;
+    //std::cout << "MIDITimer destructor" << std::endl;
     HardStop();             // this joins the bg_thread
  };
 

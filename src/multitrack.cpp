@@ -212,6 +212,13 @@ bool MIDIMultiTrack::MoveTrack(int from, int to) {
 }
 
 
+bool MIDIMultiTrack::SetTrack(const MIDITrack* trk, int trk_num) {
+    if (!IsValidTrackNumber(trk_num)) return false;
+    *tracks[trk_num] = *trk;
+    return true;
+}
+
+
 bool MIDIMultiTrack::InsertEvent(int trk_num, const MIDITimedMessage& msg, tInsMode _ins_mode) {
     if (IsValidTrackNumber(trk_num))
         return tracks[trk_num]->InsertEvent(msg, _ins_mode);

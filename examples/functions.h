@@ -38,7 +38,13 @@ void GetCommand();
 void DumpMIDIMultiTrackWithPauses(MIDIMultiTrack *mlt);
 // shows the content of a MIDITrack ordered by time, pausing every 80 lines
 void DumpMIDITrackWithPauses(MIDITrack* trk, int trk_num);
+// shows the attributes of all the tracks of a multitrack, pausing every 80 lines
+void DumpAllTracksAttr(MIDIMultiTrack* mlt, bool v);
 
+
+static const int PAUSE_LINES = 80;
+
+/*
 // readable names of track statuses
 static const char TRACK_TYPES[6][12] = {
     "MAIN TRACK",
@@ -49,6 +55,7 @@ static const char TRACK_TYPES[6][12] = {
     "IRREGULAR "
 
 };
+*/
 
 
 #endif // FUNCTIONS_H_INCLUDED

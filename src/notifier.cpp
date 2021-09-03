@@ -28,15 +28,25 @@
 
 
 const char MIDISequencerGUIEvent::group_names[][10] =
-        { "All      ", "Conductor", "Transport", "Track    ", "User    " };
+        { "All      ", "Conductor", "Transport", "Track    ", "Recorder ", "User     " };
 const char MIDISequencerGUIEvent::conductor_items_names[][10] =
-        { "Tempo    ", "Timesig  ", "Keysig   ", "Marker   ", "User    " };
+        { "Tempo    ", "Timesig  ", "Keysig   ", "Marker   ", "User     " };
 const char MIDISequencerGUIEvent::transport_items_names[][10] =
-        { "Start    ", "Stop     ", "Measure  ", "Beat     ", "User    " };
+        { "Start    ", "Stop     ", "Measure  ", "Beat     ", "User     " };
 const char MIDISequencerGUIEvent::track_items_names[][10] =
-        { "Name     ", "Program  ", "Note     ", "Volume   ", "Pan     ", "Chorus  ", "Reverb  ", "User    " };
+        { "Name     ", "Program  ", "Note     ", "Volume   ", "Pan      ", "Chorus   ", "Reverb   ", "User     " };
+const char MIDISequencerGUIEvent::recording_items_names[][10] =
+        { "Reset    ", "Start    ", "Stop     ", "User     " };
 const char MIDISequencerGUIEvent::user_items_names[][10] =
         { "User     " };
+
+bool MIDISequencerGUINotifierText::SetStartFrom(char f) {
+    if (f == 0 || f == 1) {
+        start_from = f;
+        return true;
+    }
+    return false;
+}
 
 
 void MIDISequencerGUINotifierText::Notify(const MIDISequencerGUIEvent &ev) {
@@ -46,7 +56,7 @@ void MIDISequencerGUINotifierText::Notify(const MIDISequencerGUIEvent &ev) {
     if (!en) return;                    // not enabled
 
     char s[200];
-    int track_num = ev.GetSubGroup();   // used only for track events
+    int trk_num = ev.GetSubGroup();     // used only for track events
     int wr = sprintf(s, "GUI EVENT: %s ", MIDISequencerGUIEvent::group_names[ev.GetGroup()]);
 
     switch(ev.GetGroup()) {
@@ -83,11 +93,11 @@ void MIDISequencerGUINotifierText::Notify(const MIDISequencerGUIEvent &ev) {
                     sprintf(s + wr, "SEQUENCER STOP");
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRANSPORT_MEASURE:
-                    sprintf(s + wr, "MEAS %d", sequencer->GetCurrentMeasure() + 1);
+                    sprintf(s + wr, "MEAS %d", sequencer->GetCurrentMeasure() + start_from);
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRANSPORT_BEAT:
-                    sprintf(s + wr, "MEAS %d BEAT %d", sequencer->GetCurrentMeasure() + 1,
-                           sequencer->GetCurrentBeat() + 1);
+                    sprintf(s + wr, "MEAS %d BEAT %d", sequencer->GetCurrentMeasure() + start_from,
+                           sequencer->GetCurrentBeat() + start_from );
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRANSPORT_USER:
                     sprintf(s + wr, "USER EV Item %d", ev.GetItem());
@@ -95,30 +105,46 @@ void MIDISequencerGUINotifierText::Notify(const MIDISequencerGUIEvent &ev) {
             }
             break;
         case MIDISequencerGUIEvent::GROUP_TRACK:
-            wr += sprintf (s + wr, "TRACK %3d ", track_num);
+            wr += sprintf (s + wr, "TRACK %3d ", trk_num);
             switch (ev.GetItem()) {
                 case MIDISequencerGUIEvent::GROUP_TRACK_NAME:
-                    sprintf(s + wr, "NAME: %s", sequencer->GetTrackState(track_num)->track_name.c_str());
+                    sprintf(s + wr, "NAME: %s", sequencer->GetTrackState(trk_num)->track_name.c_str());
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRACK_PROGRAM:
-                    sprintf(s + wr, "PROGRAM: %d", sequencer->GetTrackState(track_num)->program);
+                    sprintf(s + wr, "PROGRAM: %d", sequencer->GetTrackState(trk_num)->program);
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRACK_NOTE:
                     sprintf(s + wr, "NOTE");
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRACK_VOLUME:
-                    sprintf(s + wr, "VOLUME: %d",sequencer->GetTrackState(track_num)->control_values[C_MAIN_VOLUME]);
+                    sprintf(s + wr, "VOLUME: %d",sequencer->GetTrackState(trk_num)->control_values[C_MAIN_VOLUME]);
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRACK_PAN:
-                    sprintf(s + wr, "PAN: %d", sequencer->GetTrackState(track_num)->control_values[C_PAN]);
+                    sprintf(s + wr, "PAN: %d", sequencer->GetTrackState(trk_num)->control_values[C_PAN]);
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRACK_CHR:
-                    sprintf(s + wr, "CHORUS: %d", sequencer->GetTrackState(track_num)->control_values[C_CHORUS_DEPTH]);
+                    sprintf(s + wr, "CHORUS: %d", sequencer->GetTrackState(trk_num)->control_values[C_CHORUS_DEPTH]);
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRACK_REV:
-                    sprintf(s + wr, "REVERB: %d", sequencer->GetTrackState(track_num)->control_values[C_EFFECT_DEPTH]);
+                    sprintf(s + wr, "REVERB: %d", sequencer->GetTrackState(trk_num)->control_values[C_EFFECT_DEPTH]);
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRACK_USER:
+                    sprintf(s + wr, "USER EV Item %d", ev.GetItem());
+                    break;
+            }
+            break;
+        case MIDISequencerGUIEvent::GROUP_RECORDER:
+            switch (ev.GetItem()) {
+                case MIDISequencerGUIEvent::GROUP_RECORDER_RESET:
+                    sprintf(s + wr, "RECORDER RESET");
+                    break;
+                case MIDISequencerGUIEvent::GROUP_RECORDER_START:
+                    sprintf(s + wr, "RECORDING START");
+                    break;
+                case MIDISequencerGUIEvent::GROUP_RECORDER_STOP:
+                    sprintf(s + wr, "RECORDING STOP");
+                    break;
+                case MIDISequencerGUIEvent::GROUP_RECORDER_USER:
                     sprintf(s + wr, "USER EV Item %d", ev.GetItem());
                     break;
             }
