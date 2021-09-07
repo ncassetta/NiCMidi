@@ -356,7 +356,8 @@ MIDIMultiTrackIteratorState::MIDIMultiTrackIteratorState(int n_tracks) :
     SetNumTracks(n_tracks);
 }
 
-
+// methods SetNumTracks() and Reset() don't affect time_shift_mode, which
+// is changed only by the MIDISequencer class
 void MIDIMultiTrackIteratorState::SetNumTracks(int n) {
     num_tracks = n;
     next_event_number.resize(n);

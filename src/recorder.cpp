@@ -63,9 +63,10 @@ void RecNotifier::Notify(const MIDISequencerGUIEvent &ev) {
                 num_beats++;
             }
         }
-        if (other_notifier)
-            other_notifier->Notify(ev);
     }
+    // always send the event to other notifier (could be enabled)
+    if (other_notifier)
+        other_notifier->Notify(ev);
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -109,39 +110,21 @@ void MIDIRecorder::Reset() {
 
 
 bool MIDIRecorder::SetTrackInPort(unsigned int trk_num, unsigned int port) {
-    if (!seq_tracks->IsValidTrackNumber(trk_num) || !MIDIManager::IsValidInPortNumber(port))
+    if (IsPlaying() || !seq_tracks->IsValidTrackNumber(trk_num) || !MIDIManager::IsValidInPortNumber(port))
         return false;
-    if (!IsPlaying())
-        seq_tracks->GetTrack(trk_num)->SetInPort(port);
-    else {
-        proc_lock.lock();
-        if (tracks->IsValidTrackNumber(trk_num)) {
-            tracks->GetTrack(trk_num)->CloseOpenEvents(rec_start_time, seq->GetCurrentMIDIClockTime());
-            tracks->GetTrack(trk_num)->SetInPort(port);
-        }
-        else
-            seq_tracks->GetTrack(trk_num)->SetInPort(port);
-        proc_lock.unlock();
-     }
+    seq_tracks->GetTrack(trk_num)->SetInPort(port);
+    if (tracks->IsValidTrackNumber(trk_num))
+        tracks->GetTrack(trk_num)->SetInPort(port);
     return true;
 }
 
 
 bool MIDIRecorder::SetTrackRecChannel(unsigned int trk_num, char chan) {
-    if (!tracks->IsValidTrackNumber(trk_num) || (chan < -1 || chan > 15))
+    if (IsPlaying() || !tracks->IsValidTrackNumber(trk_num) || (chan < -1 || chan > 15))
         return false;
-    if (!IsPlaying())
-        seq_tracks->GetTrack(trk_num)->SetRecChannel(chan);
-    else {
-        proc_lock.lock();
-        if (tracks->IsValidTrackNumber(trk_num)) {
-            seq_tracks->GetTrack(trk_num)->CloseOpenEvents(rec_start_time, seq->GetCurrentMIDIClockTime());
-            tracks->GetTrack(trk_num)->SetRecChannel(chan);
-        }
-        else
-            seq_tracks->GetTrack(trk_num)->SetRecChannel(chan);
-        proc_lock.unlock();
-    }
+    seq_tracks->GetTrack(trk_num)->SetRecChannel(chan);
+    if (tracks->IsValidTrackNumber(trk_num))
+        tracks->GetTrack(trk_num)->SetRecChannel(chan);
     return true;
 }
 
@@ -256,15 +239,19 @@ bool MIDIRecorder::DisableTrack(unsigned int trk_num) {
 }
 
 
-void MIDIRecorder::UndoRec() {
-    const MIDIMultiTrack* undo_tracks = undo_stack.top();
-    for (unsigned int i = 0; i < undo_tracks->GetNumTracks(); i++)
-        if (!undo_tracks->GetTrack(i)->IsEmpty())
-            *tracks->GetTrack(i) = *undo_tracks->GetTrack(i);
-    undo_stack.pop();
-    if (seq->GetState()->notifier)
-        seq->GetState()->Notify(MIDISequencerGUIEvent::GROUP_ALL);
-    delete undo_tracks;
+bool MIDIRecorder::UndoRec() {
+    if (!undo_stack.empty()) {
+        const MIDIMultiTrack* undo_tracks = undo_stack.top();
+        for (unsigned int i = 0; i < undo_tracks->GetNumTracks(); i++)
+            if (!undo_tracks->GetTrack(i)->IsEmpty())
+                seq_tracks->SetTrack(undo_tracks->GetTrack(i) , i);
+        undo_stack.pop();
+        if (seq->GetState()->notifier)
+            seq->GetState()->Notify(MIDISequencerGUIEvent::GROUP_ALL);
+        delete undo_tracks;
+        return true;
+    }
+    return false;
 }
 
 
@@ -312,7 +299,7 @@ void MIDIRecorder::Stop() {
         }
         MIDITickComponent::Stop();
         MIDIManager::CloseInPorts();
-        seq->Stop();
+        seq->MIDISequencer::Stop();         //AdvancedSequencer calls GoToMeasure()
         ResetSeqNotifier();
         for (unsigned int i = 0; i < en_tracks.size(); i++) {
             if (en_tracks[i]) {
@@ -322,6 +309,8 @@ void MIDIRecorder::Stop() {
         }
         seq->UpdateStatus();
         seq->SetPlayMode(old_seq_mode);
+        //stops the sequencer on a beat
+        seq->GoToMeasure(seq->GetCurrentMeasure(), seq->GetCurrentBeat());
         std::cout << "\t\t ... Exiting from MIDIRecorder::Stop()" << std::endl;
     }
 }
@@ -405,6 +394,12 @@ void MIDIRecorder::StaticTickProc(tMsecs sys_time, void* pt) {
     seq_pt->TickProc(sys_time);
 }
 
+
+
+// The idea of writing new messages directly into the sequencer (and not the recorder)
+// must be discarded because in recording you are messing sequencer tracks while playing
+// them (you should call MIDISequencer::UpdateStatus() at every MIDIRecorder::TickProc())
+// TODO: perhaps it is possible to write a Sequencer::InsertEvent() method
 
 void MIDIRecorder::TickProc(tMsecs sys_time) {
     proc_lock.lock();

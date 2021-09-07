@@ -147,7 +147,7 @@ void DumpAllTracks (MIDIMultiTrack* const mlt, std::ostream& ost) {
     ost << "Clocks per beat: " << mlt->GetClksPerBeat() << std::endl << std::endl;
 
     for (unsigned int i = 0; i < mlt->GetNumTracks(); ++i) {
-        ost << "Dump of track" << i << std::endl;
+        ost << "Dump of track " << i << std::endl;
         for (unsigned int j = 0; j < mlt->GetTrack(i)->GetNumEvents(); j++)
             DumpMIDITimedMessage(mlt->GetTrack (i)->GetEventAddress(j), ost);
         ost << std::endl;

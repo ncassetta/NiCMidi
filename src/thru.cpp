@@ -175,10 +175,10 @@ void MIDIThru::TickProc(tMsecs sys_time_)
 {
     proc_lock.lock();
 
-    static unsigned int times = 0;
-    times++;
-    if (!(times % 100))
-        std::cout << "MIDIThru::TickProc() called " << times << " times\n";
+    //static unsigned int times = 0;
+    //times++;
+    //if (!(times % 100))
+    //    std::cout << "MIDIThru::TickProc() called " << times << " times\n";
 
     MIDIRawMessage rmsg;
     MIDITimedMessage msg;

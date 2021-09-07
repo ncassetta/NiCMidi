@@ -124,11 +124,14 @@ class AdvancedSequencer : public MIDISequencer {
         /// Loads a MIDIFile into the internal MIDIMultiTrack. It can change the MIDIMultiTrack::clks_per_beat
         /// parameter according to the file signature. You can then play the MIDI content with the Play() method.
         /// \param fname the file name.
+        /// \return **true** if the file has been loaded; if it fails returns **false** and leaves the multitrack
+        /// in its previous status.
         virtual bool        Load(const char *fname);
         /// Copies the content of an external MIDIMultiTrack into the sequencer. It can change the
         /// MIDIMultiTrack::clks_per_beat parameter according to the multitrack signature. You can then play the
         /// MIDI content with the Play() method.
         /// \param tracks the MIDIMultiTrack to be copied.
+        /// \return always returns **true**.
         virtual bool        Load(const MIDIMultiTrack* tracks);
         /// Clears the contents of the internal MIDIMultiTrack and reset its MIDIMultiTrack::clks_per_beat parameter
         /// to **DEFAULT_CLKS_PER_BEAT** (actually 120).

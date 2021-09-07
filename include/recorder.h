@@ -206,15 +206,13 @@ class MIDIRecorder : public MIDITickComponent {
         /// Returns the recording channel for the given track, or -1 for any channel. You can
         /// force a track to receive a given channel with SetTrackChannel().
         char                            GetTrackRecChannel(unsigned int trk_num)
-                                                            { return tracks->GetTrack(trk_num)->GetRecChannel(); }
-        /// Sets the MIDI in port for a track. This method is thread-safe, however changing
-        /// a port during recording can lead to unexpected results.
+                                                            { return seq_tracks->GetTrack(trk_num)->GetRecChannel(); }
+        /// Sets the MIDI in port for a track. This cannot be called during recording.
         /// \param trk_num the track number
         /// \param port the id number of the port (see MIDIManager::GetOutPorts())
         /// \return **true** if parameters are valid (and the port has been changed), **false** otherwise.
         bool                            SetTrackInPort(unsigned int trk_num, unsigned int port);
-        /// Sets the recording channel for the given track. This method is thread-safe, however
-        /// changing the channel during recording can lead to unexpected results.
+        /// Sets the recording channel for the given track. This cannot be called during recording.
         /// \param trk_num the track number
         /// \param chan the channel:You can specify a number between 0 ... 15 or -1 for any channel.
         /// \return **true** if parameters are valid (and the channel has been changed), **false** otherwise.
@@ -271,8 +269,9 @@ class MIDIRecorder : public MIDITickComponent {
         /// \param trk_num the track number
         /// \return **true** if _trk_num_ is valid (and the track has been enabled), **false** otherwise.
         bool                            DisableTrack(unsigned int trk_num);
-        /// Deletes the changes made in the last recording. You can have multiple levels of undo
-        void                            UndoRec();
+        /// Deletes the changes made in the last recording. You have multiple levels of undo.
+        /// \return **true** if undo is possible, **false** otherwise.
+        bool                            UndoRec();
 
         /// Starts the recording from the enabled ports and channels.
         virtual void                    Start();

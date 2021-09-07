@@ -47,6 +47,34 @@ const MIDIClockTime TIME_INFINITE = 0xffffffff;
 /// This is the number of MIDI ticks for a quarter note in all the tracks of the multitrack.
 const unsigned int DEFAULT_CLKS_PER_BEAT = 120;
 ///@}
+
+
+/* TODO: THIS IS EXPERIMENTAL; FOR NOW NOT IMPLEMENTED
+/// \name Counting channels, measures, etc. form 0 or 1
+///@{
+enum {
+    CHANS_FROM_1 = 1,
+    MEAS_FROM_1 = 2,
+    TRACKS_FROM_1 = 4,
+    PORTS_FROM_1 = 8
+};
+
+static char From1Flag = 0;
+
+void SetChansFrom1(bool f)      { (From1Flag &= (~CHANS_FROM_1)) |= (CHANS_FROM_1 * f); };
+void SetMeasFrom1(bool f)       { (From1Flag &= (~MEAS_FROM_1)) |= (MEAS_FROM_1 * f); };
+void SetTracksFrom1(bool f)     { (From1Flag &= (~TRACKS_FROM_1)) |= (TRACKS_FROM_1 * f); };
+void SetPortsFrom1(bool f)      { (From1Flag &= (~PORTS_FROM_1)) |= (PORTS_FROM_1 * f); };
+void SetFrom1(char c)           { From1Flag = c; }
+int GetChansFrom1()             { return (From1Flag & CHANS_FROM_1) == CHANS_FROM_1; };
+int GetMeasFrom1()              { return (From1Flag & MEAS_FROM_1) == MEAS_FROM_1; };
+int GetTracksFrom1()            { return (From1Flag & TRACKS_FROM_1) == TRACKS_FROM_1; };
+int GetPortsFrom1()             { return (From1Flag & PORTS_FROM_1) == PORTS_FROM_1; };
+char GetFrom1Flag()             { return From1Flag; };
+
+///@}
+*/
+
 ///@}
 
 

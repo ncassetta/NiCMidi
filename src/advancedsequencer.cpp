@@ -173,17 +173,23 @@ void AdvancedSequencer::Reset() {
         // causes a call to Analyze()
         GetMultiTrack()->GetTrack(i)->GetStatus();
     }
+    file_loaded = state.multitrack->IsEmpty();      // the multitrack is not cleared by this
     ExtractWarpPositions();
 }
 
 
 bool AdvancedSequencer::Load (const char *fname) {
     Stop();
+    // copy the old multitrack in case we need to rstore it
+    MIDIMultiTrack undo_multi = *state.multitrack;
     //state.multitrack->Reset();    this is done by LoadMIDIFile
 
     bool load = LoadMIDIFile(fname, state.multitrack, &header);
-    Reset();                    // synchronizes the sequencer with the multitrack and goes to 0
-    UpdateStatus();             // sets file_loaded and calls ExtractWarpPositions()
+    if(!load)
+        *state.multitrack = undo_multi;
+    Reset();                    // synchronizes the sequencer with the multitrack, goes to 0, calls
+                                // ExtractWarpPositions() and sets file_loaded
+    // UpdateStatus();
     return load;                // file_loaded could be true if load fails and a file was already loaded
 }
 
@@ -193,8 +199,8 @@ bool AdvancedSequencer::Load (const MIDIMultiTrack* tracks) {
     *state.multitrack = *tracks;
     //file_loaded = !state.multitrack->IsEmpty();   this is done by Reset
     Reset();                    // synchronizes the sequencer with the multitrack and goes to 0
-    UpdateStatus();             // sets file_loaded and calls ExtractWarpPositions()
-    return file_loaded;
+    //UpdateStatus();             // all done by Reset()
+    return true;
 }
 
 
@@ -480,8 +486,6 @@ bool AdvancedSequencer::SetTrackTranspose (unsigned int trk_num, char amt) {
 
 
 bool AdvancedSequencer::GoToTime (MIDIClockTime time_clk) {
-    if (!file_loaded)
-        return false;
     bool ret;
 
     // figure out which warp item we use
@@ -515,8 +519,6 @@ bool AdvancedSequencer::GoToTime (MIDIClockTime time_clk) {
 
 
 bool AdvancedSequencer::GoToTimeMs(float time_ms) {
-    if (!file_loaded)
-        return false;
     bool ret;
 
     // figure out which warp item we use
@@ -551,8 +553,6 @@ bool AdvancedSequencer::GoToTimeMs(float time_ms) {
 
 
 bool AdvancedSequencer::GoToMeasure (int measure, int beat) {
-    if (!file_loaded)
-        return false;
     bool ret;
 
     // figure out which warp item we use
@@ -601,11 +601,11 @@ void AdvancedSequencer::Start () {
 
     state.Notify (MIDISequencerGUIEvent::GROUP_TRANSPORT,
                       MIDISequencerGUIEvent::GROUP_TRANSPORT_START);
-    SetTimeShiftMode(true);
+    state.iterator.SetTimeShiftMode(true);
     SetDevOffset((tMsecs)GetCurrentTimeMs());
     MIDITickComponent::Start();
     std::cout << "\t\t ... Exiting from AdvancedSequencer::Start()" << std::endl;
-    std::cout << "sys_time_offset = " << sys_time_offset << " sys_time = " << MIDITimer::GetSysTimeMs() << std::endl;
+    //std::cout << "sys_time_offset = " << sys_time_offset << " sys_time = " << MIDITimer::GetSysTimeMs() << std::endl;
 }
 
 
@@ -615,7 +615,7 @@ void AdvancedSequencer::Stop() {
 
     std::cout << "\t\tEntered in AdvancedSequencer::Stop() ...\n";
     MIDITickComponent::Stop();
-    SetTimeShiftMode(false);
+    state.iterator.SetTimeShiftMode(time_shift_mode);
     MIDIManager::AllNotesOff();
     MIDIManager::CloseOutPorts();
     state.Notify (MIDISequencerGUIEvent::GROUP_TRANSPORT,
@@ -705,12 +705,6 @@ void AdvancedSequencer::UpdateStatus() {
 
 
 void AdvancedSequencer::ExtractWarpPositions() {
-    if (!file_loaded) {
-        warp_positions.clear();
-        num_measures = 0;
-        return;
-    }
-
     MIDISequencerGUINotifier* notifier = state.notifier;
 
     Stop();         //TODO: this forbids to edit the multitrack while the sequencer is playing

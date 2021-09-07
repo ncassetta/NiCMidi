@@ -360,7 +360,9 @@ MIDISequencer::~MIDISequencer() {
 
 void MIDISequencer::Reset() {
     Stop();
-    state.Reset();              // syncronize the multitrack with the state and goes to zero
+    time_shift_mode = false;
+    state.iterator.SetTimeShiftMode(false);         // before state.Reset() which uses GetShiftedTime()
+    state.Reset();                                  // syncronizes the multitrack with the state and goes to zero
     for (unsigned int i = 0; i < track_processors.size(); ++i)
         if (track_processors[i])
             delete track_processors[i];
@@ -374,7 +376,6 @@ void MIDISequencer::Reset() {
         state.multitrack->GetTrack(i)->SetTimeShift(0);
         //track_ports[i] = 0;
     }
-    SetTimeShiftMode(false);
     play_mode = PLAY_BOUNDED;
     bool notifier_mode = false;
     if(state.notifier) {
