@@ -87,6 +87,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac713af881d0bae398d1d85506ef98ac2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_multi_track_iterator.html#ac713af881d0bae398d1d85506ef98ac2">SetTimeShiftMode</a> (bool f)</td></tr>
 <tr class="memdesc:ac713af881d0bae398d1d85506ef98ac2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Turns time shifting on and off.  <a href="class_m_i_d_i_multi_track_iterator.html#ac713af881d0bae398d1d85506ef98ac2">More...</a><br /></td></tr>
 <tr class="separator:ac713af881d0bae398d1d85506ef98ac2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9e460431b3afce23e2252db9e69609d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_multi_track_iterator.html#aa9e460431b3afce23e2252db9e69609d">SetEnable</a> (unsigned int trk_num, bool f)</td></tr>
+<tr class="memdesc:aa9e460431b3afce23e2252db9e69609d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable or disable a track.  <a href="class_m_i_d_i_multi_track_iterator.html#aa9e460431b3afce23e2252db9e69609d">More...</a><br /></td></tr>
+<tr class="separator:aa9e460431b3afce23e2252db9e69609d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade42861a5013927e2b148a43649306ed"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_multi_track_iterator.html#ade42861a5013927e2b148a43649306ed">SetState</a> (const <a class="el" href="class_m_i_d_i_multi_track_iterator_state.html">MIDIMultiTrackIteratorState</a> &amp;s)</td></tr>
 <tr class="memdesc:ade42861a5013927e2b148a43649306ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the given <a class="el" href="class_m_i_d_i_multi_track_iterator_state.html" title="Used by the MIDIMultiTrackIterator to keep track of the current state of the iterator.">MIDIMultiTrackIteratorState</a> as current state.  <a href="class_m_i_d_i_multi_track_iterator.html#ade42861a5013927e2b148a43649306ed">More...</a><br /></td></tr>
 <tr class="separator:ade42861a5013927e2b148a43649306ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -262,6 +265,9 @@ Public Member Functions</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void MIDIMultiTrackIterator::SetTimeShiftMode </td>
@@ -271,10 +277,52 @@ Public Member Functions</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Turns time shifting on and off. </p>
 <p>If time shifting is off events are sorted according to their time, otherwise an offset (positive or negative) is added to channel and sysex events time (other events time remain unchanged). </p><dl class="section return"><dt>Returns</dt><dd><b>true</b> if the function succeeded (it could fail if you try to set the mode on without having set a vector). </dd></dl>
+
+</div>
+</div>
+<a id="aa9e460431b3afce23e2252db9e69609d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9e460431b3afce23e2252db9e69609d">&#9670;&nbsp;</a></span>SetEnable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MIDIMultiTrackIterator::SetEnable </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>trk_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>f</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable or disable a track. </p>
+<p>If you know that a track contains events which you want to ignore you can exclude it for more speed. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">trk_num</td><td>the number of the track </td></tr>
+    <tr><td class="paramname">f</td><td><b>true</b> for enabling, <b>false</b> for disabling. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

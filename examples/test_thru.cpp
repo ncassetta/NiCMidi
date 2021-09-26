@@ -1,7 +1,7 @@
 /*
  *   Example file for NiCMidi - A C++ Class Library for MIDI
  *
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -95,6 +95,8 @@ int main( int argc, char **argv ) {
     {
         GetCommand();                               // gets user input and splits it into command, par1, par2
 
+        if(command == "")                           // empty command
+            continue;
         if (command == "ports") {                   // enumerates the midi ports
             if (MIDIManager::GetNumMIDIIns()) {
                 cout << "\tMIDI IN PORTS:" << endl;
@@ -137,6 +139,8 @@ int main( int argc, char **argv ) {
                 thru->Stop();
                 cout << "MIDI thru off" << endl;
             }
+            else
+                cout << "You must specify on or off" << endl;
         }
         else if (command == "program") {            // sets the MIDI program
             unsigned int prog = atoi(par1.c_str()) & 0x7f;      // program number
@@ -163,6 +167,8 @@ int main( int argc, char **argv ) {
                 printer.SetPrint(false);
                 cout << "Print off" << endl;
             }
+            else
+                cout << "You must specify on or off" << endl;
         }
         else if (command == "status") {             // prints the general thru status
             cout << "\nTHRU STATUS:" << endl;

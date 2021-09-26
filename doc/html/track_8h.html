@@ -61,10 +61,12 @@ $(document).ready(function(){initNavTree('track_8h.html',''); initResizable(); }
 
 <p>Contains the definition of the classes <a class="el" href="class_m_i_d_i_track.html" title="Manages a std::vector of MIDITimedMessage objects storing MIDI events, with methods for editing them.">MIDITrack</a> and <a class="el" href="class_m_i_d_i_track_iterator.html" title="Forward iterator for moving along a MIDITrack.">MIDITrackIterator</a>.  
 <a href="#details">More...</a></p>
-<div class="textblock"><code>#include &quot;<a class="el" href="midi_8h_source.html">midi.h</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="manager_8h_source.html">manager.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="midi_8h_source.html">midi.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="sysex_8h_source.html">sysex.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="msg_8h_source.html">msg.h</a>&quot;</code><br />
 <code>#include &lt;vector&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
 </div>
 <p><a href="track_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -90,12 +92,12 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:gab6393b4d89fcf78103811502a7eb1c54"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the default behavior of the methods <a class="el" href="class_m_i_d_i_track.html#a5af064d70942ca6dce6a328242a92ffa" title="Inserts a single event into the track.">MIDITrack::InsertEvent()</a> and <a class="el" href="class_m_i_d_i_track.html#a7eac7598842402e8b2dd900bb0e484ba" title="Inserts a Note On and a Note Off event into the track.">MIDITrack::InsertNote()</a> when inserting events.  <a href="group___g_l_o_b_a_l_s.html#gab6393b4d89fcf78103811502a7eb1c54">More...</a><br /></td></tr>
 <tr class="separator:gab6393b4d89fcf78103811502a7eb1c54"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga05589fbab0657f08285ebdfe93f5ec9e"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="group___g_l_o_b_a_l_s.html#gga05589fbab0657f08285ebdfe93f5ec9ea025e38f823e7ec7505c0af5c6ff3de83">COMPMODE_EQUAL</a>
-, <a class="el" href="group___g_l_o_b_a_l_s.html#gga05589fbab0657f08285ebdfe93f5ec9ea083d39b26bd9a8ca3e54d122fbba0def">COMPMODE_SAMEKIND</a>
-, <a class="el" href="group___g_l_o_b_a_l_s.html#gga05589fbab0657f08285ebdfe93f5ec9ea203905b7b7b7cae3afcf6d604775b216">COMPMODE_TIME</a>
+<tr class="memitem:ga80155586fa275b28773c9b203f52caba"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="group___g_l_o_b_a_l_s.html#gga80155586fa275b28773c9b203f52cabaa025e38f823e7ec7505c0af5c6ff3de83">COMPMODE_EQUAL</a>
+, <a class="el" href="group___g_l_o_b_a_l_s.html#gga80155586fa275b28773c9b203f52cabaa083d39b26bd9a8ca3e54d122fbba0def">COMPMODE_SAMEKIND</a>
+, <a class="el" href="group___g_l_o_b_a_l_s.html#gga80155586fa275b28773c9b203f52cabaa203905b7b7b7cae3afcf6d604775b216">COMPMODE_TIME</a>
  }</td></tr>
-<tr class="memdesc:ga05589fbab0657f08285ebdfe93f5ec9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the behaviour of the method MIDITrack::FindEventNunber() when searching events.  <a href="group___g_l_o_b_a_l_s.html#ga05589fbab0657f08285ebdfe93f5ec9e">More...</a><br /></td></tr>
-<tr class="separator:ga05589fbab0657f08285ebdfe93f5ec9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memdesc:ga80155586fa275b28773c9b203f52caba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the behaviour of the method MIDITrack::FindEventNunber() when searching events.  <a href="group___g_l_o_b_a_l_s.html#ga80155586fa275b28773c9b203f52caba">More...</a><br /></td></tr>
+<tr class="separator:ga80155586fa275b28773c9b203f52caba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains the definition of the classes <a class="el" href="class_m_i_d_i_track.html" title="Manages a std::vector of MIDITimedMessage objects storing MIDI events, with methods for editing them.">MIDITrack</a> and <a class="el" href="class_m_i_d_i_track_iterator.html" title="Forward iterator for moving along a MIDITrack.">MIDITrackIterator</a>. </p>

@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -45,7 +45,7 @@ typedef unsigned long long tMsecs;
 /// This is the typedef of the callback function which is called at every timer tick.
 typedef  void (MIDITick)(tMsecs, void*);
 ///@}
-///@}
+
 
 ///
 /// A static class which provides the timing required for MIDI playback, using the C++11 &lt;chrono&gt;

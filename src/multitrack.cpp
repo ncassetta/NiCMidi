@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -263,8 +263,8 @@ void MIDIMultiTrack::EditCopy(MIDIClockTime start, MIDIClockTime end,
     for (int i = 0; i <= tr_end - tr_start; i++)
         tracks[tr_start + i]->MakeInterval(start, end, edit->tracks[i]);
 
-    DumpMIDIMultiTrack(this);
-    DumpMIDIMultiTrack(edit);
+    //DumpMIDIMultiTrack(this);
+    //DumpMIDIMultiTrack(edit);
 }
 
 
@@ -277,44 +277,42 @@ void MIDIMultiTrack::EditCut(MIDIClockTime start, MIDIClockTime end, MIDIEditMul
     for (unsigned int i = 0; i < tracks.size(); i++)
         GetTrack(i)->DeleteInterval(start, end);
 
-    DumpMIDIMultiTrack(this);
+    //DumpMIDIMultiTrack(this);
 }
 
 
 void MIDIMultiTrack::EditClear(MIDIClockTime start, MIDIClockTime end, int tr_start, int tr_end) {
-    DumpMIDIMultiTrack(this);
+    //DumpMIDIMultiTrack(this);
 
     for (int i = tr_start; i <= tr_end; i++)
         GetTrack(i)->ClearInterval(start, end);
 
-    DumpMIDIMultiTrack(this);
+    //DumpMIDIMultiTrack(this);
 }
 
 
-void MIDIMultiTrack::EditInsert(MIDIClockTime start, int tr_start, int times, bool sysex,
-                                MIDIEditMultiTrack* edit) {
+void MIDIMultiTrack::EditInsert(MIDIClockTime start, int tr_start, int times, MIDIEditMultiTrack* edit) {
 
-    MIDIClockTime length = edit->tracks[0]->GetEndTime();
+    MIDIClockTime length = edit->GetEndTime();
     int tr_end = tr_start + edit->GetEndTrack() - edit->GetStartTrack();
+    if ((unsigned int)tr_end >= tracks.size())
+        tr_end = tracks.size() - 1;
 
     for (unsigned int i = 0; i < tracks.size(); i++)
-        tracks[i]->InsertInterval(start, length * times, 0);    // inserts a blank interval
+        tracks[i]->InsertInterval(start, start + length * times, 0);    // inserts a blank interval
 
-    DumpMIDIMultiTrack(this);
-    DumpMIDIMultiTrack(edit);
+    //DumpMIDIMultiTrack(this);
+    //DumpMIDIMultiTrack(edit);
 
     if(edit) {
-        if (tr_start == 0)
-            tr_start = 1;
-            // skip track 0: it will be set from the corresponding INTTrack with a Recompose
         for (int i = tr_start; i <= tr_end; i++) {
             for(int j = 0; j < times; j++)
-                tracks[i]->ReplaceInterval(start + j * length, length, sysex, edit->tracks[i]);
+                tracks[i]->ReplaceInterval(start + j * length, length, edit->tracks[i]);
         }
     }
 
-    DumpMIDIMultiTrack(this);
-    DumpMIDIMultiTrack(edit);
+    //DumpMIDIMultiTrack(this);
+    //DumpMIDIMultiTrack(edit);
 }
 
 
@@ -322,9 +320,11 @@ void MIDIMultiTrack::EditReplace(MIDIClockTime start, int tr_start, int times, b
                                  MIDIEditMultiTrack* edit) {
     MIDIClockTime length = edit->tracks[0]->GetEndTime() * times;
     int tr_end = tr_start + edit->GetEndTrack() - edit->GetStartTrack();
+    if ((unsigned int)tr_end >= tracks.size())
+        tr_end = tracks.size() - 1;
 
-    DumpMIDIMultiTrack(this);
-    DumpMIDIMultiTrack(edit);
+    //DumpMIDIMultiTrack(this);
+    //DumpMIDIMultiTrack(edit);
 
     for (int i = tr_start; i <= tr_end; i++)
         tracks[i]->ClearInterval(start, length);        // deletes previous events
@@ -337,10 +337,10 @@ void MIDIMultiTrack::EditReplace(MIDIClockTime start, int tr_start, int times, b
     for (int i = tr_start; i <= tr_end; i++) {
         for(int j = 0; j < times; j++)
             tracks[i]->ReplaceInterval(start + j * edit->tracks[0]->GetEndTime(),
-                                       edit->tracks[0]->GetEndTime(), sysex, edit->tracks[i]);
+                                       edit->tracks[0]->GetEndTime(), edit->tracks[i]);
     }
 
-    DumpMIDIMultiTrack(this);
+    //DumpMIDIMultiTrack(this);
 }
 
 

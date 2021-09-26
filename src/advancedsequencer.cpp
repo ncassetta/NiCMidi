@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -171,7 +171,7 @@ void AdvancedSequencer::Reset() {
     for (unsigned  int i = 0; i < GetNumTracks(); ++i) {    // MIDISequencer::Reset() deletes the processors
         track_processors[i] = new MIDISequencerTrackProcessor;
         // causes a call to Analyze()
-        GetMultiTrack()->GetTrack(i)->GetStatus();
+        GetTrack(i)->GetStatus();
     }
     file_loaded = state.multitrack->IsEmpty();      // the multitrack is not cleared by this
     ExtractWarpPositions();
@@ -324,7 +324,7 @@ int AdvancedSequencer::GetTrackChannel (unsigned int trk_num) {
     if (!file_loaded)
         return -1;
     return (GetTrackProcessor(trk_num)->rechannel == -1 ?
-            GetMultiTrack()->GetTrack(trk_num)->GetChannel() : GetTrackProcessor(trk_num)->rechannel);
+            GetTrack(trk_num)->GetChannel() : GetTrackProcessor(trk_num)->rechannel);
 }
 
 
@@ -594,14 +594,18 @@ void AdvancedSequencer::Start () {
         GoToMeasure (repeat_start_meas);
 
     MIDIManager::OpenOutPorts();
-    CatchEventsBefore();
     // this intercepts any CC, SYSEX and TEMPO messages and send them to the out port
     // allowing to start with correct values; we could incorporate this in the
     // sequencer state, but it would track even CC (not difficult) and SYSEX messages
+    CatchEventsBefore();
 
-    state.Notify (MIDISequencerGUIEvent::GROUP_TRANSPORT,
-                      MIDISequencerGUIEvent::GROUP_TRANSPORT_START);
     state.iterator.SetTimeShiftMode(true);
+    if (GetCountInEnable())
+            CountInPrepare();
+        else
+            state.Notify (MIDISequencerGUIEvent::GROUP_TRANSPORT,
+                          MIDISequencerGUIEvent::GROUP_TRANSPORT_START);
+
     SetDevOffset((tMsecs)GetCurrentTimeMs());
     MIDITickComponent::Start();
     std::cout << "\t\t ... Exiting from AdvancedSequencer::Start()" << std::endl;
@@ -651,7 +655,7 @@ bool AdvancedSequencer::SetSMPTE(SMPTE* s) {
     const MIDIMessage* msg = 0;
 
     // search a SMPTE event in track 0, time 0
-    const MIDITrack* trk = GetMultiTrack()->GetTrack(0);
+    const MIDITrack* trk = GetTrack(0);
     for (unsigned int i = 0; i < trk->GetNumEvents(); i++) {
         if (trk->GetEventAddress(i)->GetTime() > 0)
             break;
@@ -769,7 +773,7 @@ void AdvancedSequencer::CatchEventsBefore() {
 
     //first send sysex (but not reset ones)
     for (unsigned int i = 0; i < GetNumTracks(); i++) {
-        trk = GetMultiTrack()->GetTrack(i);
+        trk = GetTrack(i);
         if (!(trk->HasSysex())) continue;
         msg.SetTime(0);
         port = GetTrackOutPort(i);
@@ -787,7 +791,7 @@ void AdvancedSequencer::CatchEventsBefore() {
     // then set program, pitch bend and controls of ordinary channel tracks, according to the
     // sequencer state
     for (unsigned int i = 0; i < GetNumTracks(); i++) {
-        trk = GetMultiTrack()->GetTrack(i);
+        trk = GetTrack(i);
         if (!GetTrackMute(i) &&
             (trk->GetType() == MIDITrack::TYPE_CHAN || trk->GetType() == MIDITrack::TYPE_IRREG_CHAN)) {
             int channel = GetTrackChannel(i);
@@ -816,7 +820,7 @@ void AdvancedSequencer::CatchEventsBefore() {
 
     // and now send program, controls and pitch bend of non compliant tracks
     for (unsigned int i = 0; i < GetMultiTrack()->GetNumTracks(); i++) {
-        trk = GetMultiTrack()->GetTrack(i);
+        trk = GetTrack(i);
         if (trk->GetType() == MIDITrack::TYPE_MIXED_CHAN) {
             port = GetTrackOutPort(i);
             msg.SetTime(0);
@@ -837,7 +841,7 @@ void AdvancedSequencer::CatchEventsBefore() {
 
 void AdvancedSequencer::CatchEventsBefore(int trk_num) {
     MIDITimedMessage msg;
-    MIDITrack* t = GetMultiTrack()->GetTrack(trk_num);
+    MIDITrack* trk = GetTrack(trk_num);
     unsigned int port = GetTrackOutPort(trk_num);
     int events_sent = 0;
 
@@ -848,10 +852,10 @@ void AdvancedSequencer::CatchEventsBefore(int trk_num) {
     MIDIManager::OpenOutPorts();
 
     //first send sysex (but not reset ones)
-    if (t->HasSysex()) {
+    if (trk->HasSysex()) {
         msg.SetTime(0);
-        for (unsigned int i = 0; i < t->GetNumEvents() && msg.GetTime() <= GetCurrentMIDIClockTime(); i++) {
-            msg = t->GetEvent(i);
+        for (unsigned int i = 0; i < trk->GetNumEvents() && msg.GetTime() <= GetCurrentMIDIClockTime(); i++) {
+            msg = trk->GetEvent(i);
             if (msg.IsSysEx() &&
                 !(msg.GetSysEx()->IsGMReset() || msg.GetSysEx()->IsGSReset() || msg.GetSysEx()->IsXGReset())) {
 
@@ -865,33 +869,33 @@ void AdvancedSequencer::CatchEventsBefore(int trk_num) {
     // restore program, pitch bend and controllers as registered in the sequencer state
     if (!GetTrackMute(trk_num)) {
         // if this is an ordinary channel track ...
-        if (t->GetType() == MIDITrack::TYPE_CHAN || t->GetType() == MIDITrack::TYPE_IRREG_CHAN) {
+        if (trk->GetType() == MIDITrack::TYPE_CHAN || trk->GetType() == MIDITrack::TYPE_IRREG_CHAN) {
             int channel = GetTrackChannel(trk_num);     // takes into account rechannelize
-            const MIDISequencerTrackState* tr_state = GetTrackState(trk_num);
+            const MIDISequencerTrackState* trk_state = GetTrackState(trk_num);
             // set the current program
-            if (tr_state->program != -1) {
-                msg.SetProgramChange(channel, tr_state->program);
+            if (trk_state->program != -1) {
+                msg.SetProgramChange(channel, trk_state->program);
                 OutputMessage(msg, port);
                 events_sent++;
             }
             // set the current pitch bend value
-            msg.SetPitchBend(channel, tr_state->bender_value);
+            msg.SetPitchBend(channel, trk_state->bender_value);
             OutputMessage(msg, port);
             events_sent ++;
             // set the controllers
             for (unsigned int j = 0; j < C_ALL_NOTES_OFF; j++) {
-                if (tr_state->control_values[j] != -1) {
-                    msg.SetControlChange(channel, j, tr_state->control_values[j]);
+                if (trk_state->control_values[j] != -1) {
+                    msg.SetControlChange(channel, j, trk_state->control_values[j]);
                     OutputMessage(msg, port);
                     events_sent++;
                 }   // TODO: RPN and NRPN
             }
         }
         // if the track has mixed channels send all previous messages
-        else if (t->GetType() == MIDITrack::TYPE_MIXED_CHAN) {
+        else if (trk->GetType() == MIDITrack::TYPE_MIXED_CHAN) {
             msg.SetTime(0);
-            for (unsigned int i = 0; i < t->GetNumEvents() && msg.GetTime() <= GetCurrentMIDIClockTime(); i++) {
-                msg = t->GetEvent(i);
+            for (unsigned int i = 0; i < trk->GetNumEvents() && msg.GetTime() <= GetCurrentMIDIClockTime(); i++) {
+                msg = trk->GetEvent(i);
                 if (msg.IsProgramChange() || msg.IsControlChange() || msg.IsPitchBend()) {
                     OutputMessage(msg, port);
                     events_sent++;

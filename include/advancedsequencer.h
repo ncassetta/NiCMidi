@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -133,8 +133,8 @@ class AdvancedSequencer : public MIDISequencer {
         /// \param tracks the MIDIMultiTrack to be copied.
         /// \return always returns **true**.
         virtual bool        Load(const MIDIMultiTrack* tracks);
-        /// Clears the contents of the internal MIDIMultiTrack and reset its MIDIMultiTrack::clks_per_beat parameter
-        /// to **DEFAULT_CLKS_PER_BEAT** (actually 120).
+        /// Clears the contents of the internal MIDIMultiTrack. Moreover it resets its MIDIMultiTrack::clks_per_beat
+        /// parameter to \ref DEFAULT_CLKS_PER_BEAT.
         virtual void        UnLoad();
 
         /// Returns **true** if the internal MIDIMultiTrack is not empty.
@@ -146,24 +146,25 @@ class AdvancedSequencer : public MIDISequencer {
         /// Returns the address of the MIDIThru tick component. This is NULL if in the system there are non MIDI
         /// in ports and the thru is disabled.
         MIDIThru*           GetMIDIThru()                       { return thru; }
-        /// Returns the address of the MIDIThru tick component. This is NULL if in the system there are non MIDI
+        /// Returns a pointer to the MIDIThru tick component. This is NULL if in the system there are non MIDI
         /// in ports and the thru is disabled.
         const MIDIThru*     GetMIDIThru() const                 { return thru; }
         /// Returns **true** if MIDIThru is enabled (always **false** if the thru is not present).
         bool                GetMIDIThruEnable() const           { return thru ? thru->IsPlaying() : false; }
         /// Returns the output channel of the MIDIThru, -1 if the thru is not present.
+        /// See \ref NUMBERING.
         int                 GetMIDIThruChannel() const          { return thru ? thru->GetOutChannel() : -1; }
         /// Returns the transpose amount of the MIDIThru, 0 if the thru is not present.
         int                 GetMIDIThruTranspose() const        { return thru ? thru_transposer->GetChannelTranspose(0) : 0; }
         /// Returns **true** if any track is soloed.
         bool                GetSoloMode() const;
         /// Returns **true** if a specific track is soloed
-        /// \param trk the number of the track
+        /// \param trk_num the number of the track
         bool                GetTrackSolo(unsigned int trk_num) const
                                                 { return (((MIDISequencerTrackProcessor *)track_processors[trk_num])->solo ==
                                                   MIDISequencerTrackProcessor::SOLOED); }
          /// Returns **true** if a specific track is muted
-        /// \param trk the number of the track
+        /// \param trk_num the number of the track
         bool                GetTrackMute (unsigned int trk_num) const
                                                 { return ((MIDISequencerTrackProcessor *)track_processors[trk_num])->mute; }
         /// Returns the number of measures of the sequencer.
@@ -178,9 +179,11 @@ class AdvancedSequencer : public MIDISequencer {
         int                 GetTimeSigNumerator() const;
         /// Returns the denominator of current time signature.
         int                 GetTimeSigDenominator() const;
-        /// Return the number of sharps or flats of the current key signature (see MIDIMessage::GetKeySigSharpsFlats()).
+        /// Return the number of sharps or flats of the current key signature.
+        /// See MIDIMessage::GetKeySigSharpsFlats().
         int                 GetKeySigSharpsFlats() const;
-        /// Returns the mode (major/minor) of the he current key signature (see MIDIMessage::GetKeySigMode()).
+        /// Returns the mode (major/minor) of the he current key signature.
+        /// See MIDIMessage::GetKeySigMode().
         int                 GetKeySigMode() const;
         /// Returns the current marker text.
         std::string         GetCurrentMarker() const;
@@ -195,8 +198,10 @@ class AdvancedSequencer : public MIDISequencer {
         /// Returns the velocity scale percentage for the given track.
         unsigned int        GetTrackVelocityScale(unsigned int trk_num) const;
         /// Returns the rechannelized channel for the given track (-1 if the track is not rechannelized).
+        /// See \ref NUMBERING.
         int                 GetTrackRechannelize(unsigned int trk_num) const;
-        /// If the track has channel messages all with same channel returns the channel, otherwise -1.
+        /// If the track has channel messages all with same channel returns the channel, otherwise -1. See
+        /// \ref NUMBERING.
         /// \note This is **not** const because it may reanalyze the track setting its status parameter.
         int                 GetTrackChannel(unsigned int trk_num);          // NOT const!!!
         /// Returns the transposing amount in semitones for the given track.
@@ -209,17 +214,17 @@ class AdvancedSequencer : public MIDISequencer {
         /// Returns a pointer to the MIDISequencerTrackProcessor for the given track.
         const MIDISequencerTrackProcessor* GetTrackProcessor(unsigned int trk_num) const
                                                 { return (const MIDISequencerTrackProcessor *)track_processors[trk_num]; }
-
         /// Sets a name for the content of sequencer.
         void                SetFileName(std::string& fname)     { header.filename = fname; }
         /// Enables or disables the embedded MIDIthru. This has no effect if the thru is not present.
         /// \return **true** if the thru has been enabled/disabled, **false** otherwise.
         bool                SetMIDIThruEnable(bool on_off);
         /// Sets the out channel for MIDIthru. This has no effect if the thru is not present.
+        /// See \ref NUMBERING.
         /// \return **true** if the channel has been set, **false** otherwise.
         bool                SetMIDIThruChannel(char chan);
-        /// Sets a transpose amount in semitones for the messages coming from the MIDIThru (see MIDIProcessorTransposer).
-        /// This has no effect if the thru is not present.
+        /// Sets a transpose amount in semitones for the messages coming from the MIDIThru.
+        /// This has no effect if the thru is not present. See MIDIProcessorTransposer.
         /// \return **true** if the transpose has been set, **false** otherwise.
         bool                SetMIDIThruTranspose (char amt);
         /// Soloes the given track muting all others.
@@ -235,26 +240,27 @@ class AdvancedSequencer : public MIDISequencer {
         /// Sets a track velocity scale in percentage for the given track.
         /// \return **true** if _trk_num is a valid track number, **false** otherwise.
         bool                SetTrackVelocityScale(unsigned int trk_num, unsigned int scale);
-        /// Sets a channel for the given track (all channel messages in it will be output on given channel,
-        /// regardless their original channel). Calling this with _chan_ = -1 disables the rechannelizing.
+        /// Redirects all channel messages in the track on the given channel.
+        /// This is done during playback by mean of a TrackProcessor, without changing original messages.
+        /// Calling this with _chan_ = -1 disables the rechannelizing. See \ref NUMBERING
         /// \return **true** if _trk_num is a valid track number, **false** otherwise.
         bool                SetTrackRechannelize(unsigned int trk_num, char chan);
-        /// Sets a transpose amount in semitones for the given track (see MIDIProcessorTransposer).
+        /// Sets a transpose amount in semitones for the given track.
+        /// See MIDIProcessorTransposer.
         /// \return **true** if _trk_num is a valid track number, **false** otherwise.
         bool                SetTrackTranspose(unsigned int trk_num, char amt);
-        /// Sets the current time to the beginning of the song, updating the internal status. This method is
-        /// thread-safe and can be called during playback. Notifies the GUI a GROUP_ALL event to signify a
-        /// full GUI reset.
+        /// Sets the current time to the beginning of the song. This method is thread-safe and can be
+        /// called during playback. Notifies the GUI a GROUP_ALL event to signify a full GUI reset.
         virtual void        GoToZero()                          { GoToTime(0); }
-        /// Sets the current time to the given MIDI time, updating the internal status. This is as
-        /// MIDISequencer::GoToTime() but uses a better algorithm and sends to the MIDI out ports all the
-        /// appropriate sysex, patch, pitch bend and control change messages.
+        /// Sets the current time to the given MIDI time. This is as MIDISequencer::GoToTime() but uses
+        /// a faster algorithm and sends to the MIDI out ports all the appropriate sysex, patch, pitch bend
+        /// and control change messages. Notifies the GUI a GROUP_ALL event to signify a full GUI reset.
         virtual bool        GoToTime(MIDIClockTime time_clk);
         /// Same as GoToTime(), but the time is given in milliseconds.
         virtual bool        GoToTimeMs(float time_ms);
-        /// Sets the current time to the given measure and beat, updating the internal status. This is as
-        /// MIDISequencer::GoToMeasure() but uses a better algorithm and sends to the MIDI out ports all the
-        /// appropriate sysex, patch, pitch bend and control change messages.
+        /// Sets the current time to the given measure and beat. This is as MIDISequencer::GoToMeasure() but uses
+        /// a better algorithm and sends to the MIDI out ports all the appropriate sysex, patch, pitch bend and
+        /// control change messages. Notifies the GUI a GROUP_ALL event to signify a full GUI reset.
         virtual bool        GoToMeasure(int measure, int beat = 0);
 
 
@@ -262,8 +268,7 @@ class AdvancedSequencer : public MIDISequencer {
         virtual void        Start();
         /// Stops the sequencer playing.
         virtual void        Stop();
-        /// Sends a given MIDI message to an hardware port in a thread safe way (can
-        /// be called while playing).
+        /// Sends a given MIDI message to an hardware port. This is thread-safe and can be called while playing.
         /// \param msg the MIDI message
         /// \param port the port id
         void                OutputMessage(MIDITimedMessage& msg, unsigned int port);
@@ -273,10 +278,9 @@ class AdvancedSequencer : public MIDISequencer {
         /// \warning You cannot call this while the sequencer is playing.
         /// \return **true** if the SMPTE has been set, **false** otherwise.
         bool                SetSMPTE(SMPTE* s);
-        /// This should be used to update the sequencer state after editing the multitrack (adding,
-        /// deleting or editing events, for changes in the track structure see InsertTrack(), DeleteTrack()
-        /// and MoveTrack()). If you have edited the multitrack, call this before moving time, getting events
-        /// or playing.
+        /// This should be used to update the sequencer state after editing the multitrack.
+        /// If you have added, deleted or edited events call this before moving time, getting events
+        /// or playing. For changes in the track structure see InsertTrack(), DeleteTrack() and MoveTrack()).
         virtual void        UpdateStatus();
 
     protected:

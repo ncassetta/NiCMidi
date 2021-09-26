@@ -1,7 +1,7 @@
 /*
  *   Example file for NiCMidi - A C++ Class Library for MIDI
  *
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -44,7 +44,7 @@ using namespace std;
 
 
 AdvancedSequencer sequencer;                    // an AdvancedSequencer (without GUI notifier)
-MIDIMultiTrack* tracks = sequencer.GetMultiTrack();
+MIDIMultiTrack* multitrack = sequencer.GetMultiTrack();
 
 extern string command, par1, par2;              // used by GetCommand() for parsing the user input
 const char helpstring[] =                       // shown by the help command
@@ -90,10 +90,12 @@ All commands can be given during playback\n";
 
 int main( int argc, char **argv ) {
     cout << "TYPE help TO GET A LIST OF AVAILABLE COMMANDS" << endl << endl;
-    while ( command != "quit" ) {                   // main loop
+    while (command != "quit") {                     // main loop
         GetCommand();                               // gets user input and parses it (see functions.cpp)
 
-        if( command == "load" ) {                   // loads a file
+        if(command == "")                           // empty command
+            continue;
+        if(command == "load") {                     // loads a file
             if (sequencer.Load(par1.c_str()))
                 cout << "Loaded file " << par1 << endl;
             else
@@ -145,9 +147,9 @@ int main( int argc, char **argv ) {
             cout << "Rewind to 0:0" << endl;
         }
         else if (command == "goto") {               // goes to meas and beat
-            int measure = atoi(par1.c_str());
+            int meas = atoi(par1.c_str());
             int beat = atoi (par2.c_str());
-            if (sequencer.GoToMeasure(measure, beat))
+            if (sequencer.GoToMeasure(meas, beat))
                 cout << "Actual position: " << sequencer.GetCurrentMeasure() << ":"
                      << sequencer.GetCurrentBeat() << endl;
             else
@@ -158,8 +160,8 @@ int main( int argc, char **argv ) {
                 DumpMIDIMultiTrackWithPauses(sequencer.GetMultiTrack());
             else {
                 int trk_num = atoi(par1.c_str());
-                if (tracks->IsValidTrackNumber(trk_num)) {
-                    MIDITrack* trk = sequencer.GetMultiTrack()->GetTrack(trk_num);
+                if (multitrack->IsValidTrackNumber(trk_num)) {
+                    MIDITrack* trk = sequencer.GetTrack(trk_num);
                     DumpMIDITrackWithPauses(trk, trk_num);
                 }
                 else
@@ -167,18 +169,17 @@ int main( int argc, char **argv ) {
             }
         }
         else if (command == "outport") {            // changes the midi out port
-            int track = atoi(par1.c_str());
+            int trk_num = atoi(par1.c_str());
             int port = atoi(par2.c_str());
-            if (sequencer.SetTrackOutPort(track, port))
-                cout << "Assigned out port n. " << sequencer.GetTrackOutPort(track)
-                     << " to track " << track << endl;
+            if (sequencer.SetTrackOutPort(trk_num, port))
+                cout << "Assigned out port n. " << port << " to track " << trk_num << endl;
             else
                 cout << "Invalid parameters" << endl;
         }
         else if (command == "solo") {               // soloes a track
-            int track = atoi(par1.c_str());
-            if(sequencer.SetTrackSolo(track))
-                cout << "Soloed track " << track << endl;
+            int trk_num = atoi(par1.c_str());
+            if(sequencer.SetTrackSolo(trk_num))
+                cout << "Soloed track " << trk_num << endl;
             else
                 cout << "Invalid parameter" << endl;
         }
@@ -187,12 +188,12 @@ int main( int argc, char **argv ) {
             cout << "Unsoloed all tracks" << endl;
         }
         else if (command == "mute") {               // mutes a track
-            int track = atoi(par1.c_str());
-            sequencer.SetTrackMute(track, !sequencer.GetTrackMute(track));
-            if (sequencer.GetTrackMute(track))
-                cout << "Muted track " << track << endl;
+            int trk_num = atoi(par1.c_str());
+            sequencer.SetTrackMute(trk_num, !sequencer.GetTrackMute(trk_num));
+            if (sequencer.GetTrackMute(trk_num))
+                cout << "Muted track " << trk_num << endl;
             else
-                cout << "Unmuted track " << track << endl;
+                cout << "Unmuted track " << trk_num << endl;
         }
         else if (command == "unmute") {             // unmutes a track
             sequencer.UnmuteAllTracks();
@@ -205,26 +206,26 @@ int main( int argc, char **argv ) {
                     " Effective tempo: " << sequencer.GetTempoWithScale() << " bpm" << endl;
         }
         else if (command == "vscale") {             // scales velocity for a track
-            int track = atoi(par1.c_str());
+            int trk_num = atoi(par1.c_str());
             int scale = atoi(par2.c_str());
-            if (sequencer.SetTrackVelocityScale(track, scale))
-                cout << "Track " << track << " velocity scale set to " << scale << "%" << endl;
+            if (sequencer.SetTrackVelocityScale(trk_num, scale))
+                cout << "Track " << trk_num << " velocity scale set to " << scale << "%" << endl;
             else
                 cout << "Invalid parameters" << endl;
         }
         else if (command == "trans") {              // transposes a track
-            int track = atoi(par1.c_str());
+            int trk_num = atoi(par1.c_str());
             int amount = atoi(par2.c_str());
-            if (sequencer.SetTrackTranspose(track, amount))
-                cout << "Track " << track << " transposed by " << amount << " semitones " << endl;
+            if (sequencer.SetTrackTranspose(trk_num, amount))
+                cout << "Track " << trk_num << " transposed by " << amount << " semitones " << endl;
             else
                 cout << "Invalid parameters" << endl;
         }
         else if (command == "tshift") {             // sets the time shift (in ticks) of a track
-            int track = atoi(par1.c_str());
+            int trk_num = atoi(par1.c_str());
             int amount = atoi(par2.c_str());
-            if (sequencer.SetTrackTimeShift(track, amount))
-                cout << "Track " << track << " time shifted by " << amount << " MIDI ticks" << endl;
+            if (sequencer.SetTrackTimeShift(trk_num, amount))
+                cout << "Track " << trk_num << " time shifted by " << amount << " MIDI ticks" << endl;
             else
                 cout << "Invalid parameters" << endl;
         }
@@ -244,10 +245,12 @@ int main( int argc, char **argv ) {
                 else
                     cout << "Thru disable failed" << endl;
             }
+            else
+                cout << "You must specify on or off" << endl;
         }
         else if (command == "trackinfo") {          // prints info about tracks
             bool verbose = (par1 == "v");
-            DumpAllTracksAttr(tracks, verbose);
+            DumpAllTracksAttr(multitrack, verbose);
         }
         else if (command == "b") {                  // goes a measure backward
             int meas = sequencer.GetCurrentMeasure();

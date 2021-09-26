@@ -99,26 +99,26 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a2d02dd729726c73798154397401c7bb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> attached to the thru (see <a class="el" href="class_m_i_d_i_thru.html#a20e56f1e45522116d3e693cc29c5bf30" title="Sets the out processor, which can manipulate messages arrived to the in port before they are sent to ...">SetProcessor()</a>).  <a href="class_m_i_d_i_thru.html#a2d02dd729726c73798154397401c7bb4">More...</a><br /></td></tr>
 <tr class="separator:a2d02dd729726c73798154397401c7bb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac0382b4bf923a4969b8243f0eea48efb"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_thru.html#ac0382b4bf923a4969b8243f0eea48efb">GetInChannel</a> () const</td></tr>
-<tr class="memdesc:ac0382b4bf923a4969b8243f0eea48efb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the thru in channel (see <a class="el" href="class_m_i_d_i_thru.html#a474d67ed70a6b82f92055c4bf1d51ff4" title="Sets the channel for incoming thru messages.">SetInChannel()</a>)  <a href="class_m_i_d_i_thru.html#ac0382b4bf923a4969b8243f0eea48efb">More...</a><br /></td></tr>
+<tr class="memdesc:ac0382b4bf923a4969b8243f0eea48efb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the thru in channel (see <a class="el" href="class_m_i_d_i_thru.html#a49a03ce916243f70a0382e2d6a1a2468" title="Sets the channel for incoming thru messages.">SetInChannel()</a>)  <a href="class_m_i_d_i_thru.html#ac0382b4bf923a4969b8243f0eea48efb">More...</a><br /></td></tr>
 <tr class="separator:ac0382b4bf923a4969b8243f0eea48efb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a75d6bb283ad86882fff7137c0d7216f0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_thru.html#a75d6bb283ad86882fff7137c0d7216f0">GetOutChannel</a> () const</td></tr>
-<tr class="memdesc:a75d6bb283ad86882fff7137c0d7216f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the thru out channel (see <a class="el" href="class_m_i_d_i_thru.html#a01e089e4330c841ee4c30e322de98a19" title="Sets the channel for outgoing thru messages.">SetOutChannel()</a>)  <a href="class_m_i_d_i_thru.html#a75d6bb283ad86882fff7137c0d7216f0">More...</a><br /></td></tr>
+<tr class="memdesc:a75d6bb283ad86882fff7137c0d7216f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the thru out channel (see <a class="el" href="class_m_i_d_i_thru.html#adc2e65813530fcd935fd88e1c19deced" title="Sets the channel for outgoing thru messages.">SetOutChannel()</a>)  <a href="class_m_i_d_i_thru.html#a75d6bb283ad86882fff7137c0d7216f0">More...</a><br /></td></tr>
 <tr class="separator:a75d6bb283ad86882fff7137c0d7216f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a78f9b89d06b883c4208bc2df6fc6265b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_thru.html#a78f9b89d06b883c4208bc2df6fc6265b">SetInPort</a> (unsigned int port)</td></tr>
-<tr class="memdesc:a78f9b89d06b883c4208bc2df6fc6265b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects the hardware in port from which messages will be received.  <a href="class_m_i_d_i_thru.html#a78f9b89d06b883c4208bc2df6fc6265b">More...</a><br /></td></tr>
-<tr class="separator:a78f9b89d06b883c4208bc2df6fc6265b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5ef41486ccb0df609d3b40c8f0cc465a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_thru.html#a5ef41486ccb0df609d3b40c8f0cc465a">SetOutPort</a> (unsigned int port)</td></tr>
-<tr class="memdesc:a5ef41486ccb0df609d3b40c8f0cc465a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects the hardware out port to whom messages will be sent.  <a href="class_m_i_d_i_thru.html#a5ef41486ccb0df609d3b40c8f0cc465a">More...</a><br /></td></tr>
-<tr class="separator:a5ef41486ccb0df609d3b40c8f0cc465a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a912390aa07f133266fd304004c5f31ec"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_thru.html#a912390aa07f133266fd304004c5f31ec">SetInPort</a> (unsigned int port)</td></tr>
+<tr class="memdesc:a912390aa07f133266fd304004c5f31ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects the hardware in port from which messages will be received.  <a href="class_m_i_d_i_thru.html#a912390aa07f133266fd304004c5f31ec">More...</a><br /></td></tr>
+<tr class="separator:a912390aa07f133266fd304004c5f31ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a04ed6bdb1f72149611ddd74fe2b7b4"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_thru.html#a5a04ed6bdb1f72149611ddd74fe2b7b4">SetOutPort</a> (unsigned int port)</td></tr>
+<tr class="memdesc:a5a04ed6bdb1f72149611ddd74fe2b7b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Selects the hardware out port to whom messages will be sent.  <a href="class_m_i_d_i_thru.html#a5a04ed6bdb1f72149611ddd74fe2b7b4">More...</a><br /></td></tr>
+<tr class="separator:a5a04ed6bdb1f72149611ddd74fe2b7b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a20e56f1e45522116d3e693cc29c5bf30"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_thru.html#a20e56f1e45522116d3e693cc29c5bf30">SetProcessor</a> (<a class="el" href="class_m_i_d_i_processor.html">MIDIProcessor</a> *proc)</td></tr>
 <tr class="memdesc:a20e56f1e45522116d3e693cc29c5bf30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the out processor, which can manipulate messages arrived to the in port before they are sent to the out port (see <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a>).  <a href="class_m_i_d_i_thru.html#a20e56f1e45522116d3e693cc29c5bf30">More...</a><br /></td></tr>
 <tr class="separator:a20e56f1e45522116d3e693cc29c5bf30"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a474d67ed70a6b82f92055c4bf1d51ff4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_thru.html#a474d67ed70a6b82f92055c4bf1d51ff4">SetInChannel</a> (char chan)</td></tr>
-<tr class="memdesc:a474d67ed70a6b82f92055c4bf1d51ff4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the channel for incoming thru messages.  <a href="class_m_i_d_i_thru.html#a474d67ed70a6b82f92055c4bf1d51ff4">More...</a><br /></td></tr>
-<tr class="separator:a474d67ed70a6b82f92055c4bf1d51ff4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a01e089e4330c841ee4c30e322de98a19"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_thru.html#a01e089e4330c841ee4c30e322de98a19">SetOutChannel</a> (char chan)</td></tr>
-<tr class="memdesc:a01e089e4330c841ee4c30e322de98a19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the channel for outgoing thru messages.  <a href="class_m_i_d_i_thru.html#a01e089e4330c841ee4c30e322de98a19">More...</a><br /></td></tr>
-<tr class="separator:a01e089e4330c841ee4c30e322de98a19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a49a03ce916243f70a0382e2d6a1a2468"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_thru.html#a49a03ce916243f70a0382e2d6a1a2468">SetInChannel</a> (char chan)</td></tr>
+<tr class="memdesc:a49a03ce916243f70a0382e2d6a1a2468"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the channel for incoming thru messages.  <a href="class_m_i_d_i_thru.html#a49a03ce916243f70a0382e2d6a1a2468">More...</a><br /></td></tr>
+<tr class="separator:a49a03ce916243f70a0382e2d6a1a2468"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc2e65813530fcd935fd88e1c19deced"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_thru.html#adc2e65813530fcd935fd88e1c19deced">SetOutChannel</a> (char chan)</td></tr>
+<tr class="memdesc:adc2e65813530fcd935fd88e1c19deced"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the channel for outgoing thru messages.  <a href="class_m_i_d_i_thru.html#adc2e65813530fcd935fd88e1c19deced">More...</a><br /></td></tr>
+<tr class="separator:adc2e65813530fcd935fd88e1c19deced"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa9a317d6b06984e143d88e38dbc53904"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_thru.html#aa9a317d6b06984e143d88e38dbc53904">Start</a> ()</td></tr>
 <tr class="memdesc:aa9a317d6b06984e143d88e38dbc53904"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts the MIDI thru.  <a href="class_m_i_d_i_thru.html#aa9a317d6b06984e143d88e38dbc53904">More...</a><br /></td></tr>
 <tr class="separator:aa9a317d6b06984e143d88e38dbc53904"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -298,7 +298,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns the number of the MIDI in port from which messages are actually being received. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a34">test_advancedsequencer.cpp</a>, <a class="el" href="test_recorder_8cpp-example.html#a29">test_recorder.cpp</a>, and <a class="el" href="test_thru_8cpp-example.html#a14">test_thru.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a32">test_advancedsequencer.cpp</a>, and <a class="el" href="test_thru_8cpp-example.html#a13">test_thru.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -327,7 +327,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns a pointer to the <a class="el" href="class_m_i_d_i_out_driver.html" title="Sends MIDI messages to an hardware MIDI out port.">MIDIOutDriver</a> to whom messages are actually being sent. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a37">test_advancedsequencer.cpp</a>, <a class="el" href="test_recorder_8cpp-example.html#a30">test_recorder.cpp</a>, and <a class="el" href="test_thru_8cpp-example.html#a10">test_thru.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a35">test_advancedsequencer.cpp</a>, and <a class="el" href="test_thru_8cpp-example.html#a14">test_thru.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -409,8 +409,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns the thru in channel (see <a class="el" href="class_m_i_d_i_thru.html#a474d67ed70a6b82f92055c4bf1d51ff4" title="Sets the channel for incoming thru messages.">SetInChannel()</a>) </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_thru_8cpp-example.html#a15">test_thru.cpp</a>.</dd>
+<p>Returns the thru in channel (see <a class="el" href="class_m_i_d_i_thru.html#a49a03ce916243f70a0382e2d6a1a2468" title="Sets the channel for incoming thru messages.">SetInChannel()</a>) </p>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_thru_8cpp-example.html#a17">test_thru.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -438,14 +438,14 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns the thru out channel (see <a class="el" href="class_m_i_d_i_thru.html#a01e089e4330c841ee4c30e322de98a19" title="Sets the channel for outgoing thru messages.">SetOutChannel()</a>) </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_thru_8cpp-example.html#a11">test_thru.cpp</a>.</dd>
+<p>Returns the thru out channel (see <a class="el" href="class_m_i_d_i_thru.html#adc2e65813530fcd935fd88e1c19deced" title="Sets the channel for outgoing thru messages.">SetOutChannel()</a>) </p>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_thru_8cpp-example.html#a16">test_thru.cpp</a>.</dd>
 </dl>
 
 </div>
 </div>
-<a id="a78f9b89d06b883c4208bc2df6fc6265b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a78f9b89d06b883c4208bc2df6fc6265b">&#9670;&nbsp;</a></span>SetInPort()</h2>
+<a id="a912390aa07f133266fd304004c5f31ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a912390aa07f133266fd304004c5f31ec">&#9670;&nbsp;</a></span>SetInPort()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -454,7 +454,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void MIDIThru::SetInPort </td>
+          <td class="memname">virtual bool MIDIThru::SetInPort </td>
           <td>(</td>
           <td class="paramtype">unsigned int&#160;</td>
           <td class="paramname"><em>port</em></td><td>)</td>
@@ -469,14 +469,14 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Selects the hardware in port from which messages will be received. </p>
-<p>This can be done even if thru is already enabled. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_thru_8cpp-example.html#a12">test_thru.cpp</a>.</dd>
+<p>This can be done even if thru is already enabled. </p><dl class="section return"><dt>Returns</dt><dd><b>true</b> if <em>port</em> is a valid port number, <b>false</b> otherwise. </dd></dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_thru_8cpp-example.html#a10">test_thru.cpp</a>.</dd>
 </dl>
 
 </div>
 </div>
-<a id="a5ef41486ccb0df609d3b40c8f0cc465a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5ef41486ccb0df609d3b40c8f0cc465a">&#9670;&nbsp;</a></span>SetOutPort()</h2>
+<a id="a5a04ed6bdb1f72149611ddd74fe2b7b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a04ed6bdb1f72149611ddd74fe2b7b4">&#9670;&nbsp;</a></span>SetOutPort()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -485,7 +485,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void MIDIThru::SetOutPort </td>
+          <td class="memname">virtual bool MIDIThru::SetOutPort </td>
           <td>(</td>
           <td class="paramtype">unsigned int&#160;</td>
           <td class="paramname"><em>port</em></td><td>)</td>
@@ -500,7 +500,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Selects the hardware out port to whom messages will be sent. </p>
-<p>This can be done even if thru is already enabled. </p>
+<p>This can be done even if thru is already enabled. </p><dl class="section return"><dt>Returns</dt><dd><b>true</b> if <em>port</em> is a valid port number, <b>false</b> otherwise. </dd></dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_thru_8cpp-example.html#a8">test_thru.cpp</a>.</dd>
 </dl>
 
@@ -532,13 +532,13 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Sets the out processor, which can manipulate messages arrived to the in port before they are sent to the out port (see <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a>). </p>
 <p>If you want to eliminate a processor already set, call it with 0 as parameter (this only sets the processor pointer to 0! The class doesn't own its processor). </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_thru_8cpp-example.html#a5">test_thru.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_thru_8cpp-example.html#a3">test_thru.cpp</a>.</dd>
 </dl>
 
 </div>
 </div>
-<a id="a474d67ed70a6b82f92055c4bf1d51ff4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a474d67ed70a6b82f92055c4bf1d51ff4">&#9670;&nbsp;</a></span>SetInChannel()</h2>
+<a id="a49a03ce916243f70a0382e2d6a1a2468"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a49a03ce916243f70a0382e2d6a1a2468">&#9670;&nbsp;</a></span>SetInChannel()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -547,7 +547,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void MIDIThru::SetInChannel </td>
+          <td class="memname">virtual bool MIDIThru::SetInChannel </td>
           <td>(</td>
           <td class="paramtype">char&#160;</td>
           <td class="paramname"><em>chan</em></td><td>)</td>
@@ -568,13 +568,14 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_thru_8cpp-example.html#a13">test_thru.cpp</a>.</dd>
+<dl class="section return"><dt>Returns</dt><dd><b>true</b> if <em>chan</em> is a valid channel number, <b>false</b> otherwise. </dd></dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_thru_8cpp-example.html#a11">test_thru.cpp</a>.</dd>
 </dl>
 
 </div>
 </div>
-<a id="a01e089e4330c841ee4c30e322de98a19"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a01e089e4330c841ee4c30e322de98a19">&#9670;&nbsp;</a></span>SetOutChannel()</h2>
+<a id="adc2e65813530fcd935fd88e1c19deced"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc2e65813530fcd935fd88e1c19deced">&#9670;&nbsp;</a></span>SetOutChannel()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -583,7 +584,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void MIDIThru::SetOutChannel </td>
+          <td class="memname">virtual bool MIDIThru::SetOutChannel </td>
           <td>(</td>
           <td class="paramtype">char&#160;</td>
           <td class="paramname"><em>chan</em></td><td>)</td>
@@ -604,6 +605,7 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd><b>true</b> if <em>chan</em> is a valid channel number, <b>false</b> otherwise </dd></dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_thru_8cpp-example.html#a9">test_thru.cpp</a>.</dd>
 </dl>
 
@@ -635,7 +637,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Starts the MIDI thru. </p>
 
 <p>Reimplemented from <a class="el" href="class_m_i_d_i_tick_component.html#a7d0c188caac6b9443d7fb966a1602a82">MIDITickComponent</a>.</p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_thru_8cpp-example.html#a16">test_thru.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_thru_8cpp-example.html#a12">test_thru.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -666,7 +668,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Stops the MIDI thru. </p>
 
 <p>Reimplemented from <a class="el" href="class_m_i_d_i_tick_component.html#aec496a4b1afd838003f324d5962b7078">MIDITickComponent</a>.</p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_thru_8cpp-example.html#a17">test_thru.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_thru_8cpp-example.html#a15">test_thru.cpp</a>.</dd>
 </dl>
 
 </div>

@@ -1,7 +1,7 @@
 /*
  *   Example file for NiCMidi - A C++ Class Library for MIDI
  *
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -148,17 +148,19 @@ int main(int argc, char **argv) {
                 cout << "Error loading file" << endl;
         }
 
-        else if (command == "save"){                // saves current file
-            strcpy (filename, par1.c_str());
-            if (strlen(filename) == 0)
-                cout << "File name not defined" << endl;
-            else {
+        else if(command == "save") {                // save the multitrack contents
+            if (par1.size() > 0)
+                strcpy (filename, par1.c_str());
+            if (strlen(filename) > 0) {
                 if (WriteMIDIFile(filename, 1, multitrack))
                     cout << "File saved" << endl;
                 else
                     cout << "Error writing file" << endl;
             }
+            else
+                cout << "File name not defined" << endl;
         }
+
 
         else if (command == "play") {               // starts playback
             if (sequencer.IsLoaded())
@@ -176,9 +178,9 @@ int main(int argc, char **argv) {
         }
 
         else if (command == "goto") {               // goes to meas and beat
-            int measure = atoi(par1.c_str()) - 1;
+            int meas = atoi(par1.c_str()) - 1;
             int beat = (par2.length() == 0 ? 0 : atoi(par2.c_str()) - 1);
-            if (sequencer.GoToMeasure(measure, beat))
+            if (sequencer.GoToMeasure(meas, beat))
                 cur_pos.settime(sequencer.GetCurrentMIDIClockTime());
             else
                 cout << "Invalid position" << endl;
@@ -186,11 +188,11 @@ int main(int argc, char **argv) {
 
         else if (command == "dump") {               // prints a dump of the sequencer contents
             if (par1.size() == 0)
-                DumpMIDIMultiTrackWithPauses(sequencer.GetMultiTrack());
+                DumpMIDIMultiTrackWithPauses(multitrack);
             else {
                 int trk_num = atoi(par1.c_str());
-                if (sequencer.GetMultiTrack()->IsValidTrackNumber(trk_num)) {
-                    MIDITrack* trk = sequencer.GetMultiTrack()->GetTrack(trk_num);
+                if (multitrack->IsValidTrackNumber(trk_num)) {
+                    MIDITrack* trk = sequencer.GetTrack(trk_num);
                     DumpMIDITrackWithPauses(trk, trk_num);
                 }
                 else
@@ -203,6 +205,8 @@ int main(int argc, char **argv) {
                 notifier.SetEnable(true);
             else if (par1 == "off")
                 notifier.SetEnable(false);
+            else
+                cout << "You must specify on or off" << endl;
         }
 
         else if (command == "<") {                  // step backward
@@ -296,7 +300,6 @@ int main(int argc, char **argv) {
         }
 
         else if (command == "control") {            // inserts a generic control event
-
             msg.SetTime(cur_pos.gettime());
             if (par2 != "*") {
                 msg.SetControlChange(cur_pos.gettrack() - 1, atoi(par1.c_str()), atoi(par2.c_str()));
@@ -314,11 +317,11 @@ int main(int argc, char **argv) {
             sequencer.UpdateStatus();
         }
 
-        else if ( command == "program") {           // inserts a program event
+        else if (command == "program") {            // inserts a program event
             msg.SetTime(cur_pos.gettime());
             if (par1 != "*") {
                 msg.SetProgramChange(cur_pos.gettrack() - 1, atoi(par1.c_str()));
-                trk->InsertEvent (msg);
+                trk->InsertEvent(msg);
             }
             else {
                 msg.SetProgramChange(cur_pos.gettrack() - 1, 0);
@@ -332,7 +335,7 @@ int main(int argc, char **argv) {
             sequencer.UpdateStatus();
         }
 
-        else if ( command == "tempo") {             // inserts a tempo event in track 0
+        else if (command == "tempo") {              // inserts a tempo event in track 0
             msg.SetTime (cur_pos.gettime());
             if (par1 != "*") {
                 msg.SetTempo(atoi(par1.c_str()));
@@ -374,9 +377,8 @@ int main(int argc, char **argv) {
                 cur_block.track_begin = 0;
                 cur_block.track_end = multitrack->GetNumTracks() - 1;
             }
-            else {
+            else
                 cur_block.track_begin = cur_block.track_end = atoi(par1.c_str());
-            }
         }
 
         else if (command == "be") {
@@ -393,6 +395,7 @@ int main(int argc, char **argv) {
         else if (command == "bcopy") {
             multitrack->EditCopy(cur_block.time_begin, cur_block.time_end,
                                  cur_block.track_begin, cur_block.track_end, &edit_multitrack);
+            sequencer.UpdateStatus();
         }
 
         else if (command == "bclear") {

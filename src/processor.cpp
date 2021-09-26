@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -145,10 +145,10 @@ bool MIDIProcessorRechannelizer::Process(MIDITimedMessage *msg) {
 
 bool MIDIProcessorPrinter::Process(MIDITimedMessage *msg) {
     if (print_on)
-        ost << msg->MsgToText() << std::endl;
+        ost << msg->MsgToText(chan_from_1) << std::endl;
     return true;
 }
 
 
 
-// TODO: implement a MIDIProcessorFilter
+// DONE: implement a MIDIProcessorFilter You can use the rechannelizer

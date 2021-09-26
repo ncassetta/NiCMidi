@@ -1,7 +1,7 @@
 /*
  *   NiCMidi - A C++ Class Library for MIDI
  *
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -162,7 +162,7 @@ bool MIDIRecorder::SetEndRecTime(MIDIClockTime t) {
 
 
 bool MIDIRecorder::InsertTrack(int trk_num) {
-    if (!seq->InsertTrack(trk_num))
+    if (IsPlaying())
         return false;
     proc_lock.lock();
     if ((int)en_tracks.size() > trk_num && trk_num != -1){
@@ -175,7 +175,7 @@ bool MIDIRecorder::InsertTrack(int trk_num) {
 
 
 bool MIDIRecorder::DeleteTrack(int trk_num) {
-    if (!seq->DeleteTrack())
+    if (IsPlaying())
         return false;
     proc_lock.lock();
     if (tracks->DeleteTrack(trk_num))
@@ -187,7 +187,7 @@ bool MIDIRecorder::DeleteTrack(int trk_num) {
 
 bool MIDIRecorder::MoveTrack(int from, int to) {
     if (from == to) return true;                        // nothing to do
-    if (!seq->MoveTrack(from, to))
+    if (IsPlaying())
         return false;
     proc_lock.lock();
     bool has_from = tracks->IsValidTrackNumber(from);
@@ -206,7 +206,6 @@ bool MIDIRecorder::MoveTrack(int from, int to) {
         en_tracks[to] = temp_en;
         *tracks->GetTrack(to) = temp_track;
     }
-
     else if (temp_en == true) {
         ResizeTracks(to + 1);
         en_tracks[to] = temp_en;
@@ -279,6 +278,7 @@ void MIDIRecorder::Start() {
         SetSeqNotifier();
         old_seq_mode = seq->GetPlayMode();
         seq->SetPlayMode(MIDISequencer::PLAY_UNBOUNDED);
+        seq->SetCountIn(true);
         seq->Start();
         SetDevOffset(seq->GetDevOffset());
         MIDITickComponent::Start();
@@ -300,6 +300,7 @@ void MIDIRecorder::Stop() {
         MIDITickComponent::Stop();
         MIDIManager::CloseInPorts();
         seq->MIDISequencer::Stop();         //AdvancedSequencer calls GoToMeasure()
+        seq->SetCountIn(false);
         ResetSeqNotifier();
         for (unsigned int i = 0; i < en_tracks.size(); i++) {
             if (en_tracks[i]) {
@@ -402,13 +403,16 @@ void MIDIRecorder::StaticTickProc(tMsecs sys_time, void* pt) {
 // TODO: perhaps it is possible to write a Sequencer::InsertEvent() method
 
 void MIDIRecorder::TickProc(tMsecs sys_time) {
+    //static unsigned int times;
+    //times++;
+    //if (!(times % 100))
+        //std::cout << "MIDIRecorder::TickProc() " << times << " times" << std::endl;
+
+    // the sequencer is counting in, nothing to do for the recorder
+    if (seq->GetCountInPending())
+        return;
+
     proc_lock.lock();
-
-    static unsigned int times;
-    times++;
-    if (!(times % 100))
-        std::cout << "MIDIRecorder::TickProc() " << times << " times" << std::endl;
-
     MIDIClockTime cur_time = seq->GetCurrentMIDIClockTime();
     // we are recording
     if (cur_time >= rec_start_time && cur_time < rec_end_time) {    // TODO or <= rec_end_rime ??

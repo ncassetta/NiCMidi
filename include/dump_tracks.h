@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -38,8 +38,12 @@
 /// \addtogroup GLOBALS
 ///@{
 
-/// \name Helper functions for viewing track content
+/// \name Helper functions for viewing messages content
 ///@{
+
+/// Sets the numbering of MIDI channels in message printing. If c == 0 they will be numbered 0 ... 15, else
+/// 1 ... 16. This will affect all the functions of this file. See \ref NUMBERING.
+void SetChanFrom(char c = 0);
 /// Prints a readable string describing the contents of the given MIDIMessage (or MIDITimedMessage).
 void DumpMIDITimedMessage (MIDITimedMessage* const msg, std::ostream& ost = std::cout);
 /// Prints a list of all the MIDI messages in the given MIDItrack.
@@ -59,8 +63,10 @@ void DumpMIDIMultiTrack (MIDIMultiTrack* const mlt, std::ostream& ost = std::cou
 
 /// \addtogroup GLOBALS
 ///@{
-/// \name Helper function for checking a MIDIMatrix content
+/// \name Other helper functions
 ///@{
+
+/// Helper function which shows the contents of a MIDIMatrix.
 void CheckMIDIMatrix(const MIDIMatrix& matrix, std::ostream& ost = std::cout);
 ///@}
 ///@}

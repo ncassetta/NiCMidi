@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -101,6 +101,7 @@ class MIDISequencerGUIEvent {
             GROUP_TRANSPORT_STOP,       ///< Sequencer stop
             GROUP_TRANSPORT_MEASURE,    ///< Start of a measure
             GROUP_TRANSPORT_BEAT,       ///< Beat marker
+            GROUP_TRANSPORT_COUNTIN,    ///< Countin start
             GROUP_TRANSPORT_USER        ///< User defined item
         };      // TODO: add a GROUP_TRANSPORT_ENDOFSONG for midi type 3 files?
 

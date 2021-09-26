@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -25,6 +25,8 @@
 
 #include "../include/dump_tracks.h"
 
+static char chan_from_1 = 0;
+
 
 static const char* trk_types[10] = {
         "EMPTY",
@@ -40,9 +42,14 @@ static const char* trk_types[10] = {
     };
 
 
+void SetChanFrom(char c) {
+    chan_from_1 = c;
+}
+
+
 void DumpMIDITimedMessage (MIDITimedMessage* const msg, std::ostream& ost) {
     if (msg)
-        ost << msg->MsgToText() << std::endl;
+        ost << msg->MsgToText(chan_from_1) << std::endl;
 }
 
 
@@ -69,10 +76,13 @@ int DumpMIDITrackAttr(MIDITrack* const trk, int num, std::ostream& ost) {
             break;
     }
 
-    ost << std::endl << "    Type: " << trk_types[type] << std::endl;
+    ost << std::endl << "    Type: " << trk_types[type];
+    if (type == MIDITrack::TYPE_CHAN || type == MIDITrack::TYPE_IRREG_CHAN)
+        ost << " (" << (int)trk->GetChannel() + chan_from_1 << ")";
+    ost << std::endl;
     sprintf(s, "%6d", trk->GetNumEvents()),
     ost << "Events in track: " << s << "\t   End of track time: " << trk->GetEndTime()
-        << std::endl << std::endl;
+        << std::endl;
     return 3;           // it always writes 3 lines
 }
 
@@ -106,7 +116,7 @@ int DumpMIDITrackAttrVerbose(MIDITrack* const trk, int num, std::ostream& ost) {
         lines++;
     }
     if (status & MIDITrack::HAS_ONE_CHAN) {
-        ost << "    Has channel events (channel " << (int)trk->GetChannel() << ")" << std::endl;
+        ost << "    Has channel events (channel " << (int)trk->GetChannel() + chan_from_1 << ")" << std::endl;
         lines++;
     }
     if (status & MIDITrack::HAS_MANY_CHAN) {
@@ -134,7 +144,7 @@ int DumpMIDITrackAttrVerbose(MIDITrack* const trk, int num, std::ostream& ost) {
 
     sprintf(s, "%6d", trk->GetNumEvents()),
     ost << "Events in track: " << s << "\t   End of track time: " << trk->GetEndTime()
-        << std::endl << std::endl;
+        << std::endl;
     return lines;
 }
 

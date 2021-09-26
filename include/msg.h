@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -68,7 +68,8 @@ class 	MIDIMessage {
         /// Returns the status byte of the message. If the message is a channel message this contains the message
         /// type in the top 4 bits and the channel in the bottom 4. See \ref MIDIENUM for status bytes
         unsigned char	        GetStatus() const	        { return (unsigned char)status;	}
-        /// If the message is a channel message, returns its MIDI channel (0...15).
+        /// If the message is a channel message, returns its MIDI channel.
+        /// See \ref NUMBERING.
         unsigned char	        GetChannel() const          { return (unsigned char)(status  &0x0f);	}
         /// If the message is a channel message, returns the relevant top 4 bits of the status byte.
         /// These describe what type of channel message it is.
@@ -91,7 +92,7 @@ class 	MIDIMessage {
         unsigned char	        GetVelocity() const	        { return byte2;	}
         /// If the message is a channel pressure message, returns the pressure value.
         unsigned char           GetChannelPressure() const  { return byte1; }
-        /// If the message is a program change message, returns the program number.
+        /// If the message is a program change (patch) message, returns the program number.
         unsigned char	        GetProgramValue() const     { return byte1;	}
         /// If the message is a control change message, returns the controller number.
         unsigned char	        GetController() const	    { return byte1; }
@@ -136,7 +137,7 @@ class 	MIDIMessage {
         bool	                IsPolyPressure() const      { return ((status & 0xf0) == POLY_PRESSURE); }
         /// Returns **true** if the message is a control change message.
         /// You can then call GetChannel(), GetController() and GetControllerValue() for further information.
-        /// \note This will return *false* on channel mode messages (which have the same status byte of control
+        /// \note This will return **false** on channel mode messages (which have the same status byte of control
         /// changes). Call IsChannelMode() for inspecting them.
         bool	                IsControlChange() const     { return ((status & 0xf0) == CONTROL_CHANGE) &&
                                                                         (byte1 < C_ALL_SOUND_OFF); }
@@ -205,12 +206,12 @@ class 	MIDIMessage {
         /// This is an internal service message used by the MIDISequencer class to mark the metronome clicks.
         bool                    IsBeatMarker() const        { return (status == STATUS_SERVICE) && (byte1 == BEAT_MARKER_VAL); }
 
-        /// Sets all bits of the status byte of the message (i.e., for channel messages, the type and the channel).
+        /// Sets all 8 bits of the status byte of the message. These define, for channel messages, the type and the channel.
         void	                SetStatus(unsigned char s)	        { status = s; }
         /// Sets just the lower 4 bits of the status byte without changing the upper 4 bits.
-        void	                SetChannel(unsigned char s)         { status = (unsigned char)((status & 0xf0) | s); }
+        void	                SetChannel(unsigned char s)         { status = (unsigned char)((status & 0xf0) | (s & 0x0f)); }
         /// Sets just the upper 4 bits of the status byte without changing the lower 4 bits.
-        void	                SetType(unsigned char s)            { status = (unsigned char)((status & 0x0f) | s); }
+        void	                SetType(unsigned char s)            { status = (unsigned char)((status & 0x0f) | (s & 0xf0)); }
         /// Sets the raw value of the data byte 1.
         void	                SetByte1(unsigned char b)		    { byte1 = b; }
         /// Sets the raw value of the data byte 2.
@@ -234,27 +235,36 @@ class 	MIDIMessage {
         /// Sets the meta value for a meta-event message.
         void	                SetMetaValue(unsigned short v);
         /// Makes the message a note on message with given channel, note and velocity. Frees the sysex pointer.
+        /// \param chan, note, vel see \ref NUMBERING
         void	                SetNoteOn(unsigned char chan, unsigned char note, unsigned char vel);
         /// Makes the message a note off message with given channel, note and velocity.
         /// Frees the sysex pointer. The default behavior of this method is to put a NOTE OFF type message and copy
         /// the given velocity; you can also make the method put a NOTE ON with 0 velocity (ignoring the third parameter).
         /// See the USeNoteOnForOff() static method.
+        /// \param chan, note, vel see \ref NUMBERING
         void	                SetNoteOff(unsigned char chan, unsigned char note, unsigned char vel);
         /// Makes the message a polyphonic aftertouch message with given channel, note and pressure. Frees the sysex pointer.
+        /// \param chan, note,pres see \ref NUMBERING
         void	                SetPolyPressure(unsigned char chan, unsigned char note, unsigned char pres);
         /// Makes the message a control change message with given channel, controller and value. Frees the sysex pointer.
+        /// \param chan, ctrl, val see \ref NUMBERING
         void	                SetControlChange(unsigned char chan, unsigned char ctrl, unsigned char val);
         /// Makes the message a volume change (control == 0x07) message with given channel and value. Frees the sysex pointer.
+        /// \param chan, val see \ref NUMBERING
         void                    SetVolumeChange (unsigned char chan, unsigned char val)
                                             { SetControlChange( chan, C_MAIN_VOLUME, val); }
         /// Makes the message a pan change (control == 0x0A) message with given channel and value. Frees the sysex pointer.
+        /// \param chan, val see \ref NUMBERING
         void                    SetPanChange (unsigned char chan, unsigned char val)
                                             { SetControlChange( chan, C_PAN, val); }
         /// Makes the message a program change message with given channel and program. Frees the sysex pointer.
+        /// \param chan, prog see \ref NUMBERING
         void	                SetProgramChange(unsigned char chan, unsigned char prog);
         /// Makes the message a channel pressure message with given channel and pressure. Frees the sysex pointer.
+        /// \param chan, pres see \ref NUMBERING
         void	                SetChannelPressure(unsigned char chan, unsigned char pres);
         /// Makes the message a pitch bend message with given channel and value (unsigned 14 bit). Frees the sysex pointer.
+        /// \param chan, val see \ref NUMBERING
         void	                SetPitchBend( unsigned char chan, short val );
         /// Makes the message a channel mode message (i.e. a control change with a specific control number.
         /// Channel mode messages include:
@@ -266,9 +276,11 @@ class 	MIDIMessage {
         /// + Omni mode on          (type = C_OMNI_ON)
         /// + Mono mode on          (type = C_MONO, value = number of channels to respond, 0 for all channels)
         /// + Poly mode on          (type = C_POLY)
+        /// \param chan, type, val see \ref NUMBERING
         void	                SetChannelMode(unsigned char chan, unsigned char type, unsigned char val = 0)
                                                     { SetControlChange(chan, type, val); }
         /// Makes the message a all notes off message with given channel.
+        /// \param chan see \ref NUMBERING
         void	                SetAllNotesOff(unsigned char chan)
                                                     { SetControlChange(chan, C_ALL_NOTES_OFF, 0); }
         /// Makes the message a system exclusive message with given MIDISystemExclusive object.
@@ -316,7 +328,8 @@ class 	MIDIMessage {
         void	                SetBeatMarker();
 
         /// Returns a human readable ascii string describing the message content.
-        virtual std::string     MsgToText() const;
+        /// \param chan_from_1 if zero channels are numbered 0 ... 15, otherwise 1 ... 16. See \ref NUMBERING
+        virtual std::string     MsgToText(char chan_from_1 = 0) const;
         /// Allocates a MIDISystemExclusive object, with a buffer of given max size.
         ///The buffer is initially empty and can be accessed with GetSysEx(). An eventual old object is freed.
         void                    AllocateSysEx(unsigned int len);
@@ -384,7 +397,8 @@ class 	MIDITimedMessage : public MIDIMessage {
         const MIDITimedMessage &operator= (const MIDIMessage &msg);
 
         /// Returns a human readable ascii string describing the message content.
-        virtual std::string     MsgToText() const;
+        /// \param chan_from_1 if zero channels are numbered 0 ... 15, otherwise 1 ... 16. See \ref NUMBERING
+        virtual std::string     MsgToText(char chan_from_1 = 0) const;
 
         /// Returns the MIDIClockTime associated with the message.
         MIDIClockTime	        GetTime() const                 { return time; }

@@ -52,6 +52,7 @@ $(document).ready(function(){initNavTree('class_m_i_d_i_recorder.html',''); init
 <div id="doc-content">
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-static-methods">Static Protected Member Functions</a> &#124;
@@ -75,65 +76,88 @@ Inheritance diagram for MIDIRecorder:</div>
   </map>
 </div></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a8e80848ba8095ff5a8a8cf0a2d7cfd23"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="class_m_i_d_i_recorder.html#a8e80848ba8095ff5a8a8cf0a2d7cfd23a53bde32a0571b640bff450437683d00a">REC_MERGE</a>
+, <a class="el" href="class_m_i_d_i_recorder.html#a8e80848ba8095ff5a8a8cf0a2d7cfd23a785c2ccc23e2348fb937bdf2070b3d8a">REC_OVER</a>
+ }</td></tr>
+<tr class="memdesc:a8e80848ba8095ff5a8a8cf0a2d7cfd23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recording mode: You can choose to merge the new with the old track content, or to overwrite it.  <a href="class_m_i_d_i_recorder.html#a8e80848ba8095ff5a8a8cf0a2d7cfd23">More...</a><br /></td></tr>
+<tr class="separator:a8e80848ba8095ff5a8a8cf0a2d7cfd23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aaa8801daa1c14bd74d7cfe206842e853"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#aaa8801daa1c14bd74d7cfe206842e853">MIDIRecorder</a> ()</td></tr>
-<tr class="memdesc:aaa8801daa1c14bd74d7cfe206842e853"><td class="mdescLeft">&#160;</td><td class="mdescRight">The constructor.  <a href="class_m_i_d_i_recorder.html#aaa8801daa1c14bd74d7cfe206842e853">More...</a><br /></td></tr>
-<tr class="separator:aaa8801daa1c14bd74d7cfe206842e853"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa92bc67cd71a5891a0ee211f5d8a4b91"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#aa92bc67cd71a5891a0ee211f5d8a4b91">MIDIRecorder</a> (<a class="el" href="class_m_i_d_i_sequencer.html">MIDISequencer</a> *const s)</td></tr>
+<tr class="memdesc:aa92bc67cd71a5891a0ee211f5d8a4b91"><td class="mdescLeft">&#160;</td><td class="mdescRight">The constructor. It binds the recorder to the given <a class="el" href="class_m_i_d_i_sequencer.html" title="A MIDITickComponent which implements a basic sequencer, able to play the MIDI events contained in a M...">MIDISequencer</a>.  <a href="class_m_i_d_i_recorder.html#aa92bc67cd71a5891a0ee211f5d8a4b91">More...</a><br /></td></tr>
+<tr class="separator:aa92bc67cd71a5891a0ee211f5d8a4b91"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acdb0a37702827ed782841761f76bff4a"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#acdb0a37702827ed782841761f76bff4a">~MIDIRecorder</a> ()</td></tr>
 <tr class="memdesc:acdb0a37702827ed782841761f76bff4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">The destructor.  <a href="class_m_i_d_i_recorder.html#acdb0a37702827ed782841761f76bff4a">More...</a><br /></td></tr>
 <tr class="separator:acdb0a37702827ed782841761f76bff4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a529108417592825416522c50551ca26c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a529108417592825416522c50551ca26c">Reset</a> ()</td></tr>
-<tr class="memdesc:a529108417592825416522c50551ca26c"><td class="mdescLeft">&#160;</td><td class="mdescRight">A pure virtual method reinitializing the class parameters.  <a href="class_m_i_d_i_recorder.html#a529108417592825416522c50551ca26c">More...</a><br /></td></tr>
+<tr class="memdesc:a529108417592825416522c50551ca26c"><td class="mdescLeft">&#160;</td><td class="mdescRight">It sets all tracks to not enable state, empties the internal multitrack and sets the start and end recording times to 0 ...  <a href="class_m_i_d_i_recorder.html#a529108417592825416522c50551ca26c">More...</a><br /></td></tr>
 <tr class="separator:a529108417592825416522c50551ca26c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab4883a0a16cd78f0d8e9deac0a86447c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_m_i_d_i_multi_track.html">MIDIMultiTrack</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#ab4883a0a16cd78f0d8e9deac0a86447c">GetMultiTrack</a> () const</td></tr>
 <tr class="memdesc:ab4883a0a16cd78f0d8e9deac0a86447c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>.  <a href="class_m_i_d_i_recorder.html#ab4883a0a16cd78f0d8e9deac0a86447c">More...</a><br /></td></tr>
 <tr class="separator:ab4883a0a16cd78f0d8e9deac0a86447c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a27ead2d43ebd59848216fed702b95874"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a27ead2d43ebd59848216fed702b95874">GetTempo</a> () const</td></tr>
-<tr class="memdesc:a27ead2d43ebd59848216fed702b95874"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the recording tempo in bpm.  <a href="class_m_i_d_i_recorder.html#a27ead2d43ebd59848216fed702b95874">More...</a><br /></td></tr>
-<tr class="separator:a27ead2d43ebd59848216fed702b95874"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a833ad3dd39f505a145bad717681a0b55"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a833ad3dd39f505a145bad717681a0b55">GetRecMode</a> () const</td></tr>
+<tr class="memdesc:a833ad3dd39f505a145bad717681a0b55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the recording mode.  <a href="class_m_i_d_i_recorder.html#a833ad3dd39f505a145bad717681a0b55">More...</a><br /></td></tr>
+<tr class="separator:a833ad3dd39f505a145bad717681a0b55"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a09414429295c2b8ed2a23baffa5a5418"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a09414429295c2b8ed2a23baffa5a5418">GetStartRecTime</a> () const</td></tr>
 <tr class="memdesc:a09414429295c2b8ed2a23baffa5a5418"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the start MIDI time of the recording.  <a href="class_m_i_d_i_recorder.html#a09414429295c2b8ed2a23baffa5a5418">More...</a><br /></td></tr>
 <tr class="separator:a09414429295c2b8ed2a23baffa5a5418"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ed39fbbdd5bb5606d56aebad8bc0bc0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a1ed39fbbdd5bb5606d56aebad8bc0bc0">GetEndRecTime</a> () const</td></tr>
 <tr class="memdesc:a1ed39fbbdd5bb5606d56aebad8bc0bc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the end MIDI time of the recording.  <a href="class_m_i_d_i_recorder.html#a1ed39fbbdd5bb5606d56aebad8bc0bc0">More...</a><br /></td></tr>
 <tr class="separator:a1ed39fbbdd5bb5606d56aebad8bc0bc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7eb001011639cc7ed86e622f6b81acfc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a7eb001011639cc7ed86e622f6b81acfc">SetTempo</a> (float t)</td></tr>
-<tr class="memdesc:a7eb001011639cc7ed86e622f6b81acfc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the recording tempo.  <a href="class_m_i_d_i_recorder.html#a7eb001011639cc7ed86e622f6b81acfc">More...</a><br /></td></tr>
-<tr class="separator:a7eb001011639cc7ed86e622f6b81acfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f77044cce7892befd3f354b7dd1fd21"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a0f77044cce7892befd3f354b7dd1fd21">SetStartRecTime</a> (<a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a> t)</td></tr>
-<tr class="memdesc:a0f77044cce7892befd3f354b7dd1fd21"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the recording start time.  <a href="class_m_i_d_i_recorder.html#a0f77044cce7892befd3f354b7dd1fd21">More...</a><br /></td></tr>
-<tr class="separator:a0f77044cce7892befd3f354b7dd1fd21"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9fa25bfcbcb6de47e1371171e995b57d"><td class="memItemLeft" align="right" valign="top"><a id="a9fa25bfcbcb6de47e1371171e995b57d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SetStartRecTime</b> (unsigned int meas, unsigned int beat=0)</td></tr>
-<tr class="separator:a9fa25bfcbcb6de47e1371171e995b57d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9501ed8bc2e4c05483a63979bca36d92"><td class="memItemLeft" align="right" valign="top"><a id="a9501ed8bc2e4c05483a63979bca36d92"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SetEndRecTime</b> (<a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a> t)</td></tr>
-<tr class="separator:a9501ed8bc2e4c05483a63979bca36d92"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a963128d48432cc4ee16ee97408f2d166"><td class="memItemLeft" align="right" valign="top"><a id="a963128d48432cc4ee16ee97408f2d166"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SetEndRecTime</b> (unsigned int meas, unsigned int beat=0)</td></tr>
-<tr class="separator:a963128d48432cc4ee16ee97408f2d166"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1e71bce9e1f1da3cec8b08e3e9d29ef0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a1e71bce9e1f1da3cec8b08e3e9d29ef0">EnablePort</a> (unsigned int port, bool en_chans=true)</td></tr>
-<tr class="memdesc:a1e71bce9e1f1da3cec8b08e3e9d29ef0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables a MIDI in port in the system for recording.  <a href="class_m_i_d_i_recorder.html#a1e71bce9e1f1da3cec8b08e3e9d29ef0">More...</a><br /></td></tr>
-<tr class="separator:a1e71bce9e1f1da3cec8b08e3e9d29ef0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9377d201a5a99f72a24e19baba3ffbc0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a9377d201a5a99f72a24e19baba3ffbc0">EnableChannel</a> (unsigned int port, unsigned int ch)</td></tr>
-<tr class="memdesc:a9377d201a5a99f72a24e19baba3ffbc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables a specific MIDI channel for recording, creating a track for it in the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>.  <a href="class_m_i_d_i_recorder.html#a9377d201a5a99f72a24e19baba3ffbc0">More...</a><br /></td></tr>
-<tr class="separator:a9377d201a5a99f72a24e19baba3ffbc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae108ff2a6566542d3309ad090aec65e0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#ae108ff2a6566542d3309ad090aec65e0">DisablePort</a> (unsigned int port)</td></tr>
-<tr class="memdesc:ae108ff2a6566542d3309ad090aec65e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disables a MIDI in port from recording, deleting all tracks associated with it in the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>.  <a href="class_m_i_d_i_recorder.html#ae108ff2a6566542d3309ad090aec65e0">More...</a><br /></td></tr>
-<tr class="separator:ae108ff2a6566542d3309ad090aec65e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7c2f960fed1f325061afc01513c18ce6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a7c2f960fed1f325061afc01513c18ce6">DisableChannel</a> (unsigned int port, unsigned int ch)</td></tr>
-<tr class="memdesc:a7c2f960fed1f325061afc01513c18ce6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disables a specific MIDI channel from recording, deleting its track in the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>.  <a href="class_m_i_d_i_recorder.html#a7c2f960fed1f325061afc01513c18ce6">More...</a><br /></td></tr>
-<tr class="separator:a7c2f960fed1f325061afc01513c18ce6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab5c5b4b78222f4ca5e6c2896dae242e5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#ab5c5b4b78222f4ca5e6c2896dae242e5">GoToZero</a> ()</td></tr>
-<tr class="memdesc:ab5c5b4b78222f4ca5e6c2896dae242e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the current time to the beginning of the song, updating the internal status.  <a href="class_m_i_d_i_recorder.html#ab5c5b4b78222f4ca5e6c2896dae242e5">More...</a><br /></td></tr>
-<tr class="separator:ab5c5b4b78222f4ca5e6c2896dae242e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a303a9e4c290c2f657d8e8afc2bacf51b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a303a9e4c290c2f657d8e8afc2bacf51b">GoToTime</a> (<a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a> time_clk)</td></tr>
-<tr class="memdesc:a303a9e4c290c2f657d8e8afc2bacf51b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the current time to the given MIDI time, updating the internal status.  <a href="class_m_i_d_i_recorder.html#a303a9e4c290c2f657d8e8afc2bacf51b">More...</a><br /></td></tr>
-<tr class="separator:a303a9e4c290c2f657d8e8afc2bacf51b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4427027cf34c780a525356fc7acd8aa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#ae4427027cf34c780a525356fc7acd8aa">GoToTimeMs</a> (float time_ms)</td></tr>
-<tr class="memdesc:ae4427027cf34c780a525356fc7acd8aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Same as <a class="el" href="class_m_i_d_i_recorder.html#a303a9e4c290c2f657d8e8afc2bacf51b" title="Sets the current time to the given MIDI time, updating the internal status.">GoToTime()</a>, but the time is given in milliseconds.  <a href="class_m_i_d_i_recorder.html#ae4427027cf34c780a525356fc7acd8aa">More...</a><br /></td></tr>
-<tr class="separator:ae4427027cf34c780a525356fc7acd8aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a249b276bb9a6ddaec97f9d3741d92222"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_m_i_d_i_track.html">MIDITrack</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a249b276bb9a6ddaec97f9d3741d92222">GetTrack</a> (int trk_num)</td></tr>
+<tr class="memdesc:a249b276bb9a6ddaec97f9d3741d92222"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the pointer to a track of the internal multitrack.  <a href="class_m_i_d_i_recorder.html#a249b276bb9a6ddaec97f9d3741d92222">More...</a><br /></td></tr>
+<tr class="separator:a249b276bb9a6ddaec97f9d3741d92222"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaabe0c274e4d8cfd808844692116458e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_m_i_d_i_track.html">MIDITrack</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#aaabe0c274e4d8cfd808844692116458e">GetTrack</a> (int trk_num) const</td></tr>
+<tr class="memdesc:aaabe0c274e4d8cfd808844692116458e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the pointer to a track of the internal multitrack.  <a href="class_m_i_d_i_recorder.html#aaabe0c274e4d8cfd808844692116458e">More...</a><br /></td></tr>
+<tr class="separator:aaabe0c274e4d8cfd808844692116458e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c3f96bf45bb70bacfc467f5403e7313"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a5c3f96bf45bb70bacfc467f5403e7313">GetTrackInPort</a> (unsigned int trk_num) const</td></tr>
+<tr class="memdesc:a5c3f96bf45bb70bacfc467f5403e7313"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of the in port assigned to a track.  <a href="class_m_i_d_i_recorder.html#a5c3f96bf45bb70bacfc467f5403e7313">More...</a><br /></td></tr>
+<tr class="separator:a5c3f96bf45bb70bacfc467f5403e7313"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a00999e78f9e814d7619521811eba87"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a3a00999e78f9e814d7619521811eba87">GetTrackRecChannel</a> (unsigned int trk_num)</td></tr>
+<tr class="memdesc:a3a00999e78f9e814d7619521811eba87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the recording channel for the given track, or -1 for any channel.  <a href="class_m_i_d_i_recorder.html#a3a00999e78f9e814d7619521811eba87">More...</a><br /></td></tr>
+<tr class="separator:a3a00999e78f9e814d7619521811eba87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a043e3ea432bb92514e26fe47b96719d4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a043e3ea432bb92514e26fe47b96719d4">SetTrackInPort</a> (unsigned int trk_num, unsigned int port)</td></tr>
+<tr class="memdesc:a043e3ea432bb92514e26fe47b96719d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the MIDI in port for a track.  <a href="class_m_i_d_i_recorder.html#a043e3ea432bb92514e26fe47b96719d4">More...</a><br /></td></tr>
+<tr class="separator:a043e3ea432bb92514e26fe47b96719d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a932251fce490f6905aae72901fc99e2d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a932251fce490f6905aae72901fc99e2d">SetTrackRecChannel</a> (unsigned int trk_num, char chan)</td></tr>
+<tr class="memdesc:a932251fce490f6905aae72901fc99e2d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the recording channel for the given track.  <a href="class_m_i_d_i_recorder.html#a932251fce490f6905aae72901fc99e2d">More...</a><br /></td></tr>
+<tr class="separator:a932251fce490f6905aae72901fc99e2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeb98f728059527aab48e52dfcb76e88b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#aeb98f728059527aab48e52dfcb76e88b">SetRecMode</a> (int mode)</td></tr>
+<tr class="memdesc:aeb98f728059527aab48e52dfcb76e88b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the recording mode.  <a href="class_m_i_d_i_recorder.html#aeb98f728059527aab48e52dfcb76e88b">More...</a><br /></td></tr>
+<tr class="separator:aeb98f728059527aab48e52dfcb76e88b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d3c59f8ca4636413e333d07ea1dc6e8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a2d3c59f8ca4636413e333d07ea1dc6e8">SetStartRecTime</a> (<a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a> t)</td></tr>
+<tr class="memdesc:a2d3c59f8ca4636413e333d07ea1dc6e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the recording start time.  <a href="class_m_i_d_i_recorder.html#a2d3c59f8ca4636413e333d07ea1dc6e8">More...</a><br /></td></tr>
+<tr class="separator:a2d3c59f8ca4636413e333d07ea1dc6e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a26e0e8593de6d42f41010d7c6b4d134c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a26e0e8593de6d42f41010d7c6b4d134c">SetStartRecTime</a> (unsigned int meas, unsigned int beat=0)</td></tr>
+<tr class="memdesc:a26e0e8593de6d42f41010d7c6b4d134c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the recording start time, giving the measure and beat. See SetTrackRecChannel(MIDIClockTime).  <a href="class_m_i_d_i_recorder.html#a26e0e8593de6d42f41010d7c6b4d134c">More...</a><br /></td></tr>
+<tr class="separator:a26e0e8593de6d42f41010d7c6b4d134c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdf973c44c2795a0a954b6b01598b57f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#acdf973c44c2795a0a954b6b01598b57f">SetEndRecTime</a> (<a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a> t)</td></tr>
+<tr class="memdesc:acdf973c44c2795a0a954b6b01598b57f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the recording end time.  <a href="class_m_i_d_i_recorder.html#acdf973c44c2795a0a954b6b01598b57f">More...</a><br /></td></tr>
+<tr class="separator:acdf973c44c2795a0a954b6b01598b57f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a626360aea1efc2f79d550f3c3919f561"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a626360aea1efc2f79d550f3c3919f561">SetEndRecTime</a> (unsigned int meas, unsigned int beat=0)</td></tr>
+<tr class="memdesc:a626360aea1efc2f79d550f3c3919f561"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the recording end time, giving the measure and beat. See SetTrackRecChannel(MIDIClockTime).  <a href="class_m_i_d_i_recorder.html#a626360aea1efc2f79d550f3c3919f561">More...</a><br /></td></tr>
+<tr class="separator:a626360aea1efc2f79d550f3c3919f561"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c1e3ef4d608f564ca706f3f9c80554b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a3c1e3ef4d608f564ca706f3f9c80554b">InsertTrack</a> (int trk_num=-1)</td></tr>
+<tr class="memdesc:a3c1e3ef4d608f564ca706f3f9c80554b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inserts into the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a> a new track.  <a href="class_m_i_d_i_recorder.html#a3c1e3ef4d608f564ca706f3f9c80554b">More...</a><br /></td></tr>
+<tr class="separator:a3c1e3ef4d608f564ca706f3f9c80554b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab654e2ac8a6ff6f627dde8dca3629f13"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#ab654e2ac8a6ff6f627dde8dca3629f13">DeleteTrack</a> (int trk_num=-1)</td></tr>
+<tr class="memdesc:ab654e2ac8a6ff6f627dde8dca3629f13"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes a track and all its events from the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>.  <a href="class_m_i_d_i_recorder.html#ab654e2ac8a6ff6f627dde8dca3629f13">More...</a><br /></td></tr>
+<tr class="separator:ab654e2ac8a6ff6f627dde8dca3629f13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a385186a4b895be0422e93c85b5c943"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a8a385186a4b895be0422e93c85b5c943">MoveTrack</a> (int from, int to)</td></tr>
+<tr class="memdesc:a8a385186a4b895be0422e93c85b5c943"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves a track from one position to another in the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>.  <a href="class_m_i_d_i_recorder.html#a8a385186a4b895be0422e93c85b5c943">More...</a><br /></td></tr>
+<tr class="separator:a8a385186a4b895be0422e93c85b5c943"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6337c9ff69b1d3d93c88fa11fbe0df27"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a6337c9ff69b1d3d93c88fa11fbe0df27">EnableTrack</a> (unsigned int trk_num)</td></tr>
+<tr class="memdesc:a6337c9ff69b1d3d93c88fa11fbe0df27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables a sequencer track for recording.  <a href="class_m_i_d_i_recorder.html#a6337c9ff69b1d3d93c88fa11fbe0df27">More...</a><br /></td></tr>
+<tr class="separator:a6337c9ff69b1d3d93c88fa11fbe0df27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a22f5c0f8bbf6155c1219d76bb274311c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a22f5c0f8bbf6155c1219d76bb274311c">DisableTrack</a> (unsigned int trk_num)</td></tr>
+<tr class="memdesc:a22f5c0f8bbf6155c1219d76bb274311c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Disables a sequencer track for recording.  <a href="class_m_i_d_i_recorder.html#a22f5c0f8bbf6155c1219d76bb274311c">More...</a><br /></td></tr>
+<tr class="separator:a22f5c0f8bbf6155c1219d76bb274311c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab982b3f9ba22f01798d0d3e3cfc7186f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#ab982b3f9ba22f01798d0d3e3cfc7186f">UndoRec</a> ()</td></tr>
+<tr class="memdesc:ab982b3f9ba22f01798d0d3e3cfc7186f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes the changes made in the last recording.  <a href="class_m_i_d_i_recorder.html#ab982b3f9ba22f01798d0d3e3cfc7186f">More...</a><br /></td></tr>
+<tr class="separator:ab982b3f9ba22f01798d0d3e3cfc7186f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab1000a44dcb29976cda7969e04a77a28"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#ab1000a44dcb29976cda7969e04a77a28">Start</a> ()</td></tr>
 <tr class="memdesc:ab1000a44dcb29976cda7969e04a77a28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts the recording from the enabled ports and channels.  <a href="class_m_i_d_i_recorder.html#ab1000a44dcb29976cda7969e04a77a28">More...</a><br /></td></tr>
 <tr class="separator:ab1000a44dcb29976cda7969e04a77a28"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -165,6 +189,18 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>SetEndRecTime</b> (un
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
+<tr class="memitem:a4b151847b58f391db65f47f6d9f58164"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a4b151847b58f391db65f47f6d9f58164">ResizeTracks</a> (unsigned int max_num)</td></tr>
+<tr class="memdesc:a4b151847b58f391db65f47f6d9f58164"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal function.  <a href="class_m_i_d_i_recorder.html#a4b151847b58f391db65f47f6d9f58164">More...</a><br /></td></tr>
+<tr class="separator:a4b151847b58f391db65f47f6d9f58164"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a9ac3e385c23063196e941a94378b19"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a2a9ac3e385c23063196e941a94378b19">SetSeqNotifier</a> ()</td></tr>
+<tr class="memdesc:a2a9ac3e385c23063196e941a94378b19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal function.  <a href="class_m_i_d_i_recorder.html#a2a9ac3e385c23063196e941a94378b19">More...</a><br /></td></tr>
+<tr class="separator:a2a9ac3e385c23063196e941a94378b19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3757ac8e332e047f826cc554d449b81"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#ae3757ac8e332e047f826cc554d449b81">ResetSeqNotifier</a> ()</td></tr>
+<tr class="memdesc:ae3757ac8e332e047f826cc554d449b81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal function. It is used in <a class="el" href="class_m_i_d_i_recorder.html#a196dfa9145e4e12de3f913a1ce420870" title="Stops the recording from the enabled ports and channels.">Stop()</a> to reset the hook in the sequencer notifier.  <a href="class_m_i_d_i_recorder.html#ae3757ac8e332e047f826cc554d449b81">More...</a><br /></td></tr>
+<tr class="separator:ae3757ac8e332e047f826cc554d449b81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71b3006a463cb15b943e5e44595d6d49"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a71b3006a463cb15b943e5e44595d6d49">PrepareTrack</a> (unsigned int trk_num)</td></tr>
+<tr class="memdesc:a71b3006a463cb15b943e5e44595d6d49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal function.  <a href="class_m_i_d_i_recorder.html#a71b3006a463cb15b943e5e44595d6d49">More...</a><br /></td></tr>
+<tr class="separator:a71b3006a463cb15b943e5e44595d6d49"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acf2da44386b821659f3ad69ccf3172ec"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#acf2da44386b821659f3ad69ccf3172ec">TickProc</a> (<a class="el" href="group___g_l_o_b_a_l_s.html#ga54224e8ae90b3b2f44d5afe5ab99f403">tMsecs</a> sys_time)</td></tr>
 <tr class="memdesc:acf2da44386b821659f3ad69ccf3172ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implements the pure virtual method inherited from <a class="el" href="class_m_i_d_i_tick_component.html" title="A pure virtual class implementing an object which has a callback procedure to be called at every tick...">MIDITickComponent</a> (you must not call it directly).  <a href="class_m_i_d_i_recorder.html#acf2da44386b821659f3ad69ccf3172ec">More...</a><br /></td></tr>
 <tr class="separator:acf2da44386b821659f3ad69ccf3172ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -198,11 +234,34 @@ Additional Inherited Members</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A <a class="el" href="class_m_i_d_i_tick_component.html" title="A pure virtual class implementing an object which has a callback procedure to be called at every tick...">MIDITickComponent</a> which can record MIDI messages incoming from a MIDI in port, putting them into an internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>. </p>
 <p>You can select the port, channel and MIDI notes of the metronome clicks; moreover you can have three types of click: the ordinary (beat) click, the measure click (first beat of a measure) and a subdivision click. If you enable measure clicks the metronome can count the measures and the beats of a measure (so you can represent them in a graphical interface). </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_recorder_8cpp-example.html#_a1">test_recorder.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_recorder_8cpp-example.html#_a2">test_recorder.cpp</a>.</dd>
 </dl>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="aaa8801daa1c14bd74d7cfe206842e853"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaa8801daa1c14bd74d7cfe206842e853">&#9670;&nbsp;</a></span>MIDIRecorder()</h2>
+</div><h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="a8e80848ba8095ff5a8a8cf0a2d7cfd23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8e80848ba8095ff5a8a8cf0a2d7cfd23">&#9670;&nbsp;</a></span>anonymous enum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">anonymous enum</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Recording mode: You can choose to merge the new with the old track content, or to overwrite it. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a8e80848ba8095ff5a8a8cf0a2d7cfd23a53bde32a0571b640bff450437683d00a"></a>REC_MERGE&#160;</td><td class="fielddoc"><p>Merge old and new content. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a8e80848ba8095ff5a8a8cf0a2d7cfd23a785c2ccc23e2348fb937bdf2070b3d8a"></a>REC_OVER&#160;</td><td class="fielddoc"><p>Overwrite the old content. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="aa92bc67cd71a5891a0ee211f5d8a4b91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa92bc67cd71a5891a0ee211f5d8a4b91">&#9670;&nbsp;</a></span>MIDIRecorder()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -210,13 +269,14 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">MIDIRecorder::MIDIRecorder </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype"><a class="el" href="class_m_i_d_i_sequencer.html">MIDISequencer</a> *const&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>The constructor. </p>
+<p>The constructor. It binds the recorder to the given <a class="el" href="class_m_i_d_i_sequencer.html" title="A MIDITickComponent which implements a basic sequencer, able to play the MIDI events contained in a M...">MIDISequencer</a>. </p>
 
 </div>
 </div>
@@ -271,7 +331,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>A pure virtual method reinitializing the class parameters. </p>
+<p>It sets all tracks to not enable state, empties the internal multitrack and sets the start and end recording times to 0 ... </p>
+<p>TiME_iNFiNiTE. </p>
 
 <p>Implements <a class="el" href="class_m_i_d_i_tick_component.html#a2481415a5e73b0ecc5b92e7bb1d61ddb">MIDITickComponent</a>.</p>
 
@@ -301,13 +362,11 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns a pointer to the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_recorder_8cpp-example.html#a14">test_recorder.cpp</a>.</dd>
-</dl>
 
 </div>
 </div>
-<a id="a27ead2d43ebd59848216fed702b95874"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a27ead2d43ebd59848216fed702b95874">&#9670;&nbsp;</a></span>GetTempo()</h2>
+<a id="a833ad3dd39f505a145bad717681a0b55"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a833ad3dd39f505a145bad717681a0b55">&#9670;&nbsp;</a></span>GetRecMode()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -316,7 +375,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">float MIDIRecorder::GetTempo </td>
+          <td class="memname">int MIDIRecorder::GetRecMode </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -329,7 +388,8 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns the recording tempo in bpm. </p>
+<p>Returns the recording mode. </p>
+<dl class="section return"><dt>Returns</dt><dd>One of REC_MERGE, REC_OVER. </dd></dl>
 
 </div>
 </div>
@@ -387,34 +447,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="a7eb001011639cc7ed86e622f6b81acfc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7eb001011639cc7ed86e622f6b81acfc">&#9670;&nbsp;</a></span>SetTempo()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void MIDIRecorder::SetTempo </td>
-          <td>(</td>
-          <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>t</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sets the recording tempo. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">t</td><td>the tempo in bpm </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a0f77044cce7892befd3f354b7dd1fd21"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0f77044cce7892befd3f354b7dd1fd21">&#9670;&nbsp;</a></span>SetStartRecTime()</h2>
+<a id="a249b276bb9a6ddaec97f9d3741d92222"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a249b276bb9a6ddaec97f9d3741d92222">&#9670;&nbsp;</a></span>GetTrack() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -423,10 +457,10 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void MIDIRecorder::SetStartRecTime </td>
+          <td class="memname"><a class="el" href="class_m_i_d_i_track.html">MIDITrack</a>* MIDIRecorder::GetTrack </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a>&#160;</td>
-          <td class="paramname"><em>t</em></td><td>)</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>trk_num</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -437,161 +471,18 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Sets the recording start time. </p>
+<p>Returns the pointer to a track of the internal multitrack. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">t</td><td>the MIDI clock time </td></tr>
+    <tr><td class="paramname">trk_num</td><td>The track number </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="a1e71bce9e1f1da3cec8b08e3e9d29ef0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1e71bce9e1f1da3cec8b08e3e9d29ef0">&#9670;&nbsp;</a></span>EnablePort()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void MIDIRecorder::EnablePort </td>
-          <td>(</td>
-          <td class="paramtype">unsigned int&#160;</td>
-          <td class="paramname"><em>port</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>en_chans</em> = <code>true</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Enables a MIDI in port in the system for recording. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">port</td><td>the system port id (you can use <a class="el" href="class_m_i_d_i_manager.html#ac5fbf7c0255b7bdecc32a5b06b65cb0b" title="Returns the number of MIDI in ports in the system.">MIDIManager::GetNumMIDIIns()</a> and <a class="el" href="class_m_i_d_i_manager.html#ad384cf0d531dddc0c400a2f3df778ff7" title="Returns the system name of the given MIDI in port.">MIDIManager::GetMIDIInName()</a> for inspecting them). </td></tr>
-    <tr><td class="paramname">en_chans</td><td>if <em>true</em> (default) enables recording from all channels, creating a <a class="el" href="class_m_i_d_i_track.html" title="Manages a std::vector of MIDITimedMessage objects storing MIDI events, with methods for editing them.">MIDITrack</a> in the multitrack for every one, otherwise you must set the recording channel with <a class="el" href="class_m_i_d_i_recorder.html#a9377d201a5a99f72a24e19baba3ffbc0" title="Enables a specific MIDI channel for recording, creating a track for it in the internal MIDIMultiTrack...">EnableChannel()</a> </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_recorder_8cpp-example.html#a15">test_recorder.cpp</a>.</dd>
-</dl>
-
-</div>
-</div>
-<a id="a9377d201a5a99f72a24e19baba3ffbc0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9377d201a5a99f72a24e19baba3ffbc0">&#9670;&nbsp;</a></span>EnableChannel()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void MIDIRecorder::EnableChannel </td>
-          <td>(</td>
-          <td class="paramtype">unsigned int&#160;</td>
-          <td class="paramname"><em>port</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">unsigned int&#160;</td>
-          <td class="paramname"><em>ch</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Enables a specific MIDI channel for recording, creating a track for it in the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">port</td><td>the system port id (see <a class="el" href="class_m_i_d_i_recorder.html#a1e71bce9e1f1da3cec8b08e3e9d29ef0" title="Enables a MIDI in port in the system for recording.">EnablePort()</a>); if it isn't enabled yet, enables it. </td></tr>
-    <tr><td class="paramname">ch</td><td>the MIDI channel (in the range 0...15). </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ae108ff2a6566542d3309ad090aec65e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae108ff2a6566542d3309ad090aec65e0">&#9670;&nbsp;</a></span>DisablePort()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void MIDIRecorder::DisablePort </td>
-          <td>(</td>
-          <td class="paramtype">unsigned int&#160;</td>
-          <td class="paramname"><em>port</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Disables a MIDI in port from recording, deleting all tracks associated with it in the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>. </p>
-<p>If the port is not enabled it does nothing. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">port</td><td>the system port id (see <a class="el" href="class_m_i_d_i_recorder.html#a1e71bce9e1f1da3cec8b08e3e9d29ef0" title="Enables a MIDI in port in the system for recording.">EnablePort()</a>) </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_recorder_8cpp-example.html#a16">test_recorder.cpp</a>.</dd>
-</dl>
-
-</div>
-</div>
-<a id="a7c2f960fed1f325061afc01513c18ce6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7c2f960fed1f325061afc01513c18ce6">&#9670;&nbsp;</a></span>DisableChannel()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void MIDIRecorder::DisableChannel </td>
-          <td>(</td>
-          <td class="paramtype">unsigned int&#160;</td>
-          <td class="paramname"><em>port</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">unsigned int&#160;</td>
-          <td class="paramname"><em>ch</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Disables a specific MIDI channel from recording, deleting its track in the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">port</td><td>the system port id (see <a class="el" href="class_m_i_d_i_recorder.html#a1e71bce9e1f1da3cec8b08e3e9d29ef0" title="Enables a MIDI in port in the system for recording.">EnablePort()</a>) </td></tr>
-    <tr><td class="paramname">ch</td><td>the MIDI channel (in the range 0...15). </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_recorder_8cpp-example.html#a17">test_recorder.cpp</a>.</dd>
-</dl>
-
-</div>
-</div>
-<a id="ab5c5b4b78222f4ca5e6c2896dae242e5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab5c5b4b78222f4ca5e6c2896dae242e5">&#9670;&nbsp;</a></span>GoToZero()</h2>
+<a id="aaabe0c274e4d8cfd808844692116458e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaabe0c274e4d8cfd808844692116458e">&#9670;&nbsp;</a></span>GetTrack() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -600,62 +491,491 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void MIDIRecorder::GoToZero </td>
+          <td class="memname">const <a class="el" href="class_m_i_d_i_track.html">MIDITrack</a>* MIDIRecorder::GetTrack </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>trk_num</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the pointer to a track of the internal multitrack. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">trk_num</td><td>The track number </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a5c3f96bf45bb70bacfc467f5403e7313"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c3f96bf45bb70bacfc467f5403e7313">&#9670;&nbsp;</a></span>GetTrackInPort()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int MIDIRecorder::GetTrackInPort </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>trk_num</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the number of the in port assigned to a track. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">trk_num</td><td>the track number </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a3a00999e78f9e814d7619521811eba87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a00999e78f9e814d7619521811eba87">&#9670;&nbsp;</a></span>GetTrackRecChannel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">char MIDIRecorder::GetTrackRecChannel </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>trk_num</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the recording channel for the given track, or -1 for any channel. </p>
+<p>You can force a track to receive a given channel with SetTrackChannel(). See <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a> </p>
+
+</div>
+</div>
+<a id="a043e3ea432bb92514e26fe47b96719d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a043e3ea432bb92514e26fe47b96719d4">&#9670;&nbsp;</a></span>SetTrackInPort()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MIDIRecorder::SetTrackInPort </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>trk_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>port</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the MIDI in port for a track. </p>
+<p>This cannot be called during recording. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">trk_num</td><td>the track number </td></tr>
+    <tr><td class="paramname">port</td><td>the id number of the port (see MIDIManager::GetOutPorts()) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><b>true</b> if parameters are valid (and the port has been changed), <b>false</b> otherwise. </dd></dl>
+
+</div>
+</div>
+<a id="a932251fce490f6905aae72901fc99e2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a932251fce490f6905aae72901fc99e2d">&#9670;&nbsp;</a></span>SetTrackRecChannel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MIDIRecorder::SetTrackRecChannel </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>trk_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"><em>chan</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the recording channel for the given track. </p>
+<p>This cannot be called during recording. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">trk_num</td><td>the track number </td></tr>
+    <tr><td class="paramname">chan</td><td>the channel: you can specify a number between 0 ... 15 or -1 for any channel. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><b>true</b> if parameters are valid (and the channel has been changed), <b>false</b> otherwise. </dd></dl>
+
+</div>
+</div>
+<a id="aeb98f728059527aab48e52dfcb76e88b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeb98f728059527aab48e52dfcb76e88b">&#9670;&nbsp;</a></span>SetRecMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MIDIRecorder::SetRecMode </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>mode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the recording mode. </p>
+<p>This cannot be called during recording. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mode</td><td>one of REC_MERGE, REC_OVER </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><b>true</b> if the mode has been changed, <b>false</b> otherwise. </dd></dl>
+
+</div>
+</div>
+<a id="a2d3c59f8ca4636413e333d07ea1dc6e8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d3c59f8ca4636413e333d07ea1dc6e8">&#9670;&nbsp;</a></span>SetStartRecTime() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MIDIRecorder::SetStartRecTime </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a>&#160;</td>
+          <td class="paramname"><em>t</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the recording start time. </p>
+<p>If the recording end time is less than <em>t</em> it sets it to <em>t</em>. You cannot change the time while recording. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">t</td><td>the MIDI clock time to assign </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><b>true</b> if the start time has been changed, <b>false</b> otherwise. </dd></dl>
+
+</div>
+</div>
+<a id="a26e0e8593de6d42f41010d7c6b4d134c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a26e0e8593de6d42f41010d7c6b4d134c">&#9670;&nbsp;</a></span>SetStartRecTime() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MIDIRecorder::SetStartRecTime </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>meas</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>beat</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the recording start time, giving the measure and beat. See SetTrackRecChannel(MIDIClockTime). </p>
+
+</div>
+</div>
+<a id="acdf973c44c2795a0a954b6b01598b57f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdf973c44c2795a0a954b6b01598b57f">&#9670;&nbsp;</a></span>SetEndRecTime() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MIDIRecorder::SetEndRecTime </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a>&#160;</td>
+          <td class="paramname"><em>t</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the recording end time. </p>
+<p>If the recording start time is greater than <em>t</em> it sets it to <em>t</em>. You cannot change the time while recording. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">t</td><td>the MIDI clock time to assign </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><b>true</b> if the start time has been changed, <b>false</b> otherwise. </dd></dl>
+
+</div>
+</div>
+<a id="a626360aea1efc2f79d550f3c3919f561"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a626360aea1efc2f79d550f3c3919f561">&#9670;&nbsp;</a></span>SetEndRecTime() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MIDIRecorder::SetEndRecTime </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>meas</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>beat</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the recording end time, giving the measure and beat. See SetTrackRecChannel(MIDIClockTime). </p>
+
+</div>
+</div>
+<a id="a3c1e3ef4d608f564ca706f3f9c80554b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c1e3ef4d608f564ca706f3f9c80554b">&#9670;&nbsp;</a></span>InsertTrack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MIDIRecorder::InsertTrack </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>trk_num</em> = <code>-1</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Inserts into the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a> a new track. </p>
+<p>This method is thread-safe and can be called during sequencer playback, but not during recording. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">trk_num</td><td>the track number. If you leave the default value the track will be appended as last. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><b>true</b> if the track was effectively inserted </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The recorder cannot know what you do with the attached <a class="el" href="class_m_i_d_i_sequencer.html" title="A MIDITickComponent which implements a basic sequencer, able to play the MIDI events contained in a M...">MIDISequencer</a>, so it doesn't check anything, always inserts the track and returns <b>true</b>. If you insert a track in the attached <a class="el" href="class_m_i_d_i_sequencer.html" title="A MIDITickComponent which implements a basic sequencer, able to play the MIDI events contained in a M...">MIDISequencer</a> you <b>must</b> call this with the same parameter for syncronizing the recorder with its sequencer. If you change the number of tracks of the sequencer in a more drastic mode (for example loading a MIDI file) you must call <a class="el" href="class_m_i_d_i_recorder.html#a529108417592825416522c50551ca26c" title="It sets all tracks to not enable state, empties the internal multitrack and sets the start and end re...">MIDIRecorder::Reset()</a> (which disables all tracks for recording). </dd></dl>
+
+</div>
+</div>
+<a id="ab654e2ac8a6ff6f627dde8dca3629f13"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab654e2ac8a6ff6f627dde8dca3629f13">&#9670;&nbsp;</a></span>DeleteTrack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MIDIRecorder::DeleteTrack </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>trk_num</em> = <code>-1</code></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Deletes a track and all its events from the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>. </p>
+<p>This method is thread-safe and can be called during sequencer playback, but not while recording. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">trk_num</td><td>the track number (must be in the range 0 ... GetNumTracks() - 1). If you leave he default value the last track wil be deleted. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><b>true</b> if the track was effectively deleted </dd></dl>
+<dl class="section see"><dt>See also</dt><dd>note to <a class="el" href="class_m_i_d_i_recorder.html#a3c1e3ef4d608f564ca706f3f9c80554b" title="Inserts into the internal MIDIMultiTrack a new track.">InsertTrack()</a> </dd></dl>
+
+</div>
+</div>
+<a id="a8a385186a4b895be0422e93c85b5c943"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8a385186a4b895be0422e93c85b5c943">&#9670;&nbsp;</a></span>MoveTrack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MIDIRecorder::MoveTrack </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>from</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>to</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Moves a track from one position to another in the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>. </p>
+<p>This method is thread-safe and can be called during playback. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">from,to</td><td>the start and destination track numbers (both must be in the range 0 ... GetNumTracks() - 1). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><b>true</b> if the track was effectively moved </dd></dl>
+<dl class="section see"><dt>See also</dt><dd>note to <a class="el" href="class_m_i_d_i_recorder.html#a3c1e3ef4d608f564ca706f3f9c80554b" title="Inserts into the internal MIDIMultiTrack a new track.">InsertTrack()</a> </dd></dl>
+
+</div>
+</div>
+<a id="a6337c9ff69b1d3d93c88fa11fbe0df27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6337c9ff69b1d3d93c88fa11fbe0df27">&#9670;&nbsp;</a></span>EnableTrack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MIDIRecorder::EnableTrack </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>trk_num</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enables a sequencer track for recording. </p>
+<p>If the track was already enabled it does nothing. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">trk_num</td><td>the track number </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><b>true</b> if <em>trk_num</em> is valid (and the track has been enabled), <b>false</b> otherwise. </dd></dl>
+
+</div>
+</div>
+<a id="a22f5c0f8bbf6155c1219d76bb274311c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a22f5c0f8bbf6155c1219d76bb274311c">&#9670;&nbsp;</a></span>DisableTrack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MIDIRecorder::DisableTrack </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>trk_num</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Disables a sequencer track for recording. </p>
+<p>If the track was not enabled it does nothing. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">trk_num</td><td>the track number </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><b>true</b> if <em>trk_num</em> is valid (and the track has been enabled), <b>false</b> otherwise. </dd></dl>
+
+</div>
+</div>
+<a id="ab982b3f9ba22f01798d0d3e3cfc7186f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab982b3f9ba22f01798d0d3e3cfc7186f">&#9670;&nbsp;</a></span>UndoRec()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MIDIRecorder::UndoRec </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
-<p>Sets the current time to the beginning of the song, updating the internal status. </p>
-<p>This method is thread-safe and can be called during playback. Notifies the GUI a GROUP_ALL event to signify a full GUI reset. </p>
-
-</div>
-</div>
-<a id="a303a9e4c290c2f657d8e8afc2bacf51b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a303a9e4c290c2f657d8e8afc2bacf51b">&#9670;&nbsp;</a></span>GoToTime()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool MIDIRecorder::GoToTime </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a>&#160;</td>
-          <td class="paramname"><em>time_clk</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sets the current time to the given MIDI time, updating the internal status. </p>
-<p>This is as <a class="el" href="class_m_i_d_i_sequencer.html#a59096dd52df021730366015dfd4f2590" title="Sets the current time to a given the MIDI time, updating the internal status.">MIDISequencer::GoToTime()</a> but uses a better algorithm and sends to the MIDI out ports all the appropriate sysex, patch, pitch bend and control change messages. </p>
-
-</div>
-</div>
-<a id="ae4427027cf34c780a525356fc7acd8aa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae4427027cf34c780a525356fc7acd8aa">&#9670;&nbsp;</a></span>GoToTimeMs()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool MIDIRecorder::GoToTimeMs </td>
-          <td>(</td>
-          <td class="paramtype">float&#160;</td>
-          <td class="paramname"><em>time_ms</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Same as <a class="el" href="class_m_i_d_i_recorder.html#a303a9e4c290c2f657d8e8afc2bacf51b" title="Sets the current time to the given MIDI time, updating the internal status.">GoToTime()</a>, but the time is given in milliseconds. </p>
+<p>Deletes the changes made in the last recording. </p>
+<p>You have multiple levels of undo. </p><dl class="section return"><dt>Returns</dt><dd><b>true</b> if undo is possible, <b>false</b> otherwise. </dd></dl>
 
 </div>
 </div>
@@ -685,8 +1005,6 @@ Additional Inherited Members</h2></td></tr>
 <p>Starts the recording from the enabled ports and channels. </p>
 
 <p>Reimplemented from <a class="el" href="class_m_i_d_i_tick_component.html#a7d0c188caac6b9443d7fb966a1602a82">MIDITickComponent</a>.</p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_recorder_8cpp-example.html#a12">test_recorder.cpp</a>.</dd>
-</dl>
 
 </div>
 </div>
@@ -716,8 +1034,119 @@ Additional Inherited Members</h2></td></tr>
 <p>Stops the recording from the enabled ports and channels. </p>
 
 <p>Reimplemented from <a class="el" href="class_m_i_d_i_tick_component.html#aec496a4b1afd838003f324d5962b7078">MIDITickComponent</a>.</p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_recorder_8cpp-example.html#a13">test_recorder.cpp</a>.</dd>
-</dl>
+
+</div>
+</div>
+<a id="a4b151847b58f391db65f47f6d9f58164"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b151847b58f391db65f47f6d9f58164">&#9670;&nbsp;</a></span>ResizeTracks()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MIDIRecorder::ResizeTracks </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>max_num</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Internal function. </p>
+<p>It is used to resize the internal multitrack according to the number of enabled tracks. </p>
+
+</div>
+</div>
+<a id="a2a9ac3e385c23063196e941a94378b19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2a9ac3e385c23063196e941a94378b19">&#9670;&nbsp;</a></span>SetSeqNotifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MIDIRecorder::SetSeqNotifier </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Internal function. </p>
+<p>It is used in <a class="el" href="class_m_i_d_i_recorder.html#ab1000a44dcb29976cda7969e04a77a28" title="Starts the recording from the enabled ports and channels.">Start()</a> to put an hook to the metronome in the sequencer notifier. </p>
+
+</div>
+</div>
+<a id="ae3757ac8e332e047f826cc554d449b81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae3757ac8e332e047f826cc554d449b81">&#9670;&nbsp;</a></span>ResetSeqNotifier()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MIDIRecorder::ResetSeqNotifier </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Internal function. It is used in <a class="el" href="class_m_i_d_i_recorder.html#a196dfa9145e4e12de3f913a1ce420870" title="Stops the recording from the enabled ports and channels.">Stop()</a> to reset the hook in the sequencer notifier. </p>
+
+</div>
+</div>
+<a id="a71b3006a463cb15b943e5e44595d6d49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71b3006a463cb15b943e5e44595d6d49">&#9670;&nbsp;</a></span>PrepareTrack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MIDIRecorder::PrepareTrack </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>trk_num</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Internal function. </p>
+<p>It copies an enabled sequencer track in the recorder multitrack, deleting the channel events. </p>
 
 </div>
 </div>

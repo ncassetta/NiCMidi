@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -54,7 +54,7 @@ class MIDIMultiTrack {
         /// \param num_tracks The number of tracks of the multitrack. The tracks are created by the constructor and they are
         /// are initially empty (contain only the EOT message at time 0). The default is no track
         /// \param cl_p_b The number of MIDI ticks per quarter note. All tracks share this to convert the raw
-        /// MIDIClockTime stored in their MIDITimedMessage objects into musical values.
+        /// \ref MIDIClockTime stored in their MIDITimedMessage objects into musical values.
                                     MIDIMultiTrack(unsigned int num_tracks = 0,
                                                    unsigned int cl_p_b = DEFAULT_CLKS_PER_BEAT);
 
@@ -167,8 +167,7 @@ class MIDIMultiTrack {
                                         // deletes events and shifts subsequents (only on entire multitrack)
         void                        EditClear(MIDIClockTime start, MIDIClockTime end, int tr_start, int tr_end);
                                         // erase events in tracks tr_start ... tr_end
-        void                        EditInsert(MIDIClockTime start, int tr_start, int times,
-                                            bool sysex, MIDIEditMultiTrack* edit);
+        void                        EditInsert(MIDIClockTime start, int tr_start, int times, MIDIEditMultiTrack* edit);
                                         // insert interval <edit> in <time_start>
                                         // (if <edit> == 0 insert a blank interval)
         void                        EditReplace(MIDIClockTime start, int tr_start, int times,

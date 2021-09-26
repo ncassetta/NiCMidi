@@ -78,6 +78,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a9a8b17ac38e512b38b1cd950617cefd0"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_g_u_i_notifier_text.html#a9a8b17ac38e512b38b1cd950617cefd0">MIDISequencerGUINotifierText</a> (const <a class="el" href="class_m_i_d_i_sequencer.html">MIDISequencer</a> *seq=0, std::ostream &amp;os=std::cout)</td></tr>
 <tr class="memdesc:a9a8b17ac38e512b38b1cd950617cefd0"><td class="mdescLeft">&#160;</td><td class="mdescRight">The constructor.  <a href="class_m_i_d_i_sequencer_g_u_i_notifier_text.html#a9a8b17ac38e512b38b1cd950617cefd0">More...</a><br /></td></tr>
 <tr class="separator:a9a8b17ac38e512b38b1cd950617cefd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed77e344a2fff24755e84cf713b5fbd2"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_g_u_i_notifier_text.html#aed77e344a2fff24755e84cf713b5fbd2">GetStartFrom</a> () const</td></tr>
+<tr class="memdesc:aed77e344a2fff24755e84cf713b5fbd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the numbering of measures and beats.  <a href="class_m_i_d_i_sequencer_g_u_i_notifier_text.html#aed77e344a2fff24755e84cf713b5fbd2">More...</a><br /></td></tr>
+<tr class="separator:aed77e344a2fff24755e84cf713b5fbd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a300373fa14ca1a0ada05556a50c88be7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_g_u_i_notifier_text.html#a300373fa14ca1a0ada05556a50c88be7">SetStartFrom</a> (char f)</td></tr>
+<tr class="memdesc:a300373fa14ca1a0ada05556a50c88be7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the numbering of measures and beats (starting from 0 or from 1)  <a href="class_m_i_d_i_sequencer_g_u_i_notifier_text.html#a300373fa14ca1a0ada05556a50c88be7">More...</a><br /></td></tr>
+<tr class="separator:a300373fa14ca1a0ada05556a50c88be7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a340c6c40b227a47f861509469344c0c4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_g_u_i_notifier_text.html#a340c6c40b227a47f861509469344c0c4">Notify</a> (const <a class="el" href="class_m_i_d_i_sequencer_g_u_i_event.html">MIDISequencerGUIEvent</a> &amp;ev)</td></tr>
 <tr class="memdesc:a340c6c40b227a47f861509469344c0c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Notifies the event <em>ev</em>, printing to it a readable event description.  <a href="class_m_i_d_i_sequencer_g_u_i_notifier_text.html#a340c6c40b227a47f861509469344c0c4">More...</a><br /></td></tr>
 <tr class="separator:a340c6c40b227a47f861509469344c0c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -97,7 +103,7 @@ Public Member Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A <a class="el" href="class_m_i_d_i_sequencer_g_u_i_notifier.html" title="A pure virtual class implementing a device that can send MIDISequencerGUIEvent messages to a GUI.">MIDISequencerGUINotifier</a> which sends text messages to a std::ostream (std::cout as default). </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_stepsequencer_8cpp-example.html#_a0">test_stepsequencer.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_recorder_8cpp-example.html#_a0">test_recorder.cpp</a>, <a class="el" href="test_sequencer_8cpp-example.html#_a1">test_sequencer.cpp</a>, and <a class="el" href="test_stepsequencer_8cpp-example.html#_a0">test_stepsequencer.cpp</a>.</dd>
 </dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a9a8b17ac38e512b38b1cd950617cefd0"></a>
@@ -146,6 +152,61 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="aed77e344a2fff24755e84cf713b5fbd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed77e344a2fff24755e84cf713b5fbd2">&#9670;&nbsp;</a></span>GetStartFrom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">char MIDISequencerGUINotifierText::GetStartFrom </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Gets the numbering of measures and beats. </p>
+<p>See SetStartFromone(). </p><dl class="section return"><dt>Returns</dt><dd>0 or 1. </dd></dl>
+
+</div>
+</div>
+<a id="a300373fa14ca1a0ada05556a50c88be7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a300373fa14ca1a0ada05556a50c88be7">&#9670;&nbsp;</a></span>SetStartFrom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MIDISequencerGUINotifierText::SetStartFrom </td>
+          <td>(</td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the numbering of measures and beats (starting from 0 or from 1) </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">f</td><td>0 or 1. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><b>true</b> if the parameter is correct, <b>false</b> otherwise </dd></dl>
+
+</div>
+</div>
 <a id="a340c6c40b227a47f861509469344c0c4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a340c6c40b227a47f861509469344c0c4">&#9670;&nbsp;</a></span>Notify()</h2>
 

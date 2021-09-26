@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -54,34 +54,44 @@ class  MIDIMatrix : public MIDIProcessor {
         virtual bool    Process(MIDITimedMessage* msg);
         /// Returns the total number of notes on
         int             GetTotalCount() const                           { return total_count; }
-        /// Returns the number of notes on for given channel (channels from 0 to 15)
+        /// Returns the number of notes on for given channel.
+        /// See \ref NUMBERING.
         short int       GetChannelCount(int chan) const                 { return channel_count[chan]; }
-        /// Returns the number of notes on given the channel and the note MIDI value
+        /// Returns the number of sounding notes given the channel and the note MIDI value.
+        /// See \ref NUMBERING.
         int             GetNoteCount(int chan, int note) const          { return note_on_count[chan][note]; }
         /// Returns **true** if pedal is holding on given channel.
+        /// See \ref NUMBERING.
         bool            GetHoldPedal(int chan) const                    { return hold_pedal[chan]; }
         /// Returns the minimum note on MIDI value sounding for the given channel (-1 if no note on).
+        /// See \ref NUMBERING.
         short int       GetMinNoteOn(int chan) const
                                     { return channel_count[chan] ? min_note[chan] : -1; }
         /// Returns the maximum note on MIDI value sounding for the given channel (-1 if no note on).
+        /// See \ref NUMBERING.
         short int       GetMaxNoteOn(int chan) const
                                     { return channel_count[chan] ? max_note[chan] : -1; }
 
     protected:
 
-        /// Decrements the note count for the given channel and note
+        /// Decrements the note count for the given channel and note.
+        /// See \ref NUMBERING.
         virtual void    DecNoteCount(int chan, int note);
-        /// Increments the note count for the given channel and note
+        /// Increments the note count for the given channel and note.
+        /// See \ref NUMBERING.
         virtual void    IncNoteCount (int chan, int note);
-        /// Clear the note count and the pedal on the given channel
+        /// Clear the note count and the pedal on the given channel.
+        /// See \ref NUMBERING.
         virtual void    ClearChannel(int chan);
         /// Called by Process() for non note and non pedal messages. You can redefine it if you
         /// want your own processing (currently does nothing)
         virtual void    OtherMessage(const MIDIMessage* msg) {}
-        /// Sets the note count
+        /// Sets the note count.
+        /// See \ref NUMBERING.
         void            SetNoteCount(unsigned char chan, unsigned char note, unsigned char val)
                                                                         { note_on_count[chan][note] = val; }
-        /// Sets the channel note count
+        /// Sets the channel note count.
+        /// See \ref NUMBERING.
         void            SetChannelCount(unsigned char chan, int val)    { channel_count[chan] = val; }
 
     private:

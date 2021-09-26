@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -121,10 +121,11 @@ class MIDIProcessorTransposer : public MIDIProcessor {
                                         MIDIProcessorTransposer();
         /// Resets to the default status (no transposing on all channels).
         virtual void                    Reset();
-        /// Gets the transposing amount (in semitones) for the given channel
+        /// Gets the transposing amount (in semitones) for the given channel.
+        /// See \ref NUMBERING
         int                             GetChannelTranspose (int chan) const        { return trans_amount[chan]; }
         /// Sets the transposing amount.
-        /// \param chan the channel to be transposed
+        /// \param chan the channel to be transposed. See \ref NUMBERING
         /// \param trans The amount of transposing in semitones
         void                            SetChannelTranspose (int chan, int trans)   { trans_amount[chan] = trans; }
         /// Sets the same transposing amount (in semitones) for all the channels.
@@ -154,17 +155,17 @@ class MIDIProcessorRechannelizer : public MIDIProcessor {
         /// Resets the default status (no rechannelizing).
         void                            Reset();
         /// Gets the corresponding channel for the (source) _src_chan_.
+        /// See \ref NUMBERING
         int                             GetRechanMap (int src_chan) const           { return rechan_map[src_chan]; }
-        /// Set the correspondence between two channels (will transform _src_chan_ into
-        /// _dest_chan_). Channel range is 0 ... 15, however you can set _dest_chan_ to -1
-        /// (see the Process() method).
+        /// Set the correspondence between two channels (will transform _src_chan_ into _dest_chan_).
+        /// See \ref NUMBERING, however you can set _dest_chan_ to -1 (see the Process() method).
         void                            SetRechanMap (int src_chan, int dest_chan)  { rechan_map[src_chan] = dest_chan; }
         /// Sends all channel messages to channel _dest_chan_.
         void                            SetAllRechan (int dest_chan);
         /// The Process() method. If _msg_ is not a channel message it is left unchanged
         /// and the function returns **true**. Otherwise its channel is changed according to the
         /// rechannel map. If its destination channel is -1 the message remains unchanged but
-        /// the function returns **false** (you can use this for filtering messages by channel)
+        /// the method returns **false** (you can use this for filtering messages by channel)
         /// otherwise returns **true**.
         virtual bool                    Process(MIDITimedMessage *msg);
 
@@ -183,12 +184,18 @@ class MIDIProcessorRechannelizer : public MIDIProcessor {
 class MIDIProcessorPrinter : public MIDIProcessor {
     public:
         /// The constructor sets the std::ostream that will print the messages (default: std::cout).
-                                        MIDIProcessorPrinter(std::ostream& stream = std::cout) :
-                                                             print_on(true), ost(stream) {}
+                                        MIDIProcessorPrinter(std::ostream& stream = std::cout, char from_1 = 0) :
+                                                             print_on(true), chan_from_1(from_1 != 0), ost(stream) {}
         /// Same of SetPrint(true)
         virtual void                    Reset()                                     { print_on = true; }
-        /// Gets the printing status.
+        /// Returns the numbering of the first MIDI channel in message printing (0 or 1).
+        /// See \ref NUMBERING.
+        int                             GetChanFrom( char c)                        { return chan_from_1; }
+        /// Returns the printing status.
         bool                            GetPrint() const                            { return print_on; }
+        /// Sets the numbering of MIDI channels in message printing. If c == 0 they will be numbered 0 ... 15,
+        /// else 1 ... 16. See \ref NUMBERING.
+        void                            SetChanFrom( char c)                        { chan_from_1 = (c != 0); }
         /// Sets the printing on and off (default is on).
         void                            SetPrint(bool on_off)                       { print_on = on_off; }
         /// The Process method. It prints a human-readable description of the message to the std::ostream given
@@ -198,6 +205,7 @@ class MIDIProcessorPrinter : public MIDIProcessor {
     protected:
         /// \cond EXCLUDED
         bool                            print_on;           // The on/off printing flag
+        char                            chan_from_1;        // Starting number for MIDI channels (0 or 1)
         std::ostream&                   ost;                // The out stream
         /// \endcond
 };

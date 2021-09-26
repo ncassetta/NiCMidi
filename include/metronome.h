@@ -1,7 +1,7 @@
 /*
  *   NiCMidi - A C++ Class Library for MIDI
  *
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -75,6 +75,7 @@ class Metronome : public MIDITickComponent {
         /// Returns the number of the MIDI out port assigned to the .
         int                             GetOutPort() const                  { return new_out_port; }
         /// Returns the number of the MIDI channel assigned to the metronome.
+        /// See \ref NUMBERING.
         unsigned char                   GetOutChannel() const               { return new_chan; }
         /// Returns the MIDI note number for the measure click.
         unsigned char                   GetMeasNote() const                 { return new_meas_note; }
@@ -101,9 +102,10 @@ class Metronome : public MIDITickComponent {
         /// \param port The out MIDI port id number
         /// \return **true** if _port_ is a valid port number, **false** otherwise.
         bool                            SetOutPort(unsigned int port);
-        /// Sets the MIDI channel for the metronome clicks (channels are numbered 0 ... 15).
-        /// \return **true** if _ch_ is a valid channel number, **false** otherwise.
-        bool                            SetOutChannel(unsigned char ch);
+        /// Sets the MIDI channel for the metronome clicks.
+        /// See \ref NUMBERING.
+        /// \return **true** if _chan_ is a valid channel number, **false** otherwise.
+        bool                            SetOutChannel(unsigned char chan);
         /// Sets the MIDI note number for the measure click (the 1st beat of the measure). It is only effective if you
         /// have already set the timesig numerator (see SetTimesigNumerator()).
         void                            SetMeasNote(unsigned char note);

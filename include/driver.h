@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -175,6 +175,7 @@ class MIDIOutDriver {
         virtual void            ClosePort();
         /// Turns off all the sounding notes on the port (or on the given MIDI channel). This is normally
         /// done by sending an All Notes Off message, but you can change this behaviour (see \ref DRIVER_USES_MIDIMATRIX).
+        /// See also \ref NUMBERING.
         /// \param chan if you left the default silences all channels, otherwise you can give an unique channel
         /// to turn off
         virtual void            AllNotesOff(int chan = -1);

@@ -179,6 +179,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Gets the corresponding channel for the (source) <em>src_chan</em>. </p>
+<p>See <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a> </p>
 
 </div>
 </div>
@@ -217,7 +218,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Set the correspondence between two channels (will transform <em>src_chan</em> into <em>dest_chan</em>). </p>
-<p>Channel range is 0 ... 15, however you can set <em>dest_chan</em> to -1 (see the <a class="el" href="class_m_i_d_i_processor_rechannelizer.html#a2710133ffa1b9ae97b2e2ea646c8e1b5" title="The Process() method.">Process()</a> method). </p>
+<p>See <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a>, however you can set <em>dest_chan</em> to -1 (see the <a class="el" href="class_m_i_d_i_processor_rechannelizer.html#a2710133ffa1b9ae97b2e2ea646c8e1b5" title="The Process() method.">Process()</a> method). </p>
 
 </div>
 </div>
@@ -266,7 +267,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>The <a class="el" href="class_m_i_d_i_processor_rechannelizer.html#a2710133ffa1b9ae97b2e2ea646c8e1b5" title="The Process() method.">Process()</a> method. </p>
-<p>If <em>msg</em> is not a channel message it is left unchanged and the function returns <b>true</b>. Otherwise its channel is changed according to the rechannel map. If its destination channel is -1 the message remains unchanged but the function returns <b>false</b> (you can use this for filtering messages by channel) otherwise returns <b>true</b>. </p>
+<p>If <em>msg</em> is not a channel message it is left unchanged and the function returns <b>true</b>. Otherwise its channel is changed according to the rechannel map. If its destination channel is -1 the message remains unchanged but the method returns <b>false</b> (you can use this for filtering messages by channel) otherwise returns <b>true</b>. </p>
 
 <p>Implements <a class="el" href="class_m_i_d_i_processor.html#a59a4e9fe705051f9f6db505b41d4a705">MIDIProcessor</a>.</p>
 

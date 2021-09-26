@@ -74,7 +74,8 @@ Public Types</h2></td></tr>
 , <a class="el" href="class_m_i_d_i_sequencer_g_u_i_event.html#ab5fa5f0e49952c626a52256be4f4046ba775f5ad82bd9619f6ead0395f582fc46">GROUP_TRANSPORT</a>
 , <a class="el" href="class_m_i_d_i_sequencer_g_u_i_event.html#ab5fa5f0e49952c626a52256be4f4046bac5cb8cdd176707d0a4fdd38a62e6b57b">GROUP_TRACK</a>
 , <br />
-&#160;&#160;<a class="el" href="class_m_i_d_i_sequencer_g_u_i_event.html#ab5fa5f0e49952c626a52256be4f4046ba72c94529e46a98e84e9fe838e7eebc26">GROUP_USER</a>
+&#160;&#160;<a class="el" href="class_m_i_d_i_sequencer_g_u_i_event.html#ab5fa5f0e49952c626a52256be4f4046ba47a602bab7d589bb064b5617863ae384">GROUP_RECORDER</a>
+, <a class="el" href="class_m_i_d_i_sequencer_g_u_i_event.html#ab5fa5f0e49952c626a52256be4f4046ba72c94529e46a98e84e9fe838e7eebc26">GROUP_USER</a>
 <br />
  }</td></tr>
 <tr class="memdesc:ab5fa5f0e49952c626a52256be4f4046b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Main groups.  <a href="class_m_i_d_i_sequencer_g_u_i_event.html#ab5fa5f0e49952c626a52256be4f4046b">More...</a><br /></td></tr>
@@ -96,7 +97,8 @@ Public Types</h2></td></tr>
 , <a class="el" href="class_m_i_d_i_sequencer_g_u_i_event.html#a47a28b8312694f0896d956796af28b3daa659cd8b1f4448f4f665d810c0ac0009">GROUP_TRANSPORT_MEASURE</a>
 , <a class="el" href="class_m_i_d_i_sequencer_g_u_i_event.html#a47a28b8312694f0896d956796af28b3dab14fb95ac30a2a4342557197569d0e55">GROUP_TRANSPORT_BEAT</a>
 , <br />
-&#160;&#160;<a class="el" href="class_m_i_d_i_sequencer_g_u_i_event.html#a47a28b8312694f0896d956796af28b3dac77d98eac66b2c618c370178aed1a12c">GROUP_TRANSPORT_USER</a>
+&#160;&#160;<a class="el" href="class_m_i_d_i_sequencer_g_u_i_event.html#a47a28b8312694f0896d956796af28b3daac3abad53b2c5d2d1d1e126902e4f46f">GROUP_TRANSPORT_COUNTIN</a>
+, <a class="el" href="class_m_i_d_i_sequencer_g_u_i_event.html#a47a28b8312694f0896d956796af28b3dac77d98eac66b2c618c370178aed1a12c">GROUP_TRANSPORT_USER</a>
 <br />
  }</td></tr>
 <tr class="memdesc:a47a28b8312694f0896d956796af28b3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Items in transport group.  <a href="class_m_i_d_i_sequencer_g_u_i_event.html#a47a28b8312694f0896d956796af28b3d">More...</a><br /></td></tr>
@@ -115,10 +117,17 @@ Public Types</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:a1b34906773ed466eae0a3bb60c4c6948"><td class="mdescLeft">&#160;</td><td class="mdescRight">Items in track group (the track is in the subgroup)  <a href="class_m_i_d_i_sequencer_g_u_i_event.html#a1b34906773ed466eae0a3bb60c4c6948">More...</a><br /></td></tr>
 <tr class="separator:a1b34906773ed466eae0a3bb60c4c6948"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5bdc37fcfbae683725836bb64b6eb27d"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="class_m_i_d_i_sequencer_g_u_i_event.html#a5bdc37fcfbae683725836bb64b6eb27da025428bcabc4aeba4c821413d90eead7">GROUP_USER_USER</a> =0
+<tr class="memitem:a5bdc37fcfbae683725836bb64b6eb27d"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="class_m_i_d_i_sequencer_g_u_i_event.html#a5bdc37fcfbae683725836bb64b6eb27dab60cd309afb217620c7d6f87178997bf">GROUP_RECORDER_RESET</a>
+, <a class="el" href="class_m_i_d_i_sequencer_g_u_i_event.html#a5bdc37fcfbae683725836bb64b6eb27dab447b874481d9e9d004287654f3d5b25">GROUP_RECORDER_START</a>
+, <a class="el" href="class_m_i_d_i_sequencer_g_u_i_event.html#a5bdc37fcfbae683725836bb64b6eb27dab73cd6900df3735b1da70d876e40ffdc">GROUP_RECORDER_STOP</a>
+, <a class="el" href="class_m_i_d_i_sequencer_g_u_i_event.html#a5bdc37fcfbae683725836bb64b6eb27da2380cacfeabd2f977828eae0df9645da">GROUP_RECORDER_USER</a>
  }</td></tr>
-<tr class="memdesc:a5bdc37fcfbae683725836bb64b6eb27d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Item in user group.  <a href="class_m_i_d_i_sequencer_g_u_i_event.html#a5bdc37fcfbae683725836bb64b6eb27d">More...</a><br /></td></tr>
+<tr class="memdesc:a5bdc37fcfbae683725836bb64b6eb27d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Items in recorder group.  <a href="class_m_i_d_i_sequencer_g_u_i_event.html#a5bdc37fcfbae683725836bb64b6eb27d">More...</a><br /></td></tr>
 <tr class="separator:a5bdc37fcfbae683725836bb64b6eb27d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abccb850c498198146c88543794197f0b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="class_m_i_d_i_sequencer_g_u_i_event.html#abccb850c498198146c88543794197f0ba025428bcabc4aeba4c821413d90eead7">GROUP_USER_USER</a> = 0
+ }</td></tr>
+<tr class="memdesc:abccb850c498198146c88543794197f0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Item in user group.  <a href="class_m_i_d_i_sequencer_g_u_i_event.html#abccb850c498198146c88543794197f0b">More...</a><br /></td></tr>
+<tr class="separator:abccb850c498198146c88543794197f0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -164,6 +173,9 @@ Static Public Attributes</h2></td></tr>
 <tr class="memitem:af755b1386c60b97b873f81556bab552b"><td class="memItemLeft" align="right" valign="top">static const char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_g_u_i_event.html#af755b1386c60b97b873f81556bab552b">track_items_names</a> [][10]</td></tr>
 <tr class="memdesc:af755b1386c60b97b873f81556bab552b"><td class="mdescLeft">&#160;</td><td class="mdescRight">An array of strings with readable track group items names.  <a href="class_m_i_d_i_sequencer_g_u_i_event.html#af755b1386c60b97b873f81556bab552b">More...</a><br /></td></tr>
 <tr class="separator:af755b1386c60b97b873f81556bab552b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aecfa9f9a1ac5730c25d50f9c618a816d"><td class="memItemLeft" align="right" valign="top">static const char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_g_u_i_event.html#aecfa9f9a1ac5730c25d50f9c618a816d">recording_items_names</a> [][10]</td></tr>
+<tr class="memdesc:aecfa9f9a1ac5730c25d50f9c618a816d"><td class="mdescLeft">&#160;</td><td class="mdescRight">An array of strings with readable recording group items names.  <a href="class_m_i_d_i_sequencer_g_u_i_event.html#aecfa9f9a1ac5730c25d50f9c618a816d">More...</a><br /></td></tr>
+<tr class="separator:aecfa9f9a1ac5730c25d50f9c618a816d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab83863946cb1c79f4d9501f21d467009"><td class="memItemLeft" align="right" valign="top">static const char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_g_u_i_event.html#ab83863946cb1c79f4d9501f21d467009">user_items_names</a> [][10]</td></tr>
 <tr class="memdesc:ab83863946cb1c79f4d9501f21d467009"><td class="mdescLeft">&#160;</td><td class="mdescRight">An array of strings with readable user group item names.  <a href="class_m_i_d_i_sequencer_g_u_i_event.html#ab83863946cb1c79f4d9501f21d467009">More...</a><br /></td></tr>
 <tr class="separator:ab83863946cb1c79f4d9501f21d467009"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -196,11 +208,13 @@ Static Public Attributes</h2></td></tr>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab5fa5f0e49952c626a52256be4f4046babff3fa2f9969989c6a4a5fe7d984db57"></a>GROUP_ALL&#160;</td><td class="fielddoc"><p>Generic group: used by the <a class="el" href="class_m_i_d_i_sequencer.html" title="A MIDITickComponent which implements a basic sequencer, able to play the MIDI events contained in a M...">MIDISequencer</a> to request a full GUI reset. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ab5fa5f0e49952c626a52256be4f4046bae25cb82717820b62d25caa2da1c040eb"></a>GROUP_CONDUCTOR&#160;</td><td class="fielddoc"><p>Conductor group. </p>
+<tr><td class="fieldname"><a id="ab5fa5f0e49952c626a52256be4f4046bae25cb82717820b62d25caa2da1c040eb"></a>GROUP_CONDUCTOR&#160;</td><td class="fielddoc"><p>Conductor events (time, tempo, etc) </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ab5fa5f0e49952c626a52256be4f4046ba775f5ad82bd9619f6ead0395f582fc46"></a>GROUP_TRANSPORT&#160;</td><td class="fielddoc"><p>Transport group. </p>
+<tr><td class="fieldname"><a id="ab5fa5f0e49952c626a52256be4f4046ba775f5ad82bd9619f6ead0395f582fc46"></a>GROUP_TRANSPORT&#160;</td><td class="fielddoc"><p>Transport events (start, stop, etc) </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ab5fa5f0e49952c626a52256be4f4046bac5cb8cdd176707d0a4fdd38a62e6b57b"></a>GROUP_TRACK&#160;</td><td class="fielddoc"><p>Track group (the subgroup is the track of the event) </p>
+<tr><td class="fieldname"><a id="ab5fa5f0e49952c626a52256be4f4046bac5cb8cdd176707d0a4fdd38a62e6b57b"></a>GROUP_TRACK&#160;</td><td class="fielddoc"><p>Track events (the subgroup is the track of the event) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ab5fa5f0e49952c626a52256be4f4046ba47a602bab7d589bb064b5617863ae384"></a>GROUP_RECORDER&#160;</td><td class="fielddoc"><p>Recorder events. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ab5fa5f0e49952c626a52256be4f4046ba72c94529e46a98e84e9fe838e7eebc26"></a>GROUP_USER&#160;</td><td class="fielddoc"><p>User defined group. </p>
 </td></tr>
@@ -258,6 +272,8 @@ Static Public Attributes</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="a47a28b8312694f0896d956796af28b3dab14fb95ac30a2a4342557197569d0e55"></a>GROUP_TRANSPORT_BEAT&#160;</td><td class="fielddoc"><p>Beat marker. </p>
 </td></tr>
+<tr><td class="fieldname"><a id="a47a28b8312694f0896d956796af28b3daac3abad53b2c5d2d1d1e126902e4f46f"></a>GROUP_TRANSPORT_COUNTIN&#160;</td><td class="fielddoc"><p>Countin start. </p>
+</td></tr>
 <tr><td class="fieldname"><a id="a47a28b8312694f0896d956796af28b3dac77d98eac66b2c618c370178aed1a12c"></a>GROUP_TRANSPORT_USER&#160;</td><td class="fielddoc"><p>User defined item. </p>
 </td></tr>
 </table>
@@ -310,9 +326,35 @@ Static Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
+<p>Items in recorder group. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a5bdc37fcfbae683725836bb64b6eb27dab60cd309afb217620c7d6f87178997bf"></a>GROUP_RECORDER_RESET&#160;</td><td class="fielddoc"><p>Recorder reset. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a5bdc37fcfbae683725836bb64b6eb27dab447b874481d9e9d004287654f3d5b25"></a>GROUP_RECORDER_START&#160;</td><td class="fielddoc"><p>Recording start. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a5bdc37fcfbae683725836bb64b6eb27dab73cd6900df3735b1da70d876e40ffdc"></a>GROUP_RECORDER_STOP&#160;</td><td class="fielddoc"><p>Recording stop. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a5bdc37fcfbae683725836bb64b6eb27da2380cacfeabd2f977828eae0df9645da"></a>GROUP_RECORDER_USER&#160;</td><td class="fielddoc"><p>User defined item. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a id="abccb850c498198146c88543794197f0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abccb850c498198146c88543794197f0b">&#9670;&nbsp;</a></span>anonymous enum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">anonymous enum</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
 <p>Item in user group. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a5bdc37fcfbae683725836bb64b6eb27da025428bcabc4aeba4c821413d90eead7"></a>GROUP_USER_USER&#160;</td><td class="fielddoc"><p>User defined item. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="abccb850c498198146c88543794197f0ba025428bcabc4aeba4c821413d90eead7"></a>GROUP_USER_USER&#160;</td><td class="fielddoc"><p>User defined item. </p>
 </td></tr>
 </table>
 
@@ -699,6 +741,30 @@ Static Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>An array of strings with readable track group items names. </p>
+
+</div>
+</div>
+<a id="aecfa9f9a1ac5730c25d50f9c618a816d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aecfa9f9a1ac5730c25d50f9c618a816d">&#9670;&nbsp;</a></span>recording_items_names</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const char MIDISequencerGUIEvent::recording_items_names[][10]</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>An array of strings with readable recording group items names. </p>
 
 </div>
 </div>

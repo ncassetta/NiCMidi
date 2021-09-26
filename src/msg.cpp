@@ -5,7 +5,7 @@
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
  *   Copyright (C) 2010 V.R.Madgazin
  *   www.vmgames.com vrm@vmgames.com
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -334,7 +334,7 @@ void MIDIMessage::SetBeatMarker() {
 // MsgToText()
 //
 
-std::string MIDIMessage::MsgToText () const {
+std::string MIDIMessage::MsgToText (char chan_from_1) const {
     char buf[256];
     std::string txt;
 
@@ -425,7 +425,7 @@ std::string MIDIMessage::MsgToText () const {
     // Channel Events
     else {
 
-        sprintf (buf, "Ch %2d     ", (int) GetChannel() + 1);
+        sprintf (buf, "Ch %2d     ", (int) GetChannel() + (chan_from_1 != 0));
         txt += buf;
 
         if (IsChannelMode()) {
@@ -555,13 +555,13 @@ const MIDITimedMessage &MIDITimedMessage::operator= (const MIDIMessage &msg) {
 // MsgToText()
 //
 
-std::string MIDITimedMessage::MsgToText() const {
+std::string MIDITimedMessage::MsgToText(char chan_from_1) const {
     char buf[256];
     std::string txt;
 
     sprintf (buf, "%8ld : ", GetTime());
     txt += buf;
-    txt += MIDIMessage::MsgToText();
+    txt += MIDIMessage::MsgToText(chan_from_1);
     return txt;
 }
 

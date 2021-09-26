@@ -7,7 +7,7 @@ var class_m_i_d_i_timed_message =
     [ "Clear", "class_m_i_d_i_timed_message.html#a6019bd26ec3f8c0328fe4effdd4a763c", null ],
     [ "operator=", "class_m_i_d_i_timed_message.html#a0648d7d72b5f1fce6799564de24c5762", null ],
     [ "operator=", "class_m_i_d_i_timed_message.html#af3cdade0ae9ac57a6a4674231a60bcec", null ],
-    [ "MsgToText", "class_m_i_d_i_timed_message.html#a23eef0cb97e53ec252f8568f32eb0fd9", null ],
+    [ "MsgToText", "class_m_i_d_i_timed_message.html#ac4b7537d29229d09b273ac1e57f6e8fd", null ],
     [ "GetTime", "class_m_i_d_i_timed_message.html#a841d72ba6c9b07efeafee29864aa33ad", null ],
     [ "SetTime", "class_m_i_d_i_timed_message.html#a8620466e69bd0a50b9dead94ec9f554f", null ],
     [ "AddTime", "class_m_i_d_i_timed_message.html#a8622b30564a475742ccc23d5b8b92a45", null ],

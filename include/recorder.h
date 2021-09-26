@@ -1,7 +1,7 @@
 /*
  *   NiCMidi - A C++ Class Library for MIDI
  *
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -147,7 +147,8 @@ class RecNotifier: public MIDISequencerGUINotifier {
         /// \param port The out MIDI port id number
         /// \warning This doesn't check if _p_ is a valid port number.
         void                            SetOutPort(unsigned int p)          { port = p; }
-        /// Sets the MIDI channel for the metronome clicks (channels are numbered 0 ... 15).
+        /// Sets the MIDI channel for the metronome clicks.
+        /// See \ref NUMBERING
         void                            SetOutChannel(unsigned char ch)     { chan = ch & 0x0f; }
         /// Remembers the original sequencer notifier.
         void                            SetOtherNotifier(MIDISequencerGUINotifier* n)
@@ -202,11 +203,11 @@ class MIDIRecorder : public MIDITickComponent {
         /// Returns the number of the in port assigned to a track.
         /// \param trk_num the track number
         unsigned int                    GetTrackInPort(unsigned int trk_num) const
-                                                                { return tracks->GetTrack(trk_num)->GetInPort(); }
+                                                                { return seq->GetTrack(trk_num)->GetInPort(); }
         /// Returns the recording channel for the given track, or -1 for any channel. You can
-        /// force a track to receive a given channel with SetTrackChannel().
+        /// force a track to receive a given channel with SetTrackChannel(). See \ref NUMBERING
         char                            GetTrackRecChannel(unsigned int trk_num)
-                                                            { return seq_tracks->GetTrack(trk_num)->GetRecChannel(); }
+                                                            { return seq->GetTrack(trk_num)->GetRecChannel(); }
         /// Sets the MIDI in port for a track. This cannot be called during recording.
         /// \param trk_num the track number
         /// \param port the id number of the port (see MIDIManager::GetOutPorts())
@@ -214,7 +215,7 @@ class MIDIRecorder : public MIDITickComponent {
         bool                            SetTrackInPort(unsigned int trk_num, unsigned int port);
         /// Sets the recording channel for the given track. This cannot be called during recording.
         /// \param trk_num the track number
-        /// \param chan the channel:You can specify a number between 0 ... 15 or -1 for any channel.
+        /// \param chan the channel: you can specify a number between 0 ... 15 or -1 for any channel.
         /// \return **true** if parameters are valid (and the channel has been changed), **false** otherwise.
         bool                            SetTrackRecChannel(unsigned int trk_num, char chan);
         /// Sets the recording mode. This cannot be called during recording.
@@ -238,18 +239,19 @@ class MIDIRecorder : public MIDITickComponent {
         bool                            SetEndRecTime(unsigned int meas, unsigned int beat = 0)
                                                             { return SetEndRecTime(seq->MeasToMIDI(meas, beat)); }
 
-        /// Inserts into the internal MIDIMultiTrack a new empty track with default track parameters (transpose,
-        /// time offset, etc.). This method is thread-safe and can be called during playback.
-        /// \param trk_num the track number (it must be in the range 0 ... GetNumTracks() - 1). If you leave the
-        /// default value the track will be appended as last.
+        /// Inserts into the internal MIDIMultiTrack a new track. This method is thread-safe and can be called during
+        /// sequencer playback, but not during recording.
+        /// \param trk_num the track number. If you leave the default value the track will be appended as last.
         /// \return **true** if the track was effectively inserted
-        /// \note If you insert a track in the attached MIDISequencer you **must** call this with the same parameter
-        /// for syncronizing the recorder with its sequencer.If you change the number of tracks of the sequencer in
+        /// \note The recorder cannot know what you do with the attached MIDISequencer, so it doesn't check anything,
+        /// always inserts the track and returns **true**.
+        /// If you insert a track in the attached MIDISequencer you **must** call this with the same parameter
+        /// for syncronizing the recorder with its sequencer. If you change the number of tracks of the sequencer in
         /// a more drastic mode (for example loading a MIDI file) you must call MIDIRecorder::Reset() (which disables
         /// all tracks for recording).
         bool                            InsertTrack(int trk_num = -1);
         /// Deletes a track and all its events from the internal MIDIMultiTrack. This method is thread-safe and can
-        /// be called during playback.
+        /// be called during sequencer playback, but not while recording.
         /// \param trk_num the track number (must be in the range 0 ... GetNumTracks() - 1). If you leave he default
         /// value the last track wil be deleted.
         /// \return **true** if the track was effectively deleted

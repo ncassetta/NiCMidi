@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -32,7 +32,7 @@ const char MIDISequencerGUIEvent::group_names[][10] =
 const char MIDISequencerGUIEvent::conductor_items_names[][10] =
         { "Tempo    ", "Timesig  ", "Keysig   ", "Marker   ", "User     " };
 const char MIDISequencerGUIEvent::transport_items_names[][10] =
-        { "Start    ", "Stop     ", "Measure  ", "Beat     ", "User     " };
+        { "Start    ", "Stop     ", "Measure  ", "Beat     ", "Count in ", "User     " };
 const char MIDISequencerGUIEvent::track_items_names[][10] =
         { "Name     ", "Program  ", "Note     ", "Volume   ", "Pan      ", "Chorus   ", "Reverb   ", "User     " };
 const char MIDISequencerGUIEvent::recording_items_names[][10] =
@@ -98,6 +98,9 @@ void MIDISequencerGUINotifierText::Notify(const MIDISequencerGUIEvent &ev) {
                 case MIDISequencerGUIEvent::GROUP_TRANSPORT_BEAT:
                     sprintf(s + wr, "MEAS %d BEAT %d", sequencer->GetCurrentMeasure() + start_from,
                            sequencer->GetCurrentBeat() + start_from );
+                    break;
+                case MIDISequencerGUIEvent::GROUP_TRANSPORT_COUNTIN:
+                    sprintf(s + wr, "SEQUENCER COUNT IN");
                     break;
                 case MIDISequencerGUIEvent::GROUP_TRANSPORT_USER:
                     sprintf(s + wr, "USER EV Item %d", ev.GetItem());

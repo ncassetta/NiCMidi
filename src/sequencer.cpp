@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -79,7 +79,7 @@ MIDISequencerState::MIDISequencerState(const MIDISequencerState& s) :
     timesig_denominator(s.timesig_denominator), keysig_sharpflat(s.keysig_sharpflat),
     keysig_mode(s. keysig_mode), marker_text(s.marker_text), last_event_track(s.last_event_track),
     last_beat_time(s.last_beat_time), ms_per_clock(s.ms_per_clock), last_time_ms(s.last_time_ms),
-    last_tempo_change(s.last_tempo_change)
+    last_tempo_change(s.last_tempo_change), count_in_time(s.count_in_time), count_in_status(s.count_in_status)
 {
     track_states.resize(multitrack->GetNumTracks());
     for (unsigned int i = 0; i < track_states.size(); i++)
@@ -116,6 +116,8 @@ const MIDISequencerState& MIDISequencerState::operator= (const MIDISequencerStat
     ms_per_clock = s.ms_per_clock;
     last_time_ms = s.last_time_ms;
     last_tempo_change = s.last_tempo_change;
+    count_in_time = s.count_in_time;
+    count_in_status = s.count_in_status;
 
     return *this;
 }
@@ -152,13 +154,27 @@ void MIDISequencerState::Reset() {
     ms_per_clock = 6000000.0 / (MIDI_DEFAULT_TEMPO * tempo_scale * multitrack->GetClksPerBeat());
     last_time_ms = 0;
     last_tempo_change = 0;
+    count_in_time = 0;
+    count_in_status = 0;
 }
 
 
-bool MIDISequencerState::Process( MIDITimedMessage *msg ) {
+bool MIDISequencerState::Process(MIDITimedMessage *msg) {
     // is the event a NoOp?
     if(msg->IsNoOp())
         return false;                           // ignore event.
+
+    // we are counting in: send only beats to the notifier
+    if (count_in_status & MIDISequencer::COUNT_IN_PENDING) {
+        // notify the GUI the beat number (or measure) event
+        if(count_in_time == 0)
+            Notify(MIDISequencerGUIEvent::GROUP_TRANSPORT,
+                   MIDISequencerGUIEvent::GROUP_TRANSPORT_MEASURE);
+        Notify(MIDISequencerGUIEvent::GROUP_TRANSPORT,
+            MIDISequencerGUIEvent::GROUP_TRANSPORT_BEAT);
+        count_in_time += beat_length;
+        return true;
+    }
 
     // set new time
     if (msg->GetTime() != cur_clock) {
@@ -433,6 +449,13 @@ bool MIDISequencer::SetRepeatPlay(int on_off, int start_meas, int end_meas) {
 }
 
 
+void MIDISequencer::SetCountIn(bool on_off) {
+    proc_lock.lock();
+    (state.count_in_status &= ~COUNT_IN_ENABLED) |= on_off * COUNT_IN_ENABLED;
+    proc_lock.unlock();
+}
+
+
 void MIDISequencer::SetTempoScale(unsigned int scale) {
     proc_lock.lock();
     state.tempo_scale = scale;
@@ -533,6 +556,7 @@ bool MIDISequencer::InsertTrack(int trk_num) {
         //track_ports.insert(track_ports.begin() + trk_num, 0);
         MIDIClockTime now = state.cur_clock;            // remember current time
         state.Reset();                                  // reset the state (syncs the iterator and the track states)
+        UpdateStatus();                                 // syncs other sequencer parameters (needed in AdvancedSequencer()
         GoToTime(now);                                  // returns to current time
         if (state.notifier)                             // cause a complete GUI refresh
             state.notifier->Notify(MIDISequencerGUIEvent::GROUP_ALL);
@@ -560,6 +584,7 @@ bool MIDISequencer::DeleteTrack(int trk_num) {
         //track_ports.erase(track_ports.begin() + trk_num);
         MIDIClockTime now = state.cur_clock;            // remember current time
         state.Reset();                                  // reset the state (syncs the iterator and the track states)
+        UpdateStatus();                                 // syncs other sequencer parameters (needed in AdvancedSequencer)
         GoToTime(now);                                  // returns to current time
         if (state.notifier)                             // cause a complete GUI refresh
             state.notifier->Notify(MIDISequencerGUIEvent::GROUP_ALL);
@@ -588,6 +613,7 @@ bool MIDISequencer::MoveTrack(int from, int to) {
         //track_ports.insert(track_ports.begin() + to, temp_port);
         MIDIClockTime now = state.cur_clock;            // remember current time
         state.Reset();                                  // reset the state (syncs the iterator)
+        UpdateStatus();                                 // syncs other sequencer parameters (needed in AdvancedSequencer)
         GoToTime(now);                                  // returns to current time
         if (state.notifier)                             // cause a complete GUI refresh
             state.notifier->Notify(MIDISequencerGUIEvent::GROUP_ALL);
@@ -1000,7 +1026,7 @@ float MIDISequencer::MIDItoMs(MIDIClockTime t) {
     proc_lock.lock();
     // enable only tracks with meta events in the iterator
     for (unsigned int i = 0; i < GetNumTracks(); i++) {
-        int trk_status = GetMultiTrack()->GetTrack(i)->GetStatus();
+        int trk_status = GetTrack(i)->GetStatus();
         if (!(trk_status & MIDITrack::HAS_MAIN_META))
             iter.SetEnable(i, false);
     }
@@ -1114,7 +1140,7 @@ MIDIClockTime MIDISequencer::MeasToMIDI(unsigned int meas, unsigned int beat, un
     proc_lock.lock();
     // enable only tracks with meta events in the iterator
     for (unsigned int i = 0; i < GetNumTracks(); i++) {
-        int trk_status = GetMultiTrack()->GetTrack(i)->GetStatus();
+        int trk_status = GetTrack(i)->GetStatus();
         if (!(trk_status & MIDITrack::HAS_MAIN_META))
             iter.SetEnable(i, false);
     }
@@ -1179,9 +1205,15 @@ void MIDISequencer::Start() {
     if (!IsPlaying()) {
         std::cout << "\t\tEntered in MIDISequencer::Start() ..." << std::endl;
         MIDIManager::OpenOutPorts();
-        state.Notify (MIDISequencerGUIEvent::GROUP_TRANSPORT,
-                      MIDISequencerGUIEvent::GROUP_TRANSPORT_START);
         state.iterator.SetTimeShiftMode(true);
+        if (GetCountInEnable()) {
+            CountInPrepare();
+            state.Notify (MIDISequencerGUIEvent::GROUP_TRANSPORT,
+                          MIDISequencerGUIEvent::GROUP_TRANSPORT_COUNTIN);
+        }
+        else
+            state.Notify (MIDISequencerGUIEvent::GROUP_TRANSPORT,
+                          MIDISequencerGUIEvent::GROUP_TRANSPORT_START);
         SetDevOffset((tMsecs)GetCurrentTimeMs());
         MIDITickComponent::Start();
         std::cout << "\t\t ... Exiting from MIDISequencer::Start()" << std::endl;
@@ -1282,10 +1314,35 @@ void MIDISequencer::TickProc(tMsecs sys_time) {
     //if (!(times % 100))
         //std::cout << "MIDISequencer::TickProc() " << times << " times" << std::endl;
 
+    // check if we we are counting in
+    if (state.count_in_status & COUNT_IN_PENDING) {
+        MIDIClockTime clocks = (MIDIClockTime)((sys_time - sys_time_offset) / state.ms_per_clock);
+        //std::cout << "clocks = " << clocks << "     count_in_time = " << state.count_in_time << std::endl;
+        if (clocks >= state.count_in_time) {
+            if (state.count_in_time != state.beat_length * state.number_of_beats) {
+                state.Process(&beat_marker_msg);    // increments state.count_in_time
+                proc_lock.unlock();
+                return;
+            }
+            else {
+                // ends count in
+                state.count_in_status &= ~COUNT_IN_PENDING;
+                // updates the start time of the sequencer
+                sys_time_offset = sys_time;
+                state.Notify (MIDISequencerGUIEvent::GROUP_TRANSPORT,
+                          MIDISequencerGUIEvent::GROUP_TRANSPORT_START);
+            }
+        }
+        else {
+            proc_lock.unlock();
+            return;
+        }
+    }
+    // find current time
+    tMsecs cur_time = sys_time - sys_time_offset + dev_time_offset;
     // find all events that exist before or at this time,
     // limit ourselves to 100 midi events max.
     int output_count = 100;
-    tMsecs cur_time = sys_time - sys_time_offset + dev_time_offset;
     while(
         (GetNextEventTimeMs(&next_event_time) || play_mode == PLAY_UNBOUNDED)
         && (next_event_time <= cur_time
@@ -1351,3 +1408,12 @@ void MIDISequencer::ScanEventsAtThisTime() {
         state.next_beat_time = state.cur_clock;
 }
 
+
+void MIDISequencer::CountInPrepare() {
+    if (state.count_in_status & COUNT_IN_ENABLED) {
+        std::cout << "Setting count in" << std::endl;
+        (state.count_in_status &= ~COUNT_IN_PENDING) |= COUNT_IN_PENDING;
+        state.count_in_time = 0;
+        beat_marker_msg.SetTime(0);
+    }
+}

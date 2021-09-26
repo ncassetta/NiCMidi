@@ -101,6 +101,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a3cbb050336bb4bd0de53c7c020add7b7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_state.html#a3cbb050336bb4bd0de53c7c020add7b7">NotifyTrack</a> (int item) const</td></tr>
 <tr class="memdesc:a3cbb050336bb4bd0de53c7c020add7b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">These are used for notifying the GUI when something happens (a parameter was changed, current time is moved, etc.)  <a href="class_m_i_d_i_sequencer_state.html#a3cbb050336bb4bd0de53c7c020add7b7">More...</a><br /></td></tr>
 <tr class="separator:a3cbb050336bb4bd0de53c7c020add7b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8f251a720583240b5b9ec4125a30083"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_state.html#aa8f251a720583240b5b9ec4125a30083">GoForwardNoEvent</a> (<a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a> t)</td></tr>
+<tr class="memdesc:aa8f251a720583240b5b9ec4125a30083"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the cur time to the given time.  <a href="class_m_i_d_i_sequencer_state.html#aa8f251a720583240b5b9ec4125a30083">More...</a><br /></td></tr>
+<tr class="separator:aa8f251a720583240b5b9ec4125a30083"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_m_i_d_i_processor"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_class_m_i_d_i_processor')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_m_i_d_i_processor.html">MIDIProcessor</a></td></tr>
 <tr class="memitem:adeddbc887f238e640befc3825f3c8ca4 inherit pub_methods_class_m_i_d_i_processor"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_processor.html#adeddbc887f238e640befc3825f3c8ca4">MIDIProcessor</a> ()</td></tr>
 <tr class="memdesc:adeddbc887f238e640befc3825f3c8ca4 inherit pub_methods_class_m_i_d_i_processor"><td class="mdescLeft">&#160;</td><td class="mdescRight">The constructor.  <a href="class_m_i_d_i_processor.html#adeddbc887f238e640befc3825f3c8ca4">More...</a><br /></td></tr>
@@ -135,12 +138,18 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:ae723380f71b158f435540b8d64f68e6d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_state.html#ae723380f71b158f435540b8d64f68e6d">beat_length</a></td></tr>
 <tr class="memdesc:ae723380f71b158f435540b8d64f68e6d"><td class="mdescLeft">&#160;</td><td class="mdescRight">The duration of a beat.  <a href="class_m_i_d_i_sequencer_state.html#ae723380f71b158f435540b8d64f68e6d">More...</a><br /></td></tr>
 <tr class="separator:ae723380f71b158f435540b8d64f68e6d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa6c291f9f555ce189b9f475b31f360e4"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_state.html#aa6c291f9f555ce189b9f475b31f360e4">number_of_beats</a></td></tr>
+<tr class="memdesc:aa6c291f9f555ce189b9f475b31f360e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of beats in the measure.  <a href="class_m_i_d_i_sequencer_state.html#aa6c291f9f555ce189b9f475b31f360e4">More...</a><br /></td></tr>
+<tr class="separator:aa6c291f9f555ce189b9f475b31f360e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9db6c04daa4e7cbce74b2a9f17b69f99"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_state.html#a9db6c04daa4e7cbce74b2a9f17b69f99">next_beat_time</a></td></tr>
 <tr class="memdesc:a9db6c04daa4e7cbce74b2a9f17b69f99"><td class="mdescLeft">&#160;</td><td class="mdescRight">The MIDI time of the next beat (for internal use)  <a href="class_m_i_d_i_sequencer_state.html#a9db6c04daa4e7cbce74b2a9f17b69f99">More...</a><br /></td></tr>
 <tr class="separator:a9db6c04daa4e7cbce74b2a9f17b69f99"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a547ed8145297674224a1cbdce58f8490"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_state.html#a547ed8145297674224a1cbdce58f8490">tempobpm</a></td></tr>
 <tr class="memdesc:a547ed8145297674224a1cbdce58f8490"><td class="mdescLeft">&#160;</td><td class="mdescRight">The current tempo in beats per minute.  <a href="class_m_i_d_i_sequencer_state.html#a547ed8145297674224a1cbdce58f8490">More...</a><br /></td></tr>
 <tr class="separator:a547ed8145297674224a1cbdce58f8490"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaea26c0f6043edae5583fd9806c2d71c"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_state.html#aaea26c0f6043edae5583fd9806c2d71c">tempo_scale</a></td></tr>
+<tr class="memdesc:aaea26c0f6043edae5583fd9806c2d71c"><td class="mdescLeft">&#160;</td><td class="mdescRight">The tempo scale in percentage (100 = true time)  <a href="class_m_i_d_i_sequencer_state.html#aaea26c0f6043edae5583fd9806c2d71c">More...</a><br /></td></tr>
+<tr class="separator:aaea26c0f6043edae5583fd9806c2d71c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3dc8cfd5fcc0dff06a299bf7b548916f"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_state.html#a3dc8cfd5fcc0dff06a299bf7b548916f">timesig_numerator</a></td></tr>
 <tr class="memdesc:a3dc8cfd5fcc0dff06a299bf7b548916f"><td class="mdescLeft">&#160;</td><td class="mdescRight">The numerator of current time signature.  <a href="class_m_i_d_i_sequencer_state.html#a3dc8cfd5fcc0dff06a299bf7b548916f">More...</a><br /></td></tr>
 <tr class="separator:a3dc8cfd5fcc0dff06a299bf7b548916f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -165,6 +174,21 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a3bff8e1c796a122b46eef62069b5d3ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_state.html#a3bff8e1c796a122b46eef62069b5d3ed">last_beat_time</a></td></tr>
 <tr class="memdesc:a3bff8e1c796a122b46eef62069b5d3ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal use.  <a href="class_m_i_d_i_sequencer_state.html#a3bff8e1c796a122b46eef62069b5d3ed">More...</a><br /></td></tr>
 <tr class="separator:a3bff8e1c796a122b46eef62069b5d3ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add6095a3bef7d0ad33a49ed2b81cffd7"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_state.html#add6095a3bef7d0ad33a49ed2b81cffd7">ms_per_clock</a></td></tr>
+<tr class="memdesc:add6095a3bef7d0ad33a49ed2b81cffd7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal use.  <a href="class_m_i_d_i_sequencer_state.html#add6095a3bef7d0ad33a49ed2b81cffd7">More...</a><br /></td></tr>
+<tr class="separator:add6095a3bef7d0ad33a49ed2b81cffd7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e28a107eab17ff8e265aaafc6ffd7f2"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_state.html#a0e28a107eab17ff8e265aaafc6ffd7f2">last_time_ms</a></td></tr>
+<tr class="memdesc:a0e28a107eab17ff8e265aaafc6ffd7f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal use.  <a href="class_m_i_d_i_sequencer_state.html#a0e28a107eab17ff8e265aaafc6ffd7f2">More...</a><br /></td></tr>
+<tr class="separator:a0e28a107eab17ff8e265aaafc6ffd7f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5319cdedc3c377e3dda9b1ae6356c6c8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_state.html#a5319cdedc3c377e3dda9b1ae6356c6c8">last_tempo_change</a></td></tr>
+<tr class="memdesc:a5319cdedc3c377e3dda9b1ae6356c6c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal use.  <a href="class_m_i_d_i_sequencer_state.html#a5319cdedc3c377e3dda9b1ae6356c6c8">More...</a><br /></td></tr>
+<tr class="separator:a5319cdedc3c377e3dda9b1ae6356c6c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a018ba62e1a3ea479b63b9c9451c72820"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_state.html#a018ba62e1a3ea479b63b9c9451c72820">count_in_time</a></td></tr>
+<tr class="memdesc:a018ba62e1a3ea479b63b9c9451c72820"><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal use.  <a href="class_m_i_d_i_sequencer_state.html#a018ba62e1a3ea479b63b9c9451c72820">More...</a><br /></td></tr>
+<tr class="separator:a018ba62e1a3ea479b63b9c9451c72820"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0d57853de9f0c4dc3a577665e825852"><td class="memItemLeft" align="right" valign="top">char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_state.html#ac0d57853de9f0c4dc3a577665e825852">count_in_status</a></td></tr>
+<tr class="memdesc:ac0d57853de9f0c4dc3a577665e825852"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag affecting the count in.  <a href="class_m_i_d_i_sequencer_state.html#ac0d57853de9f0c4dc3a577665e825852">More...</a><br /></td></tr>
+<tr class="separator:ac0d57853de9f0c4dc3a577665e825852"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -331,7 +355,7 @@ Static Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>This is the process function inherited from <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a>. </p>
-<p>When you get a MIDI message from the sequencer, it is processed by the state, which updates its parameters and notifies the GUI if required. </p>
+<p>When you get a MIDI message from the sequencer, it is processed by the state, which updates its parameters and notifies the GUI if required. </p><dl class="section return"><dt>Returns</dt><dd><b>true</b> if <em>msg</em> is a real MIDI message, <b>false</b> if it is a service message (a NoOp or beat marker). </dd></dl>
 
 <p>Implements <a class="el" href="class_m_i_d_i_processor.html#a59a4e9fe705051f9f6db505b41d4a705">MIDIProcessor</a>.</p>
 
@@ -384,6 +408,27 @@ Static Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>These are used for notifying the GUI when something happens (a parameter was changed, current time is moved, etc.) </p>
+
+</div>
+</div>
+<a id="aa8f251a720583240b5b9ec4125a30083"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8f251a720583240b5b9ec4125a30083">&#9670;&nbsp;</a></span>GoForwardNoEvent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void MIDISequencerState::GoForwardNoEvent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a>&#160;</td>
+          <td class="paramname"><em>t</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the cur time to the given time. </p>
+<p>This assumes t &gt; cur_time and <b>no events in the interval</b>. It is used, for example, by the sequencer when it must go to a time with no event, or after the end time in UNBOUNDED mode. </p><dl class="section warning"><dt>Warning</dt><dd>this doesn't check anything and doesn't process any event. </dd></dl>
 
 </div>
 </div>
@@ -516,6 +561,22 @@ Static Public Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="aa6c291f9f555ce189b9f475b31f360e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa6c291f9f555ce189b9f475b31f360e4">&#9670;&nbsp;</a></span>number_of_beats</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int MIDISequencerState::number_of_beats</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of beats in the measure. </p>
+
+</div>
+</div>
 <a id="a9db6c04daa4e7cbce74b2a9f17b69f99"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9db6c04daa4e7cbce74b2a9f17b69f99">&#9670;&nbsp;</a></span>next_beat_time</h2>
 
@@ -545,6 +606,22 @@ Static Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>The current tempo in beats per minute. </p>
+
+</div>
+</div>
+<a id="aaea26c0f6043edae5583fd9806c2d71c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaea26c0f6043edae5583fd9806c2d71c">&#9670;&nbsp;</a></span>tempo_scale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int MIDISequencerState::tempo_scale</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The tempo scale in percentage (100 = true time) </p>
 
 </div>
 </div>
@@ -677,6 +754,86 @@ Static Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Internal use. </p>
+
+</div>
+</div>
+<a id="add6095a3bef7d0ad33a49ed2b81cffd7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add6095a3bef7d0ad33a49ed2b81cffd7">&#9670;&nbsp;</a></span>ms_per_clock</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double MIDISequencerState::ms_per_clock</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal use. </p>
+
+</div>
+</div>
+<a id="a0e28a107eab17ff8e265aaafc6ffd7f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e28a107eab17ff8e265aaafc6ffd7f2">&#9670;&nbsp;</a></span>last_time_ms</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double MIDISequencerState::last_time_ms</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal use. </p>
+
+</div>
+</div>
+<a id="a5319cdedc3c377e3dda9b1ae6356c6c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5319cdedc3c377e3dda9b1ae6356c6c8">&#9670;&nbsp;</a></span>last_tempo_change</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a> MIDISequencerState::last_tempo_change</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal use. </p>
+
+</div>
+</div>
+<a id="a018ba62e1a3ea479b63b9c9451c72820"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a018ba62e1a3ea479b63b9c9451c72820">&#9670;&nbsp;</a></span>count_in_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a> MIDISequencerState::count_in_time</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Internal use. </p>
+
+</div>
+</div>
+<a id="ac0d57853de9f0c4dc3a577665e825852"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0d57853de9f0c4dc3a577665e825852">&#9670;&nbsp;</a></span>count_in_status</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">char MIDISequencerState::count_in_status</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Flag affecting the count in. </p>
 
 </div>
 </div>

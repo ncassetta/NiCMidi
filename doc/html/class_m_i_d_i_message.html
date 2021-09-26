@@ -102,7 +102,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a7189f12574467f8980458da659a6270c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the status byte of the message.  <a href="class_m_i_d_i_message.html#a7189f12574467f8980458da659a6270c">More...</a><br /></td></tr>
 <tr class="separator:a7189f12574467f8980458da659a6270c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a61156e0c48b35e58eafd213945ad63e8"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8">GetChannel</a> () const</td></tr>
-<tr class="memdesc:a61156e0c48b35e58eafd213945ad63e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">If the message is a channel message, returns its MIDI channel (0...15).  <a href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8">More...</a><br /></td></tr>
+<tr class="memdesc:a61156e0c48b35e58eafd213945ad63e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">If the message is a channel message, returns its MIDI channel.  <a href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8">More...</a><br /></td></tr>
 <tr class="separator:a61156e0c48b35e58eafd213945ad63e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a229f977583db813b43751f5f19159d5f"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#a229f977583db813b43751f5f19159d5f">GetType</a> () const</td></tr>
 <tr class="memdesc:a229f977583db813b43751f5f19159d5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">If the message is a channel message, returns the relevant top 4 bits of the status byte.  <a href="class_m_i_d_i_message.html#a229f977583db813b43751f5f19159d5f">More...</a><br /></td></tr>
@@ -135,7 +135,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a5230bc95f8f646d20fbd678fff526664"><td class="mdescLeft">&#160;</td><td class="mdescRight">If the message is a channel pressure message, returns the pressure value.  <a href="class_m_i_d_i_message.html#a5230bc95f8f646d20fbd678fff526664">More...</a><br /></td></tr>
 <tr class="separator:a5230bc95f8f646d20fbd678fff526664"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a90a1a274009e5cd457130b5993aa455c"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#a90a1a274009e5cd457130b5993aa455c">GetProgramValue</a> () const</td></tr>
-<tr class="memdesc:a90a1a274009e5cd457130b5993aa455c"><td class="mdescLeft">&#160;</td><td class="mdescRight">If the message is a program change message, returns the program number.  <a href="class_m_i_d_i_message.html#a90a1a274009e5cd457130b5993aa455c">More...</a><br /></td></tr>
+<tr class="memdesc:a90a1a274009e5cd457130b5993aa455c"><td class="mdescLeft">&#160;</td><td class="mdescRight">If the message is a program change (patch) message, returns the program number.  <a href="class_m_i_d_i_message.html#a90a1a274009e5cd457130b5993aa455c">More...</a><br /></td></tr>
 <tr class="separator:a90a1a274009e5cd457130b5993aa455c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8c0b4381c852e27da37499c37653cb5c"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#a8c0b4381c852e27da37499c37653cb5c">GetController</a> () const</td></tr>
 <tr class="memdesc:a8c0b4381c852e27da37499c37653cb5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">If the message is a control change message, returns the controller number.  <a href="class_m_i_d_i_message.html#a8c0b4381c852e27da37499c37653cb5c">More...</a><br /></td></tr>
@@ -255,7 +255,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ae68b99f8e6f4cdf3aba769280a3590e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <b>true</b> if the message is a beat marker message.  <a href="class_m_i_d_i_message.html#ae68b99f8e6f4cdf3aba769280a3590e2">More...</a><br /></td></tr>
 <tr class="separator:ae68b99f8e6f4cdf3aba769280a3590e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaedd274b75a4d33e5f8add88939e7d85"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#aaedd274b75a4d33e5f8add88939e7d85">SetStatus</a> (unsigned char s)</td></tr>
-<tr class="memdesc:aaedd274b75a4d33e5f8add88939e7d85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets all bits of the status byte of the message (i.e., for channel messages, the type and the channel).  <a href="class_m_i_d_i_message.html#aaedd274b75a4d33e5f8add88939e7d85">More...</a><br /></td></tr>
+<tr class="memdesc:aaedd274b75a4d33e5f8add88939e7d85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets all 8 bits of the status byte of the message. These define, for channel messages, the type and the channel.  <a href="class_m_i_d_i_message.html#aaedd274b75a4d33e5f8add88939e7d85">More...</a><br /></td></tr>
 <tr class="separator:aaedd274b75a4d33e5f8add88939e7d85"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af33dc4d038ca706a9137db34310b8fc6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#af33dc4d038ca706a9137db34310b8fc6">SetChannel</a> (unsigned char s)</td></tr>
 <tr class="memdesc:af33dc4d038ca706a9137db34310b8fc6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets just the lower 4 bits of the status byte without changing the upper 4 bits.  <a href="class_m_i_d_i_message.html#af33dc4d038ca706a9137db34310b8fc6">More...</a><br /></td></tr>
@@ -297,31 +297,31 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a428a1db6c54392feea6071d64549fc4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the meta value for a meta-event message.  <a href="class_m_i_d_i_message.html#a428a1db6c54392feea6071d64549fc4a">More...</a><br /></td></tr>
 <tr class="separator:a428a1db6c54392feea6071d64549fc4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aacdcc337086ad7f19b40b133021c73da"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#aacdcc337086ad7f19b40b133021c73da">SetNoteOn</a> (unsigned char chan, unsigned char note, unsigned char vel)</td></tr>
-<tr class="memdesc:aacdcc337086ad7f19b40b133021c73da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the message a note on message with given channel, note and velocity. Frees the sysex pointer.  <a href="class_m_i_d_i_message.html#aacdcc337086ad7f19b40b133021c73da">More...</a><br /></td></tr>
+<tr class="memdesc:aacdcc337086ad7f19b40b133021c73da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the message a note on message with given channel, note and velocity.  <a href="class_m_i_d_i_message.html#aacdcc337086ad7f19b40b133021c73da">More...</a><br /></td></tr>
 <tr class="separator:aacdcc337086ad7f19b40b133021c73da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4a9e52c8594c0ef43d2845557dce05c8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#a4a9e52c8594c0ef43d2845557dce05c8">SetNoteOff</a> (unsigned char chan, unsigned char note, unsigned char vel)</td></tr>
 <tr class="memdesc:a4a9e52c8594c0ef43d2845557dce05c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the message a note off message with given channel, note and velocity.  <a href="class_m_i_d_i_message.html#a4a9e52c8594c0ef43d2845557dce05c8">More...</a><br /></td></tr>
 <tr class="separator:a4a9e52c8594c0ef43d2845557dce05c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a86882c5cd91ee060c9cf9fb3ffed2e9e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#a86882c5cd91ee060c9cf9fb3ffed2e9e">SetPolyPressure</a> (unsigned char chan, unsigned char note, unsigned char pres)</td></tr>
-<tr class="memdesc:a86882c5cd91ee060c9cf9fb3ffed2e9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the message a polyphonic aftertouch message with given channel, note and pressure. Frees the sysex pointer.  <a href="class_m_i_d_i_message.html#a86882c5cd91ee060c9cf9fb3ffed2e9e">More...</a><br /></td></tr>
+<tr class="memdesc:a86882c5cd91ee060c9cf9fb3ffed2e9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the message a polyphonic aftertouch message with given channel, note and pressure.  <a href="class_m_i_d_i_message.html#a86882c5cd91ee060c9cf9fb3ffed2e9e">More...</a><br /></td></tr>
 <tr class="separator:a86882c5cd91ee060c9cf9fb3ffed2e9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a583867bb3401f7afe3b8698aaf83dfce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#a583867bb3401f7afe3b8698aaf83dfce">SetControlChange</a> (unsigned char chan, unsigned char ctrl, unsigned char val)</td></tr>
-<tr class="memdesc:a583867bb3401f7afe3b8698aaf83dfce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the message a control change message with given channel, controller and value. Frees the sysex pointer.  <a href="class_m_i_d_i_message.html#a583867bb3401f7afe3b8698aaf83dfce">More...</a><br /></td></tr>
+<tr class="memdesc:a583867bb3401f7afe3b8698aaf83dfce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the message a control change message with given channel, controller and value.  <a href="class_m_i_d_i_message.html#a583867bb3401f7afe3b8698aaf83dfce">More...</a><br /></td></tr>
 <tr class="separator:a583867bb3401f7afe3b8698aaf83dfce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a8861486a6a902064b1295880c5eb55"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#a1a8861486a6a902064b1295880c5eb55">SetVolumeChange</a> (unsigned char chan, unsigned char val)</td></tr>
-<tr class="memdesc:a1a8861486a6a902064b1295880c5eb55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the message a volume change (control == 0x07) message with given channel and value. Frees the sysex pointer.  <a href="class_m_i_d_i_message.html#a1a8861486a6a902064b1295880c5eb55">More...</a><br /></td></tr>
+<tr class="memdesc:a1a8861486a6a902064b1295880c5eb55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the message a volume change (control == 0x07) message with given channel and value.  <a href="class_m_i_d_i_message.html#a1a8861486a6a902064b1295880c5eb55">More...</a><br /></td></tr>
 <tr class="separator:a1a8861486a6a902064b1295880c5eb55"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d4735af51b1e18adf892e3ae2d30c56"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#a8d4735af51b1e18adf892e3ae2d30c56">SetPanChange</a> (unsigned char chan, unsigned char val)</td></tr>
-<tr class="memdesc:a8d4735af51b1e18adf892e3ae2d30c56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the message a pan change (control == 0x0A) message with given channel and value. Frees the sysex pointer.  <a href="class_m_i_d_i_message.html#a8d4735af51b1e18adf892e3ae2d30c56">More...</a><br /></td></tr>
+<tr class="memdesc:a8d4735af51b1e18adf892e3ae2d30c56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the message a pan change (control == 0x0A) message with given channel and value.  <a href="class_m_i_d_i_message.html#a8d4735af51b1e18adf892e3ae2d30c56">More...</a><br /></td></tr>
 <tr class="separator:a8d4735af51b1e18adf892e3ae2d30c56"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7edc0209b59a09b4d50d8dad9da89589"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#a7edc0209b59a09b4d50d8dad9da89589">SetProgramChange</a> (unsigned char chan, unsigned char prog)</td></tr>
-<tr class="memdesc:a7edc0209b59a09b4d50d8dad9da89589"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the message a program change message with given channel and program. Frees the sysex pointer.  <a href="class_m_i_d_i_message.html#a7edc0209b59a09b4d50d8dad9da89589">More...</a><br /></td></tr>
+<tr class="memdesc:a7edc0209b59a09b4d50d8dad9da89589"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the message a program change message with given channel and program.  <a href="class_m_i_d_i_message.html#a7edc0209b59a09b4d50d8dad9da89589">More...</a><br /></td></tr>
 <tr class="separator:a7edc0209b59a09b4d50d8dad9da89589"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a98b9c8ff44f73c0ac1746f7e7bf7c7cd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#a98b9c8ff44f73c0ac1746f7e7bf7c7cd">SetChannelPressure</a> (unsigned char chan, unsigned char pres)</td></tr>
-<tr class="memdesc:a98b9c8ff44f73c0ac1746f7e7bf7c7cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the message a channel pressure message with given channel and pressure. Frees the sysex pointer.  <a href="class_m_i_d_i_message.html#a98b9c8ff44f73c0ac1746f7e7bf7c7cd">More...</a><br /></td></tr>
+<tr class="memdesc:a98b9c8ff44f73c0ac1746f7e7bf7c7cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the message a channel pressure message with given channel and pressure.  <a href="class_m_i_d_i_message.html#a98b9c8ff44f73c0ac1746f7e7bf7c7cd">More...</a><br /></td></tr>
 <tr class="separator:a98b9c8ff44f73c0ac1746f7e7bf7c7cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0ff8eef5b4eab8d934df8591da029b30"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#a0ff8eef5b4eab8d934df8591da029b30">SetPitchBend</a> (unsigned char chan, short val)</td></tr>
-<tr class="memdesc:a0ff8eef5b4eab8d934df8591da029b30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the message a pitch bend message with given channel and value (unsigned 14 bit). Frees the sysex pointer.  <a href="class_m_i_d_i_message.html#a0ff8eef5b4eab8d934df8591da029b30">More...</a><br /></td></tr>
+<tr class="memdesc:a0ff8eef5b4eab8d934df8591da029b30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the message a pitch bend message with given channel and value (unsigned 14 bit).  <a href="class_m_i_d_i_message.html#a0ff8eef5b4eab8d934df8591da029b30">More...</a><br /></td></tr>
 <tr class="separator:a0ff8eef5b4eab8d934df8591da029b30"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad3d618f9a679d68c625344ae9319e791"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#ad3d618f9a679d68c625344ae9319e791">SetChannelMode</a> (unsigned char chan, unsigned char type, unsigned char val=0)</td></tr>
 <tr class="memdesc:ad3d618f9a679d68c625344ae9319e791"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the message a channel mode message (i.e.  <a href="class_m_i_d_i_message.html#ad3d618f9a679d68c625344ae9319e791">More...</a><br /></td></tr>
@@ -374,9 +374,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad55768533e1a72f075c50271c5d203d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#ad55768533e1a72f075c50271c5d203d5">SetBeatMarker</a> ()</td></tr>
 <tr class="memdesc:ad55768533e1a72f075c50271c5d203d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the message a beat marker internal service message.  <a href="class_m_i_d_i_message.html#ad55768533e1a72f075c50271c5d203d5">More...</a><br /></td></tr>
 <tr class="separator:ad55768533e1a72f075c50271c5d203d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac9ab2b2df274dbaeda353bdad0abcaad"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#ac9ab2b2df274dbaeda353bdad0abcaad">MsgToText</a> () const</td></tr>
-<tr class="memdesc:ac9ab2b2df274dbaeda353bdad0abcaad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a human readable ascii string describing the message content.  <a href="class_m_i_d_i_message.html#ac9ab2b2df274dbaeda353bdad0abcaad">More...</a><br /></td></tr>
-<tr class="separator:ac9ab2b2df274dbaeda353bdad0abcaad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a255363c005352054fd39aa4a8c89f938"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#a255363c005352054fd39aa4a8c89f938">MsgToText</a> (char chan_from_1=0) const</td></tr>
+<tr class="memdesc:a255363c005352054fd39aa4a8c89f938"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a human readable ascii string describing the message content.  <a href="class_m_i_d_i_message.html#a255363c005352054fd39aa4a8c89f938">More...</a><br /></td></tr>
+<tr class="separator:a255363c005352054fd39aa4a8c89f938"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6acf30c66b172eb21cd4a2b4d621e0e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#a6acf30c66b172eb21cd4a2b4d621e0e1">AllocateSysEx</a> (unsigned int len)</td></tr>
 <tr class="memdesc:a6acf30c66b172eb21cd4a2b4d621e0e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates a <a class="el" href="class_m_i_d_i_system_exclusive.html" title="Stores a buffer of MIDI data bytes in a std::vector, plus a byte for the checksum.">MIDISystemExclusive</a> object, with a buffer of given max size.  <a href="class_m_i_d_i_message.html#a6acf30c66b172eb21cd4a2b4d621e0e1">More...</a><br /></td></tr>
 <tr class="separator:a6acf30c66b172eb21cd4a2b4d621e0e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -607,7 +607,8 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>If the message is a channel message, returns its MIDI channel (0...15). </p>
+<p>If the message is a channel message, returns its MIDI channel. </p>
+<p>See <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a>. </p>
 
 </div>
 </div>
@@ -905,7 +906,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>If the message is a program change message, returns the program number. </p>
+<p>If the message is a program change (patch) message, returns the program number. </p>
 
 </div>
 </div>
@@ -1209,7 +1210,7 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns <b>true</b> if the message is some sort of channel message. </p>
-<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel (0...15).">GetChannel()</a> and <a class="el" href="class_m_i_d_i_message.html#a229f977583db813b43751f5f19159d5f" title="If the message is a channel message, returns the relevant top 4 bits of the status byte.">GetType()</a> for further information. </p>
+<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel.">GetChannel()</a> and <a class="el" href="class_m_i_d_i_message.html#a229f977583db813b43751f5f19159d5f" title="If the message is a channel message, returns the relevant top 4 bits of the status byte.">GetType()</a> for further information. </p>
 
 </div>
 </div>
@@ -1237,7 +1238,7 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns <b>true</b> if the message is a note on message (status == NOTE_ON and velocity &gt; 0). </p>
-<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel (0...15).">GetChannel()</a>, <a class="el" href="class_m_i_d_i_message.html#a6cdc40e0bb8711ad6ec8a55b44066ce2" title="If the message is a note on, note off, or poly aftertouch message, returns the note number.">GetNote()</a> and <a class="el" href="class_m_i_d_i_message.html#a57b8348eaebb7c7ac092c18630fd8110" title="If the message is a note on, note off, or poly aftertouch message, returns the velocity (or pressure)...">GetVelocity()</a> for further information. </p>
+<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel.">GetChannel()</a>, <a class="el" href="class_m_i_d_i_message.html#a6cdc40e0bb8711ad6ec8a55b44066ce2" title="If the message is a note on, note off, or poly aftertouch message, returns the note number.">GetNote()</a> and <a class="el" href="class_m_i_d_i_message.html#a57b8348eaebb7c7ac092c18630fd8110" title="If the message is a note on, note off, or poly aftertouch message, returns the velocity (or pressure)...">GetVelocity()</a> for further information. </p>
 
 </div>
 </div>
@@ -1265,7 +1266,7 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns <b>true</b> if the message is a note off message (status == NOTE_OFF or status == NOTE_ON and velocity == 0). </p>
-<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel (0...15).">GetChannel()</a> and <a class="el" href="class_m_i_d_i_message.html#a6cdc40e0bb8711ad6ec8a55b44066ce2" title="If the message is a note on, note off, or poly aftertouch message, returns the note number.">GetNote()</a> for further information. </p>
+<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel.">GetChannel()</a> and <a class="el" href="class_m_i_d_i_message.html#a6cdc40e0bb8711ad6ec8a55b44066ce2" title="If the message is a note on, note off, or poly aftertouch message, returns the note number.">GetNote()</a> for further information. </p>
 
 </div>
 </div>
@@ -1320,7 +1321,7 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns <b>true</b> if the message is a polyphonic pressure channel message. </p>
-<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel (0...15).">GetChannel()</a>, <a class="el" href="class_m_i_d_i_message.html#a6cdc40e0bb8711ad6ec8a55b44066ce2" title="If the message is a note on, note off, or poly aftertouch message, returns the note number.">GetNote()</a> and <a class="el" href="class_m_i_d_i_message.html#a57b8348eaebb7c7ac092c18630fd8110" title="If the message is a note on, note off, or poly aftertouch message, returns the velocity (or pressure)...">GetVelocity()</a> for further information. </p>
+<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel.">GetChannel()</a>, <a class="el" href="class_m_i_d_i_message.html#a6cdc40e0bb8711ad6ec8a55b44066ce2" title="If the message is a note on, note off, or poly aftertouch message, returns the note number.">GetNote()</a> and <a class="el" href="class_m_i_d_i_message.html#a57b8348eaebb7c7ac092c18630fd8110" title="If the message is a note on, note off, or poly aftertouch message, returns the velocity (or pressure)...">GetVelocity()</a> for further information. </p>
 
 </div>
 </div>
@@ -1348,7 +1349,7 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns <b>true</b> if the message is a control change message. </p>
-<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel (0...15).">GetChannel()</a>, <a class="el" href="class_m_i_d_i_message.html#a8c0b4381c852e27da37499c37653cb5c" title="If the message is a control change message, returns the controller number.">GetController()</a> and <a class="el" href="class_m_i_d_i_message.html#afd331608aa69a23bf14c85dee2106e46" title="If the message is a control change message, returns the controller value.">GetControllerValue()</a> for further information. </p><dl class="section note"><dt>Note</dt><dd>This will return <em>false</em> on channel mode messages (which have the same status byte of control changes). Call <a class="el" href="class_m_i_d_i_message.html#a18a72d9604ebdb355468dd0fcc920a26" title="Returns true if the message is a channel mode message (a control change with control &gt;= 0x7A).">IsChannelMode()</a> for inspecting them. </dd></dl>
+<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel.">GetChannel()</a>, <a class="el" href="class_m_i_d_i_message.html#a8c0b4381c852e27da37499c37653cb5c" title="If the message is a control change message, returns the controller number.">GetController()</a> and <a class="el" href="class_m_i_d_i_message.html#afd331608aa69a23bf14c85dee2106e46" title="If the message is a control change message, returns the controller value.">GetControllerValue()</a> for further information. </p><dl class="section note"><dt>Note</dt><dd>This will return <b>false</b> on channel mode messages (which have the same status byte of control changes). Call <a class="el" href="class_m_i_d_i_message.html#a18a72d9604ebdb355468dd0fcc920a26" title="Returns true if the message is a channel mode message (a control change with control &gt;= 0x7A).">IsChannelMode()</a> for inspecting them. </dd></dl>
 
 </div>
 </div>
@@ -1376,7 +1377,7 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns <b>true</b> if the message is a volume change message (control == 0x07). </p>
-<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel (0...15).">GetChannel()</a> and <a class="el" href="class_m_i_d_i_message.html#afd331608aa69a23bf14c85dee2106e46" title="If the message is a control change message, returns the controller value.">GetControllerValue()</a> for further information. </p>
+<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel.">GetChannel()</a> and <a class="el" href="class_m_i_d_i_message.html#afd331608aa69a23bf14c85dee2106e46" title="If the message is a control change message, returns the controller value.">GetControllerValue()</a> for further information. </p>
 
 </div>
 </div>
@@ -1404,7 +1405,7 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns <b>true</b> if the message is a pan change message (control == 0x0A). </p>
-<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel (0...15).">GetChannel()</a> and <a class="el" href="class_m_i_d_i_message.html#afd331608aa69a23bf14c85dee2106e46" title="If the message is a control change message, returns the controller value.">GetControllerValue()</a> for further information. </p>
+<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel.">GetChannel()</a> and <a class="el" href="class_m_i_d_i_message.html#afd331608aa69a23bf14c85dee2106e46" title="If the message is a control change message, returns the controller value.">GetControllerValue()</a> for further information. </p>
 
 </div>
 </div>
@@ -1432,7 +1433,7 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns <b>true</b> if the message is a pedal on message (control == 0x40 and value &gt;= 0x64). </p>
-<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel (0...15).">GetChannel()</a> for further information. </p>
+<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel.">GetChannel()</a> for further information. </p>
 
 </div>
 </div>
@@ -1460,7 +1461,7 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns <b>true</b> if the message is a pedal off message (control == 0x40 and value &lt; 0x64). </p>
-<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel (0...15).">GetChannel()</a> for further information. </p>
+<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel.">GetChannel()</a> for further information. </p>
 
 </div>
 </div>
@@ -1488,7 +1489,7 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns <b>true</b> if the message is a program change message. </p>
-<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel (0...15).">GetChannel()</a> and <a class="el" href="class_m_i_d_i_message.html#a90a1a274009e5cd457130b5993aa455c" title="If the message is a program change message, returns the program number.">GetProgramValue()</a> for further information. </p>
+<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel.">GetChannel()</a> and <a class="el" href="class_m_i_d_i_message.html#a90a1a274009e5cd457130b5993aa455c" title="If the message is a program change (patch) message, returns the program number.">GetProgramValue()</a> for further information. </p>
 
 </div>
 </div>
@@ -1516,7 +1517,7 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns <b>true</b> if the message is a channel pressure message. </p>
-<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel (0...15).">GetChannel()</a> and <a class="el" href="class_m_i_d_i_message.html#a5230bc95f8f646d20fbd678fff526664" title="If the message is a channel pressure message, returns the pressure value.">GetChannelPressure()</a> for further information. </p>
+<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel.">GetChannel()</a> and <a class="el" href="class_m_i_d_i_message.html#a5230bc95f8f646d20fbd678fff526664" title="If the message is a channel pressure message, returns the pressure value.">GetChannelPressure()</a> for further information. </p>
 
 </div>
 </div>
@@ -1544,7 +1545,7 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns <b>true</b> if the message is a bender message. </p>
-<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel (0...15).">GetChannel()</a> and <a class="el" href="class_m_i_d_i_message.html#a2d19d277c0d3fe788a7f74cf515d9b89" title="If the message is a bender message, returns the signed 14 bit bender value.">GetBenderValue()</a> for further information. </p>
+<p>You can then call <a class="el" href="class_m_i_d_i_message.html#a61156e0c48b35e58eafd213945ad63e8" title="If the message is a channel message, returns its MIDI channel.">GetChannel()</a> and <a class="el" href="class_m_i_d_i_message.html#a2d19d277c0d3fe788a7f74cf515d9b89" title="If the message is a bender message, returns the signed 14 bit bender value.">GetBenderValue()</a> for further information. </p>
 
 </div>
 </div>
@@ -1986,7 +1987,7 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Sets all bits of the status byte of the message (i.e., for channel messages, the type and the channel). </p>
+<p>Sets all 8 bits of the status byte of the message. These define, for channel messages, the type and the channel. </p>
 
 </div>
 </div>
@@ -2370,7 +2371,13 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Makes the message a note on message with given channel, note and velocity. Frees the sysex pointer. </p>
+<p>Makes the message a note on message with given channel, note and velocity. </p>
+<p>Frees the sysex pointer. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chan,note,vel</td><td>see <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a> </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_component_8cpp-example.html#a10">test_component.cpp</a>, <a class="el" href="test_stepsequencer_8cpp-example.html#a13">test_stepsequencer.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a15">test_writefile.cpp</a>.</dd>
 </dl>
 
@@ -2409,7 +2416,12 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Makes the message a note off message with given channel, note and velocity. </p>
-<p>Frees the sysex pointer. The default behavior of this method is to put a NOTE OFF type message and copy the given velocity; you can also make the method put a NOTE ON with 0 velocity (ignoring the third parameter). See the USeNoteOnForOff() static method. </p>
+<p>Frees the sysex pointer. The default behavior of this method is to put a NOTE OFF type message and copy the given velocity; you can also make the method put a NOTE ON with 0 velocity (ignoring the third parameter). See the USeNoteOnForOff() static method. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chan,note,vel</td><td>see <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a> </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_component_8cpp-example.html#a8">test_component.cpp</a>.</dd>
 </dl>
 
@@ -2447,7 +2459,13 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Makes the message a polyphonic aftertouch message with given channel, note and pressure. Frees the sysex pointer. </p>
+<p>Makes the message a polyphonic aftertouch message with given channel, note and pressure. </p>
+<p>Frees the sysex pointer. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chan,note,pres</td><td>see <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a> </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -2483,7 +2501,13 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Makes the message a control change message with given channel, controller and value. Frees the sysex pointer. </p>
+<p>Makes the message a control change message with given channel, controller and value. </p>
+<p>Frees the sysex pointer. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chan,ctrl,val</td><td>see <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a> </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_stepsequencer_8cpp-example.html#a19">test_stepsequencer.cpp</a>.</dd>
 </dl>
 
@@ -2523,8 +2547,14 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Makes the message a volume change (control == 0x07) message with given channel and value. Frees the sysex pointer. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_writefile_8cpp-example.html#a14">test_writefile.cpp</a>.</dd>
+<p>Makes the message a volume change (control == 0x07) message with given channel and value. </p>
+<p>Frees the sysex pointer. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chan,val</td><td>see <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a> </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_recorder_8cpp-example.html#a16">test_recorder.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a14">test_writefile.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -2563,7 +2593,13 @@ Friends</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Makes the message a pan change (control == 0x0A) message with given channel and value. Frees the sysex pointer. </p>
+<p>Makes the message a pan change (control == 0x0A) message with given channel and value. </p>
+<p>Frees the sysex pointer. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chan,val</td><td>see <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a> </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -2593,8 +2629,14 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Makes the message a program change message with given channel and program. Frees the sysex pointer. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_stepsequencer_8cpp-example.html#a24">test_stepsequencer.cpp</a>, <a class="el" href="test_thru_8cpp-example.html#a19">test_thru.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a13">test_writefile.cpp</a>.</dd>
+<p>Makes the message a program change message with given channel and program. </p>
+<p>Frees the sysex pointer. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chan,prog</td><td>see <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a> </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_recorder_8cpp-example.html#a15">test_recorder.cpp</a>, <a class="el" href="test_stepsequencer_8cpp-example.html#a24">test_stepsequencer.cpp</a>, <a class="el" href="test_thru_8cpp-example.html#a19">test_thru.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a13">test_writefile.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -2625,7 +2667,13 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Makes the message a channel pressure message with given channel and pressure. Frees the sysex pointer. </p>
+<p>Makes the message a channel pressure message with given channel and pressure. </p>
+<p>Frees the sysex pointer. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chan,pres</td><td>see <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a> </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -2655,7 +2703,13 @@ Friends</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Makes the message a pitch bend message with given channel and value (unsigned 14 bit). Frees the sysex pointer. </p>
+<p>Makes the message a pitch bend message with given channel and value (unsigned 14 bit). </p>
+<p>Frees the sysex pointer. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chan,val</td><td>see <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a> </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -2709,7 +2763,13 @@ Friends</h2></td></tr>
 <li>Omni mode off (type = C_OMNI_OFF)</li>
 <li>Omni mode on (type = C_OMNI_ON)</li>
 <li>Mono mode on (type = C_MONO, value = number of channels to respond, 0 for all channels)</li>
-<li>Poly mode on (type = C_POLY) </li>
+<li>Poly mode on (type = C_POLY) <dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chan,type,val</td><td>see <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a> </td></tr>
+  </table>
+  </dd>
+</dl>
+</li>
 </ul>
 
 </div>
@@ -2739,6 +2799,12 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Makes the message a all notes off message with given channel. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chan</td><td>see <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a> </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -3182,8 +3248,8 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a id="ac9ab2b2df274dbaeda353bdad0abcaad"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac9ab2b2df274dbaeda353bdad0abcaad">&#9670;&nbsp;</a></span>MsgToText()</h2>
+<a id="a255363c005352054fd39aa4a8c89f938"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a255363c005352054fd39aa4a8c89f938">&#9670;&nbsp;</a></span>MsgToText()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3194,7 +3260,8 @@ Friends</h2></td></tr>
         <tr>
           <td class="memname">virtual std::string MIDIMessage::MsgToText </td>
           <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype">char&#160;</td>
+          <td class="paramname"><em>chan_from_1</em> = <code>0</code></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -3206,8 +3273,14 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns a human readable ascii string describing the message content. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">chan_from_1</td><td>if zero channels are numbered 0 ... 15, otherwise 1 ... 16. See <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a> </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p>Reimplemented in <a class="el" href="class_m_i_d_i_timed_message.html#a23eef0cb97e53ec252f8568f32eb0fd9">MIDITimedMessage</a>.</p>
+<p>Reimplemented in <a class="el" href="class_m_i_d_i_timed_message.html#ac4b7537d29229d09b273ac1e57f6e8fd">MIDITimedMessage</a>.</p>
 
 </div>
 </div>

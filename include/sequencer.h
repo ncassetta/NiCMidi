@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -157,6 +157,8 @@ class MIDISequencerState : public MIDIProcessor {
         double                  ms_per_clock;       ///< Internal use
         double                  last_time_ms;       ///< Internal use
         MIDIClockTime           last_tempo_change;  ///< Internal use
+        MIDIClockTime           count_in_time;      ///< Internal use
+        char                    count_in_status;    ///< Flag affecting the count in
         static int              metronome_mode;     ///< Flag affecting how metronome beat is calculated
 };
 
@@ -226,6 +228,10 @@ class MIDISequencer : public MIDITickComponent {
         MIDIMultiTrack*                 GetMultiTrack()         { return state.multitrack; }
         /// Returns a pointer to the internal MIDIMultiTrack.
         const MIDIMultiTrack*           GetMultiTrack() const   { return state.multitrack; }
+        /// Returns a pointer to the given track, or 0 if _num_trk is not a valid number.
+        MIDITrack*                      GetTrack(unsigned int trk_num)
+                                            { return state.multitrack->IsValidTrackNumber(trk_num) ?
+                                                     state.multitrack->GetTrack(trk_num) : 0; }
         /// Returns the number of tracks of the multitrack.
         unsigned int                    GetNumTracks() const	{ return state.multitrack->GetNumTracks(); }
         /// Returns current tempo scale in percentage (100 = no scaling, 200 = twice faster, etc.).
@@ -244,6 +250,11 @@ class MIDISequencer : public MIDITickComponent {
         /// Returns the repeat play (loop) end measure.
         unsigned int                    GetRepeatPlayEnd() const
                                                                 { return repeat_end_meas; }
+        /// Returns **true** if the count in is enabled.
+        bool                            GetCountInEnable() const    { return state.count_in_status & COUNT_IN_ENABLED; }
+        /// Returns **true** if the count in is pending (the sequencer is counting in).
+        bool                            GetCountInPending() const   { return state.count_in_status & COUNT_IN_PENDING; }
+
         /// Returns the time shift mode (on or off). This is the value of the internal parameter, **not**
         /// the actual mode (during the playback the Start() method always sets it to on, while at the end
         /// the Stop() method resets it to this value).
@@ -299,6 +310,8 @@ class MIDISequencer : public MIDITickComponent {
         /// \return **true** if parameters are valid (and the mode has been changed), **false** otherwise (the mode
         /// has been set to **false**).
         virtual bool                    SetRepeatPlay(int on_off, int start_meas = -1, int end_meas = -1);
+        /// Sets the count in enable or disable.
+        virtual void                    SetCountIn(bool on_off);
         /// Sets the global tempo scale.
         /// \param scale the percentage: 100 = no scaling, 200 = twice faster, 50 = twice slower, etc.).
         virtual void                    SetTempoScale(unsigned int scale);
@@ -356,6 +369,7 @@ class MIDISequencer : public MIDITickComponent {
         /// iterator and the sequencer internal arrays. If you change the number of tracks directly in the
         /// multitrack (for example when loading a MIDI file) you must then call MIDISequencer::Reset() for
         /// updating the sequencer parameters, but this will reset all track parameters to the default.
+        /// \warning if the sequencer is connected to a MIDIRecorder see MIDIRecorder::InsertTrack().
         virtual bool                    InsertTrack(int trk_num = -1);
         /// Deletes a track and all its events from the internal MIDIMultiTrack. This method is thread-safe and can
         /// be called during playback (in this case the sequencer will send a MIDI AllNotesOff message to the old track
@@ -364,6 +378,7 @@ class MIDISequencer : public MIDITickComponent {
         /// value the last track wil be deleted.
         /// \return **true** if the track was effectively deleted
         /// \see note to InsertTrack()
+        /// \warning if the sequencer is connected to a MIDIRecorder see MIDIRecorder::DeleteTrack().
         virtual bool                    DeleteTrack(int trk_num = -1);
         /// Moves a track from one position to another in the internal MIDIMultiTrack. This method is thread-safe and can
         /// be called during playback (in this case the sequencer will send a MIDI AllNotesOff message to the involved
@@ -371,6 +386,7 @@ class MIDISequencer : public MIDITickComponent {
         /// \param from, to the start and destination track numbers (both must be in the range 0 ... GetNumTracks() - 1).
         /// \return **true** if the track was effectively moved
         /// \see note to InsertTrack()
+        /// \warning if the sequencer is connected to a MIDIRecorder see MIDIRecorder::MoveTrack().
         virtual bool                    MoveTrack(int from, int to);
         /// Sets the current time to the beginning of the song, updating the internal status. This method is
         /// thread-safe and can be called during playback. Notifies the GUI a GROUP_ALL event to signify a
@@ -458,6 +474,13 @@ class MIDISequencer : public MIDITickComponent {
             PLAY_BOUNDED,                   ///< See SetPlayMode()
             PLAY_UNBOUNDED                  ///< See SetPlayMode()
         };
+
+        /// Values for count_in status
+        enum {
+            COUNT_IN_ENABLED = 1,           ///< 0 if no count in before starting, 1 if yes
+            COUNT_IN_PENDING = 2,           ///< 0 if count in is done, 2 if it is pending
+        };
+
     protected:
         /// Implements the static method inherited by MIDITickComponent and called at every timer tick.
         /// It only calls the member TickProc().
@@ -470,6 +493,9 @@ class MIDISequencer : public MIDITickComponent {
         /// \cond EXCLUDED
         // Internal use: scans events at 'now' time upgrading the sequencer state
         void                            ScanEventsAtThisTime();
+
+        // Internal use: prepares the count in
+        void                            CountInPrepare();
 
         MIDITimedMessage                beat_marker_msg;    // Used by the sequencer to send beat marker messages
 

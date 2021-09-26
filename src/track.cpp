@@ -5,7 +5,7 @@
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
  *   Copyright (C) 2010 V.R.Madgazin
  *   www.vmgames.com vrm@vmgames.com
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -140,22 +140,22 @@ bool MIDITrack::SetEndTime(MIDIClockTime end_time) {
 }
 
 
-bool MIDITrack::SetChannel(int ch) {
-    if (ch < 0 || ch > 15)
+bool MIDITrack::SetChannel(int chan) {
+    if (chan < 0 || chan> 15)
         return false;
     for (unsigned int i = 0; i < events.size(); i++) {
         if (GetEvent(i).IsChannelMsg())
-            GetEvent(i).SetChannel(ch);
+            GetEvent(i).SetChannel(chan);
     }
     status |= STATUS_DIRTY;
     return true;
 }
 
 
-bool MIDITrack::SetRecChannel(int ch) {
-    if (ch < -1 || ch > 15)
+bool MIDITrack::SetRecChannel(int chan) {
+    if (chan < -1 || chan > 15)
         return false;
-    rec_chan = ch;
+    rec_chan = chan;
     return true;
 }
 
@@ -397,11 +397,11 @@ void MIDITrack::InsertInterval(MIDIClockTime start, MIDIClockTime length, const 
 }
 
 
-MIDITrack* MIDITrack::MakeInterval(MIDIClockTime start, MIDIClockTime end, MIDITrack* interval) const {
+void MIDITrack::MakeInterval(MIDIClockTime start, MIDIClockTime end, MIDITrack* interval) const {
     interval->Clear();
     if (end > GetEndTime())                         // adjust end time
         end = GetEndTime();
-    if (end <= start) return interval;              // return an empty track
+    if (end <= start) return;                       // nothing to do
     interval->SetEndTime(end - start);
 
     MIDITrack edittrack(*this);                     // copy original track to make edits on it;
@@ -425,7 +425,6 @@ MIDITrack* MIDITrack::MakeInterval(MIDIClockTime start, MIDIClockTime end, MIDIT
         msg.SubTime(start);                         // adjust message time
         interval->InsertEvent(msg);                 // insert it in interval
     }
-    return interval;
 }
 
 
@@ -471,17 +470,17 @@ void MIDITrack::ClearInterval(MIDIClockTime start, MIDIClockTime end) {
 }
 
 
-void MIDITrack::ReplaceInterval(MIDIClockTime start, MIDIClockTime length, bool sysex, const MIDITrack* src) {
-    if (length == 0) return;
+void MIDITrack::ReplaceInterval(MIDIClockTime start, MIDIClockTime end, const MIDITrack* src) {
+    if (end <= start || src == 0) return;
 
-    ClearInterval(start, start + length);           // deletes all in the interval
+    ClearInterval(start, end);                      // deletes all events in the interval
     for(unsigned int i = 0; i < src->GetNumEvents(); i++) {
         MIDITimedMessage msg(src->GetEvent(i));     // inserts events
-        if (msg.GetTime() >= length) break;         // edit is too long
+        if (msg.GetTime() >= end - start) break;    // edit is too long
         msg.AddTime(start);
         InsertEvent(msg);
     }
-    CloseOpenEvents(start, start + length);         // truncate at end
+    CloseOpenEvents(start, end);                    // truncate at end
 }
 
 

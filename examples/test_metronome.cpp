@@ -1,7 +1,7 @@
 /*
  *   Example file for NiCMidi - A C++ Class Library for MIDI
  *
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -90,6 +90,8 @@ int main( int argc, char **argv ) {
     while (command != "quit") {                     // main loop
         GetCommand();                               // gets user input and splits it into command, par1, par2
 
+        if(command == "")                           // empty command
+            continue;
         if (command == "ports") {                   // enumerates the midi ports
             if (MIDIManager::GetNumMIDIIns()) {
                 cout << "MIDI IN PORTS:" << endl;
@@ -138,7 +140,7 @@ int main( int argc, char **argv ) {
                      cout << "Number of subdivisions set to " << type << endl;
             }
             else
-                cout << "Set subdivisions failed" << endl;
+                cout << "Invalid number of subdivisions" << endl;
         }
         else if (command == "meas") {               // sets the number of beats of a measure
             unsigned int beats = atoi(par1.c_str());         // 0 disables measure clicks
@@ -167,14 +169,14 @@ int main( int argc, char **argv ) {
         else if (command == "outport") {            // changes the midi out port
             int port = atoi(par1.c_str());
             if (metro.SetOutPort(port))
-                cout << "Assigned out port n. " << metro.GetOutPort() << endl;
+                cout << "Assigned out port n. " << port << endl;
             else
                 cout << "Invalid port number" << endl;
         }
         else if (command == "outchan") {            // changes the midi out chan
             int chan = atoi(par1.c_str());
             if (metro.SetOutChannel(chan))
-                cout << "Assigned out channel n. " << (int)metro.GetOutChannel() << endl;
+                cout << "Assigned out channel n. " << (int)chan << endl;
             else
                 cout << "Invalid channel number" << endl;
         }

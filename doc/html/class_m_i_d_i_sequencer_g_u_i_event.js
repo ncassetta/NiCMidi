@@ -13,5 +13,6 @@ var class_m_i_d_i_sequencer_g_u_i_event =
     [ "conductor_items_names", "class_m_i_d_i_sequencer_g_u_i_event.html#acb3ff6641595134337a7845ea11e54be", null ],
     [ "transport_items_names", "class_m_i_d_i_sequencer_g_u_i_event.html#a576344194c486fe0dc653593590c0e9c", null ],
     [ "track_items_names", "class_m_i_d_i_sequencer_g_u_i_event.html#af755b1386c60b97b873f81556bab552b", null ],
+    [ "recording_items_names", "class_m_i_d_i_sequencer_g_u_i_event.html#aecfa9f9a1ac5730c25d50f9c618a816d", null ],
     [ "user_items_names", "class_m_i_d_i_sequencer_g_u_i_event.html#ab83863946cb1c79f4d9501f21d467009", null ]
 ];

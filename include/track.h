@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -112,6 +112,7 @@ class  MIDITrack {
         /// Returns the MIDI in port id.
         unsigned int                GetInPort() const                   { return in_port; }
         /// Returns the track channel (-1 if the track has not type TYPE_CHAN or TYPE_IRREG_CHAN).
+        /// See \ref NUMBERING
         /// \note This is **not** const, because it may call Analyze(), causing an update of the track status.
         char                        GetChannel();
         /// Returns the entire status bitfield, so you can test individual properties of the track with an AND
@@ -123,6 +124,7 @@ class  MIDITrack {
         /// \note This is **not** const, because it may call Analyze(), causing an update of the track status.
         char                        GetType();
         /// Returns the channel for recording (-1 for all channels).
+        /// See \ref NUMBERING
         char                        GetRecChannel()                     { return rec_chan; }
         /// Returns the track time shift in MIDI ticks.
         int                         GetTimeShift() const                { return time_shift; }
@@ -146,12 +148,12 @@ class  MIDITrack {
         /// \param end_time the new EOT time. If there are events of other type after it the method fails and returns
         /// **false**.
         bool                        SetEndTime(MIDIClockTime end_time);
-        /// Sets the channel of all MIDI channel events to _ch_ (_ch_ must be in the range 0 ... 15).
+        /// Sets the channel of all MIDI channel events to _chan_ (_chan_ must be in the range 0 ... 15).
         /// \return **true** if events were changed, **false** otherwise (_ch_ was not a valid channel number).
-        bool                        SetChannel(int ch);
+        bool                        SetChannel(int chan);
         /// Sets the channel for recording (-1 for all channels).
-        /// \return **true** if _ch_ was in the correct range, **false** otherwise).
-        bool                        SetRecChannel(int ch);
+        /// \return **true** if _chan_ was in the correct range, **false** otherwise).
+        bool                        SetRecChannel(int chan);
         /// Sets the input port of the track
         /// \return **true** if _port_ is a valid port number, **false** otherwise.
         bool                        SetInPort(unsigned int port);
@@ -220,20 +222,30 @@ class  MIDITrack {
         /// check temporal order and track consistency. You could use it if you would manually copy tracks
         /// (MultiTrack::AssignEventsToTracks() does it).
         void                        PushEvent( const MIDITimedMessage& msg);
-
+        /// Shifts forward by a _length_ time the track events from _start_ onwards. If _src_ == 0 it leaves the newly
+        /// created interval empty, otherwise copies the contents of _src_ into it. The events in the time interval
+        /// 0 ...       _length_ in _src_ are copied into the _start_ ... _start_ + _length_ times in the actual track.
+        /// If the _src_ end time is greater than _length_ the copy process is truncated.
+        /// \warning This is still experimental, not tested enough
         void                        InsertInterval(MIDIClockTime start, MIDIClockTime length, const MIDITrack* src = 0);
                                                     // if src == 0 only shift events of length clocks
-        /// Copies events from _start_ to _end_ into the track _interval_.
-        MIDITrack*                  MakeInterval(MIDIClockTime start, MIDIClockTime end, MIDITrack* interval) const;
-                                                    // copies selected interval into another interval
+        /// Copies events from _start_ to _end_ into the track _interval_. The events from _start_ to _end_ times in the
+        /// actual track are copied into the 0 ... _end_ - _start_ times in _interval_.
+        /// \warning This is still experimental, not tested enough
+        void                        MakeInterval(MIDIClockTime start, MIDIClockTime end, MIDITrack* interval) const;
+        /// Deletes events from _start_ to _end_, shifting subsequents.
+        /// \warning This is still experimental, not tested enough
         void                        DeleteInterval(MIDIClockTime start, MIDIClockTime end);
-                                                    // deletes events and shifts subsequents
+        /// Deletes events from _start_ to _end_, leaving subsequents unchanged.
+        /// \warning This is still experimental, not tested enough
         void                        ClearInterval(MIDIClockTime start, MIDIClockTime end);
-                                                    // deletes events leaving subsequents unchanged
-        void                        ReplaceInterval(MIDIClockTime start, MIDIClockTime length,
-                                                   bool sysex, const MIDITrack* src);
+        /// Replaces events from _start_ to _end_ with those in _src_. The events in the time interval
+        /// 0 ... _end_ - _start_ in _src_ are copied into the _start_ ... _end_ times in the actual track.
+        /// If the _src_ end time is greater than _end_ - _start_ the copy process is truncated.
+        /// \warning This is still experimental, not tested enough
+        void                        ReplaceInterval(MIDIClockTime start, MIDIClockTime end, const MIDITrack* src);
         /// Cuts note and pedal events (searching to the time _from_) at the time _to_. All sounding notes and
-        /// held pedals are truncated (the corresponding off events after the time are deleted) and the pitch
+        /// held pedals are truncated (the corresponding off events after the time _to_ are deleted) and the pitch
         /// bend is reset. Events at time _to_ are **not** truncated. This function is intended for "slicing"
         /// a track in cut, copy and paste editing.
         // TODO: restored old version: test this (involves even interval methods)

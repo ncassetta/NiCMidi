@@ -80,12 +80,22 @@ Inheritance diagram for MIDISequencer:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a68f87c0ad4eaadd75bf2f84daf517fd5"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="class_m_i_d_i_sequencer.html#a68f87c0ad4eaadd75bf2f84daf517fd5ade6b57622e50656eb3e46861c2d740dd">FOLLOW_MIDI_TIMESIG_MESSAGE</a>
-, <a class="el" href="class_m_i_d_i_sequencer.html#a68f87c0ad4eaadd75bf2f84daf517fd5ad42fe028a7c432cc7358e0d6c67793cc">FOLLOW_TIMESIG_DENOMINATOR</a>
-, <a class="el" href="class_m_i_d_i_sequencer.html#a68f87c0ad4eaadd75bf2f84daf517fd5a4be5c2c226ce2ac8fcfff9d01def46e8">FOLLOW_THEORETIC_VALUE</a>
+<tr class="memitem:a216381fd6370f982976db2ec2b12ae40"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="class_m_i_d_i_sequencer.html#a216381fd6370f982976db2ec2b12ae40ade6b57622e50656eb3e46861c2d740dd">FOLLOW_MIDI_TIMESIG_MESSAGE</a>
+, <a class="el" href="class_m_i_d_i_sequencer.html#a216381fd6370f982976db2ec2b12ae40ad42fe028a7c432cc7358e0d6c67793cc">FOLLOW_TIMESIG_DENOMINATOR</a>
+, <a class="el" href="class_m_i_d_i_sequencer.html#a216381fd6370f982976db2ec2b12ae40a4be5c2c226ce2ac8fcfff9d01def46e8">FOLLOW_THEORETIC_VALUE</a>
  }</td></tr>
-<tr class="memdesc:a68f87c0ad4eaadd75bf2f84daf517fd5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Values for the <a class="el" href="class_m_i_d_i_sequencer.html#acec81fbb015bf88f4040e692166f3f04" title="Selects the way the sequencer calculates metronome beat.">SetMetronomeMode()</a> method.  <a href="class_m_i_d_i_sequencer.html#a68f87c0ad4eaadd75bf2f84daf517fd5">More...</a><br /></td></tr>
-<tr class="separator:a68f87c0ad4eaadd75bf2f84daf517fd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memdesc:a216381fd6370f982976db2ec2b12ae40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Values for the <a class="el" href="class_m_i_d_i_sequencer.html#acec81fbb015bf88f4040e692166f3f04" title="Selects the way the sequencer calculates metronome beat.">SetMetronomeMode()</a> method.  <a href="class_m_i_d_i_sequencer.html#a216381fd6370f982976db2ec2b12ae40">More...</a><br /></td></tr>
+<tr class="separator:a216381fd6370f982976db2ec2b12ae40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27a42c2b51d2e1024796734c09eeb336"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="class_m_i_d_i_sequencer.html#a27a42c2b51d2e1024796734c09eeb336a6d742365d6cbe81cb5027e8068207a98">PLAY_BOUNDED</a>
+, <a class="el" href="class_m_i_d_i_sequencer.html#a27a42c2b51d2e1024796734c09eeb336a8b07ad2e2a8fb81ffa9d4915bb3787f7">PLAY_UNBOUNDED</a>
+ }</td></tr>
+<tr class="memdesc:a27a42c2b51d2e1024796734c09eeb336"><td class="mdescLeft">&#160;</td><td class="mdescRight">Values for the play mode.  <a href="class_m_i_d_i_sequencer.html#a27a42c2b51d2e1024796734c09eeb336">More...</a><br /></td></tr>
+<tr class="separator:a27a42c2b51d2e1024796734c09eeb336"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab56dbad10453a4f5a08ddd1ffe660626"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="class_m_i_d_i_sequencer.html#ab56dbad10453a4f5a08ddd1ffe660626a8b37f32949160d55a2658190c8ba2418">COUNT_IN_ENABLED</a> = 1
+, <a class="el" href="class_m_i_d_i_sequencer.html#ab56dbad10453a4f5a08ddd1ffe660626aa6c6dbc6449d788b8f0903c4189d716a">COUNT_IN_PENDING</a> = 2
+ }</td></tr>
+<tr class="memdesc:ab56dbad10453a4f5a08ddd1ffe660626"><td class="mdescLeft">&#160;</td><td class="mdescRight">Values for count_in status.  <a href="class_m_i_d_i_sequencer.html#ab56dbad10453a4f5a08ddd1ffe660626">More...</a><br /></td></tr>
+<tr class="separator:ab56dbad10453a4f5a08ddd1ffe660626"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -122,6 +132,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5bf05fc6f345686eaa8ec507db11a851"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_m_i_d_i_multi_track.html">MIDIMultiTrack</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a5bf05fc6f345686eaa8ec507db11a851">GetMultiTrack</a> () const</td></tr>
 <tr class="memdesc:a5bf05fc6f345686eaa8ec507db11a851"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>.  <a href="class_m_i_d_i_sequencer.html#a5bf05fc6f345686eaa8ec507db11a851">More...</a><br /></td></tr>
 <tr class="separator:a5bf05fc6f345686eaa8ec507db11a851"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a114800fd9b592e6bb303d919f73a2c3a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_m_i_d_i_track.html">MIDITrack</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a114800fd9b592e6bb303d919f73a2c3a">GetTrack</a> (unsigned int trk_num)</td></tr>
+<tr class="memdesc:a114800fd9b592e6bb303d919f73a2c3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the given track, or 0 if _num_trk is not a valid number.  <a href="class_m_i_d_i_sequencer.html#a114800fd9b592e6bb303d919f73a2c3a">More...</a><br /></td></tr>
+<tr class="separator:a114800fd9b592e6bb303d919f73a2c3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a84ae107786f698b599f2ff639059962c"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a84ae107786f698b599f2ff639059962c">GetNumTracks</a> () const</td></tr>
 <tr class="memdesc:a84ae107786f698b599f2ff639059962c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of tracks of the multitrack.  <a href="class_m_i_d_i_sequencer.html#a84ae107786f698b599f2ff639059962c">More...</a><br /></td></tr>
 <tr class="separator:a84ae107786f698b599f2ff639059962c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -143,18 +156,33 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a37f22623b09177ffa4ee7010e37b537b"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a37f22623b09177ffa4ee7010e37b537b">GetRepeatPlayEnd</a> () const</td></tr>
 <tr class="memdesc:a37f22623b09177ffa4ee7010e37b537b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the repeat play (loop) end measure.  <a href="class_m_i_d_i_sequencer.html#a37f22623b09177ffa4ee7010e37b537b">More...</a><br /></td></tr>
 <tr class="separator:a37f22623b09177ffa4ee7010e37b537b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15c9b1f5536c9014a271320fa66db8e7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a15c9b1f5536c9014a271320fa66db8e7">GetCountInEnable</a> () const</td></tr>
+<tr class="memdesc:a15c9b1f5536c9014a271320fa66db8e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <b>true</b> if the count in is enabled.  <a href="class_m_i_d_i_sequencer.html#a15c9b1f5536c9014a271320fa66db8e7">More...</a><br /></td></tr>
+<tr class="separator:a15c9b1f5536c9014a271320fa66db8e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b1324ae60aed33f1ba99c79594ee16b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a8b1324ae60aed33f1ba99c79594ee16b">GetCountInPending</a> () const</td></tr>
+<tr class="memdesc:a8b1324ae60aed33f1ba99c79594ee16b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <b>true</b> if the count in is pending (the sequencer is counting in).  <a href="class_m_i_d_i_sequencer.html#a8b1324ae60aed33f1ba99c79594ee16b">More...</a><br /></td></tr>
+<tr class="separator:a8b1324ae60aed33f1ba99c79594ee16b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3eb06159ec75cfe92cc284e44556277e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a3eb06159ec75cfe92cc284e44556277e">GetTimeShiftMode</a> () const</td></tr>
+<tr class="memdesc:a3eb06159ec75cfe92cc284e44556277e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the time shift mode (on or off).  <a href="class_m_i_d_i_sequencer.html#a3eb06159ec75cfe92cc284e44556277e">More...</a><br /></td></tr>
+<tr class="separator:a3eb06159ec75cfe92cc284e44556277e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9cfce22600c87bb80f0b9fc7fe013003"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_m_i_d_i_sequencer_state.html">MIDISequencerState</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a9cfce22600c87bb80f0b9fc7fe013003">GetState</a> ()</td></tr>
 <tr class="memdesc:a9cfce22600c87bb80f0b9fc7fe013003"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the current <a class="el" href="class_m_i_d_i_sequencer_state.html" title="Stores current MIDI general parameters for a MIDISequencer object, embedding a MIDISequencerTrackStat...">MIDISequencerState</a> (i.e.  <a href="class_m_i_d_i_sequencer.html#a9cfce22600c87bb80f0b9fc7fe013003">More...</a><br /></td></tr>
 <tr class="separator:a9cfce22600c87bb80f0b9fc7fe013003"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3e5cc0ab1dd0c5fc8767a5a956a6fe0"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_m_i_d_i_sequencer_state.html">MIDISequencerState</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#aa3e5cc0ab1dd0c5fc8767a5a956a6fe0">GetState</a> () const</td></tr>
 <tr class="memdesc:aa3e5cc0ab1dd0c5fc8767a5a956a6fe0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the current <a class="el" href="class_m_i_d_i_sequencer_state.html" title="Stores current MIDI general parameters for a MIDISequencer object, embedding a MIDISequencerTrackStat...">MIDISequencerState</a> (i.e.  <a href="class_m_i_d_i_sequencer.html#aa3e5cc0ab1dd0c5fc8767a5a956a6fe0">More...</a><br /></td></tr>
 <tr class="separator:aa3e5cc0ab1dd0c5fc8767a5a956a6fe0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acbc8c732b8eabdf27404691c4b6ac45e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#acbc8c732b8eabdf27404691c4b6ac45e">GetPlayMode</a> ()</td></tr>
+<tr class="memdesc:acbc8c732b8eabdf27404691c4b6ac45e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the play mode state (see <a class="el" href="class_m_i_d_i_sequencer.html#a3b31f5d78d481cda789999473c1b1559" title="Sets the play mode.">SetPlayMode()</a>).  <a href="class_m_i_d_i_sequencer.html#acbc8c732b8eabdf27404691c4b6ac45e">More...</a><br /></td></tr>
+<tr class="separator:acbc8c732b8eabdf27404691c4b6ac45e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7bf4b409b6a7fac5b882b47a96281958"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_m_i_d_i_sequencer_track_state.html">MIDISequencerTrackState</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a7bf4b409b6a7fac5b882b47a96281958">GetTrackState</a> (unsigned int trk_num)</td></tr>
 <tr class="memdesc:a7bf4b409b6a7fac5b882b47a96281958"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the <a class="el" href="class_m_i_d_i_sequencer_track_state.html" title="Stores current MIDI parameters for a sequencer track.">MIDISequencerTrackState</a> for a track.  <a href="class_m_i_d_i_sequencer.html#a7bf4b409b6a7fac5b882b47a96281958">More...</a><br /></td></tr>
 <tr class="separator:a7bf4b409b6a7fac5b882b47a96281958"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a62a3f2c968f4e4c1e198d0abc40e708c"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_m_i_d_i_sequencer_track_state.html">MIDISequencerTrackState</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a62a3f2c968f4e4c1e198d0abc40e708c">GetTrackState</a> (unsigned int trk_num) const</td></tr>
 <tr class="memdesc:a62a3f2c968f4e4c1e198d0abc40e708c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the <a class="el" href="class_m_i_d_i_sequencer_track_state.html" title="Stores current MIDI parameters for a sequencer track.">MIDISequencerTrackState</a> for a track.  <a href="class_m_i_d_i_sequencer.html#a62a3f2c968f4e4c1e198d0abc40e708c">More...</a><br /></td></tr>
 <tr class="separator:a62a3f2c968f4e4c1e198d0abc40e708c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a265e717ba643a28559a54f056f7925f0"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a265e717ba643a28559a54f056f7925f0">GetTrackOutPort</a> (unsigned int trk_num) const</td></tr>
+<tr class="memdesc:a265e717ba643a28559a54f056f7925f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of the out port assigned to a track.  <a href="class_m_i_d_i_sequencer.html#a265e717ba643a28559a54f056f7925f0">More...</a><br /></td></tr>
+<tr class="separator:a265e717ba643a28559a54f056f7925f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0edf7b35f17a2f3a228fc7efdac107b2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_m_i_d_i_processor.html">MIDIProcessor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a0edf7b35f17a2f3a228fc7efdac107b2">GetTrackProcessor</a> (unsigned int trk_num)</td></tr>
 <tr class="memdesc:a0edf7b35f17a2f3a228fc7efdac107b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the <a class="el" href="class_m_i_d_i_sequencer_track_processor.html" title="A multipurpose MIDIProcessor implementing muting, soloing, rechannelizing, velocity scaling and trans...">MIDISequencerTrackProcessor</a> for a track.  <a href="class_m_i_d_i_sequencer.html#a0edf7b35f17a2f3a228fc7efdac107b2">More...</a><br /></td></tr>
 <tr class="separator:a0edf7b35f17a2f3a228fc7efdac107b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -164,66 +192,72 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a07f1cf78f34d74cba93088e28853b451"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a07f1cf78f34d74cba93088e28853b451">GetTrackTimeShift</a> (unsigned int trk_num) const</td></tr>
 <tr class="memdesc:a07f1cf78f34d74cba93088e28853b451"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the time offset (in MIDI ticks) assigned to a track.  <a href="class_m_i_d_i_sequencer.html#a07f1cf78f34d74cba93088e28853b451">More...</a><br /></td></tr>
 <tr class="separator:a07f1cf78f34d74cba93088e28853b451"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af28339bdec98627c546e1aad78503856"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#af28339bdec98627c546e1aad78503856">GetTrackPort</a> (unsigned int trk_num) const</td></tr>
-<tr class="memdesc:af28339bdec98627c546e1aad78503856"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the number of the port assigned to a track.  <a href="class_m_i_d_i_sequencer.html#af28339bdec98627c546e1aad78503856">More...</a><br /></td></tr>
-<tr class="separator:af28339bdec98627c546e1aad78503856"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a297e14ff8ec004b6565c34e2726c93d4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a297e14ff8ec004b6565c34e2726c93d4">SetRepeatPlay</a> (int on_off, int start_meas=-1, int end_meas=-1)</td></tr>
-<tr class="memdesc:a297e14ff8ec004b6565c34e2726c93d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the repeat play (loop) parameters: you can set the repeat play status on/off, the start and the end measure.  <a href="class_m_i_d_i_sequencer.html#a297e14ff8ec004b6565c34e2726c93d4">More...</a><br /></td></tr>
-<tr class="separator:a297e14ff8ec004b6565c34e2726c93d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a99810a9604e5ea8d8d0db583d42b32e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a99810a9604e5ea8d8d0db583d42b32e1">SetTempoScale</a> (unsigned int scale)</td></tr>
-<tr class="memdesc:a99810a9604e5ea8d8d0db583d42b32e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the global tempo scale.  <a href="class_m_i_d_i_sequencer.html#a99810a9604e5ea8d8d0db583d42b32e1">More...</a><br /></td></tr>
-<tr class="separator:a99810a9604e5ea8d8d0db583d42b32e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe2bd7feed80d456798c493384993252"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#afe2bd7feed80d456798c493384993252">SetTrackTimeShift</a> (unsigned int trk_num, int offset)</td></tr>
-<tr class="memdesc:afe2bd7feed80d456798c493384993252"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the time shift offset (in MIDI ticks) for a track.  <a href="class_m_i_d_i_sequencer.html#afe2bd7feed80d456798c493384993252">More...</a><br /></td></tr>
-<tr class="separator:afe2bd7feed80d456798c493384993252"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a37072592bbabfe298143b1596d10988e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a37072592bbabfe298143b1596d10988e">SetTrackOutPort</a> (unsigned int trk_num, unsigned int port)</td></tr>
-<tr class="memdesc:a37072592bbabfe298143b1596d10988e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the MIDI port for a track.  <a href="class_m_i_d_i_sequencer.html#a37072592bbabfe298143b1596d10988e">More...</a><br /></td></tr>
-<tr class="separator:a37072592bbabfe298143b1596d10988e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abca393499b3e0482d7158feabad593f7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#abca393499b3e0482d7158feabad593f7">SetState</a> (<a class="el" href="class_m_i_d_i_sequencer_state.html">MIDISequencerState</a> *s)</td></tr>
-<tr class="memdesc:abca393499b3e0482d7158feabad593f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies a given <a class="el" href="class_m_i_d_i_sequencer_state.html" title="Stores current MIDI general parameters for a MIDISequencer object, embedding a MIDISequencerTrackStat...">MIDISequencerState</a> into the internal sequencer state.  <a href="class_m_i_d_i_sequencer.html#abca393499b3e0482d7158feabad593f7">More...</a><br /></td></tr>
-<tr class="separator:abca393499b3e0482d7158feabad593f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a475d9940a8ce8550794d2669e7d8b4ab"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a475d9940a8ce8550794d2669e7d8b4ab">SetProcessor</a> (unsigned int trk_num, <a class="el" href="class_m_i_d_i_processor.html">MIDIProcessor</a> *p)</td></tr>
-<tr class="memdesc:a475d9940a8ce8550794d2669e7d8b4ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> for the given track.  <a href="class_m_i_d_i_sequencer.html#a475d9940a8ce8550794d2669e7d8b4ab">More...</a><br /></td></tr>
-<tr class="separator:a475d9940a8ce8550794d2669e7d8b4ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1890abf3b871ee50fb94d55024f47d59"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a1890abf3b871ee50fb94d55024f47d59">InsertTrack</a> (int trk_num=-1)</td></tr>
-<tr class="memdesc:a1890abf3b871ee50fb94d55024f47d59"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inserts into the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a> a new empty track with default track parameters (transpose, time offset, etc.).  <a href="class_m_i_d_i_sequencer.html#a1890abf3b871ee50fb94d55024f47d59">More...</a><br /></td></tr>
-<tr class="separator:a1890abf3b871ee50fb94d55024f47d59"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9e94ef721bb1863f9672ab630af997a4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a9e94ef721bb1863f9672ab630af997a4">DeleteTrack</a> (int trk_num)</td></tr>
-<tr class="memdesc:a9e94ef721bb1863f9672ab630af997a4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes a track and all its events from the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>.  <a href="class_m_i_d_i_sequencer.html#a9e94ef721bb1863f9672ab630af997a4">More...</a><br /></td></tr>
-<tr class="separator:a9e94ef721bb1863f9672ab630af997a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9c4ce2556fd3ed4b137594f7420675f5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a9c4ce2556fd3ed4b137594f7420675f5">MoveTrack</a> (int from, int to)</td></tr>
-<tr class="memdesc:a9c4ce2556fd3ed4b137594f7420675f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves a track from one position to another in the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>.  <a href="class_m_i_d_i_sequencer.html#a9c4ce2556fd3ed4b137594f7420675f5">More...</a><br /></td></tr>
-<tr class="separator:a9c4ce2556fd3ed4b137594f7420675f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3e494030d244875a3d9a8eef457f9ca1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a3e494030d244875a3d9a8eef457f9ca1">GoToZero</a> ()</td></tr>
-<tr class="memdesc:a3e494030d244875a3d9a8eef457f9ca1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the current time to the beginning of the song, updating the internal status.  <a href="class_m_i_d_i_sequencer.html#a3e494030d244875a3d9a8eef457f9ca1">More...</a><br /></td></tr>
-<tr class="separator:a3e494030d244875a3d9a8eef457f9ca1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a59096dd52df021730366015dfd4f2590"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a59096dd52df021730366015dfd4f2590">GoToTime</a> (<a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a> time_clk)</td></tr>
-<tr class="memdesc:a59096dd52df021730366015dfd4f2590"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the current time to a given the MIDI time, updating the internal status.  <a href="class_m_i_d_i_sequencer.html#a59096dd52df021730366015dfd4f2590">More...</a><br /></td></tr>
-<tr class="separator:a59096dd52df021730366015dfd4f2590"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abcc786b05f92dcb29882ecbdad9edf7c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#abcc786b05f92dcb29882ecbdad9edf7c">GoToTimeMs</a> (float time_ms)</td></tr>
-<tr class="memdesc:abcc786b05f92dcb29882ecbdad9edf7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Same as <a class="el" href="class_m_i_d_i_sequencer.html#a59096dd52df021730366015dfd4f2590" title="Sets the current time to a given the MIDI time, updating the internal status.">GoToTime()</a>, but the time is given in milliseconds.  <a href="class_m_i_d_i_sequencer.html#abcc786b05f92dcb29882ecbdad9edf7c">More...</a><br /></td></tr>
-<tr class="separator:abcc786b05f92dcb29882ecbdad9edf7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad7d31e619a384f7c834dd9e36d9fac34"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#ad7d31e619a384f7c834dd9e36d9fac34">GoToMeasure</a> (unsigned int measure, unsigned int beat=0)</td></tr>
-<tr class="memdesc:ad7d31e619a384f7c834dd9e36d9fac34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the current time to the given measure and beat, updating the internal status.  <a href="class_m_i_d_i_sequencer.html#ad7d31e619a384f7c834dd9e36d9fac34">More...</a><br /></td></tr>
-<tr class="separator:ad7d31e619a384f7c834dd9e36d9fac34"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa838607b4ab41a03eaef2bb107ab0f2f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#aa838607b4ab41a03eaef2bb107ab0f2f">GetNextEvent</a> (int *trk_num, <a class="el" href="class_m_i_d_i_timed_message.html">MIDITimedMessage</a> *msg)</td></tr>
-<tr class="memdesc:aa838607b4ab41a03eaef2bb107ab0f2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the next event (respect current position).  <a href="class_m_i_d_i_sequencer.html#aa838607b4ab41a03eaef2bb107ab0f2f">More...</a><br /></td></tr>
-<tr class="separator:aa838607b4ab41a03eaef2bb107ab0f2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a76532a6b85683d28c4cfe3bfe0853f98"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a76532a6b85683d28c4cfe3bfe0853f98">GetNextEventTime</a> (<a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a> *time_clk)</td></tr>
-<tr class="memdesc:a76532a6b85683d28c4cfe3bfe0853f98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the time of the next event (it can be different from current time if at current time there are not events).  <a href="class_m_i_d_i_sequencer.html#a76532a6b85683d28c4cfe3bfe0853f98">More...</a><br /></td></tr>
-<tr class="separator:a76532a6b85683d28c4cfe3bfe0853f98"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af4536b07acb15b85cf7c32b8bb998a9c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#af4536b07acb15b85cf7c32b8bb998a9c">GetNextEventTimeMs</a> (float *time_ms)</td></tr>
-<tr class="memdesc:af4536b07acb15b85cf7c32b8bb998a9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Same of <a class="el" href="class_m_i_d_i_sequencer.html#a76532a6b85683d28c4cfe3bfe0853f98" title="Gets the time of the next event (it can be different from current time if at current time there are n...">GetNextEventTime()</a>, but time is returned in milliseconds from the beginning.  <a href="class_m_i_d_i_sequencer.html#af4536b07acb15b85cf7c32b8bb998a9c">More...</a><br /></td></tr>
-<tr class="separator:af4536b07acb15b85cf7c32b8bb998a9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01946de82a9bf741647966715485cd91"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a01946de82a9bf741647966715485cd91">SetRepeatPlay</a> (int on_off, int start_meas=-1, int end_meas=-1)</td></tr>
+<tr class="memdesc:a01946de82a9bf741647966715485cd91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the repeat play (loop) parameters: you can set the repeat play status on/off, the start and the end measure.  <a href="class_m_i_d_i_sequencer.html#a01946de82a9bf741647966715485cd91">More...</a><br /></td></tr>
+<tr class="separator:a01946de82a9bf741647966715485cd91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88e268f9d874d2e38231e966604cd849"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a88e268f9d874d2e38231e966604cd849">SetCountIn</a> (bool on_off)</td></tr>
+<tr class="memdesc:a88e268f9d874d2e38231e966604cd849"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the count in enable or disable.  <a href="class_m_i_d_i_sequencer.html#a88e268f9d874d2e38231e966604cd849">More...</a><br /></td></tr>
+<tr class="separator:a88e268f9d874d2e38231e966604cd849"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab724f75e59473b31aac3db8b344a4c43"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#ab724f75e59473b31aac3db8b344a4c43">SetTempoScale</a> (unsigned int scale)</td></tr>
+<tr class="memdesc:ab724f75e59473b31aac3db8b344a4c43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the global tempo scale.  <a href="class_m_i_d_i_sequencer.html#ab724f75e59473b31aac3db8b344a4c43">More...</a><br /></td></tr>
+<tr class="separator:ab724f75e59473b31aac3db8b344a4c43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a427a23a98d219d17f566e0afeefa17ba"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a427a23a98d219d17f566e0afeefa17ba">SetTimeShiftMode</a> (bool f)</td></tr>
+<tr class="memdesc:a427a23a98d219d17f566e0afeefa17ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the time shifting of events on and off.  <a href="class_m_i_d_i_sequencer.html#a427a23a98d219d17f566e0afeefa17ba">More...</a><br /></td></tr>
+<tr class="separator:a427a23a98d219d17f566e0afeefa17ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3462550fc00118a3afc8702b3b03d2ad"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a3462550fc00118a3afc8702b3b03d2ad">SetState</a> (<a class="el" href="class_m_i_d_i_sequencer_state.html">MIDISequencerState</a> *s)</td></tr>
+<tr class="memdesc:a3462550fc00118a3afc8702b3b03d2ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copies a given <a class="el" href="class_m_i_d_i_sequencer_state.html" title="Stores current MIDI general parameters for a MIDISequencer object, embedding a MIDISequencerTrackStat...">MIDISequencerState</a> into the internal sequencer state.  <a href="class_m_i_d_i_sequencer.html#a3462550fc00118a3afc8702b3b03d2ad">More...</a><br /></td></tr>
+<tr class="separator:a3462550fc00118a3afc8702b3b03d2ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b31f5d78d481cda789999473c1b1559"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a3b31f5d78d481cda789999473c1b1559">SetPlayMode</a> (int mode)</td></tr>
+<tr class="memdesc:a3b31f5d78d481cda789999473c1b1559"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the play mode.  <a href="class_m_i_d_i_sequencer.html#a3b31f5d78d481cda789999473c1b1559">More...</a><br /></td></tr>
+<tr class="separator:a3b31f5d78d481cda789999473c1b1559"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a5ad826d66e6688da3c7c826a0243c2"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a5a5ad826d66e6688da3c7c826a0243c2">SetTrackOutPort</a> (unsigned int trk_num, unsigned int port)</td></tr>
+<tr class="memdesc:a5a5ad826d66e6688da3c7c826a0243c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the MIDI out port for a track.  <a href="class_m_i_d_i_sequencer.html#a5a5ad826d66e6688da3c7c826a0243c2">More...</a><br /></td></tr>
+<tr class="separator:a5a5ad826d66e6688da3c7c826a0243c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25f2f529aeb99d30fe416ec239d75f57"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a25f2f529aeb99d30fe416ec239d75f57">SetTrackProcessor</a> (unsigned int trk_num, <a class="el" href="class_m_i_d_i_processor.html">MIDIProcessor</a> *p)</td></tr>
+<tr class="memdesc:a25f2f529aeb99d30fe416ec239d75f57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets a <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> for the given track.  <a href="class_m_i_d_i_sequencer.html#a25f2f529aeb99d30fe416ec239d75f57">More...</a><br /></td></tr>
+<tr class="separator:a25f2f529aeb99d30fe416ec239d75f57"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03e88ef9b1e7dada3a1b26a56680f389"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a03e88ef9b1e7dada3a1b26a56680f389">SetTrackTimeShift</a> (unsigned int trk_num, int offset)</td></tr>
+<tr class="memdesc:a03e88ef9b1e7dada3a1b26a56680f389"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the time shift offset (in MIDI ticks) for a track.  <a href="class_m_i_d_i_sequencer.html#a03e88ef9b1e7dada3a1b26a56680f389">More...</a><br /></td></tr>
+<tr class="separator:a03e88ef9b1e7dada3a1b26a56680f389"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57b78af56b44b4cedc3bbbde581072d7"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a57b78af56b44b4cedc3bbbde581072d7">InsertTrack</a> (int trk_num=-1)</td></tr>
+<tr class="memdesc:a57b78af56b44b4cedc3bbbde581072d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inserts into the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a> a new empty track with default track parameters (transpose, time offset, etc.).  <a href="class_m_i_d_i_sequencer.html#a57b78af56b44b4cedc3bbbde581072d7">More...</a><br /></td></tr>
+<tr class="separator:a57b78af56b44b4cedc3bbbde581072d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56fd5414ee4dcc3dbb67dccd0ea6b028"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a56fd5414ee4dcc3dbb67dccd0ea6b028">DeleteTrack</a> (int trk_num=-1)</td></tr>
+<tr class="memdesc:a56fd5414ee4dcc3dbb67dccd0ea6b028"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deletes a track and all its events from the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>.  <a href="class_m_i_d_i_sequencer.html#a56fd5414ee4dcc3dbb67dccd0ea6b028">More...</a><br /></td></tr>
+<tr class="separator:a56fd5414ee4dcc3dbb67dccd0ea6b028"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a200eff3a9e7bdebebab7ef403b2d9d75"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a200eff3a9e7bdebebab7ef403b2d9d75">MoveTrack</a> (int from, int to)</td></tr>
+<tr class="memdesc:a200eff3a9e7bdebebab7ef403b2d9d75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Moves a track from one position to another in the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>.  <a href="class_m_i_d_i_sequencer.html#a200eff3a9e7bdebebab7ef403b2d9d75">More...</a><br /></td></tr>
+<tr class="separator:a200eff3a9e7bdebebab7ef403b2d9d75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc705150e92367ffd10b48db5e2dfdd2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#afc705150e92367ffd10b48db5e2dfdd2">GoToZero</a> ()</td></tr>
+<tr class="memdesc:afc705150e92367ffd10b48db5e2dfdd2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the current time to the beginning of the song, updating the internal status.  <a href="class_m_i_d_i_sequencer.html#afc705150e92367ffd10b48db5e2dfdd2">More...</a><br /></td></tr>
+<tr class="separator:afc705150e92367ffd10b48db5e2dfdd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c23d1e65792da91561e15588886ebe2"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a0c23d1e65792da91561e15588886ebe2">GoToTime</a> (<a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a> time_clk)</td></tr>
+<tr class="memdesc:a0c23d1e65792da91561e15588886ebe2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the current time to a given the MIDI time, updating the internal status.  <a href="class_m_i_d_i_sequencer.html#a0c23d1e65792da91561e15588886ebe2">More...</a><br /></td></tr>
+<tr class="separator:a0c23d1e65792da91561e15588886ebe2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ac09ae2e1f8c06e148c861f22dee679"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a1ac09ae2e1f8c06e148c861f22dee679">GoToTimeMs</a> (float time_ms)</td></tr>
+<tr class="memdesc:a1ac09ae2e1f8c06e148c861f22dee679"><td class="mdescLeft">&#160;</td><td class="mdescRight">Same as <a class="el" href="class_m_i_d_i_sequencer.html#a0c23d1e65792da91561e15588886ebe2" title="Sets the current time to a given the MIDI time, updating the internal status.">GoToTime()</a>, but the time is given in milliseconds.  <a href="class_m_i_d_i_sequencer.html#a1ac09ae2e1f8c06e148c861f22dee679">More...</a><br /></td></tr>
+<tr class="separator:a1ac09ae2e1f8c06e148c861f22dee679"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a626643d74757b59aaf55587069a729bd"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a626643d74757b59aaf55587069a729bd">GoToMeasure</a> (unsigned int measure, unsigned int beat=0)</td></tr>
+<tr class="memdesc:a626643d74757b59aaf55587069a729bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the current time to the given measure and beat, updating the internal status.  <a href="class_m_i_d_i_sequencer.html#a626643d74757b59aaf55587069a729bd">More...</a><br /></td></tr>
+<tr class="separator:a626643d74757b59aaf55587069a729bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac965401475006af95e25040d386382fd"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#ac965401475006af95e25040d386382fd">GetNextEvent</a> (int *trk_num, <a class="el" href="class_m_i_d_i_timed_message.html">MIDITimedMessage</a> *msg)</td></tr>
+<tr class="memdesc:ac965401475006af95e25040d386382fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the next event (respect current position).  <a href="class_m_i_d_i_sequencer.html#ac965401475006af95e25040d386382fd">More...</a><br /></td></tr>
+<tr class="separator:ac965401475006af95e25040d386382fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7d690cbcb528bd33027b66833ec8aef"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#ad7d690cbcb528bd33027b66833ec8aef">GetNextEventTime</a> (<a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a> *time_clk)</td></tr>
+<tr class="memdesc:ad7d690cbcb528bd33027b66833ec8aef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the time of the next event (it can be different from current time if at current time there are not events).  <a href="class_m_i_d_i_sequencer.html#ad7d690cbcb528bd33027b66833ec8aef">More...</a><br /></td></tr>
+<tr class="separator:ad7d690cbcb528bd33027b66833ec8aef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa331eb3f689c780ce53552fa45aee657"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#aa331eb3f689c780ce53552fa45aee657">GetNextEventTimeMs</a> (float *time_ms)</td></tr>
+<tr class="memdesc:aa331eb3f689c780ce53552fa45aee657"><td class="mdescLeft">&#160;</td><td class="mdescRight">Same of <a class="el" href="class_m_i_d_i_sequencer.html#ad7d690cbcb528bd33027b66833ec8aef" title="Gets the time of the next event (it can be different from current time if at current time there are n...">GetNextEventTime()</a>, but time is returned in milliseconds from the beginning.  <a href="class_m_i_d_i_sequencer.html#aa331eb3f689c780ce53552fa45aee657">More...</a><br /></td></tr>
+<tr class="separator:aa331eb3f689c780ce53552fa45aee657"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a678316aa390120a673cb945ce07678ee"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a678316aa390120a673cb945ce07678ee">MIDItoMs</a> (<a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a> time_clk)</td></tr>
 <tr class="memdesc:a678316aa390120a673cb945ce07678ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a time from MIDI ticks into milliseconds, taking into account all tempo changes from the beginning of the song to the given time.  <a href="class_m_i_d_i_sequencer.html#a678316aa390120a673cb945ce07678ee">More...</a><br /></td></tr>
 <tr class="separator:a678316aa390120a673cb945ce07678ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc94300fe712899bf2b304db8dc7c380"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#abc94300fe712899bf2b304db8dc7c380">UpdateStatus</a> ()</td></tr>
-<tr class="memdesc:abc94300fe712899bf2b304db8dc7c380"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is equivalent of GoToTime(state.cur_clock) and should be used to update the sequencer state after an edit in the multitrack (adding, deleting or editing events, for changes in the track structure see <a class="el" href="class_m_i_d_i_sequencer.html#a1890abf3b871ee50fb94d55024f47d59" title="Inserts into the internal MIDIMultiTrack a new empty track with default track parameters (transpose,...">InsertTrack()</a>, <a class="el" href="class_m_i_d_i_sequencer.html#a9e94ef721bb1863f9672ab630af997a4" title="Deletes a track and all its events from the internal MIDIMultiTrack.">DeleteTrack()</a> and <a class="el" href="class_m_i_d_i_sequencer.html#a9c4ce2556fd3ed4b137594f7420675f5" title="Moves a track from one position to another in the internal MIDIMultiTrack.">MoveTrack()</a>).  <a href="class_m_i_d_i_sequencer.html#abc94300fe712899bf2b304db8dc7c380">More...</a><br /></td></tr>
-<tr class="separator:abc94300fe712899bf2b304db8dc7c380"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ec13024c4ee43df968df1b43ceee7a0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a3ec13024c4ee43df968df1b43ceee7a0">SetTimeShiftMode</a> (bool f)</td></tr>
-<tr class="memdesc:a3ec13024c4ee43df968df1b43ceee7a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the time shifting of events on and off.  <a href="class_m_i_d_i_sequencer.html#a3ec13024c4ee43df968df1b43ceee7a0">More...</a><br /></td></tr>
-<tr class="separator:a3ec13024c4ee43df968df1b43ceee7a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a823690b2589a59e87690ea48107592"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a0a823690b2589a59e87690ea48107592">MeasToMIDI</a> (unsigned int meas, unsigned int beat=0, unsigned int offset=0)</td></tr>
+<tr class="memdesc:a0a823690b2589a59e87690ea48107592"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO.  <a href="class_m_i_d_i_sequencer.html#a0a823690b2589a59e87690ea48107592">More...</a><br /></td></tr>
+<tr class="separator:a0a823690b2589a59e87690ea48107592"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9de12a7f767c63cf7ebc2c0c854d17e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#ad9de12a7f767c63cf7ebc2c0c854d17e">UpdateStatus</a> ()</td></tr>
+<tr class="memdesc:ad9de12a7f767c63cf7ebc2c0c854d17e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is equivalent of GoToTime(state.cur_clock) and should be used to update the sequencer state after an edit in the multitrack (adding, deleting or editing events, for changes in the track structure see <a class="el" href="class_m_i_d_i_sequencer.html#a57b78af56b44b4cedc3bbbde581072d7" title="Inserts into the internal MIDIMultiTrack a new empty track with default track parameters (transpose,...">InsertTrack()</a>, <a class="el" href="class_m_i_d_i_sequencer.html#a56fd5414ee4dcc3dbb67dccd0ea6b028" title="Deletes a track and all its events from the internal MIDIMultiTrack.">DeleteTrack()</a> and <a class="el" href="class_m_i_d_i_sequencer.html#a200eff3a9e7bdebebab7ef403b2d9d75" title="Moves a track from one position to another in the internal MIDIMultiTrack.">MoveTrack()</a>).  <a href="class_m_i_d_i_sequencer.html#ad9de12a7f767c63cf7ebc2c0c854d17e">More...</a><br /></td></tr>
+<tr class="separator:ad9de12a7f767c63cf7ebc2c0c854d17e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6816e40d574829ffc196bfa4b5fa177a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a6816e40d574829ffc196bfa4b5fa177a">Start</a> ()</td></tr>
 <tr class="memdesc:a6816e40d574829ffc196bfa4b5fa177a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Starts the sequencer playing from the current time.  <a href="class_m_i_d_i_sequencer.html#a6816e40d574829ffc196bfa4b5fa177a">More...</a><br /></td></tr>
 <tr class="separator:a6816e40d574829ffc196bfa4b5fa177a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -313,11 +347,11 @@ Additional Inherited Members</h2></td></tr>
 <li>set a repeat play loop between two measures</li>
 </ul>
 <dl class="section note"><dt>Note</dt><dd>This class is especially suitable for subclassing but has limited playing capacity (for example, if you jump from a time to another it updates the track parameters but doesn't send the appropriate MIDI messages to the drivers, so playing could be inconsistent with showed parameters). The <a class="el" href="class_advanced_sequencer.html" title="An enhanced MIDISequencer, able to directly load and play MIDI files and many more.">AdvancedSequencer</a> class is an enhanced sequencer with more features and more easy use. </dd></dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_sequencer_8cpp-example.html#_a1">test_sequencer.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_sequencer_8cpp-example.html#_a2">test_sequencer.cpp</a>.</dd>
 </dl>
 </div><h2 class="groupheader">Member Enumeration Documentation</h2>
-<a id="a68f87c0ad4eaadd75bf2f84daf517fd5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a68f87c0ad4eaadd75bf2f84daf517fd5">&#9670;&nbsp;</a></span>anonymous enum</h2>
+<a id="a216381fd6370f982976db2ec2b12ae40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a216381fd6370f982976db2ec2b12ae40">&#9670;&nbsp;</a></span>anonymous enum</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -330,11 +364,55 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Values for the <a class="el" href="class_m_i_d_i_sequencer.html#acec81fbb015bf88f4040e692166f3f04" title="Selects the way the sequencer calculates metronome beat.">SetMetronomeMode()</a> method. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a68f87c0ad4eaadd75bf2f84daf517fd5ade6b57622e50656eb3e46861c2d740dd"></a>FOLLOW_MIDI_TIMESIG_MESSAGE&#160;</td><td class="fielddoc"><p>follow the value stored in the last seen MIDI TimeSig message </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a216381fd6370f982976db2ec2b12ae40ade6b57622e50656eb3e46861c2d740dd"></a>FOLLOW_MIDI_TIMESIG_MESSAGE&#160;</td><td class="fielddoc"><p>follow the value stored in the last seen MIDI TimeSig message </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a68f87c0ad4eaadd75bf2f84daf517fd5ad42fe028a7c432cc7358e0d6c67793cc"></a>FOLLOW_TIMESIG_DENOMINATOR&#160;</td><td class="fielddoc"><p>follow the denominator of the time signature </p>
+<tr><td class="fieldname"><a id="a216381fd6370f982976db2ec2b12ae40ad42fe028a7c432cc7358e0d6c67793cc"></a>FOLLOW_TIMESIG_DENOMINATOR&#160;</td><td class="fielddoc"><p>follow the denominator of the time signature </p>
 </td></tr>
-<tr><td class="fieldname"><a id="a68f87c0ad4eaadd75bf2f84daf517fd5a4be5c2c226ce2ac8fcfff9d01def46e8"></a>FOLLOW_THEORETIC_VALUE&#160;</td><td class="fielddoc"><p>follow the music theory value </p>
+<tr><td class="fieldname"><a id="a216381fd6370f982976db2ec2b12ae40a4be5c2c226ce2ac8fcfff9d01def46e8"></a>FOLLOW_THEORETIC_VALUE&#160;</td><td class="fielddoc"><p>follow the music theory value </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a id="a27a42c2b51d2e1024796734c09eeb336"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27a42c2b51d2e1024796734c09eeb336">&#9670;&nbsp;</a></span>anonymous enum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">anonymous enum</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Values for the play mode. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a27a42c2b51d2e1024796734c09eeb336a6d742365d6cbe81cb5027e8068207a98"></a>PLAY_BOUNDED&#160;</td><td class="fielddoc"><p>See <a class="el" href="class_m_i_d_i_sequencer.html#a3b31f5d78d481cda789999473c1b1559" title="Sets the play mode.">SetPlayMode()</a> </p>
+</td></tr>
+<tr><td class="fieldname"><a id="a27a42c2b51d2e1024796734c09eeb336a8b07ad2e2a8fb81ffa9d4915bb3787f7"></a>PLAY_UNBOUNDED&#160;</td><td class="fielddoc"><p>See <a class="el" href="class_m_i_d_i_sequencer.html#a3b31f5d78d481cda789999473c1b1559" title="Sets the play mode.">SetPlayMode()</a> </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a id="ab56dbad10453a4f5a08ddd1ffe660626"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab56dbad10453a4f5a08ddd1ffe660626">&#9670;&nbsp;</a></span>anonymous enum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">anonymous enum</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Values for count_in status. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ab56dbad10453a4f5a08ddd1ffe660626a8b37f32949160d55a2658190c8ba2418"></a>COUNT_IN_ENABLED&#160;</td><td class="fielddoc"><p>0 if no count in before starting, 1 if yes </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ab56dbad10453a4f5a08ddd1ffe660626aa6c6dbc6449d788b8f0903c4189d716a"></a>COUNT_IN_PENDING&#160;</td><td class="fielddoc"><p>0 if count in is done, 2 if it is pending </p>
 </td></tr>
 </table>
 
@@ -408,7 +486,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>The destructor. </p>
-<p>The <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a> and the <a class="el" href="class_m_i_d_i_sequencer_g_u_i_notifier.html" title="A pure virtual class implementing a device that can send MIDISequencerGUIEvent messages to a GUI.">MIDISequencerGUINotifier</a> are not owned by the <a class="el" href="class_m_i_d_i_sequencer.html" title="A MIDITickComponent which implements a basic sequencer, able to play the MIDI events contained in a M...">MIDISequencer</a>; the <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> objects, instead, (if you have set them with <a class="el" href="class_m_i_d_i_sequencer.html#a475d9940a8ce8550794d2669e7d8b4ab" title="Sets a MIDIProcessor for the given track.">SetProcessor()</a>) are deleted. </p>
+<p>The <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a> and the <a class="el" href="class_m_i_d_i_sequencer_g_u_i_notifier.html" title="A pure virtual class implementing a device that can send MIDISequencerGUIEvent messages to a GUI.">MIDISequencerGUINotifier</a> are not owned by the <a class="el" href="class_m_i_d_i_sequencer.html" title="A MIDITickComponent which implements a basic sequencer, able to play the MIDI events contained in a M...">MIDISequencer</a>; the <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> objects, instead, (if you have set them with SetProcessor()) are deleted. </p>
 
 </div>
 </div>
@@ -437,7 +515,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Resets the <a class="el" href="class_m_i_d_i_sequencer.html" title="A MIDITickComponent which implements a basic sequencer, able to play the MIDI events contained in a M...">MIDISequencer</a> to its initial state. </p>
-<p>Moves the time to 0 updating the state (see <a class="el" href="class_m_i_d_i_sequencer_state.html#aa76ad6cc433107f9aff43753eaa96ed7" title="Resets the state to default values.">MIDISequencerState::Reset()</a>), deletes all the track processors (if you have set them with <a class="el" href="class_m_i_d_i_sequencer.html#a475d9940a8ce8550794d2669e7d8b4ab" title="Sets a MIDIProcessor for the given track.">SetProcessor()</a>), sets all the tracks to MIDI out 0 and no time offset, sets tempo scale to 100. </p><dl class="section note"><dt>Note</dt><dd>This doesn't affect the multitrack content. If you want to empty it call <a class="el" href="class_m_i_d_i_sequencer.html#abe062deffde109507213c91e42cb2b7f" title="Returns a pointer to the internal MIDIMultiTrack.">GetMultiTrack()</a>-&gt;Clear() <b>before</b> this (so the sequencer state is correctly updated). You should call this when the multitrack contents are changed (adding or deleting tracks) to reinitialize the <a class="el" href="class_m_i_d_i_sequencer.html" title="A MIDITickComponent which implements a basic sequencer, able to play the MIDI events contained in a M...">MIDISequencer</a> according to the new contents. </dd></dl>
+<p>Moves the time to 0 updating the state (see <a class="el" href="class_m_i_d_i_sequencer_state.html#aa76ad6cc433107f9aff43753eaa96ed7" title="Resets the state to default values.">MIDISequencerState::Reset()</a>), deletes all the track processors (if you have set them with SetProcessor()), sets all the tracks to MIDI out 0 and no time offset, sets tempo scale to 100. </p><dl class="section note"><dt>Note</dt><dd>This doesn't affect the multitrack content. If you want to empty it call <a class="el" href="class_m_i_d_i_sequencer.html#abe062deffde109507213c91e42cb2b7f" title="Returns a pointer to the internal MIDIMultiTrack.">GetMultiTrack()</a>-&gt;Clear() <b>before</b> this (so the sequencer state is correctly updated). You should call this when the multitrack contents are changed (adding or deleting tracks) to reinitialize the <a class="el" href="class_m_i_d_i_sequencer.html" title="A MIDITickComponent which implements a basic sequencer, able to play the MIDI events contained in a M...">MIDISequencer</a> according to the new contents. </dd></dl>
 
 <p>Implements <a class="el" href="class_m_i_d_i_tick_component.html#a2481415a5e73b0ecc5b92e7bb1d61ddb">MIDITickComponent</a>.</p>
 
@@ -616,7 +694,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns a pointer to the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a14">test_advancedsequencer.cpp</a>, <a class="el" href="test_recorder_8cpp-example.html#a32">test_recorder.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a2">test_writefile.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a2">test_advancedsequencer.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a2">test_writefile.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -648,6 +726,36 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a id="a114800fd9b592e6bb303d919f73a2c3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a114800fd9b592e6bb303d919f73a2c3a">&#9670;&nbsp;</a></span>GetTrack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_m_i_d_i_track.html">MIDITrack</a>* MIDISequencer::GetTrack </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>trk_num</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns a pointer to the given track, or 0 if _num_trk is not a valid number. </p>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a17">test_advancedsequencer.cpp</a>.</dd>
+</dl>
+
+</div>
+</div>
 <a id="a84ae107786f698b599f2ff639059962c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a84ae107786f698b599f2ff639059962c">&#9670;&nbsp;</a></span>GetNumTracks()</h2>
 
@@ -672,7 +780,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns the number of tracks of the multitrack. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a39">test_advancedsequencer.cpp</a>, <a class="el" href="test_recorder_8cpp-example.html#a31">test_recorder.cpp</a>, and <a class="el" href="test_win32_player_8cpp-example.html#a10">test_win32_player.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_win32_player_8cpp-example.html#a10">test_win32_player.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -757,7 +865,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns current tempo (BPM) taking into account scaling (this is the true actual tempo). </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a26">test_advancedsequencer.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a25">test_advancedsequencer.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -843,6 +951,88 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a id="a15c9b1f5536c9014a271320fa66db8e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15c9b1f5536c9014a271320fa66db8e7">&#9670;&nbsp;</a></span>GetCountInEnable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MIDISequencer::GetCountInEnable </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns <b>true</b> if the count in is enabled. </p>
+
+</div>
+</div>
+<a id="a8b1324ae60aed33f1ba99c79594ee16b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b1324ae60aed33f1ba99c79594ee16b">&#9670;&nbsp;</a></span>GetCountInPending()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MIDISequencer::GetCountInPending </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns <b>true</b> if the count in is pending (the sequencer is counting in). </p>
+
+</div>
+</div>
+<a id="a3eb06159ec75cfe92cc284e44556277e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3eb06159ec75cfe92cc284e44556277e">&#9670;&nbsp;</a></span>GetTimeShiftMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MIDISequencer::GetTimeShiftMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the time shift mode (on or off). </p>
+<p>This is the value of the internal parameter, <b>not</b> the actual mode (during the playback the <a class="el" href="class_m_i_d_i_sequencer.html#a6816e40d574829ffc196bfa4b5fa177a" title="Starts the sequencer playing from the current time.">Start()</a> method always sets it to on, while at the end the <a class="el" href="class_m_i_d_i_sequencer.html#abec3f848171c06ab4a3b6fa6b8a4c99b" title="Stops the sequencer playing.">Stop()</a> method resets it to this value). </p>
+
+</div>
+</div>
 <a id="a9cfce22600c87bb80f0b9fc7fe013003"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9cfce22600c87bb80f0b9fc7fe013003">&#9670;&nbsp;</a></span>GetState() <span class="overload">[1/2]</span></h2>
 
@@ -898,6 +1088,33 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Returns a pointer to the current <a class="el" href="class_m_i_d_i_sequencer_state.html" title="Stores current MIDI general parameters for a MIDISequencer object, embedding a MIDISequencerTrackStat...">MIDISequencerState</a> (i.e. </p>
 <p>the global sequencer state at current time). You can easily jump from a time to another saving and retrieving sequencer states. </p>
+
+</div>
+</div>
+<a id="acbc8c732b8eabdf27404691c4b6ac45e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acbc8c732b8eabdf27404691c4b6ac45e">&#9670;&nbsp;</a></span>GetPlayMode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool MIDISequencer::GetPlayMode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the play mode state (see <a class="el" href="class_m_i_d_i_sequencer.html#a3b31f5d78d481cda789999473c1b1559" title="Sets the play mode.">SetPlayMode()</a>). </p>
 
 </div>
 </div>
@@ -969,6 +1186,40 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a id="a265e717ba643a28559a54f056f7925f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a265e717ba643a28559a54f056f7925f0">&#9670;&nbsp;</a></span>GetTrackOutPort()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int MIDISequencer::GetTrackOutPort </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>trk_num</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the number of the out port assigned to a track. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">trk_num</td><td>the track number </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a0edf7b35f17a2f3a228fc7efdac107b2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0edf7b35f17a2f3a228fc7efdac107b2">&#9670;&nbsp;</a></span>GetTrackProcessor() <span class="overload">[1/2]</span></h2>
 
@@ -1000,7 +1251,7 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>the processor pointer (if you have already set it with the <a class="el" href="class_m_i_d_i_sequencer.html#a475d9940a8ce8550794d2669e7d8b4ab" title="Sets a MIDIProcessor for the given track.">SetProcessor()</a> method), otherwise 0 </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>the processor pointer (if you have already set it with the SetProcessor() method), otherwise 0 </dd></dl>
 
 </div>
 </div>
@@ -1035,7 +1286,7 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>the processor pointer (if you have already set it with the <a class="el" href="class_m_i_d_i_sequencer.html#a475d9940a8ce8550794d2669e7d8b4ab" title="Sets a MIDIProcessor for the given track.">SetProcessor()</a> method), otherwise 0 </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>the processor pointer (if you have already set it with the SetProcessor() method), otherwise 0 </dd></dl>
 
 </div>
 </div>
@@ -1074,8 +1325,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="af28339bdec98627c546e1aad78503856"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af28339bdec98627c546e1aad78503856">&#9670;&nbsp;</a></span>GetTrackPort()</h2>
+<a id="a01946de82a9bf741647966715485cd91"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01946de82a9bf741647966715485cd91">&#9670;&nbsp;</a></span>SetRepeatPlay()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1084,40 +1335,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">unsigned int MIDISequencer::GetTrackPort </td>
-          <td>(</td>
-          <td class="paramtype">unsigned int&#160;</td>
-          <td class="paramname"><em>trk_num</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Return the number of the port assigned to a track. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">trk_num</td><td>the track number </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a20">test_advancedsequencer.cpp</a>, and <a class="el" href="test_recorder_8cpp-example.html#a25">test_recorder.cpp</a>.</dd>
-</dl>
-
-</div>
-</div>
-<a id="a297e14ff8ec004b6565c34e2726c93d4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a297e14ff8ec004b6565c34e2726c93d4">&#9670;&nbsp;</a></span>SetRepeatPlay()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void MIDISequencer::SetRepeatPlay </td>
+          <td class="memname">virtual bool MIDISequencer::SetRepeatPlay </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>on_off</em>, </td>
@@ -1140,6 +1358,11 @@ Additional Inherited Members</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Sets the repeat play (loop) parameters: you can set the repeat play status on/off, the start and the end measure. </p>
@@ -1150,25 +1373,62 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a9">test_advancedsequencer.cpp</a>.</dd>
+<dl class="section return"><dt>Returns</dt><dd><b>true</b> if parameters are valid (and the mode has been changed), <b>false</b> otherwise (the mode has been set to <b>false</b>). </dd></dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a11">test_advancedsequencer.cpp</a>.</dd>
 </dl>
 
 </div>
 </div>
-<a id="a99810a9604e5ea8d8d0db583d42b32e1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a99810a9604e5ea8d8d0db583d42b32e1">&#9670;&nbsp;</a></span>SetTempoScale()</h2>
+<a id="a88e268f9d874d2e38231e966604cd849"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a88e268f9d874d2e38231e966604cd849">&#9670;&nbsp;</a></span>SetCountIn()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void MIDISequencer::SetTempoScale </td>
+          <td class="memname">virtual void MIDISequencer::SetCountIn </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>on_off</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the count in enable or disable. </p>
+
+</div>
+</div>
+<a id="ab724f75e59473b31aac3db8b344a4c43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab724f75e59473b31aac3db8b344a4c43">&#9670;&nbsp;</a></span>SetTempoScale()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void MIDISequencer::SetTempoScale </td>
           <td>(</td>
           <td class="paramtype">unsigned int&#160;</td>
           <td class="paramname"><em>scale</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Sets the global tempo scale. </p>
@@ -1178,59 +1438,125 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a25">test_advancedsequencer.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a24">test_advancedsequencer.cpp</a>.</dd>
 </dl>
 
 </div>
 </div>
-<a id="afe2bd7feed80d456798c493384993252"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afe2bd7feed80d456798c493384993252">&#9670;&nbsp;</a></span>SetTrackTimeShift()</h2>
+<a id="a427a23a98d219d17f566e0afeefa17ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a427a23a98d219d17f566e0afeefa17ba">&#9670;&nbsp;</a></span>SetTimeShiftMode()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void MIDISequencer::SetTrackTimeShift </td>
+          <td class="memname">virtual void MIDISequencer::SetTimeShiftMode </td>
           <td>(</td>
-          <td class="paramtype">unsigned int&#160;</td>
-          <td class="paramname"><em>trk_num</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>f</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>offset</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p>Sets the time shift offset (in MIDI ticks) for a track. </p>
-<p>The offset can be positive or negative; events shifted include all channel messages and sysex messages (others remain at their time). If you select a negative offset, be sure not to have shifted events at lesser time than the offset (they won't be shifted). This method is thread-safe and can be called during playback. </p><dl class="section see"><dt>See also</dt><dd>SetTimeOffsetMode(). </dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Sets the time shifting of events on and off. </p>
+<p>If you are editing the multitrack events you probably want to see the original (not shifted) MIDI time of events, while during playback you want them shifted. So you can turn time shifting on and off (and all the time related methods of the sequencer will return the shifted or the original time of events). The <a class="el" href="class_m_i_d_i_sequencer.html#a6816e40d574829ffc196bfa4b5fa177a" title="Starts the sequencer playing from the current time.">Start()</a> method sets time shifting on, while the <a class="el" href="class_m_i_d_i_sequencer.html#abec3f848171c06ab4a3b6fa6b8a4c99b" title="Stops the sequencer playing.">Stop()</a> resets it to your choice, so usually you can leave time shifting off. </p>
+
+</div>
+</div>
+<a id="a3462550fc00118a3afc8702b3b03d2ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3462550fc00118a3afc8702b3b03d2ad">&#9670;&nbsp;</a></span>SetState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void MIDISequencer::SetState </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="class_m_i_d_i_sequencer_state.html">MIDISequencerState</a> *&#160;</td>
+          <td class="paramname"><em>s</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Copies a given <a class="el" href="class_m_i_d_i_sequencer_state.html" title="Stores current MIDI general parameters for a MIDISequencer object, embedding a MIDISequencerTrackStat...">MIDISequencerState</a> into the internal sequencer state. </p>
+<p>This method is thread-safe and can be called during playback. Notifies the GUI a GROUP_ALL event to signify a full GUI reset. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">trk_num</td><td>the track number </td></tr>
-    <tr><td class="paramname">offset</td><td>the offset in MIDI ticks </td></tr>
+    <tr><td class="paramname">s</td><td>a pointer to the new state. </td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a29">test_advancedsequencer.cpp</a>.</dd>
-</dl>
+<dl class="section note"><dt>Note</dt><dd>You can save and restore the sequencer states for quickly jumping from a time to another; however you should avoid to save a state, edit the multitrack events and then restore the old state, because you can get inconsistent state parameters. </dd></dl>
 
 </div>
 </div>
-<a id="a37072592bbabfe298143b1596d10988e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a37072592bbabfe298143b1596d10988e">&#9670;&nbsp;</a></span>SetTrackOutPort()</h2>
+<a id="a3b31f5d78d481cda789999473c1b1559"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b31f5d78d481cda789999473c1b1559">&#9670;&nbsp;</a></span>SetPlayMode()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void MIDISequencer::SetTrackOutPort </td>
+          <td class="memname">virtual void MIDISequencer::SetPlayMode </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>mode</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the play mode. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mode</td><td>an enum value with the following meaning:<ul>
+<li>PLAY_BOUNDED: The sequencer auto stops after the last event. You cannot set the 'now' time after it</li>
+<li>PLAY_UNBOUNDED: The sequencer doesn't stops after last event, but continues playing sending only beat markers events. </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>The play mode affects the behavior of the methods <a class="el" href="class_m_i_d_i_sequencer.html#ac965401475006af95e25040d386382fd" title="Gets the next event (respect current position).">GetNextEvent()</a>, <a class="el" href="class_m_i_d_i_sequencer.html#ad7d690cbcb528bd33027b66833ec8aef" title="Gets the time of the next event (it can be different from current time if at current time there are n...">GetNextEventTime()</a>, <a class="el" href="class_m_i_d_i_sequencer.html#aa331eb3f689c780ce53552fa45aee657" title="Same of GetNextEventTime(), but time is returned in milliseconds from the beginning.">GetNextEventTimeMs()</a>, <a class="el" href="class_m_i_d_i_sequencer.html#a0c23d1e65792da91561e15588886ebe2" title="Sets the current time to a given the MIDI time, updating the internal status.">GoToTime()</a>, <a class="el" href="class_m_i_d_i_sequencer.html#a1ac09ae2e1f8c06e148c861f22dee679" title="Same as GoToTime(), but the time is given in milliseconds.">GoToTimeMs()</a>, <a class="el" href="class_m_i_d_i_sequencer.html#a626643d74757b59aaf55587069a729bd" title="Sets the current time to the given measure and beat, updating the internal status.">GoToMeasure()</a>. </dd></dl>
+
+</div>
+</div>
+<a id="a5a5ad826d66e6688da3c7c826a0243c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a5ad826d66e6688da3c7c826a0243c2">&#9670;&nbsp;</a></span>SetTrackOutPort()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool MIDISequencer::SetTrackOutPort </td>
           <td>(</td>
           <td class="paramtype">unsigned int&#160;</td>
           <td class="paramname"><em>trk_num</em>, </td>
@@ -1247,9 +1573,14 @@ Additional Inherited Members</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p>Sets the MIDI port for a track. </p>
+<p>Sets the MIDI out port for a track. </p>
 <p>This method is thread-safe and can be called during playback (in this case the sequencer will send a MIDI AllNotesOff message to the old port). </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">trk_num</td><td>the track number </td></tr>
@@ -1257,46 +1588,23 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a19">test_advancedsequencer.cpp</a>, and <a class="el" href="test_recorder_8cpp-example.html#a24">test_recorder.cpp</a>.</dd>
+<dl class="section return"><dt>Returns</dt><dd><b>true</b> if parameters are valid (and the port has been changed), <b>false</b> otherwise. </dd></dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a18">test_advancedsequencer.cpp</a>.</dd>
 </dl>
 
 </div>
 </div>
-<a id="abca393499b3e0482d7158feabad593f7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abca393499b3e0482d7158feabad593f7">&#9670;&nbsp;</a></span>SetState()</h2>
+<a id="a25f2f529aeb99d30fe416ec239d75f57"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a25f2f529aeb99d30fe416ec239d75f57">&#9670;&nbsp;</a></span>SetTrackProcessor()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void MIDISequencer::SetState </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="class_m_i_d_i_sequencer_state.html">MIDISequencerState</a> *&#160;</td>
-          <td class="paramname"><em>s</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Copies a given <a class="el" href="class_m_i_d_i_sequencer_state.html" title="Stores current MIDI general parameters for a MIDISequencer object, embedding a MIDISequencerTrackStat...">MIDISequencerState</a> into the internal sequencer state. </p>
-<p>This method is thread-safe and can be called during playback. Notifies the GUI a GROUP_ALL event to signify a full GUI reset. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">s</td><td>a pointer to the new state. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section note"><dt>Note</dt><dd>You can save and restore the sequencer states for quickly jumping from a time to another; however you should avoid to save a state, edit the multitrack events and then restore the old state, because you can get inconsistent state parameters. </dd></dl>
-
-</div>
-</div>
-<a id="a475d9940a8ce8550794d2669e7d8b4ab"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a475d9940a8ce8550794d2669e7d8b4ab">&#9670;&nbsp;</a></span>SetProcessor()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void MIDISequencer::SetProcessor </td>
+          <td class="memname">virtual bool MIDISequencer::SetTrackProcessor </td>
           <td>(</td>
           <td class="paramtype">unsigned int&#160;</td>
           <td class="paramname"><em>trk_num</em>, </td>
@@ -1313,27 +1621,97 @@ Additional Inherited Members</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Sets a <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> for the given track. </p>
-<p>This can't be done while the sequencer is playing so it stops it. </p><dl class="section note"><dt>Note</dt><dd>the <a class="el" href="class_m_i_d_i_sequencer.html#ad65c6d815473ac094496c0e307d0c928" title="Resets the MIDISequencer to its initial state.">Reset()</a> method deletes all processors set by this method. </dd></dl>
+<p>This can't be done while the sequencer is playing so it stops it. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">trk_num</td><td>the track number </td></tr>
+    <tr><td class="paramname">p</td><td>a pointer to a <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a>; calling this with <em>p</em> = 0 sets the track to no processor </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>the <a class="el" href="class_m_i_d_i_sequencer.html#ad65c6d815473ac094496c0e307d0c928" title="Resets the MIDISequencer to its initial state.">Reset()</a> method deletes all processors set by this method. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><b>true</b> if <em>trk_num</em> is valid (and the processor has been changed), <b>false</b> otherwise. </dd></dl>
 
 </div>
 </div>
-<a id="a1890abf3b871ee50fb94d55024f47d59"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1890abf3b871ee50fb94d55024f47d59">&#9670;&nbsp;</a></span>InsertTrack()</h2>
+<a id="a03e88ef9b1e7dada3a1b26a56680f389"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03e88ef9b1e7dada3a1b26a56680f389">&#9670;&nbsp;</a></span>SetTrackTimeShift()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool MIDISequencer::InsertTrack </td>
+          <td class="memname">virtual bool MIDISequencer::SetTrackTimeShift </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>trk_num</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>offset</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sets the time shift offset (in MIDI ticks) for a track. </p>
+<p>The offset can be positive or negative; events shifted include all channel messages and sysex messages (others remain at their time). If you select a negative offset, be sure not to have shifted events at lesser time than the offset (they won't be shifted). This method is thread-safe and can be called during playback. </p><dl class="section see"><dt>See also</dt><dd>SetTimeOffsetMode(). </dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">trk_num</td><td>the track number </td></tr>
+    <tr><td class="paramname">offset</td><td>the offset in MIDI ticks </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><b>true</b> if <em>trk_num</em> is valid (and the offset has been changed), <b>false</b> otherwise. </dd></dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a28">test_advancedsequencer.cpp</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="a57b78af56b44b4cedc3bbbde581072d7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a57b78af56b44b4cedc3bbbde581072d7">&#9670;&nbsp;</a></span>InsertTrack()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool MIDISequencer::InsertTrack </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>trk_num</em> = <code>-1</code></td><td>)</td>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Inserts into the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a> a new empty track with default track parameters (transpose, time offset, etc.). </p>
@@ -1345,45 +1723,58 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><b>true</b> if the track was effectively inserted </dd></dl>
 <dl class="section note"><dt>Note</dt><dd>You should not use the corresponding method of <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a> class, as it does not sync the iterator and the sequencer internal arrays. If you change the number of tracks directly in the multitrack (for example when loading a MIDI file) you must then call <a class="el" href="class_m_i_d_i_sequencer.html#ad65c6d815473ac094496c0e307d0c928" title="Resets the MIDISequencer to its initial state.">MIDISequencer::Reset()</a> for updating the sequencer parameters, but this will reset all track parameters to the default. </dd></dl>
+<dl class="section warning"><dt>Warning</dt><dd>if the sequencer is connected to a <a class="el" href="class_m_i_d_i_recorder.html" title="A MIDITickComponent which can record MIDI messages incoming from a MIDI in port, putting them into an...">MIDIRecorder</a> see <a class="el" href="class_m_i_d_i_recorder.html#a3c1e3ef4d608f564ca706f3f9c80554b" title="Inserts into the internal MIDIMultiTrack a new track.">MIDIRecorder::InsertTrack()</a>. </dd></dl>
 
 </div>
 </div>
-<a id="a9e94ef721bb1863f9672ab630af997a4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9e94ef721bb1863f9672ab630af997a4">&#9670;&nbsp;</a></span>DeleteTrack()</h2>
+<a id="a56fd5414ee4dcc3dbb67dccd0ea6b028"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a56fd5414ee4dcc3dbb67dccd0ea6b028">&#9670;&nbsp;</a></span>DeleteTrack()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool MIDISequencer::DeleteTrack </td>
+          <td class="memname">virtual bool MIDISequencer::DeleteTrack </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>trk_num</em></td><td>)</td>
+          <td class="paramname"><em>trk_num</em> = <code>-1</code></td><td>)</td>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Deletes a track and all its events from the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>. </p>
 <p>This method is thread-safe and can be called during playback (in this case the sequencer will send a MIDI AllNotesOff message to the old track port). Notifies the GUI a GROUP_ALL event to signify a full GUI reset. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">trk_num</td><td>the track number (must be in the range 0 ... <a class="el" href="class_m_i_d_i_sequencer.html#a84ae107786f698b599f2ff639059962c" title="Returns the number of tracks of the multitrack.">GetNumTracks()</a> - 1). </td></tr>
+    <tr><td class="paramname">trk_num</td><td>the track number (must be in the range 0 ... <a class="el" href="class_m_i_d_i_sequencer.html#a84ae107786f698b599f2ff639059962c" title="Returns the number of tracks of the multitrack.">GetNumTracks()</a> - 1). If you leave he default value the last track wil be deleted. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><b>true</b> if the track was effectively deleted </dd></dl>
-<dl class="section see"><dt>See also</dt><dd>note to <a class="el" href="class_m_i_d_i_sequencer.html#a1890abf3b871ee50fb94d55024f47d59" title="Inserts into the internal MIDIMultiTrack a new empty track with default track parameters (transpose,...">InsertTrack()</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd>note to <a class="el" href="class_m_i_d_i_sequencer.html#a57b78af56b44b4cedc3bbbde581072d7" title="Inserts into the internal MIDIMultiTrack a new empty track with default track parameters (transpose,...">InsertTrack()</a> </dd></dl>
+<dl class="section warning"><dt>Warning</dt><dd>if the sequencer is connected to a <a class="el" href="class_m_i_d_i_recorder.html" title="A MIDITickComponent which can record MIDI messages incoming from a MIDI in port, putting them into an...">MIDIRecorder</a> see <a class="el" href="class_m_i_d_i_recorder.html#ab654e2ac8a6ff6f627dde8dca3629f13" title="Deletes a track and all its events from the internal MIDIMultiTrack.">MIDIRecorder::DeleteTrack()</a>. </dd></dl>
 
 </div>
 </div>
-<a id="a9c4ce2556fd3ed4b137594f7420675f5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9c4ce2556fd3ed4b137594f7420675f5">&#9670;&nbsp;</a></span>MoveTrack()</h2>
+<a id="a200eff3a9e7bdebebab7ef403b2d9d75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a200eff3a9e7bdebebab7ef403b2d9d75">&#9670;&nbsp;</a></span>MoveTrack()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool MIDISequencer::MoveTrack </td>
+          <td class="memname">virtual bool MIDISequencer::MoveTrack </td>
           <td>(</td>
           <td class="paramtype">int&#160;</td>
           <td class="paramname"><em>from</em>, </td>
@@ -1400,6 +1791,11 @@ Additional Inherited Members</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Moves a track from one position to another in the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>. </p>
@@ -1410,44 +1806,63 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><b>true</b> if the track was effectively moved </dd></dl>
-<dl class="section see"><dt>See also</dt><dd>note to <a class="el" href="class_m_i_d_i_sequencer.html#a1890abf3b871ee50fb94d55024f47d59" title="Inserts into the internal MIDIMultiTrack a new empty track with default track parameters (transpose,...">InsertTrack()</a> </dd></dl>
+<dl class="section see"><dt>See also</dt><dd>note to <a class="el" href="class_m_i_d_i_sequencer.html#a57b78af56b44b4cedc3bbbde581072d7" title="Inserts into the internal MIDIMultiTrack a new empty track with default track parameters (transpose,...">InsertTrack()</a> </dd></dl>
+<dl class="section warning"><dt>Warning</dt><dd>if the sequencer is connected to a <a class="el" href="class_m_i_d_i_recorder.html" title="A MIDITickComponent which can record MIDI messages incoming from a MIDI in port, putting them into an...">MIDIRecorder</a> see <a class="el" href="class_m_i_d_i_recorder.html#a8a385186a4b895be0422e93c85b5c943" title="Moves a track from one position to another in the internal MIDIMultiTrack.">MIDIRecorder::MoveTrack()</a>. </dd></dl>
 
 </div>
 </div>
-<a id="a3e494030d244875a3d9a8eef457f9ca1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3e494030d244875a3d9a8eef457f9ca1">&#9670;&nbsp;</a></span>GoToZero()</h2>
+<a id="afc705150e92367ffd10b48db5e2dfdd2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc705150e92367ffd10b48db5e2dfdd2">&#9670;&nbsp;</a></span>GoToZero()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void MIDISequencer::GoToZero </td>
+          <td class="memname">virtual void MIDISequencer::GoToZero </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Sets the current time to the beginning of the song, updating the internal status. </p>
 <p>This method is thread-safe and can be called during playback. Notifies the GUI a GROUP_ALL event to signify a full GUI reset. </p>
 
+<p>Reimplemented in <a class="el" href="class_advanced_sequencer.html#a043b4a3c7f6af2eec5997103b58d8e2e">AdvancedSequencer</a>.</p>
+
 </div>
 </div>
-<a id="a59096dd52df021730366015dfd4f2590"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a59096dd52df021730366015dfd4f2590">&#9670;&nbsp;</a></span>GoToTime()</h2>
+<a id="a0c23d1e65792da91561e15588886ebe2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c23d1e65792da91561e15588886ebe2">&#9670;&nbsp;</a></span>GoToTime()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool MIDISequencer::GoToTime </td>
+          <td class="memname">virtual bool MIDISequencer::GoToTime </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a>&#160;</td>
           <td class="paramname"><em>time_clk</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Sets the current time to a given the MIDI time, updating the internal status. </p>
@@ -1457,39 +1872,54 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><b>true</b> if the new time is effectively reached, <b>false</b> otherwise (<em>time_clk</em> is after the end of the song: in this case the sequencer is leaved in its original state) </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><b>true</b> if the new time is effectively reached, <b>false</b> otherwise (<em>time_clk</em> is after the end of the song and the play mode is set to PLAY_BOUNDED: in this case the sequencer is leaved in its original state) </dd></dl>
+
+<p>Reimplemented in <a class="el" href="class_advanced_sequencer.html#aba799def66a043c00420fcb784a6f8d2">AdvancedSequencer</a>.</p>
 
 </div>
 </div>
-<a id="abcc786b05f92dcb29882ecbdad9edf7c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abcc786b05f92dcb29882ecbdad9edf7c">&#9670;&nbsp;</a></span>GoToTimeMs()</h2>
+<a id="a1ac09ae2e1f8c06e148c861f22dee679"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ac09ae2e1f8c06e148c861f22dee679">&#9670;&nbsp;</a></span>GoToTimeMs()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool MIDISequencer::GoToTimeMs </td>
+          <td class="memname">virtual bool MIDISequencer::GoToTimeMs </td>
           <td>(</td>
           <td class="paramtype">float&#160;</td>
           <td class="paramname"><em>time_ms</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p>Same as <a class="el" href="class_m_i_d_i_sequencer.html#a59096dd52df021730366015dfd4f2590" title="Sets the current time to a given the MIDI time, updating the internal status.">GoToTime()</a>, but the time is given in milliseconds. </p>
-<dl class="section return"><dt>Returns</dt><dd>see <a class="el" href="class_m_i_d_i_sequencer.html#a59096dd52df021730366015dfd4f2590" title="Sets the current time to a given the MIDI time, updating the internal status.">GoToTime()</a> </dd></dl>
+<p>Same as <a class="el" href="class_m_i_d_i_sequencer.html#a0c23d1e65792da91561e15588886ebe2" title="Sets the current time to a given the MIDI time, updating the internal status.">GoToTime()</a>, but the time is given in milliseconds. </p>
+<dl class="section return"><dt>Returns</dt><dd>see <a class="el" href="class_m_i_d_i_sequencer.html#a0c23d1e65792da91561e15588886ebe2" title="Sets the current time to a given the MIDI time, updating the internal status.">GoToTime()</a> </dd></dl>
+
+<p>Reimplemented in <a class="el" href="class_advanced_sequencer.html#a02b2b73dc440a29daf465c104a47cbc2">AdvancedSequencer</a>.</p>
 
 </div>
 </div>
-<a id="ad7d31e619a384f7c834dd9e36d9fac34"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad7d31e619a384f7c834dd9e36d9fac34">&#9670;&nbsp;</a></span>GoToMeasure()</h2>
+<a id="a626643d74757b59aaf55587069a729bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a626643d74757b59aaf55587069a729bd">&#9670;&nbsp;</a></span>GoToMeasure()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool MIDISequencer::GoToMeasure </td>
+          <td class="memname">virtual bool MIDISequencer::GoToMeasure </td>
           <td>(</td>
           <td class="paramtype">unsigned int&#160;</td>
           <td class="paramname"><em>measure</em>, </td>
@@ -1506,21 +1936,29 @@ Additional Inherited Members</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Sets the current time to the given measure and beat, updating the internal status. </p>
-<p>This method is thread-safe and can be called during playback. Notifies the GUI a GROUP_ALL event to signify a GUI reset </p><dl class="section return"><dt>Returns</dt><dd>see <a class="el" href="class_m_i_d_i_sequencer.html#a59096dd52df021730366015dfd4f2590" title="Sets the current time to a given the MIDI time, updating the internal status.">GoToTime()</a> </dd></dl>
+<p>This method is thread-safe and can be called during playback. Notifies the GUI a GROUP_ALL event to signify a GUI reset </p><dl class="section return"><dt>Returns</dt><dd>see <a class="el" href="class_m_i_d_i_sequencer.html#a0c23d1e65792da91561e15588886ebe2" title="Sets the current time to a given the MIDI time, updating the internal status.">GoToTime()</a> </dd></dl>
 
 </div>
 </div>
-<a id="aa838607b4ab41a03eaef2bb107ab0f2f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa838607b4ab41a03eaef2bb107ab0f2f">&#9670;&nbsp;</a></span>GetNextEvent()</h2>
+<a id="ac965401475006af95e25040d386382fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac965401475006af95e25040d386382fd">&#9670;&nbsp;</a></span>GetNextEvent()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool MIDISequencer::GetNextEvent </td>
+          <td class="memname">virtual bool MIDISequencer::GetNextEvent </td>
           <td>(</td>
           <td class="paramtype">int *&#160;</td>
           <td class="paramname"><em>trk_num</em>, </td>
@@ -1537,6 +1975,11 @@ Additional Inherited Members</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Gets the next event (respect current position). </p>
@@ -1547,24 +1990,35 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><b>true</b> if there is effectively a next event (and the parameters are valid), <b>false</b> otherwise (parameters are undefined and the sequencer is leaved in its original state) </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><b>true</b> if there is effectively a next event (and the parameters are valid), <b>false</b> otherwise</dd>
+<dd>
+<b>true</b> if there is effectively a next event (we are not at the end of the song or the play mode is set to PLAY_UNBOUNDED) , <b>false</b> otherwise (in this case *trk_num and *msg are undefined and the sequencer is leaved in its original state). </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>if we set the play mode to PLAY_UNBOUNDED and go beyond the end of song this will return the next beat event (on track 0). </dd></dl>
 
 </div>
 </div>
-<a id="a76532a6b85683d28c4cfe3bfe0853f98"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a76532a6b85683d28c4cfe3bfe0853f98">&#9670;&nbsp;</a></span>GetNextEventTime()</h2>
+<a id="ad7d690cbcb528bd33027b66833ec8aef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7d690cbcb528bd33027b66833ec8aef">&#9670;&nbsp;</a></span>GetNextEventTime()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool MIDISequencer::GetNextEventTime </td>
+          <td class="memname">virtual bool MIDISequencer::GetNextEventTime </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a> *&#160;</td>
           <td class="paramname"><em>time_clk</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Gets the time of the next event (it can be different from current time if at current time there are not events). </p>
@@ -1574,27 +2028,36 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><b>true</b> if there is effectively a next event (and *time_clk is a valid time), <b>false</b> if we are at the end of the song (*time_clk is undefined) </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><b>true</b> if there is effectively a next event (we are not at the end of the song or the play mode is set to PLAY_UNBOUNDED) , <b>false</b> otherwise (in this case *time_clk is undefined). </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>if we set the play mode to PLAY_UNBOUNDED and go beyond the end of song this will return the time of the next beat. </dd></dl>
 
 </div>
 </div>
-<a id="af4536b07acb15b85cf7c32b8bb998a9c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af4536b07acb15b85cf7c32b8bb998a9c">&#9670;&nbsp;</a></span>GetNextEventTimeMs()</h2>
+<a id="aa331eb3f689c780ce53552fa45aee657"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa331eb3f689c780ce53552fa45aee657">&#9670;&nbsp;</a></span>GetNextEventTimeMs()</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool MIDISequencer::GetNextEventTimeMs </td>
+          <td class="memname">virtual bool MIDISequencer::GetNextEventTimeMs </td>
           <td>(</td>
           <td class="paramtype">float *&#160;</td>
           <td class="paramname"><em>time_ms</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
-<p>Same of <a class="el" href="class_m_i_d_i_sequencer.html#a76532a6b85683d28c4cfe3bfe0853f98" title="Gets the time of the next event (it can be different from current time if at current time there are n...">GetNextEventTime()</a>, but time is returned in milliseconds from the beginning. </p>
+<p>Same of <a class="el" href="class_m_i_d_i_sequencer.html#ad7d690cbcb528bd33027b66833ec8aef" title="Gets the time of the next event (it can be different from current time if at current time there are n...">GetNextEventTime()</a>, but time is returned in milliseconds from the beginning. </p>
 
 </div>
 </div>
@@ -1624,8 +2087,44 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="abc94300fe712899bf2b304db8dc7c380"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abc94300fe712899bf2b304db8dc7c380">&#9670;&nbsp;</a></span>UpdateStatus()</h2>
+<a id="a0a823690b2589a59e87690ea48107592"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a823690b2589a59e87690ea48107592">&#9670;&nbsp;</a></span>MeasToMIDI()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a> MIDISequencer::MeasToMIDI </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>meas</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>beat</em> = <code>0</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>offset</em> = <code>0</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>TODO. </p>
+
+</div>
+</div>
+<a id="ad9de12a7f767c63cf7ebc2c0c854d17e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9de12a7f767c63cf7ebc2c0c854d17e">&#9670;&nbsp;</a></span>UpdateStatus()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1634,7 +2133,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void MIDISequencer::UpdateStatus </td>
+          <td class="memname">virtual void MIDISequencer::UpdateStatus </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1642,34 +2141,15 @@ Additional Inherited Members</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>This is equivalent of GoToTime(state.cur_clock) and should be used to update the sequencer state after an edit in the multitrack (adding, deleting or editing events, for changes in the track structure see <a class="el" href="class_m_i_d_i_sequencer.html#a1890abf3b871ee50fb94d55024f47d59" title="Inserts into the internal MIDIMultiTrack a new empty track with default track parameters (transpose,...">InsertTrack()</a>, <a class="el" href="class_m_i_d_i_sequencer.html#a9e94ef721bb1863f9672ab630af997a4" title="Deletes a track and all its events from the internal MIDIMultiTrack.">DeleteTrack()</a> and <a class="el" href="class_m_i_d_i_sequencer.html#a9c4ce2556fd3ed4b137594f7420675f5" title="Moves a track from one position to another in the internal MIDIMultiTrack.">MoveTrack()</a>). </p>
+<p>This is equivalent of GoToTime(state.cur_clock) and should be used to update the sequencer state after an edit in the multitrack (adding, deleting or editing events, for changes in the track structure see <a class="el" href="class_m_i_d_i_sequencer.html#a57b78af56b44b4cedc3bbbde581072d7" title="Inserts into the internal MIDIMultiTrack a new empty track with default track parameters (transpose,...">InsertTrack()</a>, <a class="el" href="class_m_i_d_i_sequencer.html#a56fd5414ee4dcc3dbb67dccd0ea6b028" title="Deletes a track and all its events from the internal MIDIMultiTrack.">DeleteTrack()</a> and <a class="el" href="class_m_i_d_i_sequencer.html#a200eff3a9e7bdebebab7ef403b2d9d75" title="Moves a track from one position to another in the internal MIDIMultiTrack.">MoveTrack()</a>). </p>
 <p>If you have edited the multitrack, call this before moving time, getting events or playing. </p>
 
-</div>
-</div>
-<a id="a3ec13024c4ee43df968df1b43ceee7a0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3ec13024c4ee43df968df1b43ceee7a0">&#9670;&nbsp;</a></span>SetTimeShiftMode()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void MIDISequencer::SetTimeShiftMode </td>
-          <td>(</td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>f</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Sets the time shifting of events on and off. </p>
-<p>If you are editing the multitrack events you probably want to see the original (not shifted) MIDI time of events, while during playback you want them shifted. So you can turn time shifting on and off (and all the time related methods of the sequencer will return the shifted or the original time of events). The <a class="el" href="class_m_i_d_i_sequencer.html#a6816e40d574829ffc196bfa4b5fa177a" title="Starts the sequencer playing from the current time.">Start()</a> method sets time shifting on, while the <a class="el" href="class_m_i_d_i_sequencer.html#abec3f848171c06ab4a3b6fa6b8a4c99b" title="Stops the sequencer playing.">Stop()</a> resets it to your choice, so usually if you can leave time shifting off. </p>
+<p>Reimplemented in <a class="el" href="class_advanced_sequencer.html#ab1ddc408a7cd0205bf69d7f1cffb9d1e">AdvancedSequencer</a>.</p>
 
 </div>
 </div>
@@ -1759,7 +2239,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>This is an alias of <a class="el" href="class_m_i_d_i_sequencer.html#a6816e40d574829ffc196bfa4b5fa177a" title="Starts the sequencer playing from the current time.">Start()</a>. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a6">test_advancedsequencer.cpp</a>, <a class="el" href="test_recorder_8cpp-example.html#a8">test_recorder.cpp</a>, <a class="el" href="test_win32_player_8cpp-example.html#a5">test_win32_player.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a5">test_writefile.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a8">test_advancedsequencer.cpp</a>, <a class="el" href="test_win32_player_8cpp-example.html#a5">test_win32_player.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a5">test_writefile.cpp</a>.</dd>
 </dl>
 
 </div>

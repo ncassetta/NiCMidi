@@ -1,7 +1,7 @@
 /*
  *   Example file for NiCMidi - A C++ Class Library for MIDI
  *
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -109,6 +109,8 @@ int main (int argc, char **argv) {
     while (command != "quit") {                     // main loop
         GetCommand();                               // gets user input and parses it (see functions.cpp)
 
+        if(command == "")                           // empty command
+            continue;
         if(command == "load") {                     // loads a file
             if (sequencer.Load(par1.c_str())) {
                 cout << "Loaded file " << par1 << endl;
@@ -169,41 +171,41 @@ int main (int argc, char **argv) {
                 cout << "You must specify on or off" << endl;
         }
         else if(command == "addtrack") {            // inserts a track into the multitrack
-            int trk = (par1.size() ? atoi(par1.c_str()) : -1);
-            if (!sequencer.GetMultiTrack()->IsValidTrackNumber(trk) && trk != -1)
+            int trk_num = (par1.size() ? atoi(par1.c_str()) : -1);
+            if (!sequencer.GetMultiTrack()->IsValidTrackNumber(trk_num) && trk_num != -1)
                 cout << "Invalid parameters" << endl;
             else {
-                sequencer.InsertTrack(trk);
-                recorder.InsertTrack(trk);
-                if (trk == -1) trk = sequencer.GetNumTracks() - 1;
-                cout << "Track inserted at position " << trk;
+                sequencer.InsertTrack(trk_num);
+                recorder.InsertTrack(trk_num);
+                if (trk_num == -1) trk_num = sequencer.GetNumTracks() - 1;
+                cout << "Track inserted at position " << trk_num;
             }
         }
         else if(command == "deltrack") {            // deletes a track from the multitrack
-            int trk = (par1.size() ? atoi(par1.c_str()) : -1);
-            if (!sequencer.GetMultiTrack()->IsValidTrackNumber(trk) && trk != -1)
+            int trk_num = (par1.size() ? atoi(par1.c_str()) : -1);
+            if (!sequencer.GetMultiTrack()->IsValidTrackNumber(trk_num) && trk_num != -1)
                 cout << "Invalid parameters" << endl;
             else {
-                sequencer.DeleteTrack(trk);
-                recorder.DeleteTrack(trk);
-                if (trk == -1) trk = sequencer.GetNumTracks();
-                cout << "Deleted track " << trk;
+                sequencer.DeleteTrack(trk_num);
+                recorder.DeleteTrack(trk_num);
+                if (trk_num == -1) trk_num = sequencer.GetNumTracks();
+                cout << "Deleted track " << trk_num;
             }
         }
         else if(command == "enable") {              // enables a track for recording
-            int trk = atoi(par1.c_str());
+            int trk_num = atoi(par1.c_str());
             int chan = (par2.size() ? atoi(par2.c_str()) : -1);
-            if (!sequencer.GetMultiTrack()->IsValidTrackNumber(trk) || chan < -1 || chan > 15)
+            if (!sequencer.GetMultiTrack()->IsValidTrackNumber(trk_num) || chan < -1 || chan > 15)
                 cout << "Invalid parameters" << endl;
             else {
-                recorder.EnableTrack(trk);
+                recorder.EnableTrack(trk_num);
                 if (chan != -1)
-                    recorder.SetTrackRecChannel(trk, chan);
-                if (recorder.GetTrack(trk)->GetRecChannel() == -1)
+                    recorder.SetTrackRecChannel(trk_num, chan);
+                if (recorder.GetTrack(trk_num)->GetRecChannel() == -1)
                     cout << "Enabled track " << par1 << " for recording from all channels" << endl;
                 else
                     cout << "Enabled track " << par1 << " for recording from channel " <<
-                            (int)recorder.GetTrack(trk)->GetRecChannel() << endl;
+                            (int)recorder.GetTrack(trk_num)->GetRecChannel() << endl;
             }
         }
         else if(command == "disable") {             // disables a track for recording
@@ -213,19 +215,19 @@ int main (int argc, char **argv) {
                 cout << "Disabled all tracks for recording" << endl;
             }
             else {
-                int trk = atoi(par1.c_str());
-                if (!sequencer.GetMultiTrack()->IsValidTrackNumber(trk))
+                int trk_num = atoi(par1.c_str());
+                if (!sequencer.GetMultiTrack()->IsValidTrackNumber(trk_num))
                     cout << "Invalid parameters" << endl;
                 else {
-                    recorder.DisableTrack(trk);
+                    recorder.DisableTrack(trk_num);
                     cout << "Disabled track " << par1 << " for recording" << endl;
                 }
             }
         }
         else if (command == "recstart") {           // sets the recording start time
-            int measure = atoi(par1.c_str());
+            int meas = atoi(par1.c_str());
             int beat = atoi(par2.c_str());
-            MIDIClockTime t = sequencer.MeasToMIDI(measure, beat);
+            MIDIClockTime t = sequencer.MeasToMIDI(meas, beat);
             recorder.SetStartRecTime(t);
             cout << "Set starting rec time to " << t << endl;
         }
@@ -235,9 +237,9 @@ int main (int argc, char **argv) {
                 cout << "Reset end rec time" << endl;
             }
             else {
-                int measure = atoi(par1.c_str());
+                int meas = atoi(par1.c_str());
                 int beat = atoi(par2.c_str());
-                MIDIClockTime t = sequencer.MeasToMIDI(measure, beat);
+                MIDIClockTime t = sequencer.MeasToMIDI(meas, beat);
                 recorder.SetEndRecTime(t);
                 cout << "Set end rec time to " << t << endl;
             }
@@ -253,12 +255,12 @@ int main (int argc, char **argv) {
             cout << "Rewind to 0:0" << endl;
         }
         else if (command == "goto") {               // goes to meas and beat
-            int measure = atoi(par1.c_str());
+            int meas = atoi(par1.c_str());
             int beat = atoi (par2.c_str());
-            if (measure < 0 || measure > sequencer.GetNumMeasures() - 1)
+            if (meas < 0 || meas > sequencer.GetNumMeasures() - 1)
                 cout << "Invalid position" << endl;
             else {
-                sequencer.GoToMeasure(measure, beat);
+                sequencer.GoToMeasure(meas, beat);
                 cout << "Actual position: " << sequencer.GetCurrentMeasure() << ":"
                      << sequencer.GetCurrentBeat() << endl;
             }
@@ -269,7 +271,7 @@ int main (int argc, char **argv) {
             else {
                 int trk_num = atoi(par1.c_str());
                 if (sequencer.GetMultiTrack()->IsValidTrackNumber(trk_num)) {
-                    MIDITrack* trk = sequencer.GetMultiTrack()->GetTrack(trk_num);
+                    MIDITrack* trk = sequencer.GetTrack(trk_num);
                     DumpMIDITrackWithPauses(trk, trk_num);              // in functions.cpp
                 }
                 else
@@ -282,7 +284,7 @@ int main (int argc, char **argv) {
             else {
                 int trk_num = atoi(par1.c_str());
                 if (recorder.GetMultiTrack()->IsValidTrackNumber(trk_num)) {
-                    MIDITrack* trk = recorder.GetMultiTrack()->GetTrack(trk_num);
+                    MIDITrack* trk = recorder.GetTrack(trk_num);
                     DumpMIDITrackWithPauses(trk, trk_num);              // in functions.cpp
                 }
                 else
@@ -290,46 +292,42 @@ int main (int argc, char **argv) {
             }
         }
         else if (command == "inport") {             // changes the midi in port
-            int track = atoi(par1.c_str());
+            int trk_num = atoi(par1.c_str());
             int port = atoi(par2.c_str());
-            if (port < 0 || (unsigned)port >= MIDIManager::GetNumMIDIIns())
-                cout << "Invalid port number" << endl;
-            else {
-                recorder.SetTrackInPort(track, port);
-                cout << "Assigned in port n. " << port << " to track " << track << endl;
-            }
+            if (sequencer.SetTrackOutPort(trk_num, port))
+                cout << "Assigned out port n. " << port << " to track " << trk_num << endl;
+            else
+                cout << "Invalid parameters" << endl;
         }
         else if (command == "outport") {            // changes the midi out port
-            int track = atoi(par1.c_str());
+            int trk_num = atoi(par1.c_str());
             int port = atoi(par2.c_str());
-            if (port < 0 || (unsigned)port >= MIDIManager::GetNumMIDIOuts())
-                cout << "Invalid port number" << endl;
-            else {
-                sequencer.SetTrackOutPort(track, port);
-                cout << "Assigned out port n. " << port << " to track " << track << endl;
-            }
+            if (sequencer.SetTrackOutPort(trk_num, port))
+                cout << "Assigned out port n. " << port << " to track " << trk_num << endl;
+            else
+                cout << "Invalid parameters" << endl;
         }
         else if (command == "program") {            // changes the midi track program (patch)
             if (par1 == "" || par2 == "")
                 cout << "You must specify the track and the program" << endl;
             else {
-                int track = atoi(par1.c_str());
+                int trk_num = atoi(par1.c_str());
                 int prog = atoi(par2.c_str());
-                if (!sequencer.GetMultiTrack()->IsValidTrackNumber(track) || prog < 0 || prog > 127)
+                if (!sequencer.GetMultiTrack()->IsValidTrackNumber(trk_num) || prog < 0 || prog > 127)
                     cout << "Invalid parameters" << endl;
                 else {
-                    MIDITrack* trk_ptr = sequencer.GetMultiTrack()->GetTrack(track);
+                    MIDITrack* trk = sequencer.GetTrack(trk_num);
                     char chan = -1;
-                    if (trk_ptr->GetRecChannel() != -1)
-                        chan = trk_ptr->GetRecChannel();
-                    else if (trk_ptr->GetChannel() != -1)
-                        chan = trk_ptr->GetChannel();
+                    if (trk->GetRecChannel() != -1)
+                        chan = trk->GetRecChannel();
+                    else if (trk->GetChannel() != -1)
+                        chan = trk->GetChannel();
                     if (chan != -1) {
                         MIDITimedMessage msg;
                         msg.SetProgramChange(chan, prog);
-                        sequencer.GetMultiTrack()->GetTrack(track)->InsertEvent(msg);
+                        sequencer.GetTrack(trk_num)->InsertEvent(msg);
                         sequencer.UpdateStatus();
-                        cout << "Assigned program " << prog << " to track " << track
+                        cout << "Assigned program " << prog << " to track " << trk_num
                              << " on channel " << (int)chan;
                     }
                     else
@@ -341,23 +339,23 @@ int main (int argc, char **argv) {
             if (par1 == "" || par2 == "")
                 cout << "You must specify the track and the volume" << endl;
             else {
-                int track = atoi(par1.c_str());
+                int trk_num = atoi(par1.c_str());
                 int vol = atoi(par2.c_str());
-                if (!sequencer.GetMultiTrack()->IsValidTrackNumber(track) || vol < 0 || vol > 127)
+                if (!sequencer.GetMultiTrack()->IsValidTrackNumber(trk_num) || vol < 0 || vol > 127)
                     cout << "Invalid parameters" << endl;
                 else {
-                    MIDITrack* trk_ptr = sequencer.GetMultiTrack()->GetTrack(track);
+                    MIDITrack* trk = sequencer.GetTrack(trk_num);
                     char chan = -1;
-                    if (trk_ptr->GetRecChannel() != -1)
-                        chan = trk_ptr->GetRecChannel();
-                    else if (trk_ptr->GetChannel() != -1)
-                        chan = trk_ptr->GetChannel();
+                    if (trk->GetRecChannel() != -1)
+                        chan = trk->GetRecChannel();
+                    else if (trk->GetChannel() != -1)
+                        chan = trk->GetChannel();
                     if (chan != -1) {
                         MIDITimedMessage msg;
                         msg.SetVolumeChange(chan, vol);
-                        sequencer.GetMultiTrack()->GetTrack(track)->InsertEvent(msg);
+                        sequencer.GetTrack(trk_num)->InsertEvent(msg);
                         sequencer.UpdateStatus();
-                        cout << "Assigned volume " << vol << " to track " << track
+                        cout << "Assigned volume " << vol << " to track " << trk_num
                              << " on channel " << (int)chan;
                     }
                     else

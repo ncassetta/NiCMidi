@@ -12,7 +12,7 @@ lib_libnicmidi_a_SOURCES = src/advancedsequencer.cpp  src/driver.cpp  src/dump_t
                            include/processor.h include/recorder.h include/sequencer.h  include/smpte.h             \
                            include/sysex.h  include/thru.h  include/tick.h  include/timer.h  include/track.h       \
                            rtmidi-4.0.0/RtMidi.h
-                       
+
 noinst_PROGRAMS = examples/test_advancedsequencer  examples/test_component  examples/test_metronome  \
                   examples/test_midiports examples/test_recorder  examples/test_sequencer            \
                   examples/test_stepsequencer examples/test_thru  examples/test_writefile
@@ -47,5 +47,5 @@ examples_test_writefile_SOURCES = examples/test_writefile.cpp
 examples_test_writefile_LDADD = lib/libnicmidi.a
 
 EXTRA_DIST = doc doxygen examples lib rtmidi-4.0.0 configure.ac NiCMidi_linux.cbp
-   
-                     
+
+

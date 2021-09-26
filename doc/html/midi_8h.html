@@ -51,6 +51,8 @@ $(document).ready(function(){initNavTree('midi_8h.html',''); initResizable(); })
 </script>
 <div id="doc-content">
 <div class="header">
+  <div class="summary">
+<a href="#typedef-members">Typedefs</a>  </div>
   <div class="headertitle">
 <div class="title">midi.h File Reference</div>  </div>
 </div><!--header-->
@@ -61,12 +63,15 @@ $(document).ready(function(){initNavTree('midi_8h.html',''); initResizable(); })
 
 <p><a href="midi_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:ga1f54d7f8d2631dc21e78751494337221"><td class="memItemLeft" align="right" valign="top">typedef unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a></td></tr>
+<tr class="memdesc:ga1f54d7f8d2631dc21e78751494337221"><td class="mdescLeft">&#160;</td><td class="mdescRight">The type of a variable which can hold a time in MIDI ticks.  <a href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">More...</a><br /></td></tr>
+<tr class="separator:ga1f54d7f8d2631dc21e78751494337221"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
 <tr><td colspan="2"><div class="groupHeader">Channel status bytes</div></td></tr>
-<tr><td colspan="2"><div class="groupText"><p>These are the type values for a MIDI channel message.</p>
-<p>For a channel message (with status byte between 0x80 ... 0xef) only the upper four bits of the status determine its type (while lower four bits represent the channel); all status bytes between 0xf0 ... 0xff are considered system messages. You can use these in the <a class="el" href="class_m_i_d_i_message.html#ab51d5c5c796d03bd077f848328a3e1b8" title="Sets just the upper 4 bits of the status byte without changing the lower 4 bits.">MIDIMessage::SetType()</a> method. </p>
-</div></td></tr>
 <tr class="memitem:gadf764cbdea00d65edcd07bb9953ad2b7"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <br />
 &#160;&#160;<a class="el" href="group___m_i_d_i_e_n_u_m.html#ggadf764cbdea00d65edcd07bb9953ad2b7ad9f1e80e9d867906d5dfdd41c58eb7fd">NOTE_OFF</a> =0x80
 , <a class="el" href="group___m_i_d_i_e_n_u_m.html#ggadf764cbdea00d65edcd07bb9953ad2b7a7867571d87023a2497e6826fbde8ed94">NOTE_ON</a> =0x90
@@ -88,10 +93,9 @@ Enumerations</h2></td></tr>
 , <a class="el" href="group___m_i_d_i_e_n_u_m.html#ggadf764cbdea00d65edcd07bb9953ad2b7a485c29cc7c933b54ef937b74ab361973">META_EVENT</a> =0xff
 <br />
  }</td></tr>
+<tr class="memdesc:gadf764cbdea00d65edcd07bb9953ad2b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">These are the type values for a MIDI channel message.  <a href="group___m_i_d_i_e_n_u_m.html#gadf764cbdea00d65edcd07bb9953ad2b7">More...</a><br /></td></tr>
 <tr class="separator:gadf764cbdea00d65edcd07bb9953ad2b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">MIDI Real Time Messages</div></td></tr>
-<tr><td colspan="2"><div class="groupText"><p>In the MIDI standard these bytes are used for quick one-byte messages intended to be sent during playback. </p>
-</div></td></tr>
 <tr class="memitem:ga99fb83031ce9923c84392b4e92f956b5"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <br />
 &#160;&#160;<a class="el" href="group___m_i_d_i_e_n_u_m.html#gga99fb83031ce9923c84392b4e92f956b5a1454aa084786f9f3d3cc688cda977b43">RT_TIMING_CLOCK</a> =0xf8
 , <a class="el" href="group___m_i_d_i_e_n_u_m.html#gga99fb83031ce9923c84392b4e92f956b5af8a1dc90e9b9fe6aeae55ac7def1bab5">RT_MEASURE_END</a> =0xf9
@@ -102,11 +106,9 @@ Enumerations</h2></td></tr>
 , <a class="el" href="group___m_i_d_i_e_n_u_m.html#gga99fb83031ce9923c84392b4e92f956b5a5ae13bdca3621a261ea11b58cb8c5740">RT_ACTIVE_SENSE</a> =0xfe
 <br />
  }</td></tr>
+<tr class="memdesc:ga99fb83031ce9923c84392b4e92f956b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">These bytes are used for quick one-byte messages intended to be sent during playback.  <a href="group___m_i_d_i_e_n_u_m.html#ga99fb83031ce9923c84392b4e92f956b5">More...</a><br /></td></tr>
 <tr class="separator:ga99fb83031ce9923c84392b4e92f956b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">GM Controller Numbers</div></td></tr>
-<tr><td colspan="2"><div class="groupText"><p>General MIDI standardized controller numbers (stored in the first data byte of a Control Change message); the last (between 0x78 ...</p>
-<p>0x7f) are the <b>channel mode messages</b>. You can use these in the <a class="el" href="class_m_i_d_i_message.html#a409accc926459415e22be6b178cecd2b" title="Sets the controller number for a control change message.">MIDIMessage::SetController()</a> method. </p>
-</div></td></tr>
 <tr class="memitem:gabc6126af1d45847bc59afa0aa3216b04"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <br />
 &#160;&#160;<a class="el" href="group___m_i_d_i_e_n_u_m.html#ggabc6126af1d45847bc59afa0aa3216b04a03da4e2f6f5c8170c5ba01f126648d1b">C_LSB</a> =0x20
 , <a class="el" href="group___m_i_d_i_e_n_u_m.html#ggabc6126af1d45847bc59afa0aa3216b04a8d47ff8b4618d96b796abdede39306d2">C_GM_BANK</a> =0x00
@@ -163,19 +165,16 @@ Enumerations</h2></td></tr>
 , <a class="el" href="group___m_i_d_i_e_n_u_m.html#ggabc6126af1d45847bc59afa0aa3216b04a78ca917342b811526ad1f3011df27dd1">C_POLY</a> =0x7f
 <br />
  }</td></tr>
+<tr class="memdesc:gabc6126af1d45847bc59afa0aa3216b04"><td class="mdescLeft">&#160;</td><td class="mdescRight">General MIDI standardized controller numbers.  <a href="group___m_i_d_i_e_n_u_m.html#gabc6126af1d45847bc59afa0aa3216b04">More...</a><br /></td></tr>
 <tr class="separator:gabc6126af1d45847bc59afa0aa3216b04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Registered Parameter Numbers</div></td></tr>
-<tr><td colspan="2"><div class="groupText"><p>These bytes are used by the GS standard in a RPN Control Change message. </p>
-</div></td></tr>
 <tr class="memitem:gadc29c2ff13d900c2f185ee95427fb06c"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="group___m_i_d_i_e_n_u_m.html#ggadc29c2ff13d900c2f185ee95427fb06caeb84e858bd4de27a4635ee6182bb536a">RPN_BEND_WIDTH</a> =0x00
 , <a class="el" href="group___m_i_d_i_e_n_u_m.html#ggadc29c2ff13d900c2f185ee95427fb06caa2f2910100347ec3b2594f78c74037fc">RPN_FINE_TUNE</a> =0x01
 , <a class="el" href="group___m_i_d_i_e_n_u_m.html#ggadc29c2ff13d900c2f185ee95427fb06ca205567da733c620e57dd20de68ed740b">RPN_COARSE_TUNE</a> =0x02
  }</td></tr>
+<tr class="memdesc:gadc29c2ff13d900c2f185ee95427fb06c"><td class="mdescLeft">&#160;</td><td class="mdescRight">These bytes are used by the GS standard in a RPN Control Change message.  <a href="group___m_i_d_i_e_n_u_m.html#gadc29c2ff13d900c2f185ee95427fb06c">More...</a><br /></td></tr>
 <tr class="separator:gadc29c2ff13d900c2f185ee95427fb06c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">META Event types</div></td></tr>
-<tr><td colspan="2"><div class="groupText"><p>This is the byte 1 (after the status) of a message with status 0xff (MIDI meta event), and these types are the same as MIDIFile meta-events.</p>
-<p>When the data length is &lt;= 2 bytes the library stores data in bytes 2 and 3 of the <a class="el" href="class_m_i_d_i_message.html" title="Stores data representing a MIDI event message.">MIDIMessage</a>, otherwise in the <a class="el" href="class_m_i_d_i_system_exclusive.html" title="Stores a buffer of MIDI data bytes in a std::vector, plus a byte for the checksum.">MIDISystemExclusive</a> object attached to it. So the format of the meta-events in a MIDIMessage class will be different than the standard MIDIFile meta-events. You can use these in the <a class="el" href="class_m_i_d_i_message.html#acf0e4e3fe98981d1cc2525c504346038" title="Sets the meta message type for a meta-event message.">MIDIMessage::SetMetaType()</a> method. </p>
-</div></td></tr>
 <tr class="memitem:ga61dadd085c1777f559549e05962b2c9e"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <br />
 &#160;&#160;<a class="el" href="group___m_i_d_i_e_n_u_m.html#gga61dadd085c1777f559549e05962b2c9eaa0907684a2c8e4d4ac1e792a4cbde763">META_SEQUENCE_NUMBER</a> = 0x00
 , <a class="el" href="group___m_i_d_i_e_n_u_m.html#gga61dadd085c1777f559549e05962b2c9eaff6a6ed954615fa482df7bc5709fed7b">META_GENERIC_TEXT</a> = 0x01
@@ -208,15 +207,14 @@ Enumerations</h2></td></tr>
 , <a class="el" href="group___m_i_d_i_e_n_u_m.html#gga61dadd085c1777f559549e05962b2c9eaa2213253a2e150cab65c3f3d117080d8">META_SEQUENCER_SPECIFIC</a> = 0x7F
 <br />
  }</td></tr>
+<tr class="memdesc:ga61dadd085c1777f559549e05962b2c9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is the byte 1 (after the status) of a message with status 0xff (MIDI meta event).  <a href="group___m_i_d_i_e_n_u_m.html#ga61dadd085c1777f559549e05962b2c9e">More...</a><br /></td></tr>
 <tr class="separator:ga61dadd085c1777f559549e05962b2c9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
 <tr><td colspan="2"><div class="groupHeader">Helper functions for MIDI and music</div></td></tr>
-<tr><td colspan="2"><div class="groupText"><p>Returns a readable name for the given channel message status. </p>
-</div></td></tr>
 <tr class="memitem:gae2b21a679c9e543ab0636e1ace317ab0"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___g_l_o_b_a_l_s.html#gae2b21a679c9e543ab0636e1ace317ab0">GetChanMsgName</a> (unsigned char status)</td></tr>
-<tr class="memdesc:gae2b21a679c9e543ab0636e1ace317ab0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a readable name for the given channel mode (Control change with controller number between 0x78 ...  <a href="group___g_l_o_b_a_l_s.html#gae2b21a679c9e543ab0636e1ace317ab0">More...</a><br /></td></tr>
+<tr class="memdesc:gae2b21a679c9e543ab0636e1ace317ab0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a readable name for the given channel message status.  <a href="group___g_l_o_b_a_l_s.html#gae2b21a679c9e543ab0636e1ace317ab0">More...</a><br /></td></tr>
 <tr class="separator:gae2b21a679c9e543ab0636e1ace317ab0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gacbe576205ef45e82469b7969e7009882"><td class="memItemLeft" align="right" valign="top">const char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___g_l_o_b_a_l_s.html#gacbe576205ef45e82469b7969e7009882">GetChanModeMsgName</a> (unsigned char number)</td></tr>
 <tr class="memdesc:gacbe576205ef45e82469b7969e7009882"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a readable name for the given channel mode (Control change with controller number between 0x78 ...  <a href="group___g_l_o_b_a_l_s.html#gacbe576205ef45e82469b7969e7009882">More...</a><br /></td></tr>
@@ -248,6 +246,13 @@ Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="var-members"></a>
 Variables</h2></td></tr>
+<tr><td colspan="2"><div class="groupHeader">MIDI Clock related constants</div></td></tr>
+<tr class="memitem:ga229df626e51e42224d0d30d2b21675c2"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___g_l_o_b_a_l_s.html#ga229df626e51e42224d0d30d2b21675c2">TIME_INFINITE</a> = 0xffffffff</td></tr>
+<tr class="memdesc:ga229df626e51e42224d0d30d2b21675c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">A constant which represents an infinite time.  <a href="group___g_l_o_b_a_l_s.html#ga229df626e51e42224d0d30d2b21675c2">More...</a><br /></td></tr>
+<tr class="separator:ga229df626e51e42224d0d30d2b21675c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabef54590e8d713dc6ead1833865e1197"><td class="memItemLeft" align="right" valign="top">const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___g_l_o_b_a_l_s.html#gabef54590e8d713dc6ead1833865e1197">DEFAULT_CLKS_PER_BEAT</a> = 120</td></tr>
+<tr class="memdesc:gabef54590e8d713dc6ead1833865e1197"><td class="mdescLeft">&#160;</td><td class="mdescRight">The default clocks per beat parameter when initializing a <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>.  <a href="group___g_l_o_b_a_l_s.html#gabef54590e8d713dc6ead1833865e1197">More...</a><br /></td></tr>
+<tr class="separator:gabef54590e8d713dc6ead1833865e1197"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Default constants when initializing messages and classes</div></td></tr>
 <tr class="memitem:ga8a751191508e66ee8d24bb48c106e758"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___g_l_o_b_a_l_s.html#ga8a751191508e66ee8d24bb48c106e758">MIDI_DEFAULT_TIMESIG_NUMERATOR</a> = 4</td></tr>
 <tr class="memdesc:ga8a751191508e66ee8d24bb48c106e758"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timesig numerator.  <a href="group___g_l_o_b_a_l_s.html#ga8a751191508e66ee8d24bb48c106e758">More...</a><br /></td></tr>
@@ -264,20 +269,6 @@ Variables</h2></td></tr>
 <tr class="memitem:gab634e3ae523f502afe7b528de75b22f4"><td class="memItemLeft" align="right" valign="top">const int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___g_l_o_b_a_l_s.html#gab634e3ae523f502afe7b528de75b22f4">MIDI_DEFAULT_KEYSIG_MODE</a> = 0</td></tr>
 <tr class="memdesc:gab634e3ae523f502afe7b528de75b22f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Keysig mode (major)  <a href="group___g_l_o_b_a_l_s.html#gab634e3ae523f502afe7b528de75b22f4">More...</a><br /></td></tr>
 <tr class="separator:gab634e3ae523f502afe7b528de75b22f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader">MIDI Clock related constants</h2></td></tr>
-<tr><td class="ititle" colspan="2"><p><a class="anchor" id="amgrp6660221483672053ed28dc649ad34e1a"></a>The type of a variable which can hold a time in MIDI ticks.</p>
-<p>The MIDI tick is the basis for MIDI clocking: a quarter note is assigned a number of MIDI ticks, and a <a class="el" href="class_m_i_d_i_timed_message.html" title="The MIDITimedMessage class inherits from the MIDIMessage and represents a message associated with a s...">MIDITimedMessage</a> object has its time measured in MIDI ticks. </p>
-</td></tr>
-<tr class="memitem:ga1f54d7f8d2631dc21e78751494337221"><td class="memItemLeft" align="right" valign="top">typedef unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a></td></tr>
-<tr class="memdesc:ga1f54d7f8d2631dc21e78751494337221"><td class="mdescLeft">&#160;</td><td class="mdescRight">A constant which represents an infinite time.  <a href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">More...</a><br /></td></tr>
-<tr class="separator:ga1f54d7f8d2631dc21e78751494337221"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga229df626e51e42224d0d30d2b21675c2"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___g_l_o_b_a_l_s.html#ga229df626e51e42224d0d30d2b21675c2">TIME_INFINITE</a> = 0xffffffff</td></tr>
-<tr class="memdesc:ga229df626e51e42224d0d30d2b21675c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">A constant which represents an infinite time.  <a href="group___g_l_o_b_a_l_s.html#ga229df626e51e42224d0d30d2b21675c2">More...</a><br /></td></tr>
-<tr class="separator:ga229df626e51e42224d0d30d2b21675c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gabef54590e8d713dc6ead1833865e1197"><td class="memItemLeft" align="right" valign="top">const unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___g_l_o_b_a_l_s.html#gabef54590e8d713dc6ead1833865e1197">DEFAULT_CLKS_PER_BEAT</a> = 120</td></tr>
-<tr class="memdesc:gabef54590e8d713dc6ead1833865e1197"><td class="mdescLeft">&#160;</td><td class="mdescRight">The default clocks per beat parameter when initializing a <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>.  <a href="group___g_l_o_b_a_l_s.html#gabef54590e8d713dc6ead1833865e1197">More...</a><br /></td></tr>
-<tr class="separator:gabef54590e8d713dc6ead1833865e1197"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Contains the MIDI values enumerations (to have readable values instead of hexadecimal values) and some utility function. </p>

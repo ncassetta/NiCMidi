@@ -1,7 +1,7 @@
 /*
  *   NiCMidi - A C++ Class Library for MIDI
  *
- *   Copyright (C) 2020  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -112,10 +112,10 @@ bool Metronome::SetOutPort(unsigned int port) {
 }
 
 
-bool Metronome::SetOutChannel(unsigned char ch) {
-    if (ch > 15)                                          // avoids out of range errors
+bool Metronome::SetOutChannel(unsigned char chan) {
+    if (chan > 15)                                          // avoids out of range errors
         return false;
-    new_chan = ch;
+    new_chan = chan;
     if (!IsPlaying())
         UpdateValues();
     return true;
