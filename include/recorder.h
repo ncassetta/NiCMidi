@@ -29,7 +29,7 @@
 #define RECORDER_H_INCLUDED
 
 #include "sequencer.h"
-#include "process.h"
+#include "processor.h"
 
 #include <atomic>
 #include <vector>
