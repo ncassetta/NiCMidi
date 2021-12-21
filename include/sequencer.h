@@ -158,6 +158,8 @@ class MIDISequencerState : public MIDIProcessor {
         double                  last_time_ms;       ///< Internal use
         MIDIClockTime           last_tempo_change;  ///< Internal use
         MIDIClockTime           count_in_time;      ///< Internal use
+
+        // TODO: change the name of this variable for example count_in_stop
         char                    count_in_status;    ///< Flag affecting the count in
         static int              metronome_mode;     ///< Flag affecting how metronome beat is calculated
 };
@@ -475,10 +477,11 @@ class MIDISequencer : public MIDITickComponent {
             PLAY_UNBOUNDED                  ///< See SetPlayMode()
         };
 
-        /// Values for count_in status
+        /// Values for count_in_status
         enum {
             COUNT_IN_ENABLED = 1,           ///< 0 if no count in before starting, 1 if yes
             COUNT_IN_PENDING = 2,           ///< 0 if count in is done, 2 if it is pending
+            AUTO_STOPPED     = 4            ///< 0 if playing, 4 if already stopped
         };
 
     protected:
@@ -488,7 +491,7 @@ class MIDISequencer : public MIDITickComponent {
         /// Implements the pure virtual method inherited from MIDITickComponent (you must not call it directly).
         virtual void                    TickProc(tMsecs sys_time);
         /// Internal use for auto stop.
-        static void                     StaticStopProc(MIDISequencer* p)    { p->Stop();}
+        static void                     StaticStopProc(MIDISequencer* p)    { p->Stop(); p->state.count_in_status &= ~AUTO_STOPPED; }
 
         /// \cond EXCLUDED
         // Internal use: scans events at 'now' time upgrading the sequencer state

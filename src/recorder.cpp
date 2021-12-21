@@ -81,6 +81,9 @@ MIDIRecorder::MIDIRecorder(MIDISequencer* const s) :
     old_seq_mode(MIDISequencer::PLAY_BOUNDED),
     rec_on(false)
 {
+    //check if an in port exists
+    //if (!MIDIManager::IsValidInPortNumber(0))
+        //throw RtMidiError("MIDIRecorder needs almost a MIDI in port in the system\n", RtMidiError::INVALID_DEVICE);
     tracks = new MIDIMultiTrack();
     seq_tracks = s->GetState()->multitrack;
 }
@@ -448,9 +451,9 @@ void MIDIRecorder::TickProc(tMsecs sys_time) {
                         if (ch1 == ch2 || ch2 == -1) {
                             // insert the event into the track
                             tracks->InsertEvent(i, msg);
-                            // tell the driver to send this message
-                            MIDIManager::GetOutDriver(tracks->GetTrack(i)->GetOutPort())->OutputMessage(msg);
                         }
+                        // tell the driver to send this message
+                        MIDIManager::GetOutDriver(tracks->GetTrack(i)->GetOutPort())->OutputMessage(msg);
                     }
                     //if ((*en_ports[i])[ch] != 0)
                     //    (*en_ports[i])[ch]->PushEvent(msg);

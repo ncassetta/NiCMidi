@@ -111,9 +111,11 @@ AdvancedSequencer::AdvancedSequencer(MIDISequencerGUINotifier *n) :
     MIDISequencer (new MIDIMultiTrack(17) , n),
     num_measures(0),
     file_loaded (false),
-    owns_tracks (true)                           // remembers that the multitrack is owned
+    owns_tracks (true)                          // remembers that the multitrack is owned
 {
     MIDIManager::AddMIDITick(this);
+    // sets warp_positions and num_measures (needed even if multitrack is empty, otherwise warp_position would be empty)
+    ExtractWarpPositions();
     // sets the embedded MIDIThru only if the system has almost an in port
     if (MIDIManager::IsValidInPortNumber(0)) {
         thru = new MIDIThru();
@@ -133,8 +135,6 @@ AdvancedSequencer::AdvancedSequencer(MIDIMultiTrack* mlt, MIDISequencerGUINotifi
     MIDIManager::AddMIDITick(this);
     file_loaded = !state.multitrack->IsEmpty();
     ExtractWarpPositions();                     // sets warp_positions and num_measures
-    //thru.SetProcessor(&thru_processor);
-    //thru_processor.SetProcessor(&thru_rechannelizer);
     // sets the embedded MIDIThru only if the system has almost an in port
     if (MIDIManager::IsValidInPortNumber(0)) {
         thru = new MIDIThru();
@@ -173,7 +173,7 @@ void AdvancedSequencer::Reset() {
         // causes a call to Analyze()
         GetTrack(i)->GetStatus();
     }
-    file_loaded = state.multitrack->IsEmpty();      // the multitrack is not cleared by this
+    file_loaded = !state.multitrack->IsEmpty();     // the multitrack is not cleared by this
     ExtractWarpPositions();
 }
 
