@@ -588,6 +588,7 @@ void AdvancedSequencer::Start () {
     if (!file_loaded && play_mode == PLAY_BOUNDED)
         return;
 
+    stop_lock.lock();
     std::cout << "\t\tEntered in AdvancedSequencer::Start() ...\n";
     MIDISequencer::Stop();
     if (repeat_play_mode)
@@ -610,6 +611,7 @@ void AdvancedSequencer::Start () {
     MIDITickComponent::Start();
     std::cout << "\t\t ... Exiting from AdvancedSequencer::Start()" << std::endl;
     //std::cout << "sys_time_offset = " << sys_time_offset << " sys_time = " << MIDITimer::GetSysTimeMs() << std::endl;
+    stop_lock.unlock();
 }
 
 
@@ -617,6 +619,7 @@ void AdvancedSequencer::Stop() {
     if (!IsPlaying())
         return;
 
+    stop_lock.lock();
     std::cout << "\t\tEntered in AdvancedSequencer::Stop() ...\n";
     MIDITickComponent::Stop();
     state.iterator.SetTimeShiftMode(time_shift_mode);
@@ -630,6 +633,7 @@ void AdvancedSequencer::Stop() {
     // stops on a beat (and clear midi matrix)
     GoToMeasure(state.cur_measure, state.cur_beat);
     std::cout << "\t\t ... Exiting from AdvancedSequencer::Stop()" << std::endl;
+    stop_lock.unlock();
 }
 
 

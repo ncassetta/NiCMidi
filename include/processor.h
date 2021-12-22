@@ -190,7 +190,7 @@ class MIDIProcessorPrinter : public MIDIProcessor {
         virtual void                    Reset()                                     { print_on = true; }
         /// Returns the numbering of the first MIDI channel in message printing (0 or 1).
         /// See \ref NUMBERING.
-        int                             GetChanFrom( char c)                        { return chan_from_1; }
+        int                             GetChanFrom() const                         { return chan_from_1; }
         /// Returns the printing status.
         bool                            GetPrint() const                            { return print_on; }
         /// Sets the numbering of MIDI channels in message printing. If c == 0 they will be numbered 0 ... 15,

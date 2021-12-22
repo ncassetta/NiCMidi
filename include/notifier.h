@@ -54,7 +54,7 @@ class MIDISequencer;
 class MIDISequencerGUIEvent {
     public:
         /// Default constructor: creates a generic event with all attributes set to 0
-                    MIDISequencerGUIEvent()                     { bits = 0; }
+                    MIDISequencerGUIEvent() : bits(0)                    {}
         /// This constructor creates the object directly from its parameters, packed into an unsigned long.
                     MIDISequencerGUIEvent(unsigned long bits_) : bits(bits_) {}
         /// This constructor creates the object starting from its group, subgroup, item
@@ -166,7 +166,8 @@ class MIDISequencerGUINotifier {
         /// sends them; you can set it in the constructor or later.
                         MIDISequencerGUINotifier(const MIDISequencer* seq = 0) :
                             sequencer(seq), en(true)                {}
-        // (no need for destructor)
+        // destructor needed for virtual methods
+        virtual         ~MIDISequencerGUINotifier()                 {}
         /// This sets the sequencer which generates messages sent to the GUI.
         /// \warning If you use the notifier in conjunction with an AdvancedSequencer class,
         /// this is automatically set by the class
