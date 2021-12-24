@@ -42,16 +42,18 @@ void MIDITickComponent::SetDevOffset(tMsecs dev_offs) {
 
 void MIDITickComponent::Start() {
     if (!running.load()) {
+        // set the flag BEFORE starting
+        running.store(true);
         MIDITimer::Start();
         sys_time_offset = MIDITimer::GetSysTimeMs();
-        running.store(true);
     }
 }
 
 
 void MIDITickComponent::Stop() {
     if(running.load()) {
-        running.store(false);
         MIDITimer::Stop();
+        // clear the flag only AFTER stopping
+        running.store(false);
     }
 }

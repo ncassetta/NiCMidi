@@ -588,7 +588,7 @@ void AdvancedSequencer::Start () {
     if (!file_loaded && play_mode == PLAY_BOUNDED)
         return;
 
-    stop_lock.lock();
+    //stop_lock.lock();
     std::cout << "\t\tEntered in AdvancedSequencer::Start() ...\n";
     MIDISequencer::Stop();
     if (repeat_play_mode)
@@ -611,7 +611,7 @@ void AdvancedSequencer::Start () {
     MIDITickComponent::Start();
     std::cout << "\t\t ... Exiting from AdvancedSequencer::Start()" << std::endl;
     //std::cout << "sys_time_offset = " << sys_time_offset << " sys_time = " << MIDITimer::GetSysTimeMs() << std::endl;
-    stop_lock.unlock();
+    //stop_lock.unlock();
 }
 
 
@@ -619,21 +619,18 @@ void AdvancedSequencer::Stop() {
     if (!IsPlaying())
         return;
 
-    stop_lock.lock();
     std::cout << "\t\tEntered in AdvancedSequencer::Stop() ...\n";
-    MIDITickComponent::Stop();
+    state.count_in_status |= AUTO_STOP_PENDING;
     state.iterator.SetTimeShiftMode(time_shift_mode);
     MIDIManager::AllNotesOff();
     MIDIManager::CloseOutPorts();
     state.Notify (MIDISequencerGUIEvent::GROUP_TRANSPORT,
                   MIDISequencerGUIEvent::GROUP_TRANSPORT_STOP);
-    //MIDIManager::CloseOutPorts();
-    //mgr->AllNotesOff();       // already done by SeqStop()
-    //mgr->Reset();
     // stops on a beat (and clear midi matrix)
     GoToMeasure(state.cur_measure, state.cur_beat);
+    MIDITickComponent::Stop();
+    state.count_in_status &= ~AUTO_STOP_PENDING;
     std::cout << "\t\t ... Exiting from AdvancedSequencer::Stop()" << std::endl;
-    stop_lock.unlock();
 }
 
 
