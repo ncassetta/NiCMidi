@@ -92,7 +92,7 @@ MIDISequencerState::MIDISequencerState(const MIDISequencerState& s) :
     timesig_denominator(s.timesig_denominator), keysig_sharpflat(s.keysig_sharpflat),
     keysig_mode(s. keysig_mode), marker_text(s.marker_text), last_event_track(s.last_event_track),
     last_beat_time(s.last_beat_time), ms_per_clock(s.ms_per_clock), last_time_ms(s.last_time_ms),
-    last_tempo_change(s.last_tempo_change), count_in_time(s.count_in_time), count_in_status(s.count_in_status)
+    last_tempo_change(s.last_tempo_change), count_in_time(s.count_in_time), playing_status(s.playing_status)
 {
     track_states.resize(multitrack->GetNumTracks());
     // TODO: these were added only for a bug checking; eliminate, this should never happen
@@ -136,7 +136,7 @@ const MIDISequencerState& MIDISequencerState::operator= (const MIDISequencerStat
     last_time_ms = s.last_time_ms;
     last_tempo_change = s.last_tempo_change;
     count_in_time = s.count_in_time;
-    count_in_status = s.count_in_status;
+    playing_status = s.playing_status;
 
     return *this;
 }
@@ -174,7 +174,7 @@ void MIDISequencerState::Reset() {
     last_time_ms = 0;
     last_tempo_change = 0;
     count_in_time = 0;
-    count_in_status = 0;
+    playing_status = 0;
 }
 
 
@@ -184,7 +184,7 @@ bool MIDISequencerState::Process(MIDITimedMessage *msg) {
         return false;                           // ignore event.
 
     // we are counting in: send only beats to the notifier
-    if (count_in_status & MIDISequencer::COUNT_IN_PENDING) {
+    if (playing_status & MIDISequencer::COUNT_IN_PENDING) {
         // notify the GUI the beat number (or measure) event
         if(count_in_time == 0)
             Notify(MIDISequencerGUIEvent::GROUP_TRANSPORT,
@@ -470,7 +470,7 @@ bool MIDISequencer::SetRepeatPlay(int on_off, int start_meas, int end_meas) {
 
 void MIDISequencer::SetCountIn(bool on_off) {
     proc_lock.lock();
-    (state.count_in_status &= ~COUNT_IN_ENABLED) |= on_off * COUNT_IN_ENABLED;
+    (state.playing_status &= ~COUNT_IN_ENABLED) |= on_off * COUNT_IN_ENABLED;
     proc_lock.unlock();
 }
 
@@ -1251,7 +1251,7 @@ void MIDISequencer::Stop() {
         // waits until the timer thread has stopped
         MIDITickComponent::Stop();
         // resets the autostop flag
-        state.count_in_status &= ~AUTO_STOP_PENDING;
+        state.playing_status &= ~AUTO_STOP_PENDING;
         state.iterator.SetTimeShiftMode(time_shift_mode);
         MIDIManager::AllNotesOff();
         MIDIManager::CloseOutPorts();
@@ -1335,20 +1335,27 @@ void MIDISequencer::TickProc(tMsecs sys_time) {
     //std::cout << "MIDISequencer::TickProc; sys_time_offset " << sys_time_offset << " sys_time " << sys_time
     //     << " dev_time_offset " << dev_time_offset << std::endl;
 
-    //static unsigned int times;
-    //times++;
-    //if (!(times % 100))
-        //std::cout << "MIDISequencer::TickProc() " << times << " times" << std::endl;
-
     // check if already autostopped
-    if (state.count_in_status & AUTO_STOP_PENDING) {
+    if (state.playing_status & AUTO_STOP_PENDING) {
         std::cout << "MIDISequencer::TickProc called after Auto Stop" << std::endl;
         proc_lock.unlock();
         return;
     }
 
+    if (sys_time < sys_time_offset) {
+        std::cout << "WARNING! sys_time = " << sys_time << " sys_time_offset = " << sys_time_offset << std::endl;
+        std::cout << "This causes an error when starting from the beginning" << std::endl;
+    }
+
+    //static unsigned int times;
+    //if (!(times % 100)) {
+    //    std::cout << "MIDISequencer::TickProc() " << times << " times" << std::endl;
+    //    std::cout << "sys_time_offset = " << sys_time_offset << "  sys_time = " << sys_time << std::endl;
+    //}
+    //times++;
+
     // check if we we are counting in
-    if (state.count_in_status & COUNT_IN_PENDING) {
+    if (state.playing_status & COUNT_IN_PENDING) {
         MIDIClockTime clocks = (MIDIClockTime)((sys_time - sys_time_offset) / state.ms_per_clock);
         //std::cout << "clocks = " << clocks << "     count_in_time = " << state.count_in_time << std::endl;
         if (clocks >= state.count_in_time) {
@@ -1359,7 +1366,7 @@ void MIDISequencer::TickProc(tMsecs sys_time) {
             }
             else {
                 // ends count in
-                state.count_in_status &= ~COUNT_IN_PENDING;
+                state.playing_status &= ~COUNT_IN_PENDING;
                 // updates the start time of the sequencer
                 sys_time_offset = sys_time;
                 state.Notify (MIDISequencerGUIEvent::GROUP_TRANSPORT,
@@ -1408,15 +1415,13 @@ void MIDISequencer::TickProc(tMsecs sys_time) {
         // no events left
         std::cout << "Auto stopping the sequencer: StaticStopProc called at time " << GetCurrentMIDIClockTime() << std::endl;
         //<< "GetNextEventTime() returned " << retval << std::endl;
-        //autostop.store(true);
-        state.count_in_status |= AUTO_STOP_PENDING;
+        state.playing_status |= AUTO_STOP_PENDING;      // must be here, not in StaticStopProc
+        //times = 0;      // only for log, comment if you don't need
         std::thread(StaticStopProc, this).detach();
     }
 
     proc_lock.unlock();
 }
-
-
 
 
 void MIDISequencer::ScanEventsAtThisTime() {
@@ -1447,9 +1452,9 @@ void MIDISequencer::ScanEventsAtThisTime() {
 
 
 void MIDISequencer::CountInPrepare() {
-    if (state.count_in_status & COUNT_IN_ENABLED) {
+    if (state.playing_status & COUNT_IN_ENABLED) {
         std::cout << "Setting count in" << std::endl;
-        (state.count_in_status &= ~COUNT_IN_PENDING) |= COUNT_IN_PENDING;
+        (state.playing_status &= ~COUNT_IN_PENDING) |= COUNT_IN_PENDING;
         state.count_in_time = 0;
         beat_marker_msg.SetTime(0);
     }

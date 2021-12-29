@@ -606,7 +606,7 @@ void AdvancedSequencer::Stop() {
     // waits until the timer thread has stopped
     MIDITickComponent::Stop();
     // resets the autostop flag
-    state.count_in_status &= ~AUTO_STOP_PENDING;
+    state.playing_status &= ~AUTO_STOP_PENDING;
     state.iterator.SetTimeShiftMode(time_shift_mode);
     MIDIManager::AllNotesOff();
     MIDIManager::CloseOutPorts();

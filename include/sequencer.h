@@ -163,7 +163,7 @@ class MIDISequencerState : public MIDIProcessor {
         MIDIClockTime           count_in_time;      ///< Internal use
 
         // TODO: change the name of this variable for example count_in_stop
-        char                    count_in_status;    ///< Flag affecting the count in
+        char                    playing_status;     ///< Flag affecting the TickProc (count in, auto stop, etc\.)
         static int              metronome_mode;     ///< Flag affecting how metronome beat is calculated
 };
 
@@ -257,9 +257,9 @@ class MIDISequencer : public MIDITickComponent {
         unsigned int                    GetRepeatPlayEnd() const
                                                                 { return repeat_end_meas; }
         /// Returns **true** if the count in is enabled.
-        bool                            GetCountInEnable() const    { return state.count_in_status & COUNT_IN_ENABLED; }
+        bool                            GetCountInEnable() const    { return state.playing_status & COUNT_IN_ENABLED; }
         /// Returns **true** if the count in is pending (the sequencer is counting in).
-        bool                            GetCountInPending() const   { return state.count_in_status & COUNT_IN_PENDING; }
+        bool                            GetCountInPending() const   { return state.playing_status & COUNT_IN_PENDING; }
 
         /// Returns the time shift mode (on or off). This is the value of the internal parameter, **not**
         /// the actual mode (during the playback the Start() method always sets it to on, while at the end

@@ -201,7 +201,7 @@ class MIDIMultiTrackIteratorState {
     protected:
         // Changes the number of tracks (this causes a reset of the state).
         void                        SetNumTracks(int n);
-        // Sets the time to 0 and an undefined first event and track.
+        // Sets the time to 0 and an undefined first event and track. Does not reset time shift mode.
         // \warning this is, in general, **not** a valid state. Don't call this but MIDIMultiTrackIterator::Reset().
         void                        Reset();
         // Internal use.
@@ -234,7 +234,7 @@ class MIDIMultiTrackIterator {
 
         /// The constructor creates the object and attaches it to the given MIDIMultiTrack.
                                     MIDIMultiTrackIterator (MIDIMultiTrack *mlt);
-        /// Syncs _num_tracks_ with the multitrack and resets time to 0.
+        /// Syncs _num_tracks_ with the multitrack and resets time to 0. Does not reset time shift mode.
         void                        Reset();
         /// Gets the current time of the iterator.
         MIDIClockTime               GetCurrentTime() const              { return state.cur_time; }
@@ -251,8 +251,6 @@ class MIDIMultiTrackIterator {
         /// Turns time shifting on and off. If time shifting is off events are sorted according to their
         /// time, otherwise an offset (positive or negative) is added to channel and sysex events time (other
         /// events time remain unchanged).
-        /// \return **true** if the function succeeded (it could fail if you try to set the mode on without having
-        /// set a vector).
         void                        SetTimeShiftMode(bool f)            { state.time_shift_mode = f; }
         /// Enable or disable a track. If you know that a track contains events which you want to ignore you
         /// can exclude it for more speed.
