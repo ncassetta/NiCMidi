@@ -416,7 +416,7 @@ int main(int argc, char **argv) {
         else if (command == "bpaste") {
             unsigned int tr_start = atoi(par1.c_str());
             if (par2.size() == 0) {
-                multitrack->EditInsert(cur_pos.gettime(), tr_start, 1, true, &edit_multitrack);
+                multitrack->EditInsert(cur_pos.gettime(), tr_start, 1, &edit_multitrack);
                 sequencer.UpdateStatus();
             }
             else if (par2 == "o") {

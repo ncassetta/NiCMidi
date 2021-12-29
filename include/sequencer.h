@@ -37,6 +37,7 @@
 
 #include <string>
 #include <mutex>
+#include <atomic>
 
 
 class MIDISequencer;        // forward declaration
@@ -66,12 +67,12 @@ class MIDISequencerTrackState {
         /// Resets default values.
         virtual void    Reset();
 
-        signed char     program;		    ///< the current program change, or -1 if undefined
+        int16_t         program;		    ///< the current program change, or -1 if undefined
         int             bender_value;		///< the last seen bender value
         std::string     track_name;	        ///< the track name
         bool            notes_are_on;       ///< true if there are notes currently on
         MIDIMatrix      note_matrix;        ///< to keep track of all notes on
-        unsigned char   control_values[C_ALL_NOTES_OFF];
+        int16_t         control_values[C_ALL_NOTES_OFF];
                                             ///< an array of current control change values, or -1 if not defined
         bool            got_good_track_name;///< internal use
 };
@@ -211,6 +212,7 @@ class MIDISequencer : public MIDITickComponent {
         /// the MIDISequencer according to the new contents.
         void                            Reset();
 
+        //virtual bool                    IsPlaying() const       { return (MIDITickComponent::IsPlaying() || autostop.load()); }
         /// Returns current MIDIClockTime in MIDI ticks; it is effective even during playback
         MIDIClockTime                   GetCurrentMIDIClockTime() const;
         /// Returns current time in milliseconds; it is effective even during playback
@@ -514,9 +516,6 @@ class MIDISequencer : public MIDITickComponent {
         //std::vector<int>                time_shifts;        // A time shift (in MIDI ticks) for every track
         //std::vector<unsigned int>       track_ports;        // The port id for every track
         MIDISequencerState              state;              // The sequencer state
-
-        // no more needed, delete
-        //std::recursive_mutex            stop_lock;          // used to ensure autostopping and normal stop doesn't overlap
         /// \endcond
 };
 

@@ -128,9 +128,9 @@ int main( int argc, char **argv ) {
     sequencer.Play();
     while (sequencer.IsPlaying())
         MIDITimer::Wait(50);
-    cout << "    Stop" << endl;
+    cout << "The sequencer finished" << endl;
 
-/* THE REST IS COMMENTED OUT. IF YOU SUCCEED CAN UNCOMMENT AND PLAY OTHER TWO TRACKS
+// THE REST IS COMMENTED OUT. IF YOU SUCCEED CAN UNCOMMENT AND PLAY OTHER TWO TRACKS
 
     // now do the same for track 2 (bass, channel 2)
     trk = tracks->GetTrack(2);
@@ -162,7 +162,6 @@ int main( int argc, char **argv ) {
         trk->InsertNote(msg, track3[i].length);
     }
 
-*/
     sequencer.UpdateStatus();
     sequencer.GoToZero();
 

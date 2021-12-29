@@ -1221,8 +1221,8 @@ MIDIClockTime MIDISequencer::MeasToMIDI(unsigned int meas, unsigned int beat, un
 // Inherited from MIDITICK
 
 void MIDISequencer::Start() {
-    if (!IsPlaying()) {
-        //stop_lock.lock();
+    if (!IsPlaying()) {         // TODO: this is different from AdvancedSequencer one: what is correct?
+        proc_lock.lock();
         std::cout << "\t\tEntered in MIDISequencer::Start() ..." << std::endl;
         MIDIManager::OpenOutPorts();
         state.iterator.SetTimeShiftMode(true);
@@ -1237,7 +1237,7 @@ void MIDISequencer::Start() {
         SetDevOffset((tMsecs)GetCurrentTimeMs());
         MIDITickComponent::Start();
         std::cout << "\t\t ... Exiting from MIDISequencer::Start()" << std::endl;
-        //stop_lock.unlock();
+        proc_lock.unlock();
     }
 }
 
@@ -1246,18 +1246,19 @@ void MIDISequencer::Stop() {
     if (IsPlaying()) {
         // stop_mutex is acquired when Stop() is called by TickProc autostopping (in a separate thread)
         // so no overlap of two Stop()
-        //stop_lock.lock();
+        proc_lock.lock();
         std::cout << "\t\tEntered in MIDISequencer::Stop() ..." << std::endl;
-        state.count_in_status |= AUTO_STOP_PENDING;
+        // waits until the timer thread has stopped
+        MIDITickComponent::Stop();
+        // resets the autostop flag
+        state.count_in_status &= ~AUTO_STOP_PENDING;
         state.iterator.SetTimeShiftMode(time_shift_mode);
         MIDIManager::AllNotesOff();
         MIDIManager::CloseOutPorts();
         state.Notify (MIDISequencerGUIEvent::GROUP_TRANSPORT,
                       MIDISequencerGUIEvent::GROUP_TRANSPORT_STOP);
-        MIDITickComponent::Stop();
-         state.count_in_status &= ~AUTO_STOP_PENDING;
         std::cout << "\t\t ... Exiting from MIDISequencer::Stop()" << std::endl;
-        //stop_lock.unlock();
+        proc_lock.unlock();
     }
 }
 
@@ -1402,10 +1403,12 @@ void MIDISequencer::TickProc(tMsecs sys_time) {
     }
     // auto stop at end of sequence
     MIDIClockTime tmp;
-    if (!(repeat_play_mode && GetCurrentMeasure() >= repeat_end_meas) &&
+    if (!(repeat_play_mode && state.cur_measure >= repeat_end_meas) &&
         !GetNextEventTime(&tmp) && (play_mode == PLAY_BOUNDED)) {
         // no events left
-        std::cout << "Auto stopping the sequencer: StaticStopProc called" << std::endl;
+        std::cout << "Auto stopping the sequencer: StaticStopProc called at time " << GetCurrentMIDIClockTime() << std::endl;
+        //<< "GetNextEventTime() returned " << retval << std::endl;
+        //autostop.store(true);
         state.count_in_status |= AUTO_STOP_PENDING;
         std::thread(StaticStopProc, this).detach();
     }
