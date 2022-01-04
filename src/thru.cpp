@@ -107,7 +107,7 @@ void MIDIThru::SetProcessor(MIDIProcessor* proc) {
 }
 
 
-bool MIDIThru::SetInChannel(char chan) {
+bool MIDIThru::SetInChannel(int chan) {
     if (chan < -1 || chan > 15)                     // avoids out of range errors
         return false;
     if (IsPlaying()) {
@@ -122,7 +122,7 @@ bool MIDIThru::SetInChannel(char chan) {
 }
 
 
-bool MIDIThru::SetOutChannel(char chan) {
+bool MIDIThru::SetOutChannel(int chan) {
     if (chan < -1 || chan > 15)                     // avoids out of range errors
         return false;
 

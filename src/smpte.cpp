@@ -158,7 +158,7 @@ void SMPTE::AddSamples (long n) {
 }
 
 
-void SMPTE::AddHours(char h) {
+void SMPTE::AddHours(signed char h) {
     AddSamples( sample_rates_long[sample_rate]  // samples per second times 10
                  * h *                          // number of hours
                  (  60		                    // seconds per minute
@@ -168,7 +168,7 @@ void SMPTE::AddHours(char h) {
   }
 
 
-void SMPTE::AddMinutes(char m) {
+void SMPTE::AddMinutes(signed char m) {
     AddSamples( sample_rates_long[sample_rate]  // samples per second times 10
                 * m *                           // number of minutes
                 ( 60 		                    // seconds per minute
@@ -177,7 +177,7 @@ void SMPTE::AddMinutes(char m) {
 }
 
 
-void SMPTE::AddSeconds(char s) {
+void SMPTE::AddSeconds(signed char s) {
     AddSamples( sample_rates_long[sample_rate]  // samples per second times 10
                 * s		                        // number of seconds
                 / 10		                    // compensate for freq*10
@@ -185,7 +185,7 @@ void SMPTE::AddSeconds(char s) {
 }
 
 
-void SMPTE::AddFrames(char f) {
+void SMPTE::AddFrames(signed char f) {
     AddSamples( sample_rates_long[sample_rate]  // samples per second times 10
                 * f 			                // number of frames
                 * 10			                // times 10
@@ -194,7 +194,7 @@ void SMPTE::AddFrames(char f) {
 }
 
 
-void SMPTE::AddSubFrames(char sf) {
+void SMPTE::AddSubFrames(signed char sf) {
     AddSamples( sample_rates_long[sample_rate]	// samples per second times 10
                 * sf			                // number of sub frames
                 / smpte_rates_long[smpte_rate]  // divide by smpte rate (frames per second) times 100

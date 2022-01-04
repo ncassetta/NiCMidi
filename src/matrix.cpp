@@ -109,7 +109,7 @@ void MIDIMatrix::Reset() {
 }
 
 
-void MIDIMatrix::DecNoteCount(int chan, int note) {
+void MIDIMatrix::DecNoteCount(unsigned char chan, unsigned char note) {
     if(note_on_count[chan][note] > 0) {
       --note_on_count[chan][note];
       --channel_count[chan];
@@ -118,14 +118,14 @@ void MIDIMatrix::DecNoteCount(int chan, int note) {
 }
 
 
-void MIDIMatrix::IncNoteCount(int chan, int note) {
+void MIDIMatrix::IncNoteCount(unsigned char chan, unsigned char note) {
     ++note_on_count[chan][note];
     ++channel_count[chan];
     ++total_count;
 }
 
 
-void MIDIMatrix::ClearChannel(int chan) {
+void MIDIMatrix::ClearChannel(unsigned char chan) {
     for(int note = 0; note < 128; ++note)
         note_on_count[chan][note] = 0;
     min_note[chan] = 127;

@@ -284,14 +284,14 @@ std::string AdvancedSequencer::GetTrackName (unsigned int trk_num) const {
 }
 
 
-char AdvancedSequencer::GetTrackVolume (unsigned int trk_num) const {
+int AdvancedSequencer::GetTrackVolume (unsigned int trk_num) const {
     if (!file_loaded)
         return 100;
     return GetTrackState(trk_num)->control_values[C_MAIN_VOLUME];
 }
 
 
-char AdvancedSequencer::GetTrackProgram (unsigned int trk_num) const {
+int AdvancedSequencer::GetTrackProgram (unsigned int trk_num) const {
     if (!file_loaded)
         return 0;
     return GetTrackState(trk_num)->program;
@@ -353,12 +353,12 @@ bool AdvancedSequencer::SetMIDIThruEnable(bool on_off) {
 }
 
 
-bool AdvancedSequencer::SetMIDIThruChannel (char chan) {
+bool AdvancedSequencer::SetMIDIThruChannel (int chan) {
     return (thru != 0 && thru->SetOutChannel(chan));
 }
 
 
-bool AdvancedSequencer::SetMIDIThruTranspose (char amt) {
+bool AdvancedSequencer::SetMIDIThruTranspose (int amt) {
     if (thru_transposer) {
         thru_transposer->SetAllTranspose (amt);
         MIDIManager::AllNotesOff();
@@ -457,7 +457,7 @@ bool AdvancedSequencer::SetTrackVelocityScale (unsigned int trk_num, unsigned in
 }
 
 
-bool AdvancedSequencer::SetTrackRechannelize (unsigned int trk_num, char chan) {
+bool AdvancedSequencer::SetTrackRechannelize (unsigned int trk_num, int chan) {
     if (!file_loaded || !state.multitrack->IsValidTrackNumber(trk_num))
         return false;
     proc_lock.lock();
@@ -471,7 +471,7 @@ bool AdvancedSequencer::SetTrackRechannelize (unsigned int trk_num, char chan) {
 }
 
 
-bool AdvancedSequencer::SetTrackTranspose (unsigned int trk_num, char amt) {
+bool AdvancedSequencer::SetTrackTranspose (unsigned int trk_num, int amt) {
     if (!file_loaded || !state.multitrack->IsValidTrackNumber(trk_num))
         return false;
     proc_lock.lock();
@@ -709,7 +709,7 @@ void AdvancedSequencer::ExtractWarpPositions() {
     //    notifier_mode = notifier->GetEnable();
     //    notifier->SetEnable (false);
     //}
-    char old_play_mode = play_mode;
+    int old_play_mode = play_mode;
     play_mode = PLAY_BOUNDED;
 
     unsigned int num_warp_positions = 0;

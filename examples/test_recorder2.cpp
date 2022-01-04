@@ -1,6 +1,7 @@
 #include "../include/advancedsequencer.h"
 #include "../include/recorder.h"
 #include "../include/timer.h"
+#include "../include/dump_tracks.h"
 
 
 MIDISequencerGUINotifierText text_n;        // the AdvancedSequencer GUI notifier
@@ -22,12 +23,17 @@ int main( int argc, char **argv ) {
 
     MIDITimer::Wait(15000);                 // Waits 15 secs: play something to record (remember to match
                                             // the input channel with the one set in SetTrackRecChannel)
-
     recorder.Stop();
     std::cout << "Recorder stopped\n";
 
+    std::cout << "Dump of the sequencer multitrack" << std::endl;
+    DumpMIDIMultiTrack(sequencer.GetMultiTrack());
     MIDITimer::Wait(1000);
     sequencer.GoToZero();                   // rewinds
+
     sequencer.Start();
     std::cout << "Now the sequencer plays what you have recorded\n";
+    while (sequencer.IsPlaying())
+        MIDITimer::Wait(50);
+    std::cout << "Sequencer stopped" << std::endl;
 }

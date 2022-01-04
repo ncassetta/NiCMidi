@@ -43,7 +43,7 @@
 
 /// Sets the numbering of MIDI channels in message printing. If c == 0 they will be numbered 0 ... 15, else
 /// 1 ... 16. This will affect all the functions of this file. See \ref NUMBERING.
-void SetChanFrom(char c = 0);
+void SetChanFrom(unsigned char c = 0);
 /// Prints a readable string describing the contents of the given MIDIMessage (or MIDITimedMessage).
 void DumpMIDITimedMessage (MIDITimedMessage* const msg, std::ostream& ost = std::cout);
 /// Prints a list of all the MIDI messages in the given MIDItrack.

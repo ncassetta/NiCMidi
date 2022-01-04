@@ -523,7 +523,7 @@ void MIDISequencer::SetPlayMode(int mode) {
 bool MIDISequencer::SetTrackOutPort(unsigned int trk_num, unsigned int port) {
     if (!state.multitrack->IsValidTrackNumber(trk_num) || !MIDIManager::IsValidOutPortNumber(port))
         return false;
-    char channel = state.multitrack->GetTrack(trk_num)->GetChannel();
+    int channel = state.multitrack->GetTrack(trk_num)->GetChannel();
     proc_lock.lock();
     if (IsPlaying() && port != GetTrackOutPort(trk_num) && channel != -1) {
         MIDIManager::GetOutDriver(GetTrackOutPort(trk_num))->AllNotesOff(channel);
@@ -549,7 +549,7 @@ bool MIDISequencer::SetTrackProcessor(unsigned int trk_num, MIDIProcessor* p) {
 bool MIDISequencer::SetTrackTimeShift(unsigned int trk_num, int offset) {
     if (!state.multitrack->IsValidTrackNumber(trk_num))
         return false;
-    char channel = state.multitrack->GetTrack(trk_num)->GetChannel();
+    int channel = state.multitrack->GetTrack(trk_num)->GetChannel();
     proc_lock.lock();
 
     if (IsPlaying() && channel != -1) {
@@ -590,7 +590,7 @@ bool MIDISequencer::DeleteTrack(int trk_num) {
     if (trk_num == -1) trk_num = GetNumTracks() - 1;    // if trk_num = -1 (default) append track
     bool ret = false;
     proc_lock.lock();
-    char channel = state.multitrack->GetTrack(trk_num)->GetChannel();
+    int channel = state.multitrack->GetTrack(trk_num)->GetChannel();
     if (IsPlaying() && channel != -1) {
         MIDIManager::GetOutDriver(GetTrackOutPort(trk_num))->AllNotesOff(channel);
         GetTrackState(trk_num)->note_matrix.Reset();

@@ -61,8 +61,8 @@ class MIDISequencerGUIEvent {
                     MIDISequencerGUIEvent( int group, int subgroup, int item ) {
                         bits = ((group&0xff)<<24) | ((subgroup&0xfff)<<12) | (item&0xfff); }
                         // leave unchanged! overloading trouble, too many ctors
-        /// Copy constructor.
-                    MIDISequencerGUIEvent(const MIDISequencerGUIEvent &ev) : bits(ev.bits) {}
+        // copy constructor and operator= provided by the compiler
+
         /// Converts the object into an unsigned long
                     operator unsigned long () const             { return bits; }
         /// Returns the event group.
@@ -199,18 +199,18 @@ class MIDISequencerGUINotifierText : public MIDISequencerGUINotifier {
 
         /// Gets the numbering of measures and beats. See SetStartFromone().
         /// \return 0 or 1.
-        char            GetStartFrom() const             { return start_from; }
+        unsigned char           GetStartFrom() const             { return start_from; }
         /// Sets the numbering of measures and beats (starting from 0 or from 1)
         /// \param f 0 or 1.
         /// \return **true** if the parameter is correct, **false** otherwise
-        bool            SetStartFrom(char f);
+        bool            SetStartFrom(unsigned char f);
 
         /// Notifies the event _ev_, printing to it a readable event description.
         virtual void    Notify(const MIDISequencerGUIEvent &ev);
 
     protected:
         /// \cond EXCLUDED
-        char            start_from;
+        unsigned char   start_from;
         std::ostream&   ost;
         /// \endcond
 };

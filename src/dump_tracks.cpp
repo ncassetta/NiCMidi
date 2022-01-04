@@ -25,7 +25,7 @@
 
 #include "../include/dump_tracks.h"
 
-static char chan_from_1 = 0;
+static unsigned char chan_from_1 = 0;
 
 
 static const char* trk_types[10] = {
@@ -42,7 +42,7 @@ static const char* trk_types[10] = {
     };
 
 
-void SetChanFrom(char c) {
+void SetChanFrom(unsigned char c) {
     chan_from_1 = c;
 }
 

@@ -122,7 +122,7 @@ bool MIDIRecorder::SetTrackInPort(unsigned int trk_num, unsigned int port) {
 }
 
 
-bool MIDIRecorder::SetTrackRecChannel(unsigned int trk_num, char chan) {
+bool MIDIRecorder::SetTrackRecChannel(unsigned int trk_num, int chan) {
     if (IsPlaying() || !tracks->IsValidTrackNumber(trk_num) || (chan < -1 || chan > 15))
         return false;
     seq_tracks->GetTrack(trk_num)->SetRecChannel(chan);

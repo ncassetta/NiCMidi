@@ -184,7 +184,7 @@ class MIDIProcessorRechannelizer : public MIDIProcessor {
 class MIDIProcessorPrinter : public MIDIProcessor {
     public:
         /// The constructor sets the std::ostream that will print the messages (default: std::cout).
-                                        MIDIProcessorPrinter(std::ostream& stream = std::cout, char from_1 = 0) :
+                                        MIDIProcessorPrinter(std::ostream& stream = std::cout, unsigned char from_1 = 0) :
                                                              print_on(true), chan_from_1(from_1 != 0), ost(stream) {}
         /// Same of SetPrint(true)
         virtual void                    Reset()                                     { print_on = true; }
@@ -195,7 +195,7 @@ class MIDIProcessorPrinter : public MIDIProcessor {
         bool                            GetPrint() const                            { return print_on; }
         /// Sets the numbering of MIDI channels in message printing. If c == 0 they will be numbered 0 ... 15,
         /// else 1 ... 16. See \ref NUMBERING.
-        void                            SetChanFrom( char c)                        { chan_from_1 = (c != 0); }
+        void                            SetChanFrom(unsigned char c)                { chan_from_1 = (c != 0); }
         /// Sets the printing on and off (default is on).
         void                            SetPrint(bool on_off)                       { print_on = on_off; }
         /// The Process method. It prints a human-readable description of the message to the std::ostream given
@@ -205,7 +205,7 @@ class MIDIProcessorPrinter : public MIDIProcessor {
     protected:
         /// \cond EXCLUDED
         bool                            print_on;           // The on/off printing flag
-        char                            chan_from_1;        // Starting number for MIDI channels (0 or 1)
+        unsigned char                   chan_from_1;        // Starting number for MIDI channels (0 or 1)
         std::ostream&                   ost;                // The out stream
         /// \endcond
 };

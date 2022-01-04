@@ -171,7 +171,5 @@ int main( int argc, char **argv ) {
         MIDITimer::Wait(50);
     cout << "    Stop" << endl;
 
-//
-
     return EXIT_SUCCESS;
 }

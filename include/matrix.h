@@ -56,7 +56,7 @@ class  MIDIMatrix : public MIDIProcessor {
         int             GetTotalCount() const                           { return total_count; }
         /// Returns the number of notes on for given channel.
         /// See \ref NUMBERING.
-        short int       GetChannelCount(int chan) const                 { return channel_count[chan]; }
+        int             GetChannelCount(int chan) const                 { return channel_count[chan]; }
         /// Returns the number of sounding notes given the channel and the note MIDI value.
         /// See \ref NUMBERING.
         int             GetNoteCount(int chan, int note) const          { return note_on_count[chan][note]; }
@@ -65,24 +65,24 @@ class  MIDIMatrix : public MIDIProcessor {
         bool            GetHoldPedal(int chan) const                    { return hold_pedal[chan]; }
         /// Returns the minimum note on MIDI value sounding for the given channel (-1 if no note on).
         /// See \ref NUMBERING.
-        short int       GetMinNoteOn(int chan) const
+        int             GetMinNoteOn(int chan) const
                                     { return channel_count[chan] ? min_note[chan] : -1; }
         /// Returns the maximum note on MIDI value sounding for the given channel (-1 if no note on).
         /// See \ref NUMBERING.
-        short int       GetMaxNoteOn(int chan) const
+        int             GetMaxNoteOn(int chan) const
                                     { return channel_count[chan] ? max_note[chan] : -1; }
 
     protected:
 
         /// Decrements the note count for the given channel and note.
         /// See \ref NUMBERING.
-        virtual void    DecNoteCount(int chan, int note);
+        virtual void    DecNoteCount(unsigned char chan, unsigned char note);
         /// Increments the note count for the given channel and note.
         /// See \ref NUMBERING.
-        virtual void    IncNoteCount (int chan, int note);
+        virtual void    IncNoteCount (unsigned char chan, unsigned char note);
         /// Clear the note count and the pedal on the given channel.
         /// See \ref NUMBERING.
-        virtual void    ClearChannel(int chan);
+        virtual void    ClearChannel(unsigned char chan);
         /// Called by Process() for non note and non pedal messages. You can redefine it if you
         /// want your own processing (currently does nothing)
         virtual void    OtherMessage(const MIDIMessage* msg) {}
@@ -98,7 +98,7 @@ class  MIDIMatrix : public MIDIProcessor {
         unsigned char   note_on_count[16][128];         // The note matrix
         unsigned char   min_note[16];                   // The minimum sounding note number for every channel
         unsigned char   max_note[16];                   // The maximum sounding note number for every channel
-        short int       channel_count[16];              // The number of notes sounding for every channel
+        int16_t         channel_count[16];              // The number of notes sounding for every channel
         bool            hold_pedal[16];                 // The pedal status for every channel
         int             total_count;                    // The total number of sounding notes
 };

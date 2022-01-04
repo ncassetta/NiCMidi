@@ -114,7 +114,7 @@ class  MIDITrack {
         /// Returns the track channel (-1 if the track has not type TYPE_CHAN or TYPE_IRREG_CHAN).
         /// See \ref NUMBERING
         /// \note This is **not** const, because it may call Analyze(), causing an update of the track status.
-        char                        GetChannel();
+        int                         GetChannel();
         /// Returns the entire status bitfield, so you can test individual properties of the track with an AND
         /// with one of its bits.
         /// \note This is **not** const, because it may call Analyze(), causing an update of the track status.
@@ -122,15 +122,16 @@ class  MIDITrack {
         /// Returns the track type (one of \ref TYPE_MAIN, \ref TYPE_TEXT, \ref TYPE_CHAN, \ref TYPE_IRREG_CHAN,
         /// \ref TYPE_MIXED_CHAN, \ref TYPE_UNKNOWN, \ref TYPE_SYSEX, \ref TYPE_RESET_SYSEX, \ref TYPE_BOTH_SYSEX).
         /// \note This is **not** const, because it may call Analyze(), causing an update of the track status.
-        char                        GetType();
+        unsigned char               GetType();
         /// Returns the channel for recording (-1 for all channels).
         /// See \ref NUMBERING
-        char                        GetRecChannel()                     { return rec_chan; }
+        int                         GetRecChannel()                     { return rec_chan; }
         /// Returns the track time shift in MIDI ticks.
         int                         GetTimeShift() const                { return time_shift; }
-        /// Returns **true** if the track contains MIDI SysEx messages.
+        /// Returns non zero if the track contains MIDI SysEx messages. In this case it can return one of
+        /// \ref TYPE_SYSEX, \ref TYPE_RESET_SYSEX or \ref TYPE_BOTH_SYSEX.
         /// \note This is **not** const, because it may call Analyze(), causing an update of the track status.
-        char                        HasSysex();
+        unsigned char               HasSysex();
         /// Returns the address of an event in the track.
         /// \param ev_num the index of the event in the track (must be in the range 0 ... GetNumEvents() - 1).
         MIDITimedMessage*           GetEventAddress(int ev_num)         { return &events[ev_num]; }
@@ -315,7 +316,7 @@ class  MIDITrack {
         std::vector<MIDITimedMessage>
                                     events;     // The buffer of events
         int                         status;     // A bitfield used to determine the track type
-        char                        rec_chan;   // The channel for recordng, or -1 for all channels
+        signed char                 rec_chan;   // The channel for recordng, or -1 for all channels
         int                         time_shift; // The time shift in MIDI ticks
         unsigned int                in_port;    // The in port id for recording midi events
         unsigned int                out_port;   // The out port id for playing midi events
@@ -347,17 +348,17 @@ class MIDITrackIterator {
         /// Returns the current event number in the track.
         int                         GetCurrentEventNum() const  { return cur_ev_num; }
         /// Returns the current track program (-1 if not set).
-        char                        GetProgram() const          { return program; }
+        int16_t                     GetProgram() const          { return program; }
         /// Returns the current value for the given control (-1 if not set).
-        char                        GetControl(unsigned char c) const
+        int16_t                     GetControl(unsigned char c) const
                                                                 { return controls[c]; }
         /// Returns the current bender value.
-        short                       GetBender() const           { return bender_value; }
+        int16_t                     GetBender() const           { return bender_value; }
         /// Returns the number of notes on at current time.
         int                         GetNotesOn() const          { return num_notes_on; }
         /// Returns **true** if the given note is on at current time.
-        char                        IsNoteOn(unsigned char n) const
-                                                                { return notes_on[n]; }
+        bool                        IsNoteOn(unsigned char n) const
+                                                                { return (notes_on[n] > 0); }
         /// Returns **true** if the hold pedal is on at current time.
         bool                        IsPedalOn() const           { return controls[64] > 64; }
         /// Finds the MIDITimedMessage in the track corresponding to the note off for the given note.
@@ -400,11 +401,11 @@ class MIDITrackIterator {
         unsigned int                cur_ev_num;     // number of the current event
         MIDIClockTime               cur_time;       // current time
 
-        char                        program;        // current program change, or -1
-        char                        controls[128];  // value of every control change, or -1
-        short                       bender_value;	// last seen bender value
+        int16_t                     program;        // current program change, or -1
+        int16_t                     controls[128];  // value of every control change, or -1
+        int16_t                     bender_value;	// last seen bender value
         unsigned char               num_notes_on;	// number of notes currently on
-        char		                notes_on[128];  // 0 if off, or velocity
+        unsigned char		        notes_on[128];  // 0 if off, or velocity
         /// \endcond
 };
 

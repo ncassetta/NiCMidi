@@ -150,7 +150,7 @@ void MIDIOutDriver::AllNotesOff(int chan) {
     out_mutex.lock();
 
 #if DRIVER_USES_MIDIMATRIX                      // send a note off for every note on in the out_matrix
-    if(out_matrix.GetChannelCount(chan) > 0) {
+    if(out_matrix.GetChannelCount(chan) > 0)  {
         for(int note = 0; note < 128; ++note) {
             while(out_matrix.GetNoteCount(chan,note) > 0) {
                 msg.SetNoteOff((unsigned char)chan, (unsigned char)note, 0);
@@ -195,8 +195,10 @@ void MIDIOutDriver::HardwareMsgOut(const MIDIMessage &msg) {
         return;
     msg_bytes.clear();
 #if DRIVER_USES_MIDIMATRIX
-    if (msg.IsChannelMsg())
-        out_matrix.Process (msg);
+    if (msg.IsChannelMsg()) {
+        MIDITimedMessage tmsg(msg);
+        out_matrix.Process (&tmsg);
+    }
 #endif
 
     if (msg.IsSysEx()) {

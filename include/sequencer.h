@@ -148,10 +148,10 @@ class MIDISequencerState : public MIDIProcessor {
 
         float                   tempobpm;           ///< The current tempo in beats per minute
         unsigned int            tempo_scale;        ///< The tempo scale in percentage (100 = true time)
-        char                    timesig_numerator;  ///< The numerator of current time signature
-        char                    timesig_denominator;///< The denominator of current time signature
-        char                    keysig_sharpflat;   ///< The current key signature accidents (
-        char                    keysig_mode;        ///< Major mode (0) or minor (1)
+        unsigned char           timesig_numerator;  ///< The numerator of current time signature
+        unsigned char           timesig_denominator;///< The denominator of current time signature
+        signed char             keysig_sharpflat;   ///< The current key signature accidents (
+        unsigned char           keysig_mode;        ///< Major mode (0) or minor (1)
         std::string             marker_text;        ///< The current marker
         std::vector<MIDISequencerTrackState*>
                                 track_states;       ///< A track state for every track
@@ -163,7 +163,7 @@ class MIDISequencerState : public MIDIProcessor {
         MIDIClockTime           count_in_time;      ///< Internal use
 
         // TODO: change the name of this variable for example count_in_stop
-        char                    playing_status;     ///< Flag affecting the TickProc (count in, auto stop, etc\.)
+        unsigned char           playing_status;     ///< Flag affecting the TickProc (count in, auto stop, etc\.)
         static int              metronome_mode;     ///< Flag affecting how metronome beat is calculated
 };
 
@@ -510,7 +510,7 @@ class MIDISequencer : public MIDITickComponent {
         unsigned int                    repeat_start_meas;  // The loop start measure
         unsigned int                    repeat_end_meas;    // The loop end measure
         bool                            time_shift_mode;    // The time shift on/off (during playback time shift is always on)
-        char                            play_mode;          // PLAY_BOUNDED or PLAY_UNBOUNDED
+        int                             play_mode;          // PLAY_BOUNDED or PLAY_UNBOUNDED
 
         std::vector<MIDIProcessor*>     track_processors;   // A MIDIProcessor for every track
         //std::vector<int>                time_shifts;        // A time shift (in MIDI ticks) for every track
