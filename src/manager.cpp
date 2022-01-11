@@ -289,6 +289,7 @@ void MIDIManager::Init() {
         exit(EXIT_FAILURE);
     }
     MIDITimer::SetMIDITick(TickProc);
+    MIDITimer::Start();
     atexit(Exit);
     init = true;
     std::cout << "Exiting MIDIManager::Init() Found " << MIDI_outs->size() << " midi out and "
@@ -298,7 +299,7 @@ void MIDIManager::Init() {
 
 void MIDIManager::Exit() {
     std::cout << "MIDIManager Exit()" << std::endl;
-    //MIDITimer::HardStop();
+    MIDITimer::HardStop();
 
 
 #ifdef WIN32

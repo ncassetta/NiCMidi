@@ -88,6 +88,8 @@ bool MIDITimer::Start () {
         bg_thread = std::thread(ThreadProc);
         std::cout << "Timer open with " << resolution << " msecs resolution" << std::endl;
     }
+    else
+        std::cout << "Dummy Timer::Start()" << std::endl;
     return true;
 }
 
@@ -100,6 +102,8 @@ void MIDITimer::Stop() {
 
             std:: cout << "Timer stopped by MIDITimer::Stop()" << std::endl;
         }
+        else
+            std::cout << "Dummy MIDITimer::Stop()" << std::endl;
     }
 }
 

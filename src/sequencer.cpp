@@ -1413,11 +1413,17 @@ void MIDISequencer::TickProc(tMsecs sys_time) {
     if (!(repeat_play_mode && state.cur_measure >= repeat_end_meas) &&
         !GetNextEventTime(&tmp) && (play_mode == PLAY_BOUNDED)) {
         // no events left
-        std::cout << "Auto stopping the sequencer: StaticStopProc called at time " << GetCurrentMIDIClockTime() << std::endl;
-        //<< "GetNextEventTime() returned " << retval << std::endl;
+        std::cout << "Auto stopping the sequencer at time " << GetCurrentMIDIClockTime() << std::endl;
         state.playing_status |= AUTO_STOP_PENDING;      // must be here, not in StaticStopProc
         //times = 0;      // only for log, comment if you don't need
-        std::thread(StaticStopProc, this).detach();
+        MIDITickComponent::Stop();
+        state.iterator.SetTimeShiftMode(time_shift_mode);
+        MIDIManager::AllNotesOff();
+        MIDIManager::CloseOutPorts();
+        state.Notify (MIDISequencerGUIEvent::GROUP_TRANSPORT,
+                      MIDISequencerGUIEvent::GROUP_TRANSPORT_STOP);
+        // resets the autostop flag
+        state.playing_status &= ~AUTO_STOP_PENDING;
     }
 
     proc_lock.unlock();
