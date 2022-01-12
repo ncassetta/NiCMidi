@@ -26,8 +26,6 @@ int main( int argc, char **argv ) {
     recorder.Stop();
     std::cout << "Recorder stopped\n";
 
-    std::cout << "Dump of the sequencer multitrack" << std::endl;
-    DumpMIDIMultiTrack(sequencer.GetMultiTrack());
     MIDITimer::Wait(1000);
     sequencer.GoToZero();                   // rewinds
 

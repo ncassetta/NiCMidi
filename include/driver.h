@@ -59,11 +59,6 @@
 #if DRIVER_USES_MIDIMATRIX
    #include "matrix.h"
 #endif // DRIVER_USES_MIDIMATRIX
-/// This is the maximum number of retries the method OutputMessage() will try before hanging (and skipping
-/// a message).
-#define DRIVER_MAX_RETRIES 100
-/// This is the number of milliseconds the driver waits after sending a MIDI system exclusive message.
-#define DRIVER_WAIT_AFTER_SYSEX 20
 ///@}
 
 
@@ -186,6 +181,10 @@ class MIDIOutDriver {
         virtual void            OutputMessage(const MIDITimedMessage& msg);
 
     protected:
+        /// The maximum number of retries the method OutputMessage() will try before hanging (and skipping a message).
+        static const int        DRIVER_MAX_RETRIES = 100;
+        /// The number of milliseconds the driver waits after sending a MIDI system exclusive message.
+        static const int        DRIVER_WAIT_AFTER_SYSEX = 20;
         /// Sends the message to the hardware MIDI port using the RtMidi library functions.
         virtual void            HardwareMsgOut(const MIDIMessage &msg);
 

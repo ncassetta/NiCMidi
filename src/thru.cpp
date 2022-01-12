@@ -62,12 +62,11 @@ bool MIDIThru::SetInPort(unsigned int port) {
         return true;                                // trying to assign same ports: nothing to do
 
     if (IsPlaying()) {
-        proc_lock.lock();
+        std::lock_guard<std::recursive_mutex> lock(proc_lock);
         MIDIManager::GetInDriver(in_port)->ClosePort();
         SilentOut();
         MIDIManager::GetInDriver(port)->OpenPort();
         in_port = port;
-        proc_lock.unlock();
     }
     else
         in_port = port;
@@ -82,12 +81,11 @@ bool MIDIThru::SetOutPort(unsigned int port) {
         return true;                                // trying to assign same ports: nothing to do
 
     if (IsPlaying()) {
-        proc_lock.lock();
+        std::lock_guard<std::recursive_mutex> lock(proc_lock);
         SilentOut();
         MIDIManager::GetOutDriver(out_port)->ClosePort();
         MIDIManager::GetOutDriver(port)->OpenPort();
         out_port = port;
-        proc_lock.unlock();
     }
     else
         out_port = port;
@@ -97,10 +95,9 @@ bool MIDIThru::SetOutPort(unsigned int port) {
 
 void MIDIThru::SetProcessor(MIDIProcessor* proc) {
     if (IsPlaying()) {
-        proc_lock.lock();
+        std::lock_guard<std::recursive_mutex> lock(proc_lock);
         SilentOut();
         processor = proc;
-        proc_lock.unlock();
     }
     else
         processor = proc;
@@ -111,10 +108,9 @@ bool MIDIThru::SetInChannel(int chan) {
     if (chan < -1 || chan > 15)                     // avoids out of range errors
         return false;
     if (IsPlaying()) {
-        proc_lock.lock();
+        std::lock_guard<std::recursive_mutex> lock(proc_lock);
         SilentOut();
         in_channel = chan;
-        proc_lock.unlock();
     }
     else
         in_channel = chan;
@@ -127,10 +123,9 @@ bool MIDIThru::SetOutChannel(int chan) {
         return false;
 
     if (IsPlaying()) {
-        proc_lock.lock();
+        std::lock_guard<std::recursive_mutex> lock(proc_lock);
         SilentOut();
         out_channel = chan;
-        proc_lock.unlock();
     }
     else
         out_channel = chan;
@@ -149,6 +144,7 @@ void MIDIThru::Start() {
 
 void MIDIThru::Stop() {
     if (IsPlaying()) {
+        std::lock_guard<std::recursive_mutex> lock(proc_lock);
         MIDITickComponent::Stop();
         MIDIManager::GetInDriver(in_port)->ClosePort();
         SilentOut();
@@ -173,7 +169,7 @@ void MIDIThru::StaticTickProc(tMsecs sys_time, void* pt) {
 
 void MIDIThru::TickProc(tMsecs sys_time_)
 {
-    proc_lock.lock();
+    std::lock_guard<std::recursive_mutex> lock(proc_lock);
 
     //static unsigned int times = 0;
     //times++;
@@ -200,5 +196,4 @@ void MIDIThru::TickProc(tMsecs sys_time_)
         }
     }
     in_driver->UnlockQueue();
-    proc_lock.unlock();
 }

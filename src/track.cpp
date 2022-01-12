@@ -85,7 +85,8 @@ void MIDITrack::Clear(bool mantain_end) {
 int MIDITrack::GetChannel() {
     if (status & STATUS_DIRTY)
         Analyze();
-    return (int)(status & 0xff);
+    signed char chan = status & 0xff;
+    return (int)chan;
 }
 
 

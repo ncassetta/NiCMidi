@@ -377,7 +377,7 @@ bool AdvancedSequencer::SetMIDIThruTranspose (int amt) {
 bool AdvancedSequencer::SetTrackSolo (unsigned int trk_num) {   // unsoloing done by UnSoloTrack()
     if (!file_loaded || !state.multitrack->IsValidTrackNumber(trk_num))
         return false;
-    proc_lock.lock();
+    std::lock_guard<std::recursive_mutex> lock(proc_lock);
     for (unsigned int i = 0; i < GetNumTracks(); ++i ) {
         if(i == trk_num) {
             ((MIDISequencerTrackProcessor *)track_processors[i])->solo = MIDISequencerTrackProcessor::SOLOED;
@@ -394,7 +394,6 @@ bool AdvancedSequencer::SetTrackSolo (unsigned int trk_num) {   // unsoloing don
             }
         }
     }
-    proc_lock.unlock();
     return true;
 }
 
@@ -402,7 +401,7 @@ bool AdvancedSequencer::SetTrackSolo (unsigned int trk_num) {   // unsoloing don
 void AdvancedSequencer::UnSoloTrack()  {
     if (!file_loaded)
         return;
-    proc_lock.lock();
+    std::lock_guard<std::recursive_mutex> lock(proc_lock);
     for(unsigned int i = 0; i < GetNumTracks(); ++i ) {
         bool old_solo = ((MIDISequencerTrackProcessor *)track_processors[i])->solo;
         ((MIDISequencerTrackProcessor *)track_processors[i])->solo = MIDISequencerTrackProcessor::NO_SOLO;
@@ -410,14 +409,13 @@ void AdvancedSequencer::UnSoloTrack()  {
             // this sets appropriate CC, PC, etc for previously muted tracks
             CatchEventsBefore();
     }
-    proc_lock.unlock();
 }
 
 
 bool AdvancedSequencer::SetTrackMute (unsigned int trk_num, bool f) {
     if (!file_loaded || !state.multitrack->IsValidTrackNumber(trk_num))
         return false;
-    proc_lock.lock();
+    std::lock_guard<std::recursive_mutex> lock(proc_lock);
     GetTrackProcessor(trk_num)->mute = f;
     int channel = GetTrackChannel(trk_num);
     if (IsPlaying() && channel != -1) {
@@ -429,7 +427,6 @@ bool AdvancedSequencer::SetTrackMute (unsigned int trk_num, bool f) {
             // track was muted: this set appropriate CC, PC, etc not previously sent
             CatchEventsBefore(trk_num);
     }
-    proc_lock.unlock();
     return true;
 }
 
@@ -437,22 +434,20 @@ bool AdvancedSequencer::SetTrackMute (unsigned int trk_num, bool f) {
 void AdvancedSequencer::UnmuteAllTracks() {
     if (!file_loaded)
         return;
-    proc_lock.lock();
+    std::lock_guard<std::recursive_mutex> lock(proc_lock);
     for (unsigned int i = 0; i < GetNumTracks(); ++i)
         GetTrackProcessor(i)->mute = false;
     if (IsPlaying())
         // this set appropriate CC, PC, etc for previously muted tracks
         CatchEventsBefore();
-    proc_lock.unlock();
 }
 
 
 bool AdvancedSequencer::SetTrackVelocityScale (unsigned int trk_num, unsigned int scale) {
     if (!file_loaded || !state.multitrack->IsValidTrackNumber(trk_num))
         return false;
-    proc_lock.lock();
+    std::lock_guard<std::recursive_mutex> lock(proc_lock);
     ((MIDISequencerTrackProcessor *)track_processors[trk_num])->velocity_scale = scale;
-    proc_lock.unlock();
     return true;
 }
 
@@ -460,13 +455,12 @@ bool AdvancedSequencer::SetTrackVelocityScale (unsigned int trk_num, unsigned in
 bool AdvancedSequencer::SetTrackRechannelize (unsigned int trk_num, int chan) {
     if (!file_loaded || !state.multitrack->IsValidTrackNumber(trk_num))
         return false;
-    proc_lock.lock();
+    std::lock_guard<std::recursive_mutex> lock(proc_lock);
     if (IsPlaying() && GetTrackChannel(trk_num) != chan && !(GetTrackChannel(trk_num) == -1)) {
         MIDIManager::GetOutDriver(GetTrackOutPort(trk_num))->AllNotesOff(GetTrackChannel(trk_num));
         GetTrackState(trk_num)->note_matrix.Reset();
     }
     GetTrackProcessor(trk_num)->rechannel = chan;
-    proc_lock.unlock();
     return true;
 }
 
@@ -474,13 +468,12 @@ bool AdvancedSequencer::SetTrackRechannelize (unsigned int trk_num, int chan) {
 bool AdvancedSequencer::SetTrackTranspose (unsigned int trk_num, int amt) {
     if (!file_loaded || !state.multitrack->IsValidTrackNumber(trk_num))
         return false;
-    proc_lock.lock();
+    std::lock_guard<std::recursive_mutex> lock(proc_lock);
     if (IsPlaying() && GetTrackTranspose(trk_num) != amt && !(GetTrackChannel(trk_num) == -1)) {
         MIDIManager::GetOutDriver(GetTrackOutPort(trk_num))->AllNotesOff(GetTrackChannel(trk_num));
         GetTrackState(trk_num)->note_matrix.Reset();
     }
     GetTrackProcessor(trk_num)->transpose = amt;
-    proc_lock.unlock();
     return true;
 }
 
@@ -488,7 +481,7 @@ bool AdvancedSequencer::SetTrackTranspose (unsigned int trk_num, int amt) {
 bool AdvancedSequencer::GoToTime (MIDIClockTime time_clk) {
     bool ret;
 
-    proc_lock.lock();
+    std::lock_guard<std::recursive_mutex> lock(proc_lock);
     // figure out which warp item we use
     // try warp to the last warp point BEFORE the
     // requested time
@@ -506,7 +499,6 @@ bool AdvancedSequencer::GoToTime (MIDIClockTime time_clk) {
         for (unsigned int i = 0; i < GetNumTracks(); ++i)
             GetTrackState(i)->note_matrix.Reset();
     }
-    proc_lock.unlock();
     return ret;
 }
 
@@ -514,7 +506,7 @@ bool AdvancedSequencer::GoToTime (MIDIClockTime time_clk) {
 bool AdvancedSequencer::GoToTimeMs(float time_ms) {
     bool ret;
 
-    proc_lock.lock();
+    std::lock_guard<std::recursive_mutex> lock(proc_lock);
     // figure out which warp item we use
     // try warp to the last warp point BEFORE the
     // requested time
@@ -532,7 +524,6 @@ bool AdvancedSequencer::GoToTimeMs(float time_ms) {
             for (unsigned int i = 0; i < GetNumTracks(); ++i)
                 GetTrackState(i)->note_matrix.Reset();
     }
-    proc_lock.unlock();
     return ret;
 }
 
@@ -541,7 +532,7 @@ bool AdvancedSequencer::GoToTimeMs(float time_ms) {
 bool AdvancedSequencer::GoToMeasure (int measure, int beat) {
     bool ret;
 
-    proc_lock.lock();
+    std::lock_guard<std::recursive_mutex> lock(proc_lock);
     // figure out which warp item we use
     // try warp to the last warp point BEFORE the
     // requested measure
@@ -559,18 +550,17 @@ bool AdvancedSequencer::GoToMeasure (int measure, int beat) {
             for (unsigned int i = 0; i < GetNumTracks(); ++i)
                 GetTrackState (i)->note_matrix.Reset();
     }
-    proc_lock.unlock();
     return ret;
 }
 
 
 void AdvancedSequencer::Start () {
-    // If you call this while already èlaying the sequencer will restart from the
+    // If you call this while already playing the sequencer will restart from the
     // loop initial measure (if repeat play is on)
     if (!file_loaded && play_mode == PLAY_BOUNDED)
         return;
 
-    proc_lock.lock();
+    std::lock_guard<std::recursive_mutex> lock(proc_lock);
     std::cout << "\t\tEntered in AdvancedSequencer::Start() ...\n";
     MIDISequencer::Stop();
     if (repeat_play_mode)
@@ -593,7 +583,6 @@ void AdvancedSequencer::Start () {
     MIDITickComponent::Start();
     std::cout << "\t\t ... Exiting from AdvancedSequencer::Start()" << std::endl;
     //std::cout << "sys_time_offset = " << sys_time_offset << " sys_time = " << MIDITimer::GetSysTimeMs() << std::endl;
-    proc_lock.unlock();
 }
 
 
@@ -601,7 +590,7 @@ void AdvancedSequencer::Stop() {
     if (!IsPlaying())
         return;
 
-    proc_lock.lock();
+    std::lock_guard<std::recursive_mutex> lock(proc_lock);
     std::cout << "\t\tEntered in AdvancedSequencer::Stop() ...\n";
     // waits until the timer thread has stopped
     MIDITickComponent::Stop();
@@ -615,7 +604,6 @@ void AdvancedSequencer::Stop() {
     // stops on a beat (and clear midi matrix)
     GoToMeasure(state.cur_measure, state.cur_beat);
     std::cout << "\t\t ... Exiting from AdvancedSequencer::Stop()" << std::endl;
-    proc_lock.unlock();
 }
 
 

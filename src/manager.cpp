@@ -266,6 +266,7 @@ void MIDIManager::Init() {
      CoInitializeEx(NULL, COINIT_MULTITHREADED);
 #endif // WIN32
     std::cout << "Executing MIDIManager::Init()" << std::endl;
+    std::cout << "thread::hardware_concurrency is " << std::thread::hardware_concurrency() << std::endl;
     MIDI_outs = new std::vector<MIDIOutDriver*>;
     MIDI_out_names = new std::vector<std::string>;
     MIDI_ins = new std::vector<MIDIInDriver*>;
@@ -298,7 +299,7 @@ void MIDIManager::Init() {
 
 void MIDIManager::Exit() {
     std::cout << "MIDIManager Exit()" << std::endl;
-    //MIDITimer::HardStop();
+    MIDITimer::HardStop();
 
 
 #ifdef WIN32

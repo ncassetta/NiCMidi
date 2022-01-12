@@ -180,7 +180,8 @@ class  MIDITrack {
         /// same MIDI time in the track: it may replace the event or insert a new event anyway. If you leave the
         /// default parameter (INSMODE_DEFAULT) the method will follow the behaviour set by the static
         /// method SetInsertMode(), otherwise you may override it giving the last parameter. For details see
-        /// INSMODE_DEFAULT (default), INSMODE_REPLACE, INSMODE_INSERT_OR_REPLACE, INSMODE_INSERT_OR_REPLACE_BUT_NOTE.
+        /// \ref INSMODE_DEFAULT (default), \ref INSMODE_REPLACE, \ref INSMODE_INSERT_OR_REPLACE,
+        /// \ref INSMODE_INSERT_OR_REPLACE_BUT_NOTE.
         /// \return **false** in some situations in which the method cannot insert:
         /// + _msg_ was an EndOfTrack (you cannot insert it)
         /// + __ins_mode_ was INSMODE_REPLACE but there is no event to replace
@@ -200,7 +201,7 @@ class  MIDITrack {
         /// \return **false** in some situations in which the method cannot insert:
         /// + _msg_ was not a Note On event
         /// + _mode_ was INSMODE_REPLACE but there is no event to replace
-        /// + a memory error occurred
+        /// + a memory error occurred.
         /// otherwise **true**.
         /// \bug In the latter case the method could leave the track in an inconsistent state (a Note On without
         /// corresponding Note Off or viceversa).
@@ -257,9 +258,9 @@ class  MIDITrack {
         /// \param[out] event_num contains the event number in the track if the event was found; otherwise it contains
         /// **-1** if *event time* was invalid, or the number of the first event with the same event time.
         /// \param[in] mode (compare mode) an enum value with the following meaning.
-        /// + COMPMODE_EQUAL : the event must be equal to *msg*.
-        /// + COMPMODE_SAMEKIND : the event is a same kind event (see MIDITimedMessage::IsSameKind()).
-        /// + COMPMODE_TIME : the behaviour is the same of FindEventNumber(time, event_num).
+        /// + \ref COMPMODE_EQUAL : the event must be equal to *msg*.
+        /// + \ref COMPMODE_SAMEKIND : the event is a same kind event (see MIDITimedMessage::IsSameKind()).
+        /// + \ref COMPMODE_TIME : the behaviour is the same of FindEventNumber(time, event_num).
         /// \return **true** if an event matching _msg_ was found, **false** otherwise.
         bool                        FindEventNumber( const MIDITimedMessage& msg, int *event_num,
                                                      int mode = COMPMODE_EQUAL) const;

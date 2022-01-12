@@ -69,6 +69,7 @@ class MIDIFileWriteMultiTrack {
 
 /// \name Functions for saving MIDI files
 ///@{
+
 /// Writes the given MIDIMultiTrack object into a MIDI file.
 /// \param filename the file name
 /// \param format the MIDI file format (only 0 and 1 are supported)

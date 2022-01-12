@@ -28,14 +28,17 @@
 
 
 MIDIMatrix::MIDIMatrix() {
-        for(int chan = 0; chan < 16; chan++) {
-        channel_count[chan] = 0;
-        min_note[chan] = 127;
-        max_note[chan] = 0;
+    Reset();
+}
+
+
+void MIDIMatrix::Reset() {
+    memset(note_on_count, 0, sizeof(note_on_count));
+    memset(channel_count, 0, sizeof(channel_count));
+    memset(min_note, 127, sizeof(min_note));
+    memset(max_note, 0, sizeof(max_note));
+    for(unsigned int chan = 0; chan < 16; chan++)
         hold_pedal[chan] = false;
-        for(unsigned char note = 0; note < 128; note++)
-            note_on_count[chan][note] = 0;
-    }
     total_count = 0;
 }
 
@@ -67,17 +70,17 @@ bool MIDIMatrix::Process(MIDITimedMessage* msg) {
                 max_note[chan] = 0;
             }
             else {
-                if (note == min_note[chan] && note_on_count[chan][note] == 0) {
+                if (note == min_note[chan] && note_on_count[chan * 128 + note] == 0) {
                     for (unsigned char i = note + 1; i <= max_note[chan]; i++) {
-                        if (note_on_count[chan][i] > 0) {
+                        if (note_on_count[chan * 128 + i] > 0) {
                             min_note[chan] = i;
                             break;
                         }
                     }
                 }
-                if (note == max_note[chan] && note_on_count[chan][note] == 0) {
+                if (note == max_note[chan] && note_on_count[chan * 128 + note] == 0) {
                     for (unsigned char i = note - 1; i >= min_note[chan]; i--) {
-                        if (note_on_count[chan][i] > 0) {
+                        if (note_on_count[chan * 128 + i] > 0) {
                             max_note[chan] = i;
                             break;
                         }
@@ -102,16 +105,9 @@ bool MIDIMatrix::Process(MIDITimedMessage* msg) {
 }
 
 
-void MIDIMatrix::Reset() {
-    for(int chan = 0; chan < 16; ++chan)
-        ClearChannel(chan);
-    total_count = 0;
-}
-
-
 void MIDIMatrix::DecNoteCount(unsigned char chan, unsigned char note) {
-    if(note_on_count[chan][note] > 0) {
-      --note_on_count[chan][note];
+    if(note_on_count[chan * 128 + note] > 0) {
+      --note_on_count[chan * 128 + note];
       --channel_count[chan];
       --total_count;
     }
@@ -119,15 +115,14 @@ void MIDIMatrix::DecNoteCount(unsigned char chan, unsigned char note) {
 
 
 void MIDIMatrix::IncNoteCount(unsigned char chan, unsigned char note) {
-    ++note_on_count[chan][note];
+    ++note_on_count[chan * 128 + note];
     ++channel_count[chan];
     ++total_count;
 }
 
 
 void MIDIMatrix::ClearChannel(unsigned char chan) {
-    for(int note = 0; note < 128; ++note)
-        note_on_count[chan][note] = 0;
+    memset(note_on_count + 128 * chan, 0, 128);
     min_note[chan] = 127;
     max_note[chan] = 0;
     total_count -= channel_count[chan];

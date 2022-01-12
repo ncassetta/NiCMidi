@@ -55,6 +55,7 @@
 ///
 class MIDIManager {
 public:
+    /// The constructor is deleted.
                                 MIDIManager() = delete;
 
     /// Stops the timer if it is running, resets all the MIDI in and out ports and flushes the

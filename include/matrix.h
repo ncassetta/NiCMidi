@@ -59,7 +59,7 @@ class  MIDIMatrix : public MIDIProcessor {
         int             GetChannelCount(int chan) const                 { return channel_count[chan]; }
         /// Returns the number of sounding notes given the channel and the note MIDI value.
         /// See \ref NUMBERING.
-        int             GetNoteCount(int chan, int note) const          { return note_on_count[chan][note]; }
+        int             GetNoteCount(int chan, int note) const          { return note_on_count[chan * 128 + note]; }
         /// Returns **true** if pedal is holding on given channel.
         /// See \ref NUMBERING.
         bool            GetHoldPedal(int chan) const                    { return hold_pedal[chan]; }
@@ -89,13 +89,13 @@ class  MIDIMatrix : public MIDIProcessor {
         /// Sets the note count.
         /// See \ref NUMBERING.
         void            SetNoteCount(unsigned char chan, unsigned char note, unsigned char val)
-                                                                        { note_on_count[chan][note] = val; }
+                                                                        { note_on_count[chan * 128 + note] = val; }
         /// Sets the channel note count.
         /// See \ref NUMBERING.
         void            SetChannelCount(unsigned char chan, int val)    { channel_count[chan] = val; }
 
     private:
-        unsigned char   note_on_count[16][128];         // The note matrix
+        unsigned char   note_on_count[2048];            // The note matrix (16 channels x 128 notes)
         unsigned char   min_note[16];                   // The minimum sounding note number for every channel
         unsigned char   max_note[16];                   // The maximum sounding note number for every channel
         int16_t         channel_count[16];              // The number of notes sounding for every channel

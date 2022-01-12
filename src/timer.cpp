@@ -40,9 +40,7 @@ MIDITimer::timepoint MIDITimer::current;
 std::thread MIDITimer::bg_thread;
 
 
-// We need this for assuring the destructor is called at exit, stopping the timer and joining the bg_thread
-// Without this we have errors if exiting while the timer is open
-//static MIDITimer dummy;
+// Now MIDITimer is totally static: no more ctor and dtor
 
 //MIDITimer::MIDITimer() {
     //std::cout << "MIDITimer constructor" << std::endl;

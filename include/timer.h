@@ -65,13 +65,8 @@ class MIDITimer {
         typedef std::chrono::steady_clock::time_point timepoint;
         /// Type for a variable which can hold a time duration (in milliseconds).
 		typedef std::chrono::milliseconds duration;
-
-        /// \cond EXCLUDED
-        // We must construct a dummy object (see source file)
-                                    MIDITimer();
-                                   ~MIDITimer();
-        /// \endcond
-
+        /// The constructor is deleted.
+                                    MIDITimer() = delete;
         /// Returns the timer resolution, i.e. the time interval (in milliseconds) between two ticks.
         static unsigned int         GetResolution()                 { return resolution; }
         /// Returns the pointer to the callback function set by the user.
