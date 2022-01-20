@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">NiCMidi<span id="projectnumber">&#160;1.0</span>
+   <div id="projectname">NiCMidi<span id="projectnumber">&#160;1.1.0</span>
    </div>
    <div id="projectbrief">A MIDI library derived from J.D.Koftinoff jdksmidi</div>
   </td>
@@ -372,9 +372,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad55768533e1a72f075c50271c5d203d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#ad55768533e1a72f075c50271c5d203d5">SetBeatMarker</a> ()</td></tr>
 <tr class="memdesc:ad55768533e1a72f075c50271c5d203d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the message a beat marker internal service message.  <a href="class_m_i_d_i_message.html#ad55768533e1a72f075c50271c5d203d5">More...</a><br /></td></tr>
 <tr class="separator:ad55768533e1a72f075c50271c5d203d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a255363c005352054fd39aa4a8c89f938"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#a255363c005352054fd39aa4a8c89f938">MsgToText</a> (char chan_from_1=0) const</td></tr>
-<tr class="memdesc:a255363c005352054fd39aa4a8c89f938"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a human readable ascii string describing the message content.  <a href="class_m_i_d_i_message.html#a255363c005352054fd39aa4a8c89f938">More...</a><br /></td></tr>
-<tr class="separator:a255363c005352054fd39aa4a8c89f938"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ef8950f4da1648ceece9e0fabe4b8b9"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#a2ef8950f4da1648ceece9e0fabe4b8b9">MsgToText</a> (bool chan_from_1=false) const</td></tr>
+<tr class="memdesc:a2ef8950f4da1648ceece9e0fabe4b8b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a human readable ascii string describing the message content.  <a href="class_m_i_d_i_message.html#a2ef8950f4da1648ceece9e0fabe4b8b9">More...</a><br /></td></tr>
+<tr class="separator:a2ef8950f4da1648ceece9e0fabe4b8b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6acf30c66b172eb21cd4a2b4d621e0e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#a6acf30c66b172eb21cd4a2b4d621e0e1">AllocateSysEx</a> (unsigned int len)</td></tr>
 <tr class="memdesc:a6acf30c66b172eb21cd4a2b4d621e0e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates a <a class="el" href="class_m_i_d_i_system_exclusive.html" title="Stores a buffer of MIDI data bytes in a std::vector, plus a byte for the checksum.">MIDISystemExclusive</a> object, with a buffer of given max size.  <a href="class_m_i_d_i_message.html#a6acf30c66b172eb21cd4a2b4d621e0e1">More...</a><br /></td></tr>
 <tr class="separator:a6acf30c66b172eb21cd4a2b4d621e0e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -2377,7 +2377,7 @@ Friends</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_component_8cpp-example.html#a13">test_component.cpp</a>, <a class="el" href="test_stepsequencer_8cpp-example.html#a13">test_stepsequencer.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a15">test_writefile.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_noinput_8cpp-example.html#a12">test_advancedsequencer_noinput.cpp</a>, <a class="el" href="test_component_8cpp-example.html#a13">test_component.cpp</a>, <a class="el" href="test_stepsequencer_8cpp-example.html#a13">test_stepsequencer.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a15">test_writefile.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -2553,7 +2553,7 @@ Friends</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_recorder_8cpp-example.html#a16">test_recorder.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a14">test_writefile.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_noinput_8cpp-example.html#a11">test_advancedsequencer_noinput.cpp</a>, <a class="el" href="test_recorder_8cpp-example.html#a16">test_recorder.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a14">test_writefile.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -2635,7 +2635,7 @@ Friends</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_recorder_8cpp-example.html#a15">test_recorder.cpp</a>, <a class="el" href="test_stepsequencer_8cpp-example.html#a24">test_stepsequencer.cpp</a>, <a class="el" href="test_thru_8cpp-example.html#a19">test_thru.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a13">test_writefile.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_noinput_8cpp-example.html#a10">test_advancedsequencer_noinput.cpp</a>, <a class="el" href="test_recorder_8cpp-example.html#a15">test_recorder.cpp</a>, <a class="el" href="test_stepsequencer_8cpp-example.html#a24">test_stepsequencer.cpp</a>, <a class="el" href="test_thru_8cpp-example.html#a19">test_thru.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a13">test_writefile.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -3062,7 +3062,7 @@ Friends</h2></td></tr>
 
 <p>Makes the message a tempo change meta-message with given tempo (in bpm). </p>
 <p >The tempo is stored in the sysex object as a 3 byte value according to the SMF format and the eventual old pointer is freed. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_stepsequencer_8cpp-example.html#a25">test_stepsequencer.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a12">test_writefile.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_noinput_8cpp-example.html#a9">test_advancedsequencer_noinput.cpp</a>, <a class="el" href="test_stepsequencer_8cpp-example.html#a25">test_stepsequencer.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a12">test_writefile.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -3156,7 +3156,7 @@ Friends</h2></td></tr>
 
 <p>Makes the message a time signature meta-message with given time (numerator and denominator). </p>
 <p >The bytes are stored in the sysex object and the eventual old pointer is freed. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_stepsequencer_8cpp-example.html#a26">test_stepsequencer.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a9">test_writefile.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_noinput_8cpp-example.html#a6">test_advancedsequencer_noinput.cpp</a>, <a class="el" href="test_stepsequencer_8cpp-example.html#a26">test_stepsequencer.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a9">test_writefile.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -3196,7 +3196,7 @@ Friends</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Makes the message a key signature meta-message with given accidents and mode. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_writefile_8cpp-example.html#a11">test_writefile.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_noinput_8cpp-example.html#a8">test_advancedsequencer_noinput.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a11">test_writefile.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -3247,8 +3247,8 @@ Friends</h2></td></tr>
 
 </div>
 </div>
-<a id="a255363c005352054fd39aa4a8c89f938" name="a255363c005352054fd39aa4a8c89f938"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a255363c005352054fd39aa4a8c89f938">&#9670;&nbsp;</a></span>MsgToText()</h2>
+<a id="a2ef8950f4da1648ceece9e0fabe4b8b9" name="a2ef8950f4da1648ceece9e0fabe4b8b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ef8950f4da1648ceece9e0fabe4b8b9">&#9670;&nbsp;</a></span>MsgToText()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -3259,8 +3259,8 @@ Friends</h2></td></tr>
         <tr>
           <td class="memname">virtual std::string MIDIMessage::MsgToText </td>
           <td>(</td>
-          <td class="paramtype">char&#160;</td>
-          <td class="paramname"><em>chan_from_1</em> = <code>0</code></td><td>)</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>chan_from_1</em> = <code>false</code></td><td>)</td>
           <td> const</td>
         </tr>
       </table>
@@ -3274,7 +3274,7 @@ Friends</h2></td></tr>
 <p>Returns a human readable ascii string describing the message content. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">chan_from_1</td><td>if zero channels are numbered 0 ... 15, otherwise 1 ... 16. See <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a> </td></tr>
+    <tr><td class="paramname">chan_from_1</td><td>if <b>false</b> channels are numbered 0 ... 15, otherwise 1 ... 16. See <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a> </td></tr>
   </table>
   </dd>
 </dl>

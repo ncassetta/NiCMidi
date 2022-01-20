@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">NiCMidi<span id="projectnumber">&#160;1.0</span>
+   <div id="projectname">NiCMidi<span id="projectnumber">&#160;1.1.0</span>
    </div>
    <div id="projectbrief">A MIDI library derived from J.D.Koftinoff jdksmidi</div>
   </td>
@@ -349,9 +349,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a88e268f9d874d2e38231e966604cd849 inherit pub_methods_class_m_i_d_i_sequencer"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a88e268f9d874d2e38231e966604cd849">SetCountIn</a> (bool on_off)</td></tr>
 <tr class="memdesc:a88e268f9d874d2e38231e966604cd849 inherit pub_methods_class_m_i_d_i_sequencer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the count in enable or disable.  <a href="class_m_i_d_i_sequencer.html#a88e268f9d874d2e38231e966604cd849">More...</a><br /></td></tr>
 <tr class="separator:a88e268f9d874d2e38231e966604cd849 inherit pub_methods_class_m_i_d_i_sequencer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab724f75e59473b31aac3db8b344a4c43 inherit pub_methods_class_m_i_d_i_sequencer"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#ab724f75e59473b31aac3db8b344a4c43">SetTempoScale</a> (unsigned int scale)</td></tr>
-<tr class="memdesc:ab724f75e59473b31aac3db8b344a4c43 inherit pub_methods_class_m_i_d_i_sequencer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the global tempo scale.  <a href="class_m_i_d_i_sequencer.html#ab724f75e59473b31aac3db8b344a4c43">More...</a><br /></td></tr>
-<tr class="separator:ab724f75e59473b31aac3db8b344a4c43 inherit pub_methods_class_m_i_d_i_sequencer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c7d42c3e7dd1a3c3ebc355050191993 inherit pub_methods_class_m_i_d_i_sequencer"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a9c7d42c3e7dd1a3c3ebc355050191993">SetTempoScale</a> (unsigned int scale)</td></tr>
+<tr class="memdesc:a9c7d42c3e7dd1a3c3ebc355050191993 inherit pub_methods_class_m_i_d_i_sequencer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the global tempo scale.  <a href="class_m_i_d_i_sequencer.html#a9c7d42c3e7dd1a3c3ebc355050191993">More...</a><br /></td></tr>
+<tr class="separator:a9c7d42c3e7dd1a3c3ebc355050191993 inherit pub_methods_class_m_i_d_i_sequencer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a427a23a98d219d17f566e0afeefa17ba inherit pub_methods_class_m_i_d_i_sequencer"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a427a23a98d219d17f566e0afeefa17ba">SetTimeShiftMode</a> (bool f)</td></tr>
 <tr class="memdesc:a427a23a98d219d17f566e0afeefa17ba inherit pub_methods_class_m_i_d_i_sequencer"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the time shifting of events on and off.  <a href="class_m_i_d_i_sequencer.html#a427a23a98d219d17f566e0afeefa17ba">More...</a><br /></td></tr>
 <tr class="separator:a427a23a98d219d17f566e0afeefa17ba inherit pub_methods_class_m_i_d_i_sequencer"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -497,7 +497,7 @@ Additional Inherited Members</h2></td></tr>
 <li>Embeds a <a class="el" href="class_m_i_d_i_sequencer_track_processor.html" title="A multipurpose MIDIProcessor implementing muting, soloing, rechannelizing, velocity scaling and trans...">MIDISequencerTrackProcessor</a> for each track, allowing to transpose, rechannelize, scale velocity, solo and mute the tracks</li>
 <li>Has improved methods for jumping from a time to another: if you start the sequencer from the middle of a song it automatically sets appropriate MIDI controls, programs and sysex </li>
 </ul>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#_a0">test_advancedsequencer.cpp</a>, <a class="el" href="test_recorder_8cpp-example.html#_a1">test_recorder.cpp</a>, <a class="el" href="test_stepsequencer_8cpp-example.html#_a1">test_stepsequencer.cpp</a>, <a class="el" href="test_win32_player_8cpp-example.html#_a1">test_win32_player.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#_a0">test_writefile.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#_a0">test_advancedsequencer.cpp</a>, <a class="el" href="test_advancedsequencer_noinput_8cpp-example.html#_a0">test_advancedsequencer_noinput.cpp</a>, <a class="el" href="test_recorder_8cpp-example.html#_a1">test_recorder.cpp</a>, <a class="el" href="test_recorder2_8cpp-example.html#_a1">test_recorder2.cpp</a>, <a class="el" href="test_stepsequencer_8cpp-example.html#_a1">test_stepsequencer.cpp</a>, <a class="el" href="test_win32_player_8cpp-example.html#_a1">test_win32_player.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#_a0">test_writefile.cpp</a>.</dd>
 </dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a023c3cd293f57406623a76a41ce90177" name="a023c3cd293f57406623a76a41ce90177"></a>
@@ -1803,7 +1803,7 @@ Additional Inherited Members</h2></td></tr>
 <p >This method is thread-safe and can be called during playback. Notifies the GUI a GROUP_ALL event to signify a full GUI reset. </p>
 
 <p>Reimplemented from <a class="el" href="class_m_i_d_i_sequencer.html#afc705150e92367ffd10b48db5e2dfdd2">MIDISequencer</a>.</p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a13">test_advancedsequencer.cpp</a>, <a class="el" href="test_win32_player_8cpp-example.html#a4">test_win32_player.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a20">test_writefile.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a13">test_advancedsequencer.cpp</a>, <a class="el" href="test_advancedsequencer_noinput_8cpp-example.html#a20">test_advancedsequencer_noinput.cpp</a>, <a class="el" href="test_win32_player_8cpp-example.html#a4">test_win32_player.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a20">test_writefile.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -2058,7 +2058,7 @@ Additional Inherited Members</h2></td></tr>
 <p >If you have added, deleted or edited events call this before moving time, getting events or playing. For changes in the track structure see <a class="el" href="class_m_i_d_i_sequencer.html#a57b78af56b44b4cedc3bbbde581072d7" title="Inserts into the internal MIDIMultiTrack a new empty track with default track parameters (transpose,...">InsertTrack()</a>, <a class="el" href="class_m_i_d_i_sequencer.html#a56fd5414ee4dcc3dbb67dccd0ea6b028" title="Deletes a track and all its events from the internal MIDIMultiTrack.">DeleteTrack()</a> and <a class="el" href="class_m_i_d_i_sequencer.html#a200eff3a9e7bdebebab7ef403b2d9d75" title="Moves a track from one position to another in the internal MIDIMultiTrack.">MoveTrack()</a>). </p>
 
 <p>Reimplemented from <a class="el" href="class_m_i_d_i_sequencer.html#ad9de12a7f767c63cf7ebc2c0c854d17e">MIDISequencer</a>.</p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_writefile_8cpp-example.html#a18">test_writefile.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_noinput_8cpp-example.html#a15">test_advancedsequencer_noinput.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a18">test_writefile.cpp</a>.</dd>
 </dl>
 
 </div>

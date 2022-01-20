@@ -22,14 +22,16 @@
 
 /// \page NUMBERING Numbering conventions
 ///
-/// In the MIDI standard, channels are numbered from 1 to 16, while in messages they are represented by 4-bit numbers (therefore from 0 to 15). This can be confusing, so you need to understand the various numbering conventions used in NicMidi.
-/// + **MIDI channels**: all library functions accept as parameters and return numbers in the range **0 ... 15**. If the user wants to use numbers **1 ... 16** he must add 1 to the returned values ​​(or subtract 1 from the channel number when used as a parameter in a function). For example, you must take this into account in many methods of the MIDIMessage class, in which you have to get or set the message channel.
-/// There are few exceptions: the method MIDIMessage::MsgToText(**char chan_from_1 = 0**) has a default parameter which determines if the channel of messages are printed in the range **0 ... 15** or **1 ... 16**. In the file dump_tracks.h is defined a global method SetChanFrom(**char c**) which determines the behavior of the help functions contained there. The MIDIProcessorPrinter classes has a similar method for setting the numbering of MIDI channels (from 0 or from 1).
+/// In the MIDI standard, channels are numbered from 1 to 16, while in messages they are represented by 4-bit numbers (therefore from 0 to 15). This can be confusing, so the user needs to understand the various numbering conventions used in NicMidi.
+/// + **MIDI channels**: all library functions accept as parameters and return numbers in the range **0 ... 15**. You must take this into account in many methods of the MIDIMessage class, in which you get or set the message channel number.
+/// There are few exceptions in methods which print a readable form of the messages content: the method MIDIMessage::MsgToText(bool chan_from_1 = false) has a default parameter which determines if the messages channel number is printed in the range **0 ... 15** or **1 ... 16**. In the file dump_tracks.h is defined a global method SetChanFrom(unsigned char c) which determines the behaviour of the helper functions contained there. The MIDIProcessorPrinter class has a similar method for setting the numbering of MIDI channels (from 0 or from 1).
 /// + **Sequencer tracks**: they are numbered from 0. Since usually in a MIDI song the first track is the conductor track and the others are channel tracks we will have channel 1 (actually 0) on track 1, channel 2 (1) on track 2 and so on.
 /// + **Measures and beats**: these are also numbered from 0, while in musical notation they usually start from 1. So in a **4/4** song the measures and beats will be numbered **0:0, 0:1, 0:2, 0:3, 1:0, 1:1, 1:2, 1:3** etc. The user must adapt these to the usual notation. You must take this into account in many methods of the MIDISequencer class, such as MIDISequencer::GoToMeasure() or MIDISequencer::GetCurrentMeasure(). The MIDISequencerGUINotifierText has  a method for setting the measure and beat numbering when it outputs the description of an event.
 /// + **MIDI ports**: are numbered from 0. This is the id number assigned them by the OS and therefore should not be a problem.
-/// + **Other MIDI parameters**: are numbered as in MIDI standard, in the range 0 ... 127 (0x00 ... 0x7f) if 7-bit unsigned (as note number, program number, controller amount, ecc.). Pitch wheel amount is a 14-bit signed number (from -8192 to 8191).
+/// + **Other MIDI parameters**: are numbered as in MIDI standard, in the range **0 ... 127** (**0x00 ... 0x7f**) if 7-bit unsigned (as note number, program number, controller amount, ecc.). Pitch wheel amount is a 14-bit signed number (**from -8192 to 8191**).
+///
 ///The example files show how to adapt the input and output of the library functions to the usual conventions.
+
 
 
 
@@ -132,7 +134,6 @@
 ///           <td>GROUP_CONDUCTOR_USER</td>
 ///           <td>User defined conductor event</td>
 ///       </tr>
-///       </td>
 ///    </tr>
 ///    <tr>
 ///       <td rowspan="6"><b>GROUP_TRANSPORT</b></td>
@@ -194,7 +195,29 @@
 ///           <td>GROUP_TRACK_USER</td>
 ///           <td>User defined track event</td>
 ///       </tr>
+///       </td>
+///    </tr>
+///    <tr>
+///       <td rowspan="5"><b>GROUP_RECORDER</b></td>
+///       <td rowspan="5">Not used</td>
 ///       <tr>
+///           <td>GROUP_RECORDER_RESET</td>
+///           <td>Recorder reset</td>
+///       </tr>
+///       <tr>
+///           <td>GROUP_RECORDER_START</td>
+///           <td>Recording start</td>
+///       </tr>
+///       <tr>
+///           <td>GROUP_RECORDER_STOP</td>
+///           <td>Recording stop</td>
+///       </tr>
+///       <tr>
+///           <td>GROUP_RECORDER_USER</td>
+///           <td>User defined recorder event</td>
+///       </tr>
+///    </tr>
+///    <tr>
 ///       <td><b>GROUP_USER</b></td>
 ///       <td>Not used</td>
 ///       <td>GROUP_USER_USER</td>

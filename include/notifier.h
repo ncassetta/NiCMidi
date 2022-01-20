@@ -58,7 +58,7 @@ class MIDISequencerGUIEvent {
         /// This constructor creates the object directly from its parameters, packed into an unsigned long.
                     MIDISequencerGUIEvent(unsigned long bits_) : bits(bits_) {}
         /// This constructor creates the object starting from its group, subgroup, item
-                    MIDISequencerGUIEvent( int group, int subgroup, int item ) {
+                    MIDISequencerGUIEvent(int group, int subgroup, int item) {
                         bits = ((group&0xff)<<24) | ((subgroup&0xfff)<<12) | (item&0xfff); }
                         // leave unchanged! overloading trouble, too many ctors
         // copy constructor and operator= provided by the compiler
@@ -203,7 +203,7 @@ class MIDISequencerGUINotifierText : public MIDISequencerGUINotifier {
         /// Sets the numbering of measures and beats (starting from 0 or from 1)
         /// \param f 0 or 1.
         /// \return **true** if the parameter is correct, **false** otherwise
-        bool            SetStartFrom(unsigned char f);
+        bool            SetStartFrom(unsigned char c);
 
         /// Notifies the event _ev_, printing to it a readable event description.
         virtual void    Notify(const MIDISequencerGUIEvent &ev);

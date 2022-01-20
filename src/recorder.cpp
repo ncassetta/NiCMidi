@@ -415,7 +415,7 @@ void MIDIRecorder::TickProc(tMsecs sys_time) {
     if (seq->GetCountInPending())
         return;
 
-    proc_lock.lock();
+    std::lock_guard<std::recursive_mutex> lock(proc_lock);
     MIDIClockTime cur_time = seq->GetCurrentMIDIClockTime();
     // we are recording
     if (cur_time >= rec_start_time && cur_time < rec_end_time) {    // TODO or <= rec_end_rime ??
@@ -476,7 +476,6 @@ void MIDIRecorder::TickProc(tMsecs sys_time) {
             rec_on.store(false);
         }
     }
-    proc_lock.unlock();
 }
 
 

@@ -51,6 +51,7 @@ const MIDIClockTime TIME_INFINITE = 0xffffffff;
 const unsigned int DEFAULT_CLKS_PER_BEAT = 120;
 ///@}
 
+///@}
 
 /* TODO: THIS IS EXPERIMENTAL; FOR NOW NOT IMPLEMENTED
 /// \name Counting channels, measures, etc. form 0 or 1
@@ -78,7 +79,6 @@ unsigned char GetFrom1Flag()    { return From1Flag; };
 ///@}
 */
 
-///@}
 
 
 /// \addtogroup MIDIENUM

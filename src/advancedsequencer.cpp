@@ -587,23 +587,22 @@ void AdvancedSequencer::Start () {
 
 
 void AdvancedSequencer::Stop() {
-    if (!IsPlaying())
-        return;
-
-    std::lock_guard<std::recursive_mutex> lock(proc_lock);
-    std::cout << "\t\tEntered in AdvancedSequencer::Stop() ...\n";
-    // waits until the timer thread has stopped
-    MIDITickComponent::Stop();
-    // resets the autostop flag
-    state.playing_status &= ~AUTO_STOP_PENDING;
-    state.iterator.SetTimeShiftMode(time_shift_mode);
-    MIDIManager::AllNotesOff();
-    MIDIManager::CloseOutPorts();
-    state.Notify (MIDISequencerGUIEvent::GROUP_TRANSPORT,
-                  MIDISequencerGUIEvent::GROUP_TRANSPORT_STOP);
-    // stops on a beat (and clear midi matrix)
-    GoToMeasure(state.cur_measure, state.cur_beat);
-    std::cout << "\t\t ... Exiting from AdvancedSequencer::Stop()" << std::endl;
+    if (IsPlaying()) {
+        std::lock_guard<std::recursive_mutex> lock(proc_lock);
+        std::cout << "\t\tEntered in AdvancedSequencer::Stop() ...\n";
+        // waits until the timer thread has stopped
+        MIDITickComponent::Stop();
+        // resets the autostop flag
+        state.playing_status &= ~AUTO_STOP_PENDING;
+        state.iterator.SetTimeShiftMode(time_shift_mode);
+        MIDIManager::AllNotesOff();
+        MIDIManager::CloseOutPorts();
+        state.Notify (MIDISequencerGUIEvent::GROUP_TRANSPORT,
+                      MIDISequencerGUIEvent::GROUP_TRANSPORT_STOP);
+        // stops on a beat (and clear midi matrix)
+        GoToMeasure(state.cur_measure, state.cur_beat);
+        std::cout << "\t\t ... Exiting from AdvancedSequencer::Stop()" << std::endl;
+    }
 }
 
 

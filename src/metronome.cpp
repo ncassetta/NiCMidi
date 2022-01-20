@@ -84,7 +84,7 @@ bool Metronome::SetTempo(float t) {
 
 
 bool Metronome::SetTempoScale(unsigned int scale) {
-    if (scale == 0 || scale > 500)
+    if (scale == 0)
         return false;
     new_tempo_scale = scale;
     if (!IsPlaying())
@@ -99,12 +99,12 @@ bool Metronome::SetOutPort(unsigned int port) {
     if (port == out_port)                                   // trying to assign same ports: nothing to do
         return true;
     if (IsPlaying()) {
-        proc_lock.lock();
+        // this has immediate effect, so we must lock the mutex
+        std::lock_guard<std::recursive_mutex> lock(proc_lock);
         MIDIManager::GetOutDriver(out_port)->AllNotesOff(chan);
         MIDIManager::GetOutDriver(out_port)->ClosePort();
         out_port = port;
         MIDIManager::GetOutDriver(out_port)->OpenPort();
-        proc_lock.unlock();
     }
     else
         out_port = port;
@@ -112,7 +112,7 @@ bool Metronome::SetOutPort(unsigned int port) {
 }
 
 
-bool Metronome::SetOutChannel(unsigned char chan) {
+bool Metronome::SetOutChannel(unsigned int chan) {
     if (chan > 15)                                          // avoids out of range errors
         return false;
     new_chan = chan;
@@ -294,7 +294,7 @@ void Metronome::TickProc(tMsecs sys_time) {
     //    std::cout << "Metronome::TickProc() " << times << " times" << std::endl;
 
 
-    //
+    std::lock_guard<std::recursive_mutex> lock(proc_lock);
     tMsecs cur_time = sys_time - sys_time_offset + dev_time_offset;
 
     if (cur_time >= static_cast<tMsecs>(next_time_on)) {    // we must send a note on

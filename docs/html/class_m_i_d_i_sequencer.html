@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">NiCMidi<span id="projectnumber">&#160;1.0</span>
+   <div id="projectname">NiCMidi<span id="projectnumber">&#160;1.1.0</span>
    </div>
    <div id="projectbrief">A MIDI library derived from J.D.Koftinoff jdksmidi</div>
   </td>
@@ -197,9 +197,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a88e268f9d874d2e38231e966604cd849"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a88e268f9d874d2e38231e966604cd849">SetCountIn</a> (bool on_off)</td></tr>
 <tr class="memdesc:a88e268f9d874d2e38231e966604cd849"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the count in enable or disable.  <a href="class_m_i_d_i_sequencer.html#a88e268f9d874d2e38231e966604cd849">More...</a><br /></td></tr>
 <tr class="separator:a88e268f9d874d2e38231e966604cd849"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab724f75e59473b31aac3db8b344a4c43"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#ab724f75e59473b31aac3db8b344a4c43">SetTempoScale</a> (unsigned int scale)</td></tr>
-<tr class="memdesc:ab724f75e59473b31aac3db8b344a4c43"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the global tempo scale.  <a href="class_m_i_d_i_sequencer.html#ab724f75e59473b31aac3db8b344a4c43">More...</a><br /></td></tr>
-<tr class="separator:ab724f75e59473b31aac3db8b344a4c43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c7d42c3e7dd1a3c3ebc355050191993"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a9c7d42c3e7dd1a3c3ebc355050191993">SetTempoScale</a> (unsigned int scale)</td></tr>
+<tr class="memdesc:a9c7d42c3e7dd1a3c3ebc355050191993"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the global tempo scale.  <a href="class_m_i_d_i_sequencer.html#a9c7d42c3e7dd1a3c3ebc355050191993">More...</a><br /></td></tr>
+<tr class="separator:a9c7d42c3e7dd1a3c3ebc355050191993"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a427a23a98d219d17f566e0afeefa17ba"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer.html#a427a23a98d219d17f566e0afeefa17ba">SetTimeShiftMode</a> (bool f)</td></tr>
 <tr class="memdesc:a427a23a98d219d17f566e0afeefa17ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the time shifting of events on and off.  <a href="class_m_i_d_i_sequencer.html#a427a23a98d219d17f566e0afeefa17ba">More...</a><br /></td></tr>
 <tr class="separator:a427a23a98d219d17f566e0afeefa17ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -695,7 +695,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns a pointer to the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a2">test_advancedsequencer.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a2">test_writefile.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a2">test_advancedsequencer.cpp</a>, <a class="el" href="test_advancedsequencer_noinput_8cpp-example.html#a2">test_advancedsequencer_noinput.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a2">test_writefile.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -1408,8 +1408,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="ab724f75e59473b31aac3db8b344a4c43" name="ab724f75e59473b31aac3db8b344a4c43"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab724f75e59473b31aac3db8b344a4c43">&#9670;&nbsp;</a></span>SetTempoScale()</h2>
+<a id="a9c7d42c3e7dd1a3c3ebc355050191993" name="a9c7d42c3e7dd1a3c3ebc355050191993"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c7d42c3e7dd1a3c3ebc355050191993">&#9670;&nbsp;</a></span>SetTempoScale()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1418,7 +1418,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void MIDISequencer::SetTempoScale </td>
+          <td class="memname">virtual bool MIDISequencer::SetTempoScale </td>
           <td>(</td>
           <td class="paramtype">unsigned int&#160;</td>
           <td class="paramname"><em>scale</em></td><td>)</td>
@@ -1435,10 +1435,11 @@ Additional Inherited Members</h2></td></tr>
 <p>Sets the global tempo scale. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">scale</td><td>the percentage: 100 = no scaling, 200 = twice faster, 50 = twice slower, etc.). </td></tr>
+    <tr><td class="paramname">scale</td><td>the percentage: 100 = no scaling, 200 = twice faster, 50 = twice slower, etc. </td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section return"><dt>Returns</dt><dd><b>true</b> if <em>scale</em> is a valid number, <b>false</b> otherwise (actually only if it is 0). </dd></dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a24">test_advancedsequencer.cpp</a>.</dd>
 </dl>
 
@@ -2240,7 +2241,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>This is an alias of <a class="el" href="class_m_i_d_i_sequencer.html#a6816e40d574829ffc196bfa4b5fa177a" title="Starts the sequencer playing from the current time.">Start()</a>. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a8">test_advancedsequencer.cpp</a>, <a class="el" href="test_win32_player_8cpp-example.html#a5">test_win32_player.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a5">test_writefile.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#a8">test_advancedsequencer.cpp</a>, <a class="el" href="test_advancedsequencer_noinput_8cpp-example.html#a16">test_advancedsequencer_noinput.cpp</a>, <a class="el" href="test_win32_player_8cpp-example.html#a5">test_win32_player.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a5">test_writefile.cpp</a>.</dd>
 </dl>
 
 </div>

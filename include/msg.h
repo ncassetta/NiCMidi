@@ -329,8 +329,8 @@ class 	MIDIMessage {
         void	                SetBeatMarker();
 
         /// Returns a human readable ascii string describing the message content.
-        /// \param chan_from_1 if zero channels are numbered 0 ... 15, otherwise 1 ... 16. See \ref NUMBERING
-        virtual std::string     MsgToText(char chan_from_1 = 0) const;
+        /// \param chan_from_1 if **false** channels are numbered 0 ... 15, otherwise 1 ... 16. See \ref NUMBERING
+        virtual std::string     MsgToText(bool chan_from_1 = false) const;
         /// Allocates a MIDISystemExclusive object, with a buffer of given max size.
         ///The buffer is initially empty and can be accessed with GetSysEx(). An eventual old object is freed.
         void                    AllocateSysEx(unsigned int len);

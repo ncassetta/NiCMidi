@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">NiCMidi<span id="projectnumber">&#160;1.0</span>
+   <div id="projectname">NiCMidi<span id="projectnumber">&#160;1.1.0</span>
    </div>
    <div id="projectbrief">A MIDI library derived from J.D.Koftinoff jdksmidi</div>
   </td>
@@ -182,7 +182,7 @@ Protected Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Holds an array of pointers to <a class="el" href="class_m_i_d_i_track.html" title="Manages a std::vector of MIDITimedMessage objects storing MIDI events, with methods for editing them.">MIDITrack</a> objects to be played simultaneously. </p>
 <p >Every track contains <a class="el" href="class_m_i_d_i_timed_message.html" title="The MIDITimedMessage class inherits from the MIDIMessage and represents a message associated with a s...">MIDITimedMessage</a> objects representing MIDI events, and all tracks share the same timing (i.e. the events are temporized according to the same MIDI clock per beat). Typically track 0 is the master track and contains only non-channel MIDI events (time, tempo, markers ...) while other tracks contain the channel events. The <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a> object owns its tracks, so deleting it frees them also. You need to embed this into a <a class="el" href="class_m_i_d_i_sequencer.html" title="A MIDITickComponent which implements a basic sequencer, able to play the MIDI events contained in a M...">MIDISequencer</a> for playing the tracks. Moreover, a <a class="el" href="class_m_i_d_i_multi_track_iterator.html" title="A forward iterator for moving along a MIDIMultiTrack.">MIDIMultiTrackIterator</a> class is supplied for moving along events in temporal order regardless the track number. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#_a1">test_advancedsequencer.cpp</a>, <a class="el" href="test_sequencer_8cpp-example.html#_a0">test_sequencer.cpp</a>, <a class="el" href="test_stepsequencer_8cpp-example.html#_a2">test_stepsequencer.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#_a1">test_writefile.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#_a1">test_advancedsequencer.cpp</a>, <a class="el" href="test_advancedsequencer_noinput_8cpp-example.html#_a1">test_advancedsequencer_noinput.cpp</a>, <a class="el" href="test_sequencer_8cpp-example.html#_a0">test_sequencer.cpp</a>, <a class="el" href="test_stepsequencer_8cpp-example.html#_a2">test_stepsequencer.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#_a1">test_writefile.cpp</a>.</dd>
 </dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="add230436c88a52a5d8e4297ee3ac9b68" name="add230436c88a52a5d8e4297ee3ac9b68"></a>
@@ -391,7 +391,7 @@ Protected Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_sequencer_8cpp-example.html#a14">test_sequencer.cpp</a>, <a class="el" href="test_stepsequencer_8cpp-example.html#a6">test_stepsequencer.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a8">test_writefile.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_noinput_8cpp-example.html#a5">test_advancedsequencer_noinput.cpp</a>, <a class="el" href="test_sequencer_8cpp-example.html#a14">test_sequencer.cpp</a>, <a class="el" href="test_stepsequencer_8cpp-example.html#a6">test_stepsequencer.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a8">test_writefile.cpp</a>.</dd>
 </dl>
 
 </div>

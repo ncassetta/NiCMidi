@@ -40,9 +40,9 @@ const char MIDISequencerGUIEvent::recording_items_names[][10] =
 const char MIDISequencerGUIEvent::user_items_names[][10] =
         { "User     " };
 
-bool MIDISequencerGUINotifierText::SetStartFrom(unsigned char f) {
-    if (f == 0 || f == 1) {
-        start_from = f;
+bool MIDISequencerGUINotifierText::SetStartFrom(unsigned char c) {
+    if (c == 0 || c == 1) {
+        start_from = c;
         return true;
     }
     return false;

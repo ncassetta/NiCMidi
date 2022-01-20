@@ -333,7 +333,7 @@ void MIDIMessage::SetBeatMarker() {
 // MsgToText()
 //
 
-std::string MIDIMessage::MsgToText (char chan_from_1) const {
+std::string MIDIMessage::MsgToText (bool chan_from_1) const {
     char buf[256];
     std::string txt;
 
@@ -424,7 +424,7 @@ std::string MIDIMessage::MsgToText (char chan_from_1) const {
     // Channel Events
     else {
 
-        sprintf (buf, "Ch %2d     ", (int) GetChannel() + (chan_from_1 != 0));
+        sprintf (buf, "Ch %2d     ", (int) GetChannel() + chan_from_1);
         txt += buf;
 
         if (IsChannelMode()) {

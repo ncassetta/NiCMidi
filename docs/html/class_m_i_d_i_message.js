@@ -99,7 +99,7 @@ var class_m_i_d_i_message =
     [ "SetKeySig", "class_m_i_d_i_message.html#ae2c33229914670d3320e9db69d26260a", null ],
     [ "SetNoOp", "class_m_i_d_i_message.html#a0e4529f3ad18d5ffe066b7efcc3c911a", null ],
     [ "SetBeatMarker", "class_m_i_d_i_message.html#ad55768533e1a72f075c50271c5d203d5", null ],
-    [ "MsgToText", "class_m_i_d_i_message.html#a255363c005352054fd39aa4a8c89f938", null ],
+    [ "MsgToText", "class_m_i_d_i_message.html#a2ef8950f4da1648ceece9e0fabe4b8b9", null ],
     [ "AllocateSysEx", "class_m_i_d_i_message.html#a6acf30c66b172eb21cd4a2b4d621e0e1", null ],
     [ "CopySysEx", "class_m_i_d_i_message.html#a9949cc76a4c19350c30b3f342de7bbcc", null ],
     [ "UseNoteOnv0ForOff", "class_m_i_d_i_message.html#a1b4627e877bd8a4b1c6c9b1558c75259", null ],

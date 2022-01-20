@@ -71,11 +71,11 @@ class MIDIMultiProcessor : public MIDIProcessor {
         /// Empties the processors queue, removing all their pointers from it.
         virtual void                    Reset();
         /// Returns a pointer to the MIDIProcessor at the given position.
-        MIDIProcessor*                  GetProcessor(int pos)           { return processors[pos]; }
+        MIDIProcessor*                  GetProcessor(unsigned int pos)          { return processors[pos]; }
         /// Returns a pointer to the MIDIProcessor at the given position.
-        const MIDIProcessor*            GetProcessor(int pos) const     { return processors[pos]; }
+        const MIDIProcessor*            GetProcessor(unsigned int pos) const    { return processors[pos]; }
         /// Returns the processing mode (see SetProcessMode()).
-        int                             GetProcessMode() const          { return process_mode; }
+        int                             GetProcessMode() const                  { return process_mode; }
         /// Inserts a MIDIProcessor object into the queue.
         /// \param proc the MIDIProcessor to be inserted (it is **not** owned by the MIDIMultiProcessor)
         /// \param pos the position in the queue. If you leave the default value the processor will be
@@ -84,7 +84,7 @@ class MIDIMultiProcessor : public MIDIProcessor {
         void                            SetProcessor(MIDIProcessor* proc, int pos = -1);
         /// Removes the MIDIProcessor at the given position. It only removes the processor pointer from
         /// the queue, and does nothing if _pos_ is not in the appropriate range.
-        void                            RemoveProcessor(int pos);
+        void                            RemoveProcessor(unsigned int pos);
         /// Searches the given MIDIProcessor in the queue and removes it (it does nothing
         /// if the processor is not in the queue). It only removes the processor pointer from the queue.
         void                            RemoveProcessor(const MIDIProcessor* proc);

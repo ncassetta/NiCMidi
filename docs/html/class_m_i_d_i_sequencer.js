@@ -33,7 +33,7 @@ var class_m_i_d_i_sequencer =
     [ "GetTrackTimeShift", "class_m_i_d_i_sequencer.html#a07f1cf78f34d74cba93088e28853b451", null ],
     [ "SetRepeatPlay", "class_m_i_d_i_sequencer.html#a01946de82a9bf741647966715485cd91", null ],
     [ "SetCountIn", "class_m_i_d_i_sequencer.html#a88e268f9d874d2e38231e966604cd849", null ],
-    [ "SetTempoScale", "class_m_i_d_i_sequencer.html#ab724f75e59473b31aac3db8b344a4c43", null ],
+    [ "SetTempoScale", "class_m_i_d_i_sequencer.html#a9c7d42c3e7dd1a3c3ebc355050191993", null ],
     [ "SetTimeShiftMode", "class_m_i_d_i_sequencer.html#a427a23a98d219d17f566e0afeefa17ba", null ],
     [ "SetState", "class_m_i_d_i_sequencer.html#a3462550fc00118a3afc8702b3b03d2ad", null ],
     [ "SetPlayMode", "class_m_i_d_i_sequencer.html#a3b31f5d78d481cda789999473c1b1559", null ],

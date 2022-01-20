@@ -1,9 +1,9 @@
 var NAVTREEINDEX2 =
 {
-"class_m_i_d_i_sequencer_state.html#add6095a3bef7d0ad33a49ed2b81cffd7":[2,0,24,29],
 "class_m_i_d_i_sequencer_state.html#ae56ce92e46ee3bb770930a0ebabcfdb2":[2,0,24,6],
 "class_m_i_d_i_sequencer_state.html#ae723380f71b158f435540b8d64f68e6d":[2,0,24,16],
 "class_m_i_d_i_sequencer_state.html#ae75bf1eacb7e3b09cadbff5ed15464e9":[2,0,24,5],
+"class_m_i_d_i_sequencer_state.html#aff1f2d92ed4a1be1dad0334d9e9d6dfa":[2,0,24,29],
 "class_m_i_d_i_sequencer_track_processor.html":[2,0,25],
 "class_m_i_d_i_sequencer_track_processor.html#a01a03c2fc264e1e0ce8fa722bf4a3c90":[2,0,25,10],
 "class_m_i_d_i_sequencer_track_processor.html#a1a86a5bb104f39bbb97f42f559df4f10":[2,0,25,4],
@@ -207,6 +207,7 @@ var NAVTREEINDEX2 =
 "class_metronome.html#a6a9ac9279b8076ba0c39fd39d87c951d":[2,0,1,13],
 "class_metronome.html#a72a82ba654917ec51d6c5d57a837ddd9":[2,0,1,11],
 "class_metronome.html#a796d8f44bc4c20b01f6661b496f89aea":[2,0,1,25],
+"class_metronome.html#a87929b319a33eacd557bb5a4a2bca523":[2,0,1,10],
 "class_metronome.html#a9a67666fa964aa3dc1fd94e8fcbd5495":[2,0,1,1],
 "class_metronome.html#aa5ac5c1ee3a0a9d5ccb1bebbb47b0d54":[2,0,1,5],
 "class_metronome.html#ab5de440963325f88227f75eec8a5fabb":[2,0,1,22],
@@ -216,7 +217,6 @@ var NAVTREEINDEX2 =
 "class_metronome.html#ada49e1261d83a67f377289319501536a":[2,0,1,4],
 "class_metronome.html#adc415c5b55eeaa86a0fce37c0ea240be":[2,0,1,3],
 "class_metronome.html#ae5cdb9d7789470d386fc946a70313dc9":[2,0,1,7],
-"class_metronome.html#aefa4ab925b250e2110757fd8227ba57e":[2,0,1,10],
 "class_metronome.html#af372e93dcae98b855ff255a33db42689":[2,0,1,24],
 "class_metronome.html#afb72b905b9ce2655a87bbf826afd7213":[2,0,1,9],
 "class_s_m_p_t_e.html":[2,0,34],

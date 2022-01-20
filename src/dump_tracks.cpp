@@ -78,7 +78,7 @@ int DumpMIDITrackAttr(MIDITrack* const trk, int num, std::ostream& ost) {
 
     ost << std::endl << "    Type: " << trk_types[type];
     if (type == MIDITrack::TYPE_CHAN || type == MIDITrack::TYPE_IRREG_CHAN)
-        ost << " (" << (int)trk->GetChannel() + chan_from_1 << ")";
+        ost << " (" << trk->GetChannel() + chan_from_1 << ")";
     ost << std::endl;
     sprintf(s, "%6d", trk->GetNumEvents()),
     ost << "Events in track: " << s << "\t   End of track time: " << trk->GetEndTime()
@@ -116,7 +116,7 @@ int DumpMIDITrackAttrVerbose(MIDITrack* const trk, int num, std::ostream& ost) {
         lines++;
     }
     if (status & MIDITrack::HAS_ONE_CHAN) {
-        ost << "    Has channel events (channel " << (int)trk->GetChannel() + chan_from_1 << ")" << std::endl;
+        ost << "    Has channel events (channel " << trk->GetChannel() + chan_from_1 << ")" << std::endl;
         lines++;
     }
     if (status & MIDITrack::HAS_MANY_CHAN) {

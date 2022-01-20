@@ -21,16 +21,14 @@
  */
 
 /*
-  A nice little example demonstrating how to edit the MIDIMultitrack
-  embedded in an AdvancedSequencer, play its content and then save
-  it in a MIDI file.
+  /// A basic example which plays two times a simple tune, without no
+  input from the user.
 */
 
 
 #include <string>
 
 #include "../include/advancedsequencer.h"
-#include "../include/filewritemultitrack.h"     // for WriteMIDIFile() function
 
 using namespace std;
 
@@ -130,8 +128,6 @@ int main( int argc, char **argv ) {
         MIDITimer::Wait(50);
     cout << "The sequencer finished" << endl;
 
-// THE REST IS COMMENTED OUT. IF YOU SUCCEED CAN UNCOMMENT AND PLAY OTHER TWO TRACKS
-
     // now do the same for track 2 (bass, channel 2)
     trk = tracks->GetTrack(2);
     channel = 1;
@@ -169,7 +165,7 @@ int main( int argc, char **argv ) {
     sequencer.Play();
     while (sequencer.IsPlaying())
         MIDITimer::Wait(50);
-    cout << "    Stop" << endl;
+    cout << "The sequencer finished" << endl;;
 
     return EXIT_SUCCESS;
 }

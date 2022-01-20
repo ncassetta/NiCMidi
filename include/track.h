@@ -125,25 +125,25 @@ class  MIDITrack {
         unsigned char               GetType();
         /// Returns the channel for recording (-1 for all channels).
         /// See \ref NUMBERING
-        int                         GetRecChannel()                     { return rec_chan; }
+        int                         GetRecChannel()                         { return (int)rec_chan; }
         /// Returns the track time shift in MIDI ticks.
-        int                         GetTimeShift() const                { return time_shift; }
+        int                         GetTimeShift() const                    { return time_shift; }
         /// Returns non zero if the track contains MIDI SysEx messages. In this case it can return one of
         /// \ref TYPE_SYSEX, \ref TYPE_RESET_SYSEX or \ref TYPE_BOTH_SYSEX.
         /// \note This is **not** const, because it may call Analyze(), causing an update of the track status.
         unsigned char               HasSysex();
         /// Returns the address of an event in the track.
         /// \param ev_num the index of the event in the track (must be in the range 0 ... GetNumEvents() - 1).
-        MIDITimedMessage*           GetEventAddress(int ev_num)         { return &events[ev_num]; }
+        MIDITimedMessage*           GetEventAddress(unsigned int ev_num)    { return &events[ev_num]; }
         /// Returns the address of an event in the track.
         /// \param ev_num the index of the event in the track (must be in the range 0 ... GetNumEvents() - 1).
-        const MIDITimedMessage*     GetEventAddress(int ev_num) const   { return &events[ev_num]; }
+        const MIDITimedMessage*     GetEventAddress(unsigned int ev_num) const      { return &events[ev_num]; }
         /// Returns a reference to an event in the track.
         /// \param ev_num the index of the event in the track (must be in the range 0 ... GetNumEvents() - 1).
-        MIDITimedMessage&           GetEvent(int ev_num)               { return events[ev_num]; }
+        MIDITimedMessage&           GetEvent(unsigned int ev_num)           { return events[ev_num]; }
         /// Returns a reference to an event in the track.
         /// \param ev_num the index of the event in the track (must be in the range 0 ... GetNumEvents() - 1).
-        const MIDITimedMessage&     GetEvent(int ev_num) const         { return events[ev_num]; }
+        const MIDITimedMessage&     GetEvent(unsigned int ev_num) const     { return events[ev_num]; }
 
         /// Sets the time of the EOT event.
         /// \param end_time the new EOT time. If there are events of other type after it the method fails and returns
@@ -205,25 +205,25 @@ class  MIDITrack {
         /// otherwise **true**.
         /// \bug In the latter case the method could leave the track in an inconsistent state (a Note On without
         /// corresponding Note Off or viceversa).
-        bool                        InsertNote( const MIDITimedMessage& msg, MIDIClockTime len,
-                                                tInsMode mode = INSMODE_DEFAULT );
+        bool                        InsertNote(const MIDITimedMessage& msg, MIDIClockTime len,
+                                               tInsMode mode = INSMODE_DEFAULT);
         /// Deletes an event from the track. Use DeleteNote() for safely deleting both Note On and Note Off. You cannot
         /// delete the data end event.
         /// \param msg a copy of the event to delete.
         /// \return **false** if an exact copy of the event was not found, or if a memory error occurred, otherwise **true**.
-        bool                        DeleteEvent( const MIDITimedMessage& msg );
+        bool                        DeleteEvent(const MIDITimedMessage& msg);
         /// Deletes a Note On and corresponding Note Off events from the track. Don't use DeleteEvent() for deleting
         /// notes.
         /// \param msg a copy of the Note On event to delete.
         /// \return **false** if an exact copy of the event was not found, or if a memory error occurred, otherwise **true**.
         /// \bug In the latter case the method could leave the track in an inconsistent state (a Note On without
         /// corresponding Note Off or viceversa).
-        bool                        DeleteNote( const MIDITimedMessage& msg );
+        bool                        DeleteNote(const MIDITimedMessage& msg);
 
         /// Inserts the event as last, adjusting the data end. This function should be used with caution, as it doesn't
         /// check temporal order and track consistency. You could use it if you would manually copy tracks
         /// (MultiTrack::AssignEventsToTracks() does it).
-        void                        PushEvent( const MIDITimedMessage& msg);
+        void                        PushEvent(const MIDITimedMessage& msg);
         /// Shifts forward by a _length_ time the track events from _start_ onwards. If _src_ == 0 it leaves the newly
         /// created interval empty, otherwise copies the contents of _src_ into it. The events in the time interval
         /// 0 ...       _length_ in _src_ are copied into the _start_ ... _start_ + _length_ times in the actual track.
@@ -262,8 +262,8 @@ class  MIDITrack {
         /// + \ref COMPMODE_SAMEKIND : the event is a same kind event (see MIDITimedMessage::IsSameKind()).
         /// + \ref COMPMODE_TIME : the behaviour is the same of FindEventNumber(time, event_num).
         /// \return **true** if an event matching _msg_ was found, **false** otherwise.
-        bool                        FindEventNumber( const MIDITimedMessage& msg, int *event_num,
-                                                     int mode = COMPMODE_EQUAL) const;
+        bool                        FindEventNumber(const MIDITimedMessage& msg, int *event_num,
+                                                    int mode = COMPMODE_EQUAL) const;
 
         /// Finds the first event in the track with the given time.
         /// \param[in] time the time to look for.
@@ -347,7 +347,7 @@ class MIDITrackIterator {
         /// Returns the current time of the iterator.
         MIDIClockTime               GetCurrentTime() const      { return cur_time; }
         /// Returns the current event number in the track.
-        int                         GetCurrentEventNum() const  { return cur_ev_num; }
+        unsigned int                GetCurrentEventNum() const  { return cur_ev_num; }
         /// Returns the current track program (-1 if not set).
         int16_t                     GetProgram() const          { return program; }
         /// Returns the current value for the given control (-1 if not set).

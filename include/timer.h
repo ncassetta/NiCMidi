@@ -42,7 +42,8 @@
 
 /// The type of a variable which can hold the elapsed time in milliseconds.
 typedef unsigned long long tMsecs;
-/// This is the typedef of the callback function which is called at every timer tick.
+/// This is the typedef of the callback functions which are called at every timer tick. See the MIDITickComponent
+/// class. .
 typedef  void (MIDITick)(tMsecs, void*);
 ///@}
 

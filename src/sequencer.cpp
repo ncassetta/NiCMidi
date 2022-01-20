@@ -466,13 +466,16 @@ void MIDISequencer::SetCountIn(bool on_off) {
 }
 
 
-void MIDISequencer::SetTempoScale(unsigned int scale) {
+bool MIDISequencer::SetTempoScale(unsigned int scale) {
+    if (scale == 0)
+        return false;
     std::lock_guard<std::recursive_mutex> lock(proc_lock);
     state.tempo_scale = scale;
     if (IsPlaying()) {
         dev_time_offset = state.cur_time_ms = MIDItoMs(state.cur_clock);
         sys_time_offset = MIDITimer::GetSysTimeMs();
     }
+    return true;
 }
 
 
@@ -999,7 +1002,7 @@ float MIDISequencer::MIDItoMs(MIDIClockTime t) {
         return 0.0;
     MIDIMultiTrackIterator iter(state.multitrack);
     MIDIClockTime last_tempo_t = 0, delta_t = 0, now_t = 0;
-    double ms_time = 0.0;
+    float ms_time = 0.0;
     int trk_num;
     MIDITimedMessage* msg;
 
@@ -1013,7 +1016,7 @@ float MIDISequencer::MIDItoMs(MIDIClockTime t) {
 
     // we initialize this variable in the case of no tempo signature at the beginning
     // it wil be changed (see below) at first tempo change message
-    double ms_per_clock = 6000000.0 / (MIDI_DEFAULT_TEMPO * (double)state.tempo_scale *
+    float ms_per_clock = 6000000.0 / (MIDI_DEFAULT_TEMPO * (float)state.tempo_scale *
                                        GetClksPerBeat());
 
     // look for tempo events
@@ -1021,7 +1024,7 @@ float MIDISequencer::MIDItoMs(MIDIClockTime t) {
         now_t = msg->GetTime();
         // calculate delta_time in MIDI clocks
         delta_t = now_t - last_tempo_t;
-        double delta_ms = delta_t * ms_per_clock;
+        float delta_ms = delta_t * ms_per_clock;
         if (ms_time + delta_ms >= t)
             break;
 
@@ -1038,7 +1041,7 @@ float MIDISequencer::MIDItoMs(MIDIClockTime t) {
             //  -clocks_per_ms = clocks_per_sec / 1000
             //  -ms_per_clock = 1 / clocks_per_ms
             ms_per_clock = 6000000.0 / (msg->GetTempo() *
-                           (double)state.tempo_scale * GetClksPerBeat());
+                           (float)state.tempo_scale * GetClksPerBeat());
         }
     }
     ms_time += (t - last_tempo_t) * ms_per_clock;
@@ -1380,7 +1383,7 @@ void MIDISequencer::ScanEventsAtThisTime() {
     int prev_measure = state.cur_measure;
     int prev_beat = state.cur_beat;
     MIDIClockTime orig_clock = state.cur_clock;
-    double orig_time_ms = state.cur_time_ms;
+    float orig_time_ms = state.cur_time_ms;
 
     // process all messages up to and including this time only
     MIDIClockTime t = 0;
@@ -1395,7 +1398,7 @@ void MIDISequencer::ScanEventsAtThisTime() {
     state.cur_measure = prev_measure;
     state.cur_beat = prev_beat;
     state.cur_clock = orig_clock;
-    state.cur_time_ms = double(orig_time_ms);
+    state.cur_time_ms = orig_time_ms;
     if (state.cur_clock == state.last_beat_time)
         state.next_beat_time = state.cur_clock;
 }

@@ -4,3 +4,5 @@
 /// \defgroup GLOBALS Globals
 /// Typedef, functions, enums and preprocessor labels globally defined.
 
+/// \defgroup CHANGELOG Changelog
+/// Version history.

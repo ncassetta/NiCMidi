@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">NiCMidi<span id="projectnumber">&#160;1.0</span>
+   <div id="projectname">NiCMidi<span id="projectnumber">&#160;1.1.0</span>
    </div>
    <div id="projectbrief">A MIDI library derived from J.D.Koftinoff jdksmidi</div>
   </td>
@@ -105,9 +105,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afb72b905b9ce2655a87bbf826afd7213"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_metronome.html#afb72b905b9ce2655a87bbf826afd7213">GetTempoWithScale</a> () const</td></tr>
 <tr class="memdesc:afb72b905b9ce2655a87bbf826afd7213"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns current tempo (BPM) taking into account scaling (this is the true actual tempo).  <a href="class_metronome.html#afb72b905b9ce2655a87bbf826afd7213">More...</a><br /></td></tr>
 <tr class="separator:afb72b905b9ce2655a87bbf826afd7213"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aefa4ab925b250e2110757fd8227ba57e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_metronome.html#aefa4ab925b250e2110757fd8227ba57e">GetOutPort</a> () const</td></tr>
-<tr class="memdesc:aefa4ab925b250e2110757fd8227ba57e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of the MIDI out port assigned to the .  <a href="class_metronome.html#aefa4ab925b250e2110757fd8227ba57e">More...</a><br /></td></tr>
-<tr class="separator:aefa4ab925b250e2110757fd8227ba57e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87929b319a33eacd557bb5a4a2bca523"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_metronome.html#a87929b319a33eacd557bb5a4a2bca523">GetOutPort</a> () const</td></tr>
+<tr class="memdesc:a87929b319a33eacd557bb5a4a2bca523"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of the MIDI out port assigned to the metronome.  <a href="class_metronome.html#a87929b319a33eacd557bb5a4a2bca523">More...</a><br /></td></tr>
+<tr class="separator:a87929b319a33eacd557bb5a4a2bca523"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a72a82ba654917ec51d6c5d57a837ddd9"><td class="memItemLeft" align="right" valign="top">unsigned char&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_metronome.html#a72a82ba654917ec51d6c5d57a837ddd9">GetOutChannel</a> () const</td></tr>
 <tr class="memdesc:a72a82ba654917ec51d6c5d57a837ddd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of the MIDI channel assigned to the metronome.  <a href="class_metronome.html#a72a82ba654917ec51d6c5d57a837ddd9">More...</a><br /></td></tr>
 <tr class="separator:a72a82ba654917ec51d6c5d57a837ddd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -127,10 +127,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a07c763885d5ffa668fbf3b916e8c3826"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the numerator of the current timesig.  <a href="class_metronome.html#a07c763885d5ffa668fbf3b916e8c3826">More...</a><br /></td></tr>
 <tr class="separator:a07c763885d5ffa668fbf3b916e8c3826"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac9b0a9e79f2098d37ee526546b1e2a65"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_metronome.html#ac9b0a9e79f2098d37ee526546b1e2a65">SetTempo</a> (float t)</td></tr>
-<tr class="memdesc:ac9b0a9e79f2098d37ee526546b1e2a65"><td class="mdescLeft">&#160;</td><td class="mdescRight">TODO: Actually denominator is not implemented.  <a href="class_metronome.html#ac9b0a9e79f2098d37ee526546b1e2a65">More...</a><br /></td></tr>
+<tr class="memdesc:ac9b0a9e79f2098d37ee526546b1e2a65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the musical tempo.  <a href="class_metronome.html#ac9b0a9e79f2098d37ee526546b1e2a65">More...</a><br /></td></tr>
 <tr class="separator:ac9b0a9e79f2098d37ee526546b1e2a65"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a261815d99d8435151b9c995cf0919bbe"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_metronome.html#a261815d99d8435151b9c995cf0919bbe">SetTempoScale</a> (unsigned int scale)</td></tr>
-<tr class="memdesc:a261815d99d8435151b9c995cf0919bbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the tempo scale (scale_ is the percentage: 100 = no scaling, 200 = twice faster, etc.).  <a href="class_metronome.html#a261815d99d8435151b9c995cf0919bbe">More...</a><br /></td></tr>
+<tr class="memdesc:a261815d99d8435151b9c995cf0919bbe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the global tempo scale.  <a href="class_metronome.html#a261815d99d8435151b9c995cf0919bbe">More...</a><br /></td></tr>
 <tr class="separator:a261815d99d8435151b9c995cf0919bbe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a1aec1fa5ab65030b54ad11e296b06f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_metronome.html#a0a1aec1fa5ab65030b54ad11e296b06f">SetOutPort</a> (unsigned int port)</td></tr>
 <tr class="memdesc:a0a1aec1fa5ab65030b54ad11e296b06f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the MIDI out port for the metronome clicks.  <a href="class_metronome.html#a0a1aec1fa5ab65030b54ad11e296b06f">More...</a><br /></td></tr>
@@ -504,8 +504,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="aefa4ab925b250e2110757fd8227ba57e" name="aefa4ab925b250e2110757fd8227ba57e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aefa4ab925b250e2110757fd8227ba57e">&#9670;&nbsp;</a></span>GetOutPort()</h2>
+<a id="a87929b319a33eacd557bb5a4a2bca523" name="a87929b319a33eacd557bb5a4a2bca523"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87929b319a33eacd557bb5a4a2bca523">&#9670;&nbsp;</a></span>GetOutPort()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -514,7 +514,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int Metronome::GetOutPort </td>
+          <td class="memname">unsigned int Metronome::GetOutPort </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td> const</td>
@@ -527,7 +527,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns the number of the MIDI out port assigned to the . </p>
+<p>Returns the number of the MIDI out port assigned to the metronome. </p>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a20">test_metronome.cpp</a>.</dd>
 </dl>
 
@@ -725,8 +725,8 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>TODO: Actually denominator is not implemented. </p>
-<p >Sets the musical tempo. You can set it between 1.0 bpm and 300.0 bpm. </p><dl class="section return"><dt>Returns</dt><dd><b>true</b> if <em>t</em> is a valid tempo, <b>false</b> otherwise. </dd></dl>
+<p>Sets the musical tempo. </p>
+<p >You can set it between 1.0 bpm and 300.0 bpm. </p><dl class="section return"><dt>Returns</dt><dd><b>true</b> if <em>t</em> is a valid tempo, <b>false</b> otherwise. </dd></dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a10">test_metronome.cpp</a>.</dd>
 </dl>
 
@@ -748,8 +748,14 @@ Additional Inherited Members</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Sets the tempo scale (scale_ is the percentage: 100 = no scaling, 200 = twice faster, etc.). </p>
-<p >You can set a scale between 1 and 500 %. </p><dl class="section return"><dt>Returns</dt><dd><b>true</b> if <em>scale</em> is a valid number, <b>false</b> otherwise. </dd></dl>
+<p>Sets the global tempo scale. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">scale</td><td>the percentage: 100 = no scaling, 200 = twice faster, 50 = twice slower, etc. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><b>true</b> if <em>scale</em> is a valid number, <b>false</b> otherwise (actually only if it is 0). </dd></dl>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a12">test_metronome.cpp</a>.</dd>
 </dl>
 

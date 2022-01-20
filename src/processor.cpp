@@ -42,8 +42,8 @@ void MIDIMultiProcessor::Reset() {
 }
 
 
-void MIDIMultiProcessor::RemoveProcessor(int pos) {
-    if (pos >= 0 && (unsigned)pos < processors.size())
+void MIDIMultiProcessor::RemoveProcessor(unsigned int pos) {
+    if (pos < processors.size())
         processors.erase(processors.begin() + pos);
 }
 

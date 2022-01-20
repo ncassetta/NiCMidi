@@ -59,7 +59,7 @@ var NAVTREEINDEX =
 [
 "_h_o_w__p_l_a_y_s.html",
 "class_m_i_d_i_multi_processor.html#afae638967824e1c3f819b71bf5ec68c7",
-"class_m_i_d_i_sequencer_state.html#add6095a3bef7d0ad33a49ed2b81cffd7",
+"class_m_i_d_i_sequencer_state.html#ae56ce92e46ee3bb770930a0ebabcfdb2",
 "class_s_m_p_t_e.html#a96c08c9e2c3ab7ad03dd6fcd29dcfbd3"
 ];
 

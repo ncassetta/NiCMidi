@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">NiCMidi<span id="projectnumber">&#160;1.0</span>
+   <div id="projectname">NiCMidi<span id="projectnumber">&#160;1.1.0</span>
    </div>
    <div id="projectbrief">A MIDI library derived from J.D.Koftinoff jdksmidi</div>
   </td>
@@ -409,9 +409,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad55768533e1a72f075c50271c5d203d5 inherit pub_methods_class_m_i_d_i_message"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#ad55768533e1a72f075c50271c5d203d5">SetBeatMarker</a> ()</td></tr>
 <tr class="memdesc:ad55768533e1a72f075c50271c5d203d5 inherit pub_methods_class_m_i_d_i_message"><td class="mdescLeft">&#160;</td><td class="mdescRight">Makes the message a beat marker internal service message.  <a href="class_m_i_d_i_message.html#ad55768533e1a72f075c50271c5d203d5">More...</a><br /></td></tr>
 <tr class="separator:ad55768533e1a72f075c50271c5d203d5 inherit pub_methods_class_m_i_d_i_message"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a255363c005352054fd39aa4a8c89f938 inherit pub_methods_class_m_i_d_i_message"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#a255363c005352054fd39aa4a8c89f938">MsgToText</a> (char chan_from_1=0) const</td></tr>
-<tr class="memdesc:a255363c005352054fd39aa4a8c89f938 inherit pub_methods_class_m_i_d_i_message"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a human readable ascii string describing the message content.  <a href="class_m_i_d_i_message.html#a255363c005352054fd39aa4a8c89f938">More...</a><br /></td></tr>
-<tr class="separator:a255363c005352054fd39aa4a8c89f938 inherit pub_methods_class_m_i_d_i_message"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2ef8950f4da1648ceece9e0fabe4b8b9 inherit pub_methods_class_m_i_d_i_message"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#a2ef8950f4da1648ceece9e0fabe4b8b9">MsgToText</a> (bool chan_from_1=false) const</td></tr>
+<tr class="memdesc:a2ef8950f4da1648ceece9e0fabe4b8b9 inherit pub_methods_class_m_i_d_i_message"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a human readable ascii string describing the message content.  <a href="class_m_i_d_i_message.html#a2ef8950f4da1648ceece9e0fabe4b8b9">More...</a><br /></td></tr>
+<tr class="separator:a2ef8950f4da1648ceece9e0fabe4b8b9 inherit pub_methods_class_m_i_d_i_message"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6acf30c66b172eb21cd4a2b4d621e0e1 inherit pub_methods_class_m_i_d_i_message"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_message.html#a6acf30c66b172eb21cd4a2b4d621e0e1">AllocateSysEx</a> (unsigned int len)</td></tr>
 <tr class="memdesc:a6acf30c66b172eb21cd4a2b4d621e0e1 inherit pub_methods_class_m_i_d_i_message"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates a <a class="el" href="class_m_i_d_i_system_exclusive.html" title="Stores a buffer of MIDI data bytes in a std::vector, plus a byte for the checksum.">MIDISystemExclusive</a> object, with a buffer of given max size.  <a href="class_m_i_d_i_message.html#a6acf30c66b172eb21cd4a2b4d621e0e1">More...</a><br /></td></tr>
 <tr class="separator:a6acf30c66b172eb21cd4a2b4d621e0e1 inherit pub_methods_class_m_i_d_i_message"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -447,7 +447,7 @@ Additional Inherited Members</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >The <a class="el" href="class_m_i_d_i_timed_message.html" title="The MIDITimedMessage class inherits from the MIDIMessage and represents a message associated with a s...">MIDITimedMessage</a> class inherits from the <a class="el" href="class_m_i_d_i_message.html" title="Stores data representing a MIDI event message.">MIDIMessage</a> and represents a message associated with a specific MIDIClockTime (i.e. </p>
 <p >the number of MIDI ticks from the start. The <a class="el" href="class_m_i_d_i_track.html" title="Manages a std::vector of MIDITimedMessage objects storing MIDI events, with methods for editing them.">MIDITrack</a> class stores a vector of ordered <a class="el" href="class_m_i_d_i_timed_message.html" title="The MIDITimedMessage class inherits from the MIDIMessage and represents a message associated with a s...">MIDITimedMessage</a> items, and they are used for playing, writing and loading MIDI files. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_component_8cpp-example.html#_a10">test_component.cpp</a>, <a class="el" href="test_recorder_8cpp-example.html#_a14">test_recorder.cpp</a>, <a class="el" href="test_stepsequencer_8cpp-example.html#_a4">test_stepsequencer.cpp</a>, <a class="el" href="test_thru_8cpp-example.html#_a18">test_thru.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#_a4">test_writefile.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_noinput_8cpp-example.html#_a4">test_advancedsequencer_noinput.cpp</a>, <a class="el" href="test_component_8cpp-example.html#_a10">test_component.cpp</a>, <a class="el" href="test_recorder_8cpp-example.html#_a14">test_recorder.cpp</a>, <a class="el" href="test_stepsequencer_8cpp-example.html#_a4">test_stepsequencer.cpp</a>, <a class="el" href="test_thru_8cpp-example.html#_a18">test_thru.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#_a4">test_writefile.cpp</a>.</dd>
 </dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a6dd909a17fdcc9b14b564b5bead9b623" name="a6dd909a17fdcc9b14b564b5bead9b623"></a>
@@ -559,7 +559,7 @@ Additional Inherited Members</h2></td></tr>
 <p >The message becomes a NoOp. </p>
 
 <p>Reimplemented from <a class="el" href="class_m_i_d_i_message.html#a8df88710ef0d39c05c3a34c7086d6ae7">MIDIMessage</a>.</p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_writefile_8cpp-example.html#a19">test_writefile.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_noinput_8cpp-example.html#a19">test_advancedsequencer_noinput.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a19">test_writefile.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -692,7 +692,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Sets the MIDIClockTime associated with the message. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_stepsequencer_8cpp-example.html#a12">test_stepsequencer.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a16">test_writefile.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_noinput_8cpp-example.html#a13">test_advancedsequencer_noinput.cpp</a>, <a class="el" href="test_stepsequencer_8cpp-example.html#a12">test_stepsequencer.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a16">test_writefile.cpp</a>.</dd>
 </dl>
 
 </div>

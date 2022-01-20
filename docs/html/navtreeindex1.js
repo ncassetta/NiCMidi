@@ -169,10 +169,10 @@ var NAVTREEINDEX1 =
 "class_m_i_d_i_sequencer.html#a8b1324ae60aed33f1ba99c79594ee16b":[2,0,19,20],
 "class_m_i_d_i_sequencer.html#a8bb46d033fabb69059e294419fdea674":[2,0,19,15],
 "class_m_i_d_i_sequencer.html#a991bc1eaf60cdd4f2e296a51d81243b2":[2,0,19,58],
+"class_m_i_d_i_sequencer.html#a9c7d42c3e7dd1a3c3ebc355050191993":[2,0,19,33],
 "class_m_i_d_i_sequencer.html#aa331eb3f689c780ce53552fa45aee657":[2,0,19,49],
 "class_m_i_d_i_sequencer.html#ab40c63f778040780482ae1af2584889b":[2,0,19,57],
 "class_m_i_d_i_sequencer.html#ab66d926e72581faff1913b5f2abfa611":[2,0,19,17],
-"class_m_i_d_i_sequencer.html#ab724f75e59473b31aac3db8b344a4c43":[2,0,19,33],
 "class_m_i_d_i_sequencer.html#abec3f848171c06ab4a3b6fa6b8a4c99b":[2,0,19,54],
 "class_m_i_d_i_sequencer.html#ac510771780150b42964ca172a5ba1eb4":[2,0,19,1],
 "class_m_i_d_i_sequencer.html#ac965401475006af95e25040d386382fd":[2,0,19,47],
@@ -220,7 +220,6 @@ var NAVTREEINDEX1 =
 "class_m_i_d_i_sequencer_g_u_i_notifier_win32.html#aa3445519f43abd5b49a72fd85849041f":[2,0,23,4],
 "class_m_i_d_i_sequencer_state.html":[2,0,24],
 "class_m_i_d_i_sequencer_state.html#a018ba62e1a3ea479b63b9c9451c72820":[2,0,24,32],
-"class_m_i_d_i_sequencer_state.html#a0e28a107eab17ff8e265aaafc6ffd7f2":[2,0,24,30],
 "class_m_i_d_i_sequencer_state.html#a1b19f06bc58fe11c82e2cdf7fb0ccb8e":[2,0,24,33],
 "class_m_i_d_i_sequencer_state.html#a1bc76979a5e8823e827d133ceeb2978b":[2,0,24,0],
 "class_m_i_d_i_sequencer_state.html#a1ec96bd3c6b6d9afa9161d114ad1bdc0":[2,0,24,10],
@@ -249,5 +248,6 @@ var NAVTREEINDEX1 =
 "class_m_i_d_i_sequencer_state.html#ab9d53a5895e6a8e0e25c2449a9d318ae":[2,0,24,26],
 "class_m_i_d_i_sequencer_state.html#acb2c873778f6ad0519c02a9815498ea4":[2,0,24,2],
 "class_m_i_d_i_sequencer_state.html#acd5ca4b6547c15ef41b10b0765e828fe":[2,0,24,9],
-"class_m_i_d_i_sequencer_state.html#ad889c7d98bf3baac2c2e46d7e2feaa0a":[2,0,24,13]
+"class_m_i_d_i_sequencer_state.html#ad889c7d98bf3baac2c2e46d7e2feaa0a":[2,0,24,13],
+"class_m_i_d_i_sequencer_state.html#ae36a231217a08cbdd299f287830ee4e7":[2,0,24,30]
 };

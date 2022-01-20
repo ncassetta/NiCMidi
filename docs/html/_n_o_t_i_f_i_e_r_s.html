@@ -22,7 +22,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">NiCMidi<span id="projectnumber">&#160;1.0</span>
+   <div id="projectname">NiCMidi<span id="projectnumber">&#160;1.1.0</span>
    </div>
    <div id="projectbrief">A MIDI library derived from J.D.Koftinoff jdksmidi</div>
   </td>
@@ -72,7 +72,7 @@ $(document).ready(function(){initNavTree('_n_o_t_i_f_i_e_r_s.html',''); initResi
 <tr>
 <td>GROUP_CONDUCTOR_MARKER </td><td>A text marker  </td></tr>
 <tr>
-<td>GROUP_CONDUCTOR_USER </td><td>User defined conductor event    </td></tr>
+<td>GROUP_CONDUCTOR_USER </td><td>User defined conductor event   </td></tr>
 <tr>
 <td rowspan="6"><b>GROUP_TRANSPORT</b> </td><td rowspan="6">Not used </td></tr>
 <tr>
@@ -102,7 +102,17 @@ $(document).ready(function(){initNavTree('_n_o_t_i_f_i_e_r_s.html',''); initResi
 <tr>
 <td>GROUP_TRACK_REV </td><td>Reverb control change  </td></tr>
 <tr>
-<td>GROUP_TRACK_USER </td><td>User defined track event  </td></tr>
+<td>GROUP_TRACK_USER </td><td>User defined track event    </td></tr>
+<tr>
+<td rowspan="5"><b>GROUP_RECORDER</b> </td><td rowspan="5">Not used </td></tr>
+<tr>
+<td>GROUP_RECORDER_RESET </td><td>Recorder reset  </td></tr>
+<tr>
+<td>GROUP_RECORDER_START </td><td>Recording start  </td></tr>
+<tr>
+<td>GROUP_RECORDER_STOP </td><td>Recording stop  </td></tr>
+<tr>
+<td>GROUP_RECORDER_USER </td><td>User defined recorder event   </td></tr>
 <tr>
 <td><b>GROUP_USER</b> </td><td>Not used </td><td>GROUP_USER_USER </td><td>User defined user event  </td></tr>
 </table>
@@ -126,7 +136,7 @@ $(document).ready(function(){initNavTree('_n_o_t_i_f_i_e_r_s.html',''); initResi
 <div class="ttc" id="aadvancedsequencer_8h_html"><div class="ttname"><a href="advancedsequencer_8h.html">advancedsequencer.h</a></div><div class="ttdoc">Contains the definition of the classes MIDISequencerTrackProcessor and AdvancedSequencer.</div></div>
 <div class="ttc" id="aclass_advanced_sequencer_html"><div class="ttname"><a href="class_advanced_sequencer.html">AdvancedSequencer</a></div><div class="ttdoc">An enhanced MIDISequencer, able to directly load and play MIDI files and many more.</div><div class="ttdef"><b>Definition:</b> advancedsequencer.h:93</div></div>
 <div class="ttc" id="aclass_m_i_d_i_sequencer_g_u_i_notifier_text_html"><div class="ttname"><a href="class_m_i_d_i_sequencer_g_u_i_notifier_text.html">MIDISequencerGUINotifierText</a></div><div class="ttdoc">A MIDISequencerGUINotifier which sends text messages to a std::ostream (std::cout as default).</div><div class="ttdef"><b>Definition:</b> notifier.h:192</div></div>
-<div class="ttc" id="aclass_m_i_d_i_timer_html_adbf80f5b6708bf6f84b3d354aa006bae"><div class="ttname"><a href="class_m_i_d_i_timer.html#adbf80f5b6708bf6f84b3d354aa006bae">MIDITimer::Wait</a></div><div class="ttdeci">static void Wait(unsigned int msecs)</div><div class="ttdoc">Stops the calling thread for the given number of milliseconds.</div><div class="ttdef"><b>Definition:</b> timer.h:104</div></div>
+<div class="ttc" id="aclass_m_i_d_i_timer_html_adbf80f5b6708bf6f84b3d354aa006bae"><div class="ttname"><a href="class_m_i_d_i_timer.html#adbf80f5b6708bf6f84b3d354aa006bae">MIDITimer::Wait</a></div><div class="ttdeci">static void Wait(unsigned int msecs)</div><div class="ttdoc">Stops the calling thread for the given number of milliseconds.</div><div class="ttdef"><b>Definition:</b> timer.h:105</div></div>
 <div class="ttc" id="anotifier_8h_html"><div class="ttname"><a href="notifier_8h.html">notifier.h</a></div><div class="ttdoc">Contains the definition of the classes MIDISequencerGUIEvent, MIDISequencerGUINotifier (abstract),...</div></div>
 <div class="ttc" id="atimer_8h_html"><div class="ttname"><a href="timer_8h.html">timer.h</a></div><div class="ttdoc">Contains the definition of the MIDITimer class and some other typedef related to MIDI timing.</div></div>
 </div><!-- fragment --><p >In the following files you can see more elaborated examples of the typical usage of the notifier classes:</p><ul>

@@ -69,7 +69,7 @@ class MIDISequencerTrackProcessor : public MIDIProcessor {
 
         bool            mute;                   ///< track is muted
         int             solo;                   ///< NO_SOLO, SOLOED, NOT_SOLOED
-        int             velocity_scale;         ///< current velocity scale value for note ons, 100=normal
+        unsigned int    velocity_scale;         ///< current velocity scale value for note ons, 100=normal
         int             rechannel;              ///< rechannelization value, or -1 for none
         int             transpose;              ///< amount to transpose note values
         MIDIProcessor   *extra_proc;            ///< extra midi processing for this track

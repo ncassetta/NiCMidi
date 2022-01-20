@@ -68,7 +68,7 @@ class MIDISequencerTrackState {
         virtual void    Reset();
 
         int16_t         program;		    ///< the current program change, or -1 if undefined
-        int             bender_value;		///< the last seen bender value
+        int16_t         bender_value;		///< the last seen bender value
         std::string     track_name;	        ///< the track name
         bool            notes_are_on;       ///< true if there are notes currently on
         MIDIMatrix      note_matrix;        ///< to keep track of all notes on
@@ -119,7 +119,7 @@ class MIDISequencerState : public MIDIProcessor {
         /// notifies the GUI if required.
         /// \return **true** if _msg_ is a real MIDI message, **false** if it is a service message
         /// (a NoOp or beat marker).
-        bool                    Process( MIDITimedMessage* msg );
+        bool                    Process(MIDITimedMessage* msg);
         /// Notifies the GUI when something happens (a parameter was changed,
         /// current time is moved, etc.)
         void                    Notify(int group, int item = 0) const;
@@ -157,8 +157,8 @@ class MIDISequencerState : public MIDIProcessor {
                                 track_states;       ///< A track state for every track
         int                     last_event_track;   ///< Internal use
         MIDIClockTime           last_beat_time;     ///< Internal use
-        double                  ms_per_clock;       ///< Internal use
-        double                  last_time_ms;       ///< Internal use
+        float                   ms_per_clock;       ///< Internal use
+        float                   last_time_ms;       ///< Internal use
         MIDIClockTime           last_tempo_change;  ///< Internal use
         MIDIClockTime           count_in_time;      ///< Internal use
 
@@ -210,7 +210,7 @@ class MIDISequencer : public MIDITickComponent {
         /// **before** this (so the sequencer state is correctly updated).
         /// You should call this when the multitrack contents are changed (adding or deleting tracks) to reinitialize
         /// the MIDISequencer according to the new contents.
-        void                            Reset();
+        virtual void                    Reset();
 
         //virtual bool                    IsPlaying() const       { return (MIDITickComponent::IsPlaying() || autostop.load()); }
         /// Returns current MIDIClockTime in MIDI ticks; it is effective even during playback
@@ -228,7 +228,7 @@ class MIDISequencer : public MIDITickComponent {
         /// Returns the base MIDI ticks per beat ratio of the internal MIDIMultiTrack. Default value is 120 clocks per
         /// quarter beat. However, loading a MIDIFile into the MIDIMultiTrack can change this according to the file
         /// clock.
-        int                             GetClksPerBeat() const  { return state.multitrack->GetClksPerBeat(); }
+        unsigned int                    GetClksPerBeat() const  { return state.multitrack->GetClksPerBeat(); }
 
         /// Returns a pointer to the internal MIDIMultiTrack.
         MIDIMultiTrack*                 GetMultiTrack()         { return state.multitrack; }
@@ -319,8 +319,9 @@ class MIDISequencer : public MIDITickComponent {
         /// Sets the count in enable or disable.
         virtual void                    SetCountIn(bool on_off);
         /// Sets the global tempo scale.
-        /// \param scale the percentage: 100 = no scaling, 200 = twice faster, 50 = twice slower, etc.).
-        virtual void                    SetTempoScale(unsigned int scale);
+        /// \param scale the percentage: 100 = no scaling, 200 = twice faster, 50 = twice slower, etc.
+        /// \return **true** if _scale_ is a valid number, **false** otherwise (actually only if it is 0).
+        virtual bool                    SetTempoScale(unsigned int scale);
         /// Sets the time shifting of events on and off. If you are editing the multitrack events you probably
         /// want to see the original (not shifted) MIDI time of events, while during playback you want them
         /// shifted. So you can turn time shifting on and off (and all the time related methods of the sequencer
@@ -513,8 +514,6 @@ class MIDISequencer : public MIDITickComponent {
         int                             play_mode;          // PLAY_BOUNDED or PLAY_UNBOUNDED
 
         std::vector<MIDIProcessor*>     track_processors;   // A MIDIProcessor for every track
-        //std::vector<int>                time_shifts;        // A time shift (in MIDI ticks) for every track
-        //std::vector<unsigned int>       track_ports;        // The port id for every track
         MIDISequencerState              state;              // The sequencer state
         /// \endcond
 };
