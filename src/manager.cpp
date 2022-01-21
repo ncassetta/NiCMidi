@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2021  Nicola Cassetta
+ *   Copyright (C) 2021, 2022  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -266,7 +266,7 @@ void MIDIManager::Init() {
      CoInitializeEx(NULL, COINIT_MULTITHREADED);
 #endif // WIN32
     std::cout << "Executing MIDIManager::Init()" << std::endl;
-    std::cout << "thread::hardware_concurrency is " << std::thread::hardware_concurrency() << std::endl;
+    //std::cout << "thread::hardware_concurrency is " << std::thread::hardware_concurrency() << std::endl;
     MIDI_outs = new std::vector<MIDIOutDriver*>;
     MIDI_out_names = new std::vector<std::string>;
     MIDI_ins = new std::vector<MIDIInDriver*>;

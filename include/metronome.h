@@ -1,7 +1,7 @@
 /*
  *   NiCMidi - A C++ Class Library for MIDI
  *
- *   Copyright (C) 2021  Nicola Cassetta
+ *   Copyright (C) 2021, 2022  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.

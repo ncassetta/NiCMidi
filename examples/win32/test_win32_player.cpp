@@ -72,7 +72,7 @@ HWND hTrackActs[16];                // array of boxes for track activity
 // Declare other variables
 UINT NotifierMessage = 0;           // the Windows message id to communicate between notifier and GUI
 int MIDIActDelays[16];              // array of integers for temporizing MIDI activity boxes
-const int ACT_DELAY = 4;
+const int ACT_DELAY = 4;            // delay for a MIDI activity box
 
 //
 // WinMain
