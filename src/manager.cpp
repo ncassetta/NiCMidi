@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2021, 2022  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -24,7 +24,8 @@
 
 
 #include "../include/manager.h"
-
+#include "nimBLEdriver.h"
+#include "MQTTdriver.h"
 
 std::vector<MIDIOutDriver*>* MIDIManager::MIDI_outs;
 std::vector<std::string>* MIDIManager::MIDI_out_names;
@@ -56,8 +57,8 @@ MIDIManager::~MIDIManager() {
     CoUninitialize();
 #endif // WIN32
 }
-*/
 
+*/
 
 
 void MIDIManager::Reset() {
@@ -251,10 +252,13 @@ void MIDIManager::TickProc(tMsecs sys_time, void* p) {
         if (tp->IsPlaying())
             tp->GetFunc()(sys_time, tp);
     }
-
+   //FCKX  flush input queue (this is after all other Tick components have used the data
     for (unsigned int i = 0; i < MIDI_ins->size(); i++)
-        if ((*MIDI_ins)[i]->IsPortOpen())
+        if ((*MIDI_ins)[i]->IsPortOpen())  //FCKX!!
             (*MIDI_ins)[i]->FlushQueue();
+        
+  //    (*MIDI_ins)[0]->FlushQueue(); //FCKX for the "NON-OPEN MQTT IN"
+      
     proc_lock->unlock();
 
     //std::cout << "MIDIManager::TickProc" << std::endl;
@@ -266,30 +270,47 @@ void MIDIManager::Init() {
      CoInitializeEx(NULL, COINIT_MULTITHREADED);
 #endif // WIN32
     std::cout << "Executing MIDIManager::Init()" << std::endl;
-    //std::cout << "thread::hardware_concurrency is " << std::thread::hardware_concurrency() << std::endl;
     MIDI_outs = new std::vector<MIDIOutDriver*>;
     MIDI_out_names = new std::vector<std::string>;
     MIDI_ins = new std::vector<MIDIInDriver*>;
     MIDI_in_names = new std::vector<std::string>;
     MIDITicks = new std::vector<MIDITickComponent*>;
     proc_lock = new std::mutex;
+        //FCKX_RtMidi
     try {
-        RtMidiOut temp_MIDI_out;
+           
+        //RtMidiOut temp_MIDI_out;
+        //create temp object to detect the number of avail ports, which is always 1 in the nimBLE case
+        //for this goal the object doesn't have to setup the ports during it's initialization , as is done now. 
+        //OR BETTER: IT IS NOT DESIRABLE TO SETUP THE PORTS
+        //(see how you can create multiple outputs, e.g. for multiplle MIDI channels)
+      std::cout << "Going to create temp MidiOutNimBLE for detecting nr of ports" << std::endl;
+      MidiOutNimBLE temp_MIDI_out;
+      std::cout << "Created temp MidiOutNimBLE for detecting nr of ports" << std::endl;
+
         for (unsigned int i = 0; i < temp_MIDI_out.getPortCount(); i++) {
-            MIDI_outs->push_back(new MIDIOutDriver(i));
+            MIDI_outs->push_back(new MIDIOutDriver(i)); //this again involves an instatiation of the nimBLE driver
             MIDI_out_names->push_back(temp_MIDI_out.getPortName(i));
         }
-        RtMidiIn temp_MIDI_in;
+        
+         std::cout << "Going to create temp MQTTMidiIn for detecting nr of ports" << std::endl;
+        MQTTMidiIn temp_MIDI_in;
+        std::cout << "Created temp MQTTMidiIn for detecting nr of ports" << std::endl;
         for (unsigned int i = 0; i < temp_MIDI_in.getPortCount(); i++) {
             MIDI_ins->push_back(new MIDIInDriver(i));
             MIDI_in_names->push_back(temp_MIDI_in.getPortName(i));
         }
+        
+        
+        
     }
     catch (RtMidiError &error) {
         error.printMessage();
         exit(EXIT_FAILURE);
     }
+    
     MIDITimer::SetMIDITick(TickProc);
+    MIDITimer::Start(); //Nic220111
     atexit(Exit);
     init = true;
     std::cout << "Exiting MIDIManager::Init() Found " << MIDI_outs->size() << " midi out and "
@@ -299,7 +320,7 @@ void MIDIManager::Init() {
 
 void MIDIManager::Exit() {
     std::cout << "MIDIManager Exit()" << std::endl;
-    MIDITimer::HardStop();
+    MIDITimer::HardStop(); //Nic220111
 
 
 #ifdef WIN32

@@ -3,7 +3,7 @@ var class_m_i_d_i_tick_component =
     [ "MIDITickComponent", "class_m_i_d_i_tick_component.html#af2a1de6cb660647e948a1a9c6103d10d", null ],
     [ "~MIDITickComponent", "class_m_i_d_i_tick_component.html#aaa199a871af1e28a9229d19608ffa975", null ],
     [ "Reset", "class_m_i_d_i_tick_component.html#a2481415a5e73b0ecc5b92e7bb1d61ddb", null ],
-    [ "GetFunc", "class_m_i_d_i_tick_component.html#a12e59aee239bfeabb370f2e4618b63da", null ],
+    [ "GetFunc", "class_m_i_d_i_tick_component.html#a6dbf1d4c75e038fec7a7bdb553680a62", null ],
     [ "GetPriority", "class_m_i_d_i_tick_component.html#a2c157d1f460bf520e4d7e3f431b9e657", null ],
     [ "GetDevOffset", "class_m_i_d_i_tick_component.html#a8b16b7cc46c447186c9f8f5202bd302e", null ],
     [ "IsPlaying", "class_m_i_d_i_tick_component.html#a9456c1ce1d59df3b92b37e904babdb52", null ],

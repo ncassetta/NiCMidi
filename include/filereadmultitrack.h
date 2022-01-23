@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2021, 2022  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -110,7 +110,6 @@ class MIDIFileReadMultiTrack : public MIDIFileEventHandler {
 
 /// \name Functions for Loading MIDI files
 ///@{
-
 /// Returns the header of the MIDI file specified by _filename_.
 /// You can then inspect the format, (0, 1 or 2), the number of tracks and the division (MIDI ticks per
 /// quarter note) of the file. If the header cannot be read these are all 0.

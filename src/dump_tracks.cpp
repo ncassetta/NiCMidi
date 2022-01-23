@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2021, 2022  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -25,7 +25,7 @@
 
 #include "../include/dump_tracks.h"
 
-static unsigned char chan_from_1 = 0;
+static char chan_from_1 = 0;
 
 
 static const char* trk_types[10] = {
@@ -42,7 +42,7 @@ static const char* trk_types[10] = {
     };
 
 
-void SetChanFrom(unsigned char c) {
+void SetChanFrom(char c) {
     chan_from_1 = c;
 }
 
@@ -78,7 +78,7 @@ int DumpMIDITrackAttr(MIDITrack* const trk, int num, std::ostream& ost) {
 
     ost << std::endl << "    Type: " << trk_types[type];
     if (type == MIDITrack::TYPE_CHAN || type == MIDITrack::TYPE_IRREG_CHAN)
-        ost << " (" << trk->GetChannel() + chan_from_1 << ")";
+        ost << " (" << (int)trk->GetChannel() + chan_from_1 << ")";
     ost << std::endl;
     sprintf(s, "%6d", trk->GetNumEvents()),
     ost << "Events in track: " << s << "\t   End of track time: " << trk->GetEndTime()
@@ -116,7 +116,7 @@ int DumpMIDITrackAttrVerbose(MIDITrack* const trk, int num, std::ostream& ost) {
         lines++;
     }
     if (status & MIDITrack::HAS_ONE_CHAN) {
-        ost << "    Has channel events (channel " << trk->GetChannel() + chan_from_1 << ")" << std::endl;
+        ost << "    Has channel events (channel " << (int)trk->GetChannel() + chan_from_1 << ")" << std::endl;
         lines++;
     }
     if (status & MIDITrack::HAS_MANY_CHAN) {

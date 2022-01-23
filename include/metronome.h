@@ -1,7 +1,7 @@
 /*
  *   NiCMidi - A C++ Class Library for MIDI
  *
- *   Copyright (C) 2021, 2022  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -72,11 +72,11 @@ class Metronome : public MIDITickComponent {
         float                           GetTempoWithoutScale() const        { return new_tempobpm; }
         /// Returns current tempo (BPM) taking into account scaling (this is the true actual tempo).
         float                           GetTempoWithScale() const           { return new_tempobpm * new_tempo_scale * 0.01; }
-        /// Returns the number of the MIDI out port assigned to the metronome.
-        unsigned int                    GetOutPort() const                  { return new_out_port; }
+        /// Returns the number of the MIDI out port assigned to the .
+        int                             GetOutPort() const                  { return new_out_port; }
         /// Returns the number of the MIDI channel assigned to the metronome.
         /// See \ref NUMBERING.
-        unsigned int                    GetOutChannel() const               { return new_chan; }
+        unsigned char                   GetOutChannel() const               { return new_chan; }
         /// Returns the MIDI note number for the measure click.
         unsigned char                   GetMeasNote() const                 { return new_meas_note; }
         /// Returns the MIDI note number for the ordinary beat click.metronome
@@ -88,14 +88,15 @@ class Metronome : public MIDITickComponent {
         /// Returns the numerator of the current timesig. If it is 0 the measure clicks are disabled, otherwise the 1st click
         /// of a measure will sound with different note and volume.
         unsigned char                   GetTimeSigNumerator() const         { return timesig_numerator; }
-        // TODO: Actually denominator is not implemented.
+        /// TODO: Actually denominator is not implemented.
         //unsigned char                   GetTimeSigDenominator() const       { return timesig_denominator; }
         /// Sets the musical tempo. You can set it between 1.0 bpm and 300.0 bpm.
         /// \return **true** if _t_ is a valid tempo, **false** otherwise.
         bool                            SetTempo(float t);
-        /// Sets the global tempo scale.
-        /// \param scale the percentage: 100 = no scaling, 200 = twice faster, 50 = twice slower, etc.
-        /// \return **true** if _scale_ is a valid number, **false** otherwise (actually only if it is 0).
+    // TODO: harmonize these with MIDISequencer equivalent
+        /// Sets the tempo scale (scale_ is the percentage: 100 = no scaling, 200 = twice faster, etc.).
+        /// You can set a scale between 1 and 500 %.
+        /// \return **true** if _scale_ is a valid number, **false** otherwise.
         bool                            SetTempoScale(unsigned int scale);
         /// Sets the MIDI out port for the metronome clicks.
         /// \param port The out MIDI port id number
@@ -104,7 +105,7 @@ class Metronome : public MIDITickComponent {
         /// Sets the MIDI channel for the metronome clicks.
         /// See \ref NUMBERING.
         /// \return **true** if _chan_ is a valid channel number, **false** otherwise.
-        bool                            SetOutChannel(unsigned int chan);
+        bool                            SetOutChannel(unsigned char chan);
         /// Sets the MIDI note number for the measure click (the 1st beat of the measure). It is only effective if you
         /// have already set the timesig numerator (see SetTimesigNumerator()).
         void                            SetMeasNote(unsigned char note);

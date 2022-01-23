@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2021, 2022  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -54,15 +54,17 @@ class MIDISequencer;
 class MIDISequencerGUIEvent {
     public:
         /// Default constructor: creates a generic event with all attributes set to 0
-                    MIDISequencerGUIEvent() : bits(0)                    {}
-        /// This constructor creates the object directly from its parameters, packed into an unsigned long.
+   //                 MIDISequencerGUIEvent()                     { bits = 0; }
+   MIDISequencerGUIEvent() : bits(0)                    {}  //NicMidi 211222
+
+   /// This constructor creates the object directly from its parameters, packed into an unsigned long.
                     MIDISequencerGUIEvent(unsigned long bits_) : bits(bits_) {}
         /// This constructor creates the object starting from its group, subgroup, item
-                    MIDISequencerGUIEvent(int group, int subgroup, int item) {
+                    MIDISequencerGUIEvent( int group, int subgroup, int item ) {
                         bits = ((group&0xff)<<24) | ((subgroup&0xfff)<<12) | (item&0xfff); }
                         // leave unchanged! overloading trouble, too many ctors
-        // copy constructor and operator= provided by the compiler
-
+        /// Copy constructor.
+                    MIDISequencerGUIEvent(const MIDISequencerGUIEvent &ev) : bits(ev.bits) {}
         /// Converts the object into an unsigned long
                     operator unsigned long () const             { return bits; }
         /// Returns the event group.
@@ -166,8 +168,10 @@ class MIDISequencerGUINotifier {
         /// sends them; you can set it in the constructor or later.
                         MIDISequencerGUINotifier(const MIDISequencer* seq = 0) :
                             sequencer(seq), en(true)                {}
-        // destructor needed for virtual methods
-        virtual         ~MIDISequencerGUINotifier()                 {}
+        // (no need for destructor) //OBSOLETE
+                // destructor needed for virtual methods
+        virtual         ~MIDISequencerGUINotifier()                 {}  //NiCMidi 212222
+        
         /// This sets the sequencer which generates messages sent to the GUI.
         /// \warning If you use the notifier in conjunction with an AdvancedSequencer class,
         /// this is automatically set by the class
@@ -199,18 +203,18 @@ class MIDISequencerGUINotifierText : public MIDISequencerGUINotifier {
 
         /// Gets the numbering of measures and beats. See SetStartFromone().
         /// \return 0 or 1.
-        unsigned char           GetStartFrom() const             { return start_from; }
+        char            GetStartFrom() const             { return start_from; }
         /// Sets the numbering of measures and beats (starting from 0 or from 1)
         /// \param f 0 or 1.
         /// \return **true** if the parameter is correct, **false** otherwise
-        bool            SetStartFrom(unsigned char c);
+        bool            SetStartFrom(char f);
 
         /// Notifies the event _ev_, printing to it a readable event description.
         virtual void    Notify(const MIDISequencerGUIEvent &ev);
 
     protected:
         /// \cond EXCLUDED
-        unsigned char   start_from;
+        char            start_from;
         std::ostream&   ost;
         /// \endcond
 };

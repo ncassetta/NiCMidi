@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2021, 2022  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -36,8 +36,10 @@
 #include "timer.h"
 
 
-#include "../rtmidi-4.0.0/RtMidi.h"
-
+// #include "../rtmidi-4.0.0/RtMidi.h" //FCKX
+#include "RtMidi.h" //FCKX
+#include "nimBLEdriver.h" //FCKX
+#include "MQTTdriver.h" //FCKC
 #include <vector>
 #include <string>
 #include <mutex>
@@ -59,6 +61,11 @@
 #if DRIVER_USES_MIDIMATRIX
    #include "matrix.h"
 #endif // DRIVER_USES_MIDIMATRIX
+/// This is the maximum number of retries the method OutputMessage() will try before hanging (and skipping
+/// a message).
+#define DRIVER_MAX_RETRIES 100
+/// This is the number of milliseconds the driver waits after sending a MIDI system exclusive message.
+#define DRIVER_WAIT_AFTER_SYSEX 20
 ///@}
 
 
@@ -181,16 +188,14 @@ class MIDIOutDriver {
         virtual void            OutputMessage(const MIDITimedMessage& msg);
 
     protected:
-        /// The maximum number of retries the method OutputMessage() will try before hanging (and skipping a message).
-        static const int        DRIVER_MAX_RETRIES = 100;
-        /// The number of milliseconds the driver waits after sending a MIDI system exclusive message.
-        static const int        DRIVER_WAIT_AFTER_SYSEX = 20;
         /// Sends the message to the hardware MIDI port using the RtMidi library functions.
         virtual void            HardwareMsgOut(const MIDIMessage &msg);
 
        /// \cond EXCLUDED
         MIDIProcessor*          processor;  // The out processor
-        RtMidiOut*              port;       // The hardware port
+        //RtMidiOut*              port;       // The hardware port
+        //FCKX
+        MidiOutNimBLE*          port;       // The hardware port
         const int               port_id;    // The id of the port
         int                     num_open;   // Counts the number of OpenPort() calls
         std::recursive_mutex    out_mutex;  // Used internally for thread safe operating
@@ -288,19 +293,20 @@ class MIDIInDriver {
         /// \return **true** if such a message really exists in the queue (and _msg_ is valid), otherwise **false**.
         virtual bool            ReadMessage(MIDIRawMessage& msg, unsigned int n);
 
-protected:
+//protected:   //FCKX
 
         /// This is the RtMidi callback function (you must not call it directly)
         static void             HardwareMsgIn(double time,
                                               std::vector<unsigned char>* msg_bytes,
                                               void* p);
+protected:   //FCKX  temporary make HardwareMsgIn public
 
         /// \cond EXCLUDED
         // This is the default queue size.
         static const unsigned int       DEFAULT_QUEUE_SIZE = 256;
 
         MIDIProcessor*          processor;      // The in processor
-        RtMidiIn*               port;           // The hardware port
+        MQTTMidiIn*               port;           // The hardware port
         const int               port_id;        // The id of the port
         int                     num_open;       // Counts the number of OpenPort() calls
 

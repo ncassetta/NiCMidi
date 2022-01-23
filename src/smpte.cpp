@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2021, 2022  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -158,7 +158,7 @@ void SMPTE::AddSamples (long n) {
 }
 
 
-void SMPTE::AddHours(signed char h) {
+void SMPTE::AddHours(char h) {
     AddSamples( sample_rates_long[sample_rate]  // samples per second times 10
                  * h *                          // number of hours
                  (  60		                    // seconds per minute
@@ -168,7 +168,7 @@ void SMPTE::AddHours(signed char h) {
   }
 
 
-void SMPTE::AddMinutes(signed char m) {
+void SMPTE::AddMinutes(char m) {
     AddSamples( sample_rates_long[sample_rate]  // samples per second times 10
                 * m *                           // number of minutes
                 ( 60 		                    // seconds per minute
@@ -177,7 +177,7 @@ void SMPTE::AddMinutes(signed char m) {
 }
 
 
-void SMPTE::AddSeconds(signed char s) {
+void SMPTE::AddSeconds(char s) {
     AddSamples( sample_rates_long[sample_rate]  // samples per second times 10
                 * s		                        // number of seconds
                 / 10		                    // compensate for freq*10
@@ -185,7 +185,7 @@ void SMPTE::AddSeconds(signed char s) {
 }
 
 
-void SMPTE::AddFrames(signed char f) {
+void SMPTE::AddFrames(char f) {
     AddSamples( sample_rates_long[sample_rate]  // samples per second times 10
                 * f 			                // number of frames
                 * 10			                // times 10
@@ -194,7 +194,7 @@ void SMPTE::AddFrames(signed char f) {
 }
 
 
-void SMPTE::AddSubFrames(signed char sf) {
+void SMPTE::AddSubFrames(char sf) {
     AddSamples( sample_rates_long[sample_rate]	// samples per second times 10
                 * sf			                // number of sub frames
                 / smpte_rates_long[smpte_rate]  // divide by smpte rate (frames per second) times 100

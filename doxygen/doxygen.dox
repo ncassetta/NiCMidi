@@ -244,7 +244,7 @@
 ///
 ///If you want to send (or receive) MIDI messages to (from) a port you must open it with the MIDIOutDriver::OpenPort() or MIDIInDriver::OpenPort() methods. The %MIDIOutDriver has a method MIDIOutDriver::OutputMessage() which sends a MIDITimedMessage to the port; the %MIDIInDriver is a bit more complicated, because it manages a queue for incoming messages, and you have various methods for inspecting them (see the class documentation for details).
 ///
-/// However, when using the high-level objects of the library (such as AdvancedSequencer, MIDISequencer, MIDIRecorder, etc.), all the work (opening and closing ports, sending/receiving messages ...) is done by these classes, so even in this case the user rarely needs to use the methods of this class directly.
+/// However, when using the high-level objects of the library (such as AdvancedSequencer, MIDISequencer, MIDIRecorder, etc.), all the work (opening and closing doors, sending/receiving messages ...) is done by these classes, so even in this case the user rarely needs to use the methods of this class directly.
 ///
 /// The %MIDIManager class
 /// ----------------------

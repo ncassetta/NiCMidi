@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2021, 2022  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -88,12 +88,12 @@ class MIDIThru : public MIDITickComponent {
         /// \param chan 0 ... 15: the thru will accept only messages with a specific channel; -1: the thru will
         /// accept all messages coming from the in port (this is the default). Non channel messages are always received.
         /// \return **true** if _chan_ is a valid channel number, **false** otherwise.
-        virtual bool            SetInChannel(int chan);
+        virtual bool            SetInChannel(char chan);
         /// Sets the channel for outgoing thru messages.
         /// \param chan 0 ... 15: the thru will redirect all messages to a specific channel; -1: the thru will leave
         /// channel messages unchanged (this is the default).
         /// \return **true** if _chan_ is a valid channel number, **false** otherwise
-        virtual bool            SetOutChannel(int chan);
+        virtual bool            SetOutChannel(char chan);
         /// Starts the MIDI thru.
         virtual void            Start();
         /// Stops the MIDI thru.
@@ -110,8 +110,8 @@ class MIDIThru : public MIDITickComponent {
         /// \cond EXCLUDED
         unsigned int            in_port;        // The in port id
         unsigned int            out_port;       // The out port id
-        signed char             in_channel;     // The in channel (0 .. 15, -1 for any channel)
-        signed char             out_channel;    // The out channel (0 .. 15, -1 for any channel)
+        signed char   /*FCKX!!*/                 in_channel;     // The in channel (0 .. 15, -1 for any channel)
+        signed char    /*FCKX!!*/                 out_channel;    // The out channel (0 .. 15, -1 for any channel)
 
         MIDIProcessor*          processor;      // The MIDIProcessor you can plug to the thru
         /// \endcond

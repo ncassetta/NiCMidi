@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2021, 2022  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -63,9 +63,8 @@ class 	MIDIMessage {
         /// then duplicates the (eventual) new MIDISystemExclusive, so every MIDIBigMessage has its own object.
         const MIDIMessage&      operator= (const MIDIMessage &msg);
 
-        /// Returns the length in bytes of the entire message. It can return -1 for messages whose lrngth is
-        /// undefined /for example sysex).
-        int	                    GetLength() const;
+        /// Returns the length in bytes of the entire message.
+        char	                GetLength() const;
         /// Returns the status byte of the message. If the message is a channel message this contains the message
         /// type in the top 4 bits and the channel in the bottom 4. See \ref MIDIENUM for status bytes
         unsigned char	        GetStatus() const	        { return (unsigned char)status;	}
@@ -100,9 +99,9 @@ class 	MIDIMessage {
         /// If the message is a control change message, returns the controller value.
         unsigned char	        GetControllerValue() const  { return byte2;	}
         /// If the message is a bender message, returns the signed 14 bit bender value.
-        int16_t	                GetBenderValue() const      { return (int16_t)(((byte2 << 7) | byte1) - 8192); }
+        short	                GetBenderValue() const      { return (short)(((byte2 << 7) | byte1) - 8192); }
         /// If the message is a meta-message, returns the unsigned 14 bit value attached.
-        uint16_t	            GetMetaValue()	const       { return (uint16_t)((byte3 << 8) | byte2); }
+        unsigned short	        GetMetaValue()	const       { return (unsigned short)((byte3 << 8) | byte2); }
         /// If the message is a time signature meta-message, returns the numerator of the time signature.
         unsigned char           GetTimeSigNumerator() const { return byte2; }
         /// If the message is a time signature meta-message, returns the denominator of the time signature.
@@ -114,7 +113,7 @@ class 	MIDIMessage {
         /// 0 means a major key, 1 means a minor key.
         unsigned char           GetKeySigMode() const { return byte3; }
         /// If the message is a tempo change meta-message, returns the tempo value in bpm.
-        float	                GetTempo() const;
+        double	                GetTempo() const;
         /// If the message is a tempo change meta-message, returns the tempo in SMF format.
         /// This is a 3 bytes value (the number of microseconds per quarter note).
         unsigned long           GetInternalTempo() const;
@@ -230,7 +229,7 @@ class 	MIDIMessage {
         /// Sets the program number for a program change message.
         void	                SetProgramValue(unsigned char v)    { byte1 = v; }
         /// Sets the bender value (a signed 14 bit value) for a bender message.
-        void	                SetBenderValue(int16_t v);
+        void	                SetBenderValue(short v);
         /// Sets the meta message type for a meta-event message.
         void	                SetMetaType(unsigned char t)        { byte1 = t; }
         /// Sets the meta value for a meta-event message.
@@ -266,7 +265,7 @@ class 	MIDIMessage {
         void	                SetChannelPressure(unsigned char chan, unsigned char pres);
         /// Makes the message a pitch bend message with given channel and value (unsigned 14 bit). Frees the sysex pointer.
         /// \param chan, val see \ref NUMBERING
-        void	                SetPitchBend(unsigned char chan, short val);
+        void	                SetPitchBend( unsigned char chan, short val );
         /// Makes the message a channel mode message (i.e. a control change with a specific control number.
         /// Channel mode messages include:
         /// + All sound off         (type = C_ALL_SOUND_OFF)
@@ -290,7 +289,7 @@ class 	MIDIMessage {
         /// Makes the message a MIDI time code message with given field (3 bits) and value (4 bits). Frees the sysex pointer.
         void	                SetMTC(unsigned char field, unsigned char val);
         /// Makes the message a song position system message with given position (14 bits). Frees the sysex pointer.
-        void	                SetSongPosition(int16_t pos);
+        void	                SetSongPosition(short pos);
         /// Makes the message a song select system message with given song. Frees the sysex pointer.
         void	                SetSongSelect(unsigned char sng);
         /// Makes the message a one-byte system message with given status (type must be a valid MIDI system message
@@ -311,7 +310,7 @@ class 	MIDIMessage {
         void	                SetDataEnd()                        { SetMetaEvent(META_END_OF_TRACK, 0); }
         /// Makes the message a tempo change meta-message with given tempo (in bpm). The tempo is stored in the sysex
         /// object as a 3 byte value according to the SMF format and the eventual old pointer is freed.
-        void	                SetTempo(float tempo_bpm);
+        void	                SetTempo(double tempo_bpm);
         /// Makes the message a SMPTE offset meta-message with given data.
         /// The bytes are stored in the sysex object and the eventual old pointer is freed.
         void                    SetSMPTEOffset(unsigned char hour, unsigned char min, unsigned char sec,
@@ -321,7 +320,7 @@ class 	MIDIMessage {
         void	                SetTimeSig(unsigned char num, unsigned char den,
                                            unsigned char clocks_per_metronome = 0, unsigned char num_32_per_quarter = 8);
         /// Makes the message a key signature meta-message with given accidents and mode.
-        void                    SetKeySig(signed char sharp_flats, unsigned char major_minor)
+        void                    SetKeySig( signed char sharp_flats, unsigned char major_minor )
                                                                     { SetMetaEvent(META_KEYSIG, sharp_flats, major_minor); }
         /// The same of Clear(), makes the message an uninitialized message which will be ignored.
         void	                SetNoOp()                           { Clear(); }
@@ -329,8 +328,8 @@ class 	MIDIMessage {
         void	                SetBeatMarker();
 
         /// Returns a human readable ascii string describing the message content.
-        /// \param chan_from_1 if **false** channels are numbered 0 ... 15, otherwise 1 ... 16. See \ref NUMBERING
-        virtual std::string     MsgToText(bool chan_from_1 = false) const;
+        /// \param chan_from_1 if zero channels are numbered 0 ... 15, otherwise 1 ... 16. See \ref NUMBERING
+        virtual std::string     MsgToText(char chan_from_1 = 0) const;
         /// Allocates a MIDISystemExclusive object, with a buffer of given max size.
         ///The buffer is initially empty and can be accessed with GetSysEx(). An eventual old object is freed.
         void                    AllocateSysEx(unsigned int len);
@@ -399,7 +398,7 @@ class 	MIDITimedMessage : public MIDIMessage {
 
         /// Returns a human readable ascii string describing the message content.
         /// \param chan_from_1 if zero channels are numbered 0 ... 15, otherwise 1 ... 16. See \ref NUMBERING
-        virtual std::string     MsgToText(unsigned char chan_from_1 = 0) const;
+        virtual std::string     MsgToText(char chan_from_1 = 0) const;
 
         /// Returns the MIDIClockTime associated with the message.
         MIDIClockTime	        GetTime() const                 { return time; }
