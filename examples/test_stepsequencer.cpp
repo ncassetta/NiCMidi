@@ -1,7 +1,7 @@
 /*
  *   Example file for NiCMidi - A C++ Class Library for MIDI
  *
- *   Copyright (C) 2021, 2022  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -416,7 +416,7 @@ int main(int argc, char **argv) {
         else if (command == "bpaste") {
             unsigned int tr_start = atoi(par1.c_str());
             if (par2.size() == 0) {
-                multitrack->EditInsert(cur_pos.gettime(), tr_start, 1, &edit_multitrack);
+                multitrack->EditInsert(cur_pos.gettime(), tr_start, 1, true, &edit_multitrack);
                 sequencer.UpdateStatus();
             }
             else if (par2 == "o") {

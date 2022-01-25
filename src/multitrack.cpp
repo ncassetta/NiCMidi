@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2021, 2022  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -212,35 +212,35 @@ bool MIDIMultiTrack::MoveTrack(int from, int to) {
 }
 
 
-bool MIDIMultiTrack::SetTrack(const MIDITrack* trk, unsigned int trk_num) {
+bool MIDIMultiTrack::SetTrack(const MIDITrack* trk, int trk_num) {
     if (!IsValidTrackNumber(trk_num)) return false;
     *tracks[trk_num] = *trk;
     return true;
 }
 
 
-bool MIDIMultiTrack::InsertEvent(unsigned int trk_num, const MIDITimedMessage& msg, tInsMode _ins_mode) {
+bool MIDIMultiTrack::InsertEvent(int trk_num, const MIDITimedMessage& msg, tInsMode _ins_mode) {
     if (IsValidTrackNumber(trk_num))
         return tracks[trk_num]->InsertEvent(msg, _ins_mode);
     return false;
 }
 
 
-bool MIDIMultiTrack::InsertNote(unsigned int trk_num, const MIDITimedMessage& msg, MIDIClockTime len, tInsMode _ins_mode) {
+bool MIDIMultiTrack::InsertNote(int trk_num, const MIDITimedMessage& msg, MIDIClockTime len, tInsMode _ins_mode) {
     if (IsValidTrackNumber(trk_num))
         return tracks[trk_num]->InsertNote(msg, len, _ins_mode);
     return false;
 }
 
 
-bool MIDIMultiTrack::DeleteEvent(unsigned int trk_num, const MIDITimedMessage& msg) {
+bool MIDIMultiTrack::DeleteEvent(int trk_num, const MIDITimedMessage& msg) {
     if (IsValidTrackNumber(trk_num))
         return tracks[trk_num]->DeleteEvent(msg);
     return false;
 }
 
 
-bool MIDIMultiTrack::DeleteNote(unsigned int trk_num, const MIDITimedMessage& msg) {
+bool MIDIMultiTrack::DeleteNote(int trk_num, const MIDITimedMessage& msg) {
     if (IsValidTrackNumber(trk_num))
         return tracks[trk_num]->DeleteNote(msg);
     return false;
@@ -358,7 +358,7 @@ MIDIMultiTrackIteratorState::MIDIMultiTrackIteratorState(int n_tracks) :
 
 // methods SetNumTracks() and Reset() don't affect time_shift_mode, which
 // is changed only by the MIDISequencer class
-void MIDIMultiTrackIteratorState::SetNumTracks(unsigned int n) {
+void MIDIMultiTrackIteratorState::SetNumTracks(int n) {
     num_tracks = n;
     next_event_number.resize(n);
     next_event_time.resize(n);
@@ -370,7 +370,7 @@ void MIDIMultiTrackIteratorState::SetNumTracks(unsigned int n) {
 void MIDIMultiTrackIteratorState::Reset() {
     cur_time = 0;
     cur_event_track = -1;
-    for(unsigned int i = 0; i < num_tracks; ++i) {
+    for(int i = 0; i < num_tracks; ++i) {
         next_event_number[i] = 0;
         next_event_time[i] = TIME_INFINITE;
         enabled[i] = true;
@@ -383,8 +383,8 @@ int MIDIMultiTrackIteratorState::FindTrackOfFirstEvent() {
     int minimum_time_track = -1;
 
     // go through all tracks and find the track with the smallest event time.
-    for(unsigned int j = 0; j < num_tracks; ++j) {
-        unsigned int i = (j + cur_event_track + 1) % num_tracks;
+    for(int j = 0; j < num_tracks; ++j) {
+        int i = (j + cur_event_track + 1) % num_tracks;
 
     // skip any tracks that have a current event number less than 0 - these are finished already
         if(next_event_number[i] >= 0 && enabled[i] && next_event_time[i] < minimum_time) {

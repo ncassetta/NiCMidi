@@ -82,11 +82,10 @@ void MIDITrack::Clear(bool mantain_end) {
 }
 
 
-int MIDITrack::GetChannel() {
+char MIDITrack::GetChannel() {
     if (status & STATUS_DIRTY)
         Analyze();
-    signed char chan = status & 0xff;
-    return (int)chan;
+    return (char)(status & 0xff);
 }
 
 
@@ -97,7 +96,7 @@ int MIDITrack::GetStatus() {
 }
 
 
-unsigned char MIDITrack::GetType() {
+char MIDITrack::GetType() {
     if (IsEmpty())
         return TYPE_EMPTY;
     if (status & STATUS_DIRTY)
@@ -120,7 +119,7 @@ unsigned char MIDITrack::GetType() {
 }
 
 
-unsigned char MIDITrack::HasSysex() {
+char MIDITrack::HasSysex() {
     if (status & STATUS_DIRTY)
         Analyze();
     if ((status & HAS_SYSEX) && (status & HAS_RESET_SYSEX))
@@ -641,7 +640,7 @@ bool MIDITrack::FindEventNumber(MIDIClockTime time, int* event_num) const {
 
 
 void MIDITrack::Analyze() {
-    signed char channel = -1;
+    char channel = -1;
     const MIDITimedMessage* msg;
     for (unsigned int i = 0; i < GetNumEvents(); i++) {
         msg = GetEventAddress(i);
@@ -848,4 +847,3 @@ void MIDITrackIterator::ScanEventsAtThisTime() {
         ev_num++;
     }
 }
-

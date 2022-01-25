@@ -10,7 +10,7 @@ var class_metronome =
     [ "GetTempoScale", "class_metronome.html#ae5cdb9d7789470d386fc946a70313dc9", null ],
     [ "GetTempoWithoutScale", "class_metronome.html#a426803a7f3d4a108aeea9d7259787dad", null ],
     [ "GetTempoWithScale", "class_metronome.html#afb72b905b9ce2655a87bbf826afd7213", null ],
-    [ "GetOutPort", "class_metronome.html#a87929b319a33eacd557bb5a4a2bca523", null ],
+    [ "GetOutPort", "class_metronome.html#aefa4ab925b250e2110757fd8227ba57e", null ],
     [ "GetOutChannel", "class_metronome.html#a72a82ba654917ec51d6c5d57a837ddd9", null ],
     [ "GetMeasNote", "class_metronome.html#ac27f7ceb841c5e2c955363e8591ce020", null ],
     [ "GetBeatNote", "class_metronome.html#a6a9ac9279b8076ba0c39fd39d87c951d", null ],

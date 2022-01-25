@@ -7,10 +7,6 @@
 /// Requires functions.cpp, which contains command line I/O functions.
 
 
-/// \example test_advancedsequencer_noinput.cpp
-/// A basic example which plays two times a simple tune, without no input from the user.
-
-
 /// \example test_component.cpp
 /// Example of a basic custom MIDITickComponent which only plays a note every second. The file shows how to redefine the
 /// base class methods and how to add the component to the MIDIManager queue, making it effective.
@@ -33,12 +29,6 @@
 /// in your system and store the recorded content in an AdvancedSequencer tracks.
 ///
 /// Requires functions.cpp, which contains command line I/O functions.
-
-
-/// \example test_recorder2.cpp
-/// A basic example which allows the user to record for 15 seconds and then listen the recorded messages, without no input
-/// from the computer.
-
 
 
 /// \example test_sequencer.cpp

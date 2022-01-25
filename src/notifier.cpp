@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2021, 2022  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -40,9 +40,9 @@ const char MIDISequencerGUIEvent::recording_items_names[][10] =
 const char MIDISequencerGUIEvent::user_items_names[][10] =
         { "User     " };
 
-bool MIDISequencerGUINotifierText::SetStartFrom(unsigned char c) {
-    if (c == 0 || c == 1) {
-        start_from = c;
+bool MIDISequencerGUINotifierText::SetStartFrom(char f) {
+    if (f == 0 || f == 1) {
+        start_from = f;
         return true;
     }
     return false;

@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2021, 2022  Nicola Cassetta
+ *   Copyright (C) 2020  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -51,7 +51,6 @@ const MIDIClockTime TIME_INFINITE = 0xffffffff;
 const unsigned int DEFAULT_CLKS_PER_BEAT = 120;
 ///@}
 
-///@}
 
 /* TODO: THIS IS EXPERIMENTAL; FOR NOW NOT IMPLEMENTED
 /// \name Counting channels, measures, etc. form 0 or 1
@@ -63,22 +62,23 @@ enum {
     PORTS_FROM_1 = 8
 };
 
-static unsigned char From1Flag = 0;
+static char From1Flag = 0;
 
 void SetChansFrom1(bool f)      { (From1Flag &= (~CHANS_FROM_1)) |= (CHANS_FROM_1 * f); };
 void SetMeasFrom1(bool f)       { (From1Flag &= (~MEAS_FROM_1)) |= (MEAS_FROM_1 * f); };
 void SetTracksFrom1(bool f)     { (From1Flag &= (~TRACKS_FROM_1)) |= (TRACKS_FROM_1 * f); };
 void SetPortsFrom1(bool f)      { (From1Flag &= (~PORTS_FROM_1)) |= (PORTS_FROM_1 * f); };
-void SetFrom1(unsigned char c)  { From1Flag = c; }
+void SetFrom1(char c)           { From1Flag = c; }
 int GetChansFrom1()             { return (From1Flag & CHANS_FROM_1) == CHANS_FROM_1; };
 int GetMeasFrom1()              { return (From1Flag & MEAS_FROM_1) == MEAS_FROM_1; };
 int GetTracksFrom1()            { return (From1Flag & TRACKS_FROM_1) == TRACKS_FROM_1; };
 int GetPortsFrom1()             { return (From1Flag & PORTS_FROM_1) == PORTS_FROM_1; };
-unsigned char GetFrom1Flag()    { return From1Flag; };
+char GetFrom1Flag()             { return From1Flag; };
 
 ///@}
 */
 
+///@}
 
 
 /// \addtogroup MIDIENUM
@@ -90,7 +90,7 @@ unsigned char GetFrom1Flag()    { return From1Flag; };
 /// For a channel message (with status byte between 0x80 ... 0xef) only the upper four bits of the status determine
 /// its type (while lower four bits represent the channel); all status bytes between 0xf0 ... 0xff are considered
 /// system messages. You can use these in the MIDIMessage::SetType() method.
-enum : unsigned char {
+enum {
     NOTE_OFF	        =0x80,  ///< Note off
     NOTE_ON		        =0x90,  ///< Note on
     POLY_PRESSURE	    =0xa0,  ///< Polyphonic (aftertouch) pressure
@@ -106,7 +106,6 @@ enum : unsigned char {
     SYSEX_END	        =0xf7,  ///< End of a sysex
     RESET		        =0xff,	///< 0xff never used as reset in a MIDIMessage
     META_EVENT	        =0xff	///< Meta event
-    // TODO: these should be merged with MIDI real time messages, but this should not retrocompatible
 };
 ///@}
 
@@ -115,7 +114,7 @@ enum : unsigned char {
 ///@{
 
 /// These bytes are used for quick one-byte messages intended to be sent during playback.
-enum : unsigned char {
+enum {
     RT_TIMING_CLOCK	    =0xf8,  ///< MIDI Real time clock
     RT_MEASURE_END	    =0xf9,	///< Proposed measure end byte UNUSED
     RT_START		    =0xfa,  ///< Sequencer start
@@ -132,7 +131,7 @@ enum : unsigned char {
 /// General MIDI standardized controller numbers.
 /// They are stored in the first data byte of a Control Change message; the last ones (between 0x78 ... 0x7f) are
 /// the **channel mode messages**. You can use these in the MIDIMessage::SetController() method.
-enum : unsigned char {
+enum {
     C_LSB		        =0x20,	///< add this to a non-switch controller to access the LSB.
     C_GM_BANK	        =0x00,	///< General Midi bank select
     C_MODULATION	    =0x01,	///< modulation
@@ -190,7 +189,7 @@ enum : unsigned char {
 ///@{
 
 /// These bytes are used by the GS standard in a RPN Control Change message.
-enum : unsigned char {
+enum {
     RPN_BEND_WIDTH	    =0x00,	///< bender sensitivity
     RPN_FINE_TUNE	    =0x01,	///< fine tuning
     RPN_COARSE_TUNE     =0x02	///< coarse tuning
@@ -205,7 +204,7 @@ enum : unsigned char {
 /// bytes 2 and 3 of the MIDIMessage, otherwise in the MIDISystemExclusive object attached to it. So the format of the
 /// meta-events in a %MIDIMessage class will be different than the standard MIDIFile meta-events. You can use these
 /// in the MIDIMessage::SetMetaType() method.
-enum : unsigned char {
+enum {
     /// Defines the pattern number of a Type 2 MIDI file or the number of a sequence in a Type 0
     /// or Type 1 MIDI file.\ Should always have a delta time of 0 and come before all MIDI Channel
     /// Events and non-zero delta time events.\ The data length is 2 bytes.
@@ -298,9 +297,11 @@ bool                        IsNoteWhite(unsigned char note);
 bool                        IsNoteBlack(unsigned char note);
 
 /// MIDI note number to standard octave conversion.
+
 inline int GetNoteOctave(unsigned char note) {
     return (note/12)-1;
 }
+
 
 /// Converts a MIDI key signature into a readable form.
 /// \param sharp_flats the number of accidents as coded in a MIDI keysig mera messge

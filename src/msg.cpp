@@ -5,7 +5,7 @@
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
  *   Copyright (C) 2010 V.R.Madgazin
  *   www.vmgames.com vrm@vmgames.com
- *   Copyright (C) 2021, 2022  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -91,7 +91,7 @@ const MIDIMessage& MIDIMessage::operator= (const MIDIMessage &msg) {
 // Query methods
 //
 
-int MIDIMessage::GetLength() const {
+char MIDIMessage::GetLength() const {
     if((status & 0xf0) == 0xf0)
         return sys_msg_len[status - 0xf0];
     else
@@ -99,8 +99,9 @@ int MIDIMessage::GetLength() const {
 }
 
 
-float MIDIMessage::GetTempo() const {
-    return 60.0 * 1.0e6 / GetInternalTempo();
+double MIDIMessage::GetTempo() const {
+    double tempo_bpm = 60.0 * 1.0e6 / GetInternalTempo();
+    return tempo_bpm;
 }
 
 
@@ -226,7 +227,7 @@ void MIDIMessage::SetMTC(unsigned char field, unsigned char val) {
   }
 
 
-void MIDIMessage::SetSongPosition(int16_t pos) {
+void MIDIMessage::SetSongPosition(short pos) {
     status = SONG_POSITION;
     byte1 = (unsigned char)(pos & 0x7f);
     byte2 = (unsigned char)((pos >> 7) & 0x7f);
@@ -279,7 +280,7 @@ void MIDIMessage::SetText(const char* text, unsigned char type) {
 }
 
 
-void MIDIMessage::SetTempo(float tempo_bpm) {
+void MIDIMessage::SetTempo(double tempo_bpm) {
     SetMetaEvent(META_TEMPO, 0);
     AllocateSysEx(3);
     unsigned long microsecs_per_beat = (unsigned long)(60.0 * 1.0e6 / tempo_bpm);
@@ -333,7 +334,7 @@ void MIDIMessage::SetBeatMarker() {
 // MsgToText()
 //
 
-std::string MIDIMessage::MsgToText (bool chan_from_1) const {
+std::string MIDIMessage::MsgToText (char chan_from_1) const {
     char buf[256];
     std::string txt;
 
@@ -424,7 +425,7 @@ std::string MIDIMessage::MsgToText (bool chan_from_1) const {
     // Channel Events
     else {
 
-        sprintf (buf, "Ch %2d     ", (int) GetChannel() + chan_from_1);
+        sprintf (buf, "Ch %2d     ", (int) GetChannel() + (chan_from_1 != 0));
         txt += buf;
 
         if (IsChannelMode()) {
@@ -554,7 +555,7 @@ const MIDITimedMessage &MIDITimedMessage::operator= (const MIDIMessage &msg) {
 // MsgToText()
 //
 
-std::string MIDITimedMessage::MsgToText(unsigned char chan_from_1) const {
+std::string MIDITimedMessage::MsgToText(char chan_from_1) const {
     char buf[256];
     std::string txt;
 

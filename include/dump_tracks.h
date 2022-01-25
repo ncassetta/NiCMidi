@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2021, 2022  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -41,28 +41,17 @@
 /// \name Helper functions for viewing messages content
 ///@{
 
-/// Sets the numbering of MIDI channels when messages are printed. If c == 0 channels will be numbered 0 ... 15, else
+/// Sets the numbering of MIDI channels in message printing. If c == 0 they will be numbered 0 ... 15, else
 /// 1 ... 16. This will affect all the functions of this file. See \ref NUMBERING.
-void SetChanFrom(unsigned char c = 0);
+void SetChanFrom(char c = 0);
 /// Prints a readable string describing the contents of the given MIDIMessage (or MIDITimedMessage).
 void DumpMIDITimedMessage (MIDITimedMessage* const msg, std::ostream& ost = std::cout);
 /// Prints a list of all the MIDI messages in the given MIDItrack.
 void DumpMIDITrack (MIDITrack* const trk, std::ostream& ost = std::cout);
 /// Prints the main properties of the given MIDItrack.
-/// It prints the track name, its type (see \ref MIDITrack::GetType()), the number of events and the end time.
-/// For printing the track messages use DumpMIDITrack().
-/// \param trk a pointer to the track
-/// \param num will be printed in the first line as track number.
-/// \param ost the output stream
 /// \return Actually this always returns 3, the number of written text lines
 int DumpMIDITrackAttr (MIDITrack* const trk, int num, std::ostream& ost = std::cout);
 /// Prints all the properties of the given MIDItrack.
-/// It prints the track name, its type (see \ref MIDITrack::GetType()) with a detailed description, the in and
-/// out ports, the time shift amount, the number of events and the end time.
-/// For printing the track messages use DumpMIDITrack().
-/// \param trk a pointer to the track
-/// \param num will be printed in the first line as track number.
-/// \param ost the output stream
 /// \return The number of text lines written, which depends from the track attributes.
 int DumpMIDITrackAttrVerbose (MIDITrack* const trk, int num, std::ostream& ost = std::cout);
 /// Prints a list of all MIDI messages in the given MIDIMultiTrack, a track at once.

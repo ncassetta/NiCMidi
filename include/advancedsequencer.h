@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2021, 2022  Nicola Cassetta
+ *   Copyright (C) 2021  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -68,8 +68,8 @@ class MIDISequencerTrackProcessor : public MIDIProcessor {
         virtual bool    Process ( MIDITimedMessage *msg );
 
         bool            mute;                   ///< track is muted
-        int             solo;                   ///< NO_SOLO, SOLOED, NOT_SOLOED
-        unsigned int    velocity_scale;         ///< current velocity scale value for note ons, 100=normal
+        char            solo;                   ///< NO_SOLO, SOLOED, NOT_SOLOED
+        int             velocity_scale;         ///< current velocity scale value for note ons, 100=normal
         int             rechannel;              ///< rechannelization value, or -1 for none
         int             transpose;              ///< amount to transpose note values
         MIDIProcessor   *extra_proc;            ///< extra midi processing for this track
@@ -190,9 +190,9 @@ class AdvancedSequencer : public MIDISequencer {
         /// Returns the name of the given track.
         std::string         GetTrackName(unsigned int trk_num) const;
         /// Returns the current MIDI volume for the given track (-1 if volume wasn't set at time 0).
-        int                 GetTrackVolume(unsigned int trk_num) const;     // MIDI value or -1
+        char                GetTrackVolume(unsigned int trk_num) const;     // MIDI value or -1
         /// Returns the current MIDI program (patch) for the given track (-1 if the program wasn't set  at time 0).
-        int                 GetTrackProgram (unsigned int trk_num) const;   // MIDI value or -1
+        char                GetTrackProgram (unsigned int trk_num) const;   // MIDI value or -1
         /// Returns the number of notes currently sounding on the given track (0 if the sequencer is not playing).
         int                 GetTrackNoteCount(unsigned int trk_num) const;
         /// Returns the velocity scale percentage for the given track.
@@ -219,15 +219,14 @@ class AdvancedSequencer : public MIDISequencer {
         /// Enables or disables the embedded MIDIthru. This has no effect if the thru is not present.
         /// \return **true** if the thru has been enabled/disabled, **false** otherwise.
         bool                SetMIDIThruEnable(bool on_off);
-        /// Sets the out channel for MIDIthru. You can set -1 as parameter for leaving the channel of incoming messages
-        /// unchanged. This has no effect if the thru is not present.
+        /// Sets the out channel for MIDIthru. This has no effect if the thru is not present.
         /// See \ref NUMBERING.
         /// \return **true** if the channel has been set, **false** otherwise.
-        bool                SetMIDIThruChannel(int chan);
+        bool                SetMIDIThruChannel(char chan);
         /// Sets a transpose amount in semitones for the messages coming from the MIDIThru.
         /// This has no effect if the thru is not present. See MIDIProcessorTransposer.
         /// \return **true** if the transpose has been set, **false** otherwise.
-        bool                SetMIDIThruTranspose (int amt);
+        bool                SetMIDIThruTranspose (char amt);
         /// Soloes the given track muting all others.
         /// \return **true** if _trk_num is a valid track number, **false** otherwise.
         bool                SetTrackSolo(unsigned int trk_num);
@@ -245,11 +244,11 @@ class AdvancedSequencer : public MIDISequencer {
         /// This is done during playback by mean of a TrackProcessor, without changing original messages.
         /// Calling this with _chan_ = -1 disables the rechannelizing. See \ref NUMBERING
         /// \return **true** if _trk_num is a valid track number, **false** otherwise.
-        bool                SetTrackRechannelize(unsigned int trk_num, int chan);
+        bool                SetTrackRechannelize(unsigned int trk_num, char chan);
         /// Sets a transpose amount in semitones for the given track.
         /// See MIDIProcessorTransposer.
         /// \return **true** if _trk_num is a valid track number, **false** otherwise.
-        bool                SetTrackTranspose(unsigned int trk_num, int amt);
+        bool                SetTrackTranspose(unsigned int trk_num, char amt);
         /// Sets the current time to the beginning of the song. This method is thread-safe and can be
         /// called during playback. Notifies the GUI a GROUP_ALL event to signify a full GUI reset.
         virtual void        GoToZero()                          { GoToTime(0); }
