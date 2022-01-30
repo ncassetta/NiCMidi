@@ -1,7 +1,7 @@
 /*
  *   NiCMidi - A C++ Class Library for MIDI
  *
- *   Copyright (C) 2021  Nicola Cassetta
+ *   Copyright (C) 2021, 2022  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -29,8 +29,7 @@
 #define RECORDER_H_INCLUDED
 
 #include "sequencer.h"
-//#include "process.h"  //FCKX
-#include "processor.h"  //FCKX
+#include "processor.h"
 
 #include <atomic>
 #include <vector>
@@ -150,7 +149,7 @@ class RecNotifier: public MIDISequencerGUINotifier {
         void                            SetOutPort(unsigned int p)          { port = p; }
         /// Sets the MIDI channel for the metronome clicks.
         /// See \ref NUMBERING
-        void                            SetOutChannel(unsigned char ch)     { chan = ch & 0x0f; }
+        void                            SetOutChannel(int ch)               { chan = ch & 0x0f; }
         /// Remembers the original sequencer notifier.
         void                            SetOtherNotifier(MIDISequencerGUINotifier* n)
                                                                             { other_notifier = n; }
@@ -197,18 +196,19 @@ class MIDIRecorder : public MIDITickComponent {
         MIDIClockTime                   GetEndRecTime() const           { return rec_end_time; }
         /// Returns the pointer to a track of the internal multitrack.
         /// \param trk_num The track number
-        MIDITrack*                      GetTrack(int trk_num)           { return tracks->GetTrack(trk_num); }
+        MIDITrack*                      GetTrack(unsigned int trk_num)  { return tracks->GetTrack(trk_num); }
         /// Returns the pointer to a track of the internal multitrack.
         /// \param trk_num The track number
-        const MIDITrack*                GetTrack(int trk_num) const     { return tracks->GetTrack(trk_num); }
+        const MIDITrack*                GetTrack(unsigned int trk_num) const
+                                                                        { return tracks->GetTrack(trk_num); }
         /// Returns the number of the in port assigned to a track.
         /// \param trk_num the track number
         unsigned int                    GetTrackInPort(unsigned int trk_num) const
                                                                 { return seq->GetTrack(trk_num)->GetInPort(); }
         /// Returns the recording channel for the given track, or -1 for any channel. You can
         /// force a track to receive a given channel with SetTrackChannel(). See \ref NUMBERING
-        char                            GetTrackRecChannel(unsigned int trk_num)
-                                                            { return seq->GetTrack(trk_num)->GetRecChannel(); }
+        int                             GetTrackRecChannel(unsigned int trk_num)
+                                                                { return seq->GetTrack(trk_num)->GetRecChannel(); }
         /// Sets the MIDI in port for a track. This cannot be called during recording.
         /// \param trk_num the track number
         /// \param port the id number of the port (see MIDIManager::GetOutPorts())
@@ -218,7 +218,7 @@ class MIDIRecorder : public MIDITickComponent {
         /// \param trk_num the track number
         /// \param chan the channel: you can specify a number between 0 ... 15 or -1 for any channel.
         /// \return **true** if parameters are valid (and the channel has been changed), **false** otherwise.
-        bool                            SetTrackRecChannel(unsigned int trk_num, char chan);
+        bool                            SetTrackRecChannel(unsigned int trk_num, int chan);
         /// Sets the recording mode. This cannot be called during recording.
         /// \param mode one of REC_MERGE, REC_OVER
         /// \return **true** if the mode has been changed, **false** otherwise.
@@ -316,9 +316,9 @@ class MIDIRecorder : public MIDITickComponent {
         //tMsecs                          sys_time_offset;    ///< The time between the timer start and the sequencer start
         MIDIClockTime                   rec_start_time;     // The MIDIClockTime of the beginning of recording
         MIDIClockTime                   rec_end_time;       // The MIDIClockTime of the end of recording
-        char                            rec_mode;           // The recording mode (REC_MERGE or REC_OVER)
+        int                             rec_mode;           // The recording mode (REC_MERGE or REC_OVER)
         RecNotifier                     notifier;           // A notifier used as a metronome
-        char                            old_seq_mode;       // Internal use
+        int                             old_seq_mode;       // Internal use
         std::atomic<bool>               rec_on;             // Internal use
         std::stack<MIDIMultiTrack*>     undo_stack;         // Stack of multitracks for undo
 

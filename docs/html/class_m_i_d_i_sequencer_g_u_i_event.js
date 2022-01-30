@@ -3,7 +3,6 @@ var class_m_i_d_i_sequencer_g_u_i_event =
     [ "MIDISequencerGUIEvent", "class_m_i_d_i_sequencer_g_u_i_event.html#a2ac8f879d5b8c22a517282afd2f4de89", null ],
     [ "MIDISequencerGUIEvent", "class_m_i_d_i_sequencer_g_u_i_event.html#ac2ddf344ac537fe2c40d7cc36481ba52", null ],
     [ "MIDISequencerGUIEvent", "class_m_i_d_i_sequencer_g_u_i_event.html#aaa158be9a5e4a2f2cc59f70475944abe", null ],
-    [ "MIDISequencerGUIEvent", "class_m_i_d_i_sequencer_g_u_i_event.html#a84af67d5e62a0030be2621f9b0929836", null ],
     [ "operator unsigned long", "class_m_i_d_i_sequencer_g_u_i_event.html#ab12b8152dc174f75735119cc78415701", null ],
     [ "GetGroup", "class_m_i_d_i_sequencer_g_u_i_event.html#a3fa820a0bbd6b991d88206f59a9c88c7", null ],
     [ "GetSubGroup", "class_m_i_d_i_sequencer_g_u_i_event.html#a68501a04d503c33b892735f24d845208", null ],

@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2021  Nicola Cassetta
+ *   Copyright (C) 2021, 2022  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -42,8 +42,8 @@ void MIDIMultiProcessor::Reset() {
 }
 
 
-void MIDIMultiProcessor::RemoveProcessor(int pos) {
-    if (pos >= 0 && (unsigned)pos < processors.size())
+void MIDIMultiProcessor::RemoveProcessor(unsigned int pos) {
+    if (pos < processors.size())
         processors.erase(processors.begin() + pos);
 }
 

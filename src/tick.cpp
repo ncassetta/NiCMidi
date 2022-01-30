@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2021  Nicola Cassetta
+ *   Copyright (C) 2021, 2022  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -45,8 +45,8 @@ void MIDITickComponent::Start() {
         // set the flag BEFORE starting
         running.store(true);
         // this must go BEFORE Start(), otherwise the TickProc could get a sys_time
-        // lesser than sys_time_offset and BIG TROUBLE!
-        sys_time_offset = MIDITimer::GetSysTimeMs();       
+        //lesser than sys_time_offset and BIG TROUBLE!
+        sys_time_offset = MIDITimer::GetSysTimeMs();
         MIDITimer::Start();
     }
 }
@@ -54,7 +54,6 @@ void MIDITickComponent::Start() {
 
 void MIDITickComponent::Stop() {
     if(running.load()) {
-        //running.store(false);
         MIDITimer::Stop();
         // clear the flag only AFTER stopping
         running.store(false);

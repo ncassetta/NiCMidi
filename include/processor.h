@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2021  Nicola Cassetta
+ *   Copyright (C) 2021, 2022  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -71,11 +71,11 @@ class MIDIMultiProcessor : public MIDIProcessor {
         /// Empties the processors queue, removing all their pointers from it.
         virtual void                    Reset();
         /// Returns a pointer to the MIDIProcessor at the given position.
-        MIDIProcessor*                  GetProcessor(int pos)           { return processors[pos]; }
+        MIDIProcessor*                  GetProcessor(unsigned int pos)          { return processors[pos]; }
         /// Returns a pointer to the MIDIProcessor at the given position.
-        const MIDIProcessor*            GetProcessor(int pos) const     { return processors[pos]; }
+        const MIDIProcessor*            GetProcessor(unsigned int pos) const    { return processors[pos]; }
         /// Returns the processing mode (see SetProcessMode()).
-        int                             GetProcessMode() const          { return process_mode; }
+        int                             GetProcessMode() const                  { return process_mode; }
         /// Inserts a MIDIProcessor object into the queue.
         /// \param proc the MIDIProcessor to be inserted (it is **not** owned by the MIDIMultiProcessor)
         /// \param pos the position in the queue. If you leave the default value the processor will be
@@ -84,7 +84,7 @@ class MIDIMultiProcessor : public MIDIProcessor {
         void                            SetProcessor(MIDIProcessor* proc, int pos = -1);
         /// Removes the MIDIProcessor at the given position. It only removes the processor pointer from
         /// the queue, and does nothing if _pos_ is not in the appropriate range.
-        void                            RemoveProcessor(int pos);
+        void                            RemoveProcessor(unsigned int pos);
         /// Searches the given MIDIProcessor in the queue and removes it (it does nothing
         /// if the processor is not in the queue). It only removes the processor pointer from the queue.
         void                            RemoveProcessor(const MIDIProcessor* proc);
@@ -184,20 +184,18 @@ class MIDIProcessorRechannelizer : public MIDIProcessor {
 class MIDIProcessorPrinter : public MIDIProcessor {
     public:
         /// The constructor sets the std::ostream that will print the messages (default: std::cout).
-                                        MIDIProcessorPrinter(std::ostream& stream = std::cout, char from_1 = 0) :
+                                        MIDIProcessorPrinter(std::ostream& stream = std::cout, unsigned char from_1 = 0) :
                                                              print_on(true), chan_from_1(from_1 != 0), ost(stream) {}
         /// Same of SetPrint(true)
         virtual void                    Reset()                                     { print_on = true; }
         /// Returns the numbering of the first MIDI channel in message printing (0 or 1).
         /// See \ref NUMBERING.
-       // int                             GetChanFrom( char c)                        { return chan_from_1; }
-        int                             GetChanFrom() const                         { return chan_from_1; } //NiCMidi 211222
- 
+        int                             GetChanFrom() const                         { return chan_from_1; }
         /// Returns the printing status.
         bool                            GetPrint() const                            { return print_on; }
         /// Sets the numbering of MIDI channels in message printing. If c == 0 they will be numbered 0 ... 15,
         /// else 1 ... 16. See \ref NUMBERING.
-        void                            SetChanFrom( char c)                        { chan_from_1 = (c != 0); }
+        void                            SetChanFrom(unsigned char c)                { chan_from_1 = (c != 0); }
         /// Sets the printing on and off (default is on).
         void                            SetPrint(bool on_off)                       { print_on = on_off; }
         /// The Process method. It prints a human-readable description of the message to the std::ostream given
@@ -207,7 +205,7 @@ class MIDIProcessorPrinter : public MIDIProcessor {
     protected:
         /// \cond EXCLUDED
         bool                            print_on;           // The on/off printing flag
-        char                            chan_from_1;        // Starting number for MIDI channels (0 or 1)
+        unsigned char                   chan_from_1;        // Starting number for MIDI channels (0 or 1)
         std::ostream&                   ost;                // The out stream
         /// \endcond
 };

@@ -3,7 +3,7 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2021  Nicola Cassetta
+ *   Copyright (C) 2021, 2022  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
@@ -35,19 +35,15 @@
 #include <atomic>
 
 
-#define ESP32_TIMER
-#ifdef ESP32_TIMER
-//Enable for using ESP-IDF / freeRTOS based timer
-#include "freertos/FreeRTOS.h"
-#include "freertos/timers.h" 
-#endif
+
 
 /// \addtogroup GLOBALS
 ///@{
 
 /// The type of a variable which can hold the elapsed time in milliseconds.
 typedef unsigned long long tMsecs;
-/// This is the typedef of the callback function which is called at every timer tick.
+/// This is the typedef of the callback functions which are called at every timer tick. See the MIDITickComponent
+/// class. .
 typedef  void (MIDITick)(tMsecs, void*);
 ///@}
 
@@ -70,14 +66,8 @@ class MIDITimer {
         typedef std::chrono::steady_clock::time_point timepoint;
         /// Type for a variable which can hold a time duration (in milliseconds).
 		typedef std::chrono::milliseconds duration;
-
-        
-        /// \cond EXCLUDED
-        // We must construct a dummy object (see source file)
-                                    MIDITimer();
-                                   ~MIDITimer();
-        /// \endcond
-
+        /// The constructor is deleted.
+                                    MIDITimer() = delete;
         /// Returns the timer resolution, i.e. the time interval (in milliseconds) between two ticks.
         static unsigned int         GetResolution()                 { return resolution; }
         /// Returns the pointer to the callback function set by the user.
@@ -86,7 +76,7 @@ class MIDITimer {
         static bool                 IsOpen()                        { return (num_open > 0);  }
 
         /// Sets the timer resolution to the given value in milliseconds. This method stops the timer
-        /// if it is running.   
+        /// if it is running.
         static void                 SetResolution(unsigned int res);
         /// Sets the callback function to be called at every timer tick and its parameter.
         /// The function must be of MIDITick type (i.e. void Funct(tMsecs, void*) ) and it's called
@@ -115,42 +105,23 @@ class MIDITimer {
         static void                 Wait(unsigned int msecs)
                                         { std::this_thread::sleep_for(std::chrono::milliseconds(msecs)); }
 
-
-
-
     protected:
-    
-        static const unsigned int   DEFAULT_RESOLUTION = 10;    ///< The default timer resolution
-        /// \cond EXCLUDED
-        static unsigned int         resolution;         // The actual timer resolution
-        static MIDITick*            tick_proc;          // The callback function set by the user
-        static void*                tick_param;         // The callback second parameter set by the user        
-        static std::atomic<int>     num_open;           // The number of times Start() was called without a corresponding Stop()
- 
 
-        static const timepoint      sys_clock_base;     // The base timepoint for calculating system time
-        static timepoint            current;            // Internal use 
-        
- /// \endcond
-
-#ifndef ESP32_TIMER
-
-                                                  
+        static const unsigned int   DEFAULT_RESOLUTION = 10;
+                                                        ///< The default timer resolution
         /// The background thread procedure. This calls the tick_proc callback supplied by the user and sleeps
         /// until next tick.
         static void                 ThreadProc();
 
-        /// \cond EXCLUDED 
+        /// \cond EXCLUDED
+        static unsigned int         resolution;         // The actual timer resolution
+        static MIDITick*            tick_proc;          // The callback function set by the user
+        static void*                tick_param;         // The callback second parameter set by the user
         static std::thread          bg_thread;          // The background thread
+        static std::atomic<int>     num_open;           // The number of times Start() was called without a corresponding Stop()
+        static const timepoint      sys_clock_base;     // The base timepoint for calculating system time
+        static timepoint            current;            // Internal use
         /// \endcond
-
-#else
-        static TimerHandle_t        freeRTOSTimer;
-        static void                 freeRTOSTimerCallback(TimerHandle_t pxTimer);
-        //static TimerHandle_t        create_freeRTOSTimer();
-
-#endif        
-        
 };
 
 //extern MIDITimer main_timer;

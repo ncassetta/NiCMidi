@@ -5,7 +5,7 @@
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
  *   Copyright (C) 2010 V.R.Madgazin
  *   www.vmgames.com vrm@vmgames.com
- *   Copyright (C) 2021  Nicola Cassetta.
+ *   Copyright (C) 2021, 2022  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi
@@ -120,12 +120,12 @@ class  SMPTE {
         /// \name To get and set the smpte values
         /// These perform a samples-to-smpte or milliseconds-to-smpte conversion.\ You must first
         /// load the SMPTE with the number of samples (using SetSampleNumber()) or the number of
-        /// milliseconds (using SetMilliSeconds()) to convert; then you can call thiese to get the
+        /// milliseconds (using SetMilliSeconds()) to convert; then you can call these to get the
         /// converted smpte values.
         /// \note These are NOT const! May perform an internal conversion.
         ///@{
         /// Returns the smpte hours.
-        unsigned char       GetHours();
+        unsigned char       GetHours();             // TODO: is this right? perhaps hours could be an int
         /// Returns the smpte minutes.
         unsigned char       GetMinutes();
         /// Returns the smpte seconds.
@@ -166,15 +166,15 @@ class  SMPTE {
         /// These functions add, increment or decrement smpte time parameters.
         ///@{
         /// Adds hours to smpte time.
-        void                AddHours (char h);
+        void                AddHours (signed char h);
         /// Adds minutes to smpte time.
-        void                AddMinutes (char m);
+        void                AddMinutes (signed char m);
         /// Adds seconds to smpte time.
-        void                AddSeconds (char s);
+        void                AddSeconds (signed char s);
         /// Adds frames to smpte time.
-        void                AddFrames (char f);
+        void                AddFrames (signed char f);
         /// Adds subframes to smpte time.
-        void                AddSubFrames (char sf);
+        void                AddSubFrames (signed char sf);
         /// Adds one hour to smpte time.
         void                IncHours()                      { AddHours (1); }
         /// Adds one minute to smpte time.
