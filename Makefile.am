@@ -14,8 +14,9 @@ lib_libnicmidi_a_SOURCES = src/advancedsequencer.cpp  src/driver.cpp  src/dump_t
                            rtmidi-4.0.0/RtMidi.h
 
 noinst_PROGRAMS = examples/test_advancedsequencer  examples/test_component  examples/test_metronome  \
-                  examples/test_midiports examples/test_recorder  examples/test_sequencer            \
-                  examples/test_stepsequencer examples/test_thru  examples/test_writefile
+                  examples/test_midiports  examples/test_recorder  examples/test_recorder2           \
+                  examples/test_sequencer  examples/test_stepsequencer  examples/test_thru           \
+                  examples/test_writefile  examples/test_advancedsequencer_noinput
 
 AM_CXXFLAGS = -Wall -I$(top_srcdir)
 
@@ -34,6 +35,9 @@ examples_test_midiports_LDADD = lib/libnicmidi.a
 examples_test_recorder_SOURCES = examples/test_recorder.cpp examples/functions.cpp examples/functions.h
 examples_test_recorder_LDADD = lib/libnicmidi.a
 
+examples_test_recorder2_SOURCES = examples/test_recorder2.cpp examples/functions.cpp examples/functions.h
+examples_test_recorder2_LDADD = lib/libnicmidi.a
+
 examples_test_sequencer_SOURCES = examples/test_sequencer.cpp examples/functions.cpp examples/functions.h
 examples_test_sequencer_LDADD = lib/libnicmidi.a
 
@@ -46,6 +50,9 @@ examples_test_thru_LDADD = lib/libnicmidi.a
 examples_test_writefile_SOURCES = examples/test_writefile.cpp
 examples_test_writefile_LDADD = lib/libnicmidi.a
 
-EXTRA_DIST = doc doxygen examples lib rtmidi-4.0.0 configure.ac NiCMidi_linux.cbp
+examples_test_avancedsequencer_noinput_SOURCES = examples/test_avancedsequencer_noinput.cpp
+examples_test_avancedsequencer_noinput_LDADD = lib/libnicmidi.a
+
+EXTRA_DIST = docs  doxygen  examples  lib  rtmidi-4.0.0  configure.ac  NiCMidi_windows.cbp  NiCMidi_linux.cbp
 
 

@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT([NiCMidi], [1.0], [ncassetta@tiscali.it])
+AC_INIT([NiCMidi], [1.1.0], [ncassetta@tiscali.it])
 AC_CONFIG_SRCDIR([examples/test_writefile.cpp])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_AUX_DIR([build-aux])
@@ -71,7 +71,7 @@ AS_CASE(["$systems"], [*" jack "*], [
      found="$found Jack"
      LIBS="-ljack $LIBS"], )
   AC_CHECK_LIB(jack, jack_port_rename, AC_DEFINE([JACK_HAS_PORT_RENAME]
-  												 [], 
+  												 [],
   												 [wheater JACK has port renaming]), )
 ])
 
