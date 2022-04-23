@@ -7,27 +7,27 @@
  *   This file is part of NiCMidi.
  *
  *   NiCMidi is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ *   it under the terms of the GNU Lesser General Public License as
+ *   published by the Free Software Foundation, either version 3 of
+ *   the License, or (at your option) any later version.
  *
  *   NiCMidi is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ *   GNU Lesser General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
+ *   You should have received a copy of the GNU Lesser General Public License
  *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
- /*
- A command line example of the features of the AdvancedSequencer
- class. It creates an instance of the class and allows the user
- to interact with it. You can load MIDI files and play them
- changing a lot of parameters (muting, soloing, and transposing
- tracks; jumping from a time to another, changing the tempo, etc.)
- even while the sequencer is playing.
- Requires functions.cpp, which contains command line I/O functions.
+/*
+  A command line example of the features of the AdvancedSequencer
+  class. It creates an instance of the class and allows the user
+  to interact with it. You can load MIDI files and play them
+  changing a lot of parameters (muting, soloing, and transposing
+  tracks; jumping from a time to another, changing the tempo, etc.)
+  even while the sequencer is playing.
+  Requires functions.cpp, which contains command line I/O functions.
 */
 
 

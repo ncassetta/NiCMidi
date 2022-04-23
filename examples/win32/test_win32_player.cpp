@@ -1,22 +1,22 @@
 /*
  *   Example file for NiCMidi - A C++ Class Library for MIDI
  *
- *   Copyright (C) 2021  Nicola Cassetta
+ *   Copyright (C) 2021, 2022  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
  *
  *   NiCMidi is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ *   it under the terms of the GNU Lesser General Public License as
+ *   published by the Free Software Foundation, either version 3 of
+ *   the License, or (at your option) any later version.
  *
  *   NiCMidi is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ *   GNU Lesser General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
+ *   You should have received a copy of the GNU Lesser General Public License
  *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
  */
 
@@ -531,7 +531,7 @@ const char* GetSmpteString() {
                     sprintf (s, "%d/%d", sequencer->GetTimeSigNumerator(), sequencer->GetTimeSigDenominator());
                     SetWindowText( hTime, s );
                     break;
-                /* TODO: */
+                // Keysig is changed
                 case MIDISequencerGUIEvent::GROUP_CONDUCTOR_KEYSIG:
                     SetWindowText( hKey, KeyName(sequencer->GetState()->keysig_sharpflat,
                                                  sequencer->GetState()->keysig_mode) );

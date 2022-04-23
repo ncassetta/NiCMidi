@@ -3,23 +3,23 @@
  *
  *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.
  *   www.jdkoftinoff.com jeffk@jdkoftinoff.com
- *   Copyright (C) 2021  Nicola Cassetta
+ *   Copyright (C) 2021, 2022  Nicola Cassetta
  *   https://github.com/ncassetta/NiCMidi
  *
  *   This file is part of NiCMidi.
  *
  *   NiCMidi is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
+ *   it under the terms of the GNU Lesser General Public License as
+ *   published by the Free Software Foundation, either version 3 of
+ *   the License, or (at your option) any later version.
  *
  *   NiCMidi is distributed in the hope that it will be useful,
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *   GNU Lesser General Public License for more details.
  *
- *   You should have received a copy of the GNU General Public License
- *   along with NiCMidi.  If not, see <http://www.gnu.org/licenses/>.
+ *   You should have received a copy of the GNU Lesser General Public
+ *   License along with NiCMidi. If not, see <http://www.gnu.org/licenses/>.
  */
 
 
@@ -27,8 +27,8 @@
 /// Contains the definition of the class MIDIMatrix.
 
 
-#ifndef _JDKMIDI_MATRIX_H
-#define _JDKMIDI_MATRIX_H
+#ifndef _NICMIDI_MATRIX_H
+#define _NICMIDI_MATRIX_H
 
 #include "msg.h"
 #include "processor.h"
