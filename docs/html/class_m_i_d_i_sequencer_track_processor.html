@@ -59,7 +59,7 @@ $(document).ready(function(){initNavTree('class_m_i_d_i_sequencer_track_processo
 </div><!--header-->
 <div class="contents">
 
-<p>A multipurpose <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> implementing muting, soloing, rechannelizing, velocity scaling and transposing.  
+<p>A multipurpose <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> implementing muting, soloing, rechannelizing, velocity scaling and transposing.  
  <a href="class_m_i_d_i_sequencer_track_processor.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="advancedsequencer_8h_source.html">advancedsequencer.h</a>&gt;</code></p>
@@ -69,7 +69,7 @@ Inheritance diagram for MIDISequencerTrackProcessor:</div>
  <div class="center">
   <img src="class_m_i_d_i_sequencer_track_processor.png" usemap="#MIDISequencerTrackProcessor_map" alt=""/>
   <map id="MIDISequencerTrackProcessor_map" name="MIDISequencerTrackProcessor_map">
-<area href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing..." alt="MIDIProcessor" shape="rect" coords="0,0,189,24"/>
+<area href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin..." alt="MIDIProcessor" shape="rect" coords="0,0,189,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -114,9 +114,9 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:aed6dc63284898d3292f44e1dea2b6e56"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_track_processor.html#aed6dc63284898d3292f44e1dea2b6e56">solo</a></td></tr>
 <tr class="memdesc:aed6dc63284898d3292f44e1dea2b6e56"><td class="mdescLeft">&#160;</td><td class="mdescRight">NO_SOLO, SOLOED, NOT_SOLOED.  <a href="class_m_i_d_i_sequencer_track_processor.html#aed6dc63284898d3292f44e1dea2b6e56">More...</a><br /></td></tr>
 <tr class="separator:aed6dc63284898d3292f44e1dea2b6e56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4d3e0998bf8e2add59d58be6c1efc80f"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_track_processor.html#a4d3e0998bf8e2add59d58be6c1efc80f">velocity_scale</a></td></tr>
-<tr class="memdesc:a4d3e0998bf8e2add59d58be6c1efc80f"><td class="mdescLeft">&#160;</td><td class="mdescRight">current velocity scale value for note ons, 100=normal  <a href="class_m_i_d_i_sequencer_track_processor.html#a4d3e0998bf8e2add59d58be6c1efc80f">More...</a><br /></td></tr>
-<tr class="separator:a4d3e0998bf8e2add59d58be6c1efc80f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a298b7992ae3415b7890c81fce9e7d22a"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_track_processor.html#a298b7992ae3415b7890c81fce9e7d22a">velocity_scale</a></td></tr>
+<tr class="memdesc:a298b7992ae3415b7890c81fce9e7d22a"><td class="mdescLeft">&#160;</td><td class="mdescRight">current velocity scale value for note ons, 100=normal  <a href="class_m_i_d_i_sequencer_track_processor.html#a298b7992ae3415b7890c81fce9e7d22a">More...</a><br /></td></tr>
+<tr class="separator:a298b7992ae3415b7890c81fce9e7d22a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae82eee177ef0a58e3c33e8c168a997c6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_sequencer_track_processor.html#ae82eee177ef0a58e3c33e8c168a997c6">rechannel</a></td></tr>
 <tr class="memdesc:ae82eee177ef0a58e3c33e8c168a997c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">rechannelization value, or -1 for none  <a href="class_m_i_d_i_sequencer_track_processor.html#ae82eee177ef0a58e3c33e8c168a997c6">More...</a><br /></td></tr>
 <tr class="separator:ae82eee177ef0a58e3c33e8c168a997c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -128,8 +128,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a01a03c2fc264e1e0ce8fa722bf4a3c90"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >A multipurpose <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> implementing muting, soloing, rechannelizing, velocity scaling and transposing. </p>
-<p >Moreover, you can set a custom <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> pointer which extra-processes messages. The <a class="el" href="class_advanced_sequencer.html" title="An enhanced MIDISequencer, able to directly load and play MIDI files and many more.">AdvancedSequencer</a> class contains an independent <a class="el" href="class_m_i_d_i_sequencer_track_processor.html" title="A multipurpose MIDIProcessor implementing muting, soloing, rechannelizing, velocity scaling and trans...">MIDISequencerTrackProcessor</a> for every MIDI Track, and allow you to set muting, transposing etc. by dedicated methods without directly dealing with this: the only useful function for the user is probably the extra processing hook. However, you could subclass this if you want to get new features. </p>
+<div class="textblock"><p >A multipurpose <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> implementing muting, soloing, rechannelizing, velocity scaling and transposing. </p>
+<p >Moreover, you can set a custom <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> pointer which extra-processes messages. The <a class="el" href="class_advanced_sequencer.html" title="An enhanced MIDISequencer, able to directly load and play MIDI files and many more.">AdvancedSequencer</a> class contains an independent <a class="el" href="class_m_i_d_i_sequencer_track_processor.html" title="A multipurpose MIDIProcessor implementing muting, soloing, rechannelizing, velocity scaling and trans...">MIDISequencerTrackProcessor</a> for every MIDI Track, and allow you to set muting, transposing etc. by dedicated methods without directly dealing with this: the only useful function for the user is probably the extra processing hook. However, you could subclass this if you want to get new features. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a6d441714ba4adcdb7eb34a029506f34f" name="a6d441714ba4adcdb7eb34a029506f34f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6d441714ba4adcdb7eb34a029506f34f">&#9670;&nbsp;</a></span>MIDISequencerTrackProcessor()</h2>
@@ -299,14 +299,14 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a4d3e0998bf8e2add59d58be6c1efc80f" name="a4d3e0998bf8e2add59d58be6c1efc80f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4d3e0998bf8e2add59d58be6c1efc80f">&#9670;&nbsp;</a></span>velocity_scale</h2>
+<a id="a298b7992ae3415b7890c81fce9e7d22a" name="a298b7992ae3415b7890c81fce9e7d22a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a298b7992ae3415b7890c81fce9e7d22a">&#9670;&nbsp;</a></span>velocity_scale</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int MIDISequencerTrackProcessor::velocity_scale</td>
+          <td class="memname">unsigned int MIDISequencerTrackProcessor::velocity_scale</td>
         </tr>
       </table>
 </div><div class="memdoc">

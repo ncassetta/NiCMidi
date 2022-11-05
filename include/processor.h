@@ -26,7 +26,7 @@
 /// \file
 /// Contains the definition of the pure virtual MIDIProcessor class and its specializations
 /// MIDIMultiProcessor, MIDIProcessorTransposer, MIDIProcessorRechannelizer, MIDIProcessorPrinter.
-/// These are devices that can manipulate a MIDITimedMessage.
+/// These are objects that can manipulate a MIDITimedMessage.
 
 
 #ifndef _NICMIDI_PROCESSOR_H
@@ -39,8 +39,8 @@
 
 
 ///
-/// A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing
-/// its content. Many objects, such as MIDIInDriver, MIDIOutDriver, MIDIThru and MIDISequencer, allow you
+/// A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changing
+/// its content. Many library objects, such as MIDIInDriver, MIDIOutDriver, MIDIThru and MIDISequencer, allow you
 /// to insert a MIDIProcessor into the flow of outgoing or ingoing messages with their **SetProcessor()** method.
 /// The library comes with some useful subclasses of it.
 ///

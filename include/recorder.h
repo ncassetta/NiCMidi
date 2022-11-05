@@ -171,10 +171,17 @@ class RecNotifier: public MIDISequencerGUINotifier {
 
 ///
 /// A MIDITickComponent which can record MIDI messages incoming from a MIDI in port, putting them into an internal
-/// MIDIMultiTrack. You can select the port, channel and MIDI notes of the metronome clicks; moreover you can have
-/// three types of click: the ordinary (beat) click, the measure click (first beat of a measure) and a subdivision
-/// click. If you enable measure clicks the metronome can count the measures and the beats of a measure (so you can
-/// represent them in a graphical interface).
+/// MIDIMultiTrack. These are its main features:
+/// + Can enable one or more tracks for recording, selecting the input port and channel for everyone
+/// + Can select the time interval which will be affected by recording
+/// + Can choose between merging old and new content on the tracks or overwriting.
+/// + It plays a metronome click while recording (with a lead in measure before starting)
+/// + A multilevel undo is provided
+///
+/// The recorder is bounded to a MIDISequencer component (given in the constructor) which plays the tracks
+/// content while recording and sets the current time. Recorder and sequencer manage separate MIDIMultiTrack
+/// components: when the recording stops the recorder copies the new content into the sequencer MIDIMultiTrack,
+/// keeping them synchronized.
 ///
 class MIDIRecorder : public MIDITickComponent {
     public:
@@ -182,17 +189,17 @@ class MIDIRecorder : public MIDITickComponent {
                                         MIDIRecorder(MIDISequencer* const s);
         /// The destructor.
         virtual                         ~MIDIRecorder();
-        /// It sets all tracks to not enable state, empties the internal multitrack and
-        /// sets the start and end recording times to 0 ... TiME_iNFiNiTE.
+        /// It sets all tracks to recording disabled, empties the internal multitrack and
+        /// sets the start and end recording times to 0 ... TIME_INFINITE.
         virtual void                    Reset();
         /// Returns a pointer to the internal MIDIMultiTrack.
         MIDIMultiTrack*                 GetMultiTrack() const           { return tracks; }
         /// Returns the recording mode.
-        /// \return One of REC_MERGE, REC_OVER.
+        /// \return One of \ref REC_MERGE, \ref REC_OVER.
         int                             GetRecMode() const              { return rec_mode; }
-        /// Returns the start MIDI time of the recording.
+        /// Returns the recording start time in MIDI ticks.
         MIDIClockTime                   GetStartRecTime() const         { return rec_start_time; }
-        /// Returns the end MIDI time of the recording.
+        /// Returns the recording end time in MIDI ticks.
         MIDIClockTime                   GetEndRecTime() const           { return rec_end_time; }
         /// Returns the pointer to a track of the internal multitrack.
         /// \param trk_num The track number
@@ -201,12 +208,12 @@ class MIDIRecorder : public MIDITickComponent {
         /// \param trk_num The track number
         const MIDITrack*                GetTrack(unsigned int trk_num) const
                                                                         { return tracks->GetTrack(trk_num); }
-        /// Returns the number of the in port assigned to a track.
+        /// Returns the number of the MIDI in port assigned to the given track.
         /// \param trk_num the track number
         unsigned int                    GetTrackInPort(unsigned int trk_num) const
                                                                 { return seq->GetTrack(trk_num)->GetInPort(); }
         /// Returns the recording channel for the given track, or -1 for any channel. You can
-        /// force a track to receive a given channel with SetTrackChannel(). See \ref NUMBERING
+        /// force a track to receive only a given channel with SetTrackRecChannel(). See \ref NUMBERING
         int                             GetTrackRecChannel(unsigned int trk_num)
                                                                 { return seq->GetTrack(trk_num)->GetRecChannel(); }
         /// Sets the MIDI in port for a track. This cannot be called during recording.
@@ -220,7 +227,7 @@ class MIDIRecorder : public MIDITickComponent {
         /// \return **true** if parameters are valid (and the channel has been changed), **false** otherwise.
         bool                            SetTrackRecChannel(unsigned int trk_num, int chan);
         /// Sets the recording mode. This cannot be called during recording.
-        /// \param mode one of REC_MERGE, REC_OVER
+        /// \param mode one of  \ref REC_MERGE, \ref REC_OVER
         /// \return **true** if the mode has been changed, **false** otherwise.
         bool                            SetRecMode(int mode);
         /// Sets the recording start time. If the recording end time is less than _t_ it sets it to _t_.
@@ -228,7 +235,7 @@ class MIDIRecorder : public MIDITickComponent {
         /// \param t the MIDI clock time to assign
         /// \return **true** if the start time has been changed, **false** otherwise.
         bool                            SetStartRecTime(MIDIClockTime t);
-        /// Sets the recording start time, giving the measure and beat. See SetTrackRecChannel(MIDIClockTime).
+        /// Sets the recording start time, giving the measure and beat. See SetStartRecTime(MIDIClockTime).
         bool                            SetStartRecTime(unsigned int meas, unsigned int beat = 0)
                                                             { return SetStartRecTime(seq->MeasToMIDI(meas, beat)); }
         /// Sets the recording end time. If the recording start time is greater than _t_ it sets it to _t_.
@@ -236,7 +243,7 @@ class MIDIRecorder : public MIDITickComponent {
         /// \param t the MIDI clock time to assign
         /// \return **true** if the start time has been changed, **false** otherwise.
         bool                            SetEndRecTime(MIDIClockTime t);
-        /// Sets the recording end time, giving the measure and beat. See SetTrackRecChannel(MIDIClockTime).
+        /// Sets the recording end time, giving the measure and beat. See SetEndRecTime(MIDIClockTime).
         bool                            SetEndRecTime(unsigned int meas, unsigned int beat = 0)
                                                             { return SetEndRecTime(seq->MeasToMIDI(meas, beat)); }
 
@@ -247,7 +254,7 @@ class MIDIRecorder : public MIDITickComponent {
         /// \note The recorder cannot know what you do with the attached MIDISequencer, so it doesn't check anything,
         /// always inserts the track and returns **true**.
         /// If you insert a track in the attached MIDISequencer you **must** call this with the same parameter
-        /// for syncronizing the recorder with its sequencer. If you change the number of tracks of the sequencer in
+        /// for synchronizing the recorder with its sequencer. If you change the number of tracks of the sequencer in
         /// a more drastic mode (for example loading a MIDI file) you must call MIDIRecorder::Reset() (which disables
         /// all tracks for recording).
         bool                            InsertTrack(int trk_num = -1);
@@ -270,13 +277,14 @@ class MIDIRecorder : public MIDITickComponent {
         bool                            EnableTrack(unsigned int trk_num);
         /// Disables a sequencer track for recording. If the track was not enabled it does nothing.
         /// \param trk_num the track number
-        /// \return **true** if _trk_num_ is valid (and the track has been enabled), **false** otherwise.
+        /// \return **true** if _trk_num_ is valid (and the track has been disabled), **false** otherwise.
         bool                            DisableTrack(unsigned int trk_num);
         /// Deletes the changes made in the last recording. You have multiple levels of undo.
-        /// \return **true** if undo is possible, **false** otherwise.
+        /// \return **true** if undo has been done, **false** otherwise.
         bool                            UndoRec();
 
-        /// Starts the recording from the enabled ports and channels.
+        /// Starts the recording from the enabled ports and channels. It starts the attached MIDISequencer
+        /// from its current position, after a lead in measure.
         virtual void                    Start();
         /// Stops the recording from the enabled ports and channels.
         virtual void                    Stop();

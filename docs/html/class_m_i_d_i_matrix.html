@@ -58,7 +58,7 @@ $(document).ready(function(){initNavTree('class_m_i_d_i_matrix.html',''); initRe
 </div><!--header-->
 <div class="contents">
 
-<p>This <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> subclass implements a matrix which keeps track of notes on and hold pedal for every channel.  
+<p>This <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> subclass implements a matrix which keeps track of notes on and hold pedal for every channel.  
  <a href="class_m_i_d_i_matrix.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="matrix_8h_source.html">matrix.h</a>&gt;</code></p>
@@ -68,7 +68,7 @@ Inheritance diagram for MIDIMatrix:</div>
  <div class="center">
   <img src="class_m_i_d_i_matrix.png" usemap="#MIDIMatrix_map" alt=""/>
   <map id="MIDIMatrix_map" name="MIDIMatrix_map">
-<area href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing..." alt="MIDIProcessor" shape="rect" coords="0,0,96,24"/>
+<area href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin..." alt="MIDIProcessor" shape="rect" coords="0,0,96,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -134,7 +134,7 @@ Protected Member Functions</h2></td></tr>
 <tr class="separator:a1473eec12cd068299afcbf97ef09bd58"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >This <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> subclass implements a matrix which keeps track of notes on and hold pedal for every channel. </p>
+<div class="textblock"><p >This <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> subclass implements a matrix which keeps track of notes on and hold pedal for every channel. </p>
 <p >Every time you call <a class="el" href="class_m_i_d_i_matrix.html#a438f6a25ce1ba15c37fc5e03554b9652" title="Processes the given MIDI message updating the matrix.">Process()</a> giving it a <a class="el" href="class_m_i_d_i_timed_message.html" title="The MIDITimedMessage class inherits from the MIDIMessage and represents a message associated with a s...">MIDITimedMessage</a> it updates the count of notes on and pedal (it does nothing if the message is not a note or pedal message). It is used by MIDIDriver and <a class="el" href="class_m_i_d_i_sequencer_track_state.html" title="Stores current MIDI parameters for a sequencer track.">MIDISequencerTrackState</a>. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a8513deb8dbada39117af7bfe15b8c5c3" name="a8513deb8dbada39117af7bfe15b8c5c3"></a>

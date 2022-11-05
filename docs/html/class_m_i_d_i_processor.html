@@ -57,7 +57,7 @@ $(document).ready(function(){initNavTree('class_m_i_d_i_processor.html',''); ini
 </div><!--header-->
 <div class="contents">
 
-<p>A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing its content.  
+<p>A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changing its content.  
  <a href="class_m_i_d_i_processor.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="processor_8h_source.html">processor.h</a>&gt;</code></p>
@@ -86,15 +86,15 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ae9e03fea776c2ffb37f4d9326f4f0b66"><td class="mdescLeft">&#160;</td><td class="mdescRight">The destructor.  <a href="class_m_i_d_i_processor.html#ae9e03fea776c2ffb37f4d9326f4f0b66">More...</a><br /></td></tr>
 <tr class="separator:ae9e03fea776c2ffb37f4d9326f4f0b66"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af7d1c81e7f817d16ff27afabf2a76114"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_processor.html#af7d1c81e7f817d16ff27afabf2a76114">Reset</a> ()=0</td></tr>
-<tr class="memdesc:af7d1c81e7f817d16ff27afabf2a76114"><td class="mdescLeft">&#160;</td><td class="mdescRight">You should implement this pure virtual method in order to return the <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> to its initial state.  <a href="class_m_i_d_i_processor.html#af7d1c81e7f817d16ff27afabf2a76114">More...</a><br /></td></tr>
+<tr class="memdesc:af7d1c81e7f817d16ff27afabf2a76114"><td class="mdescLeft">&#160;</td><td class="mdescRight">You should implement this pure virtual method in order to return the <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> to its initial state.  <a href="class_m_i_d_i_processor.html#af7d1c81e7f817d16ff27afabf2a76114">More...</a><br /></td></tr>
 <tr class="separator:af7d1c81e7f817d16ff27afabf2a76114"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59a4e9fe705051f9f6db505b41d4a705"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_processor.html#a59a4e9fe705051f9f6db505b41d4a705">Process</a> (<a class="el" href="class_m_i_d_i_timed_message.html">MIDITimedMessage</a> *msg)=0</td></tr>
 <tr class="memdesc:a59a4e9fe705051f9f6db505b41d4a705"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="class_m_i_d_i_processor.html#a59a4e9fe705051f9f6db505b41d4a705" title="The Process() pure virtual method.">Process()</a> pure virtual method.  <a href="class_m_i_d_i_processor.html#a59a4e9fe705051f9f6db505b41d4a705">More...</a><br /></td></tr>
 <tr class="separator:a59a4e9fe705051f9f6db505b41d4a705"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing its content. </p>
-<p >Many objects, such as <a class="el" href="class_m_i_d_i_in_driver.html" title="Receives MIDI messages from an hardware MIDI in port.">MIDIInDriver</a>, <a class="el" href="class_m_i_d_i_out_driver.html" title="Sends MIDI messages to an hardware MIDI out port.">MIDIOutDriver</a>, <a class="el" href="class_m_i_d_i_thru.html" title="A MIDITickComponent which immediately echoes to an out MIDI port all messages incoming from an in MID...">MIDIThru</a> and <a class="el" href="class_m_i_d_i_sequencer.html" title="A MIDITickComponent which implements a basic sequencer, able to play the MIDI events contained in a M...">MIDISequencer</a>, allow you to insert a <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> into the flow of outgoing or ingoing messages with their <b>SetProcessor()</b> method. The library comes with some useful subclasses of it. </p>
+<div class="textblock"><p >A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changing its content. </p>
+<p >Many library objects, such as <a class="el" href="class_m_i_d_i_in_driver.html" title="Receives MIDI messages from an hardware MIDI in port.">MIDIInDriver</a>, <a class="el" href="class_m_i_d_i_out_driver.html" title="Sends MIDI messages to an hardware MIDI out port.">MIDIOutDriver</a>, <a class="el" href="class_m_i_d_i_thru.html" title="A MIDITickComponent which immediately echoes to an out MIDI port all messages incoming from an in MID...">MIDIThru</a> and <a class="el" href="class_m_i_d_i_sequencer.html" title="A MIDITickComponent which implements a basic sequencer, able to play the MIDI events contained in a M...">MIDISequencer</a>, allow you to insert a <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> into the flow of outgoing or ingoing messages with their <b>SetProcessor()</b> method. The library comes with some useful subclasses of it. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="adeddbc887f238e640befc3825f3c8ca4" name="adeddbc887f238e640befc3825f3c8ca4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adeddbc887f238e640befc3825f3c8ca4">&#9670;&nbsp;</a></span>MIDIProcessor()</h2>
@@ -174,7 +174,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>You should implement this pure virtual method in order to return the <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> to its initial state. </p>
+<p>You should implement this pure virtual method in order to return the <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> to its initial state. </p>
 
 <p>Implemented in <a class="el" href="class_m_i_d_i_sequencer_track_processor.html#ade120ddb4ae18e3e32fe18e0811318b7">MIDISequencerTrackProcessor</a>, <a class="el" href="class_m_i_d_i_matrix.html#afb5ae5df9ce699713968919902a14f85">MIDIMatrix</a>, <a class="el" href="class_m_i_d_i_multi_processor.html#a6a95120694ccbc5401b325f25c5258f3">MIDIMultiProcessor</a>, <a class="el" href="class_m_i_d_i_processor_transposer.html#a5612be25a086b0ebbf48d17c99e1c4c6">MIDIProcessorTransposer</a>, <a class="el" href="class_m_i_d_i_processor_rechannelizer.html#a8cf8dbb1bad26439671d7e10a39aa1c6">MIDIProcessorRechannelizer</a>, <a class="el" href="class_m_i_d_i_processor_printer.html#a25145bd519b25973d44d4e1cca3884a2">MIDIProcessorPrinter</a>, and <a class="el" href="class_m_i_d_i_sequencer_state.html#aa76ad6cc433107f9aff43753eaa96ed7">MIDISequencerState</a>.</p>
 

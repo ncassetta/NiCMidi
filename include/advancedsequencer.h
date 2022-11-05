@@ -124,7 +124,7 @@ class AdvancedSequencer : public MIDISequencer {
         /// Loads a MIDIFile into the internal MIDIMultiTrack. It can change the MIDIMultiTrack::clks_per_beat
         /// parameter according to the file signature. You can then play the MIDI content with the Play() method.
         /// \param fname the file name.
-        /// \return **true** if the file has been loaded; if it fails returns **false** and leaves the multitrack
+        /// \return **true** if the file has been loaded; if not it returns **false** and leaves the multitrack
         /// in its previous status.
         virtual bool        Load(const char *fname);
         /// Copies the content of an external MIDIMultiTrack into the sequencer. It can change the
@@ -143,10 +143,10 @@ class AdvancedSequencer : public MIDISequencer {
         std::string         GetFileName()                       { return header.filename; }
         /// Returns the header of the loaded file.
         const MIDIFileHeader& GetFileHeader()                   { return header; }
-        /// Returns the address of the MIDIThru tick component. This is NULL if in the system there are non MIDI
+        /// Returns the address of the MIDIThru tick component. This is NULL if in the system there are no MIDI
         /// in ports and the thru is disabled.
         MIDIThru*           GetMIDIThru()                       { return thru; }
-        /// Returns a pointer to the MIDIThru tick component. This is NULL if in the system there are non MIDI
+        /// Returns a pointer to the MIDIThru tick component. This is NULL if in the system there are no MIDI
         /// in ports and the thru is disabled.
         const MIDIThru*     GetMIDIThru() const                 { return thru; }
         /// Returns **true** if MIDIThru is enabled (always **false** if the thru is not present).
@@ -167,11 +167,11 @@ class AdvancedSequencer : public MIDISequencer {
         /// \param trk_num the number of the track
         bool                GetTrackMute (unsigned int trk_num) const
                                                 { return ((MIDISequencerTrackProcessor *)track_processors[trk_num])->mute; }
-        /// Returns the number of measures of the sequencer.
+        /// Returns the number of measures of the loaded song.
         int                 GetNumMeasures() const              { return num_measures; }
-        /// Returns the current measure number (first is 0).
+        /// Returns the current measure number (first is 0). See \ref NUMBERING.
         unsigned int        GetCurrentMeasure() const;
-        /// Returns the number of current beat (first is 0).
+        /// Returns the number of current beat (first is 0). See \ref NUMBERING.
         unsigned int        GetCurrentBeat() const;
         /// Returns the current MIDI time offset respect current beat.
         MIDIClockTime       GetCurrentBeatOffset() const;
@@ -260,8 +260,9 @@ class AdvancedSequencer : public MIDISequencer {
         /// Same as GoToTime(), but the time is given in milliseconds.
         virtual bool        GoToTimeMs(float time_ms);
         /// Sets the current time to the given measure and beat. This is as MIDISequencer::GoToMeasure() but uses
-        /// a better algorithm and sends to the MIDI out ports all the appropriate sysex, patch, pitch bend and
-        /// control change messages. Notifies the GUI a GROUP_ALL event to signify a full GUI reset.
+        /// a faster algorithm and sends to the MIDI out ports all the appropriate sysex, patch, pitch bend and
+        /// control change messages. Notifies the GUI a GROUP_ALL event to signify a full GUI reset. See
+        /// \ref NUMBERING.
         virtual bool        GoToMeasure(int measure, int beat = 0);
 
 
@@ -275,18 +276,18 @@ class AdvancedSequencer : public MIDISequencer {
         void                OutputMessage(MIDITimedMessage& msg, unsigned int port);
         /// Sets the parameters of the given SMPTE according to the loaded content. If the loaded
         /// file contains a MIDI SMPTE offset message, sets the parameters according to the offset and
-        /// the frame rate of the message, otherwise set it to standard values (offset=0, frame=30FPS).
+        /// the frame rate of the message, otherwise sets it to standard values (offset=0, frame=30FPS).
         /// \warning You cannot call this while the sequencer is playing.
         /// \return **true** if the SMPTE has been set, **false** otherwise.
         bool                SetSMPTE(SMPTE* s);
-        /// This should be used to update the sequencer state after editing the multitrack.
+        /// This should be used to update the sequencer internal parameters after editing the multitrack.
         /// If you have added, deleted or edited events call this before moving time, getting events
         /// or playing. For changes in the track structure see InsertTrack(), DeleteTrack() and MoveTrack()).
         virtual void        UpdateStatus();
 
     protected:
 
-        /// Internal use. It registers the state of the sequencer every MEASURES_PER_WARP measures, and create a
+        /// Internal use. It registers the state of the sequencer every MEASURES_PER_WARP measures, and creates a
         /// std::vector of MIDISequencerState for a quicker jump from a time to another.
         void                ExtractWarpPositions();
         /// Internal use. When jumping from a time to another while the sequencer is playing, it examines all events

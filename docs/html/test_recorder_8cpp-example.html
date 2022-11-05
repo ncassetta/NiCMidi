@@ -58,26 +58,26 @@ $(document).ready(function(){initNavTree('test_recorder_8cpp-example.html',''); 
 <div class="fragment"><div class="line"><span class="comment">/*</span></div>
 <div class="line"><span class="comment"> *   Example file for NiCMidi - A C++ Class Library for MIDI</span></div>
 <div class="line"><span class="comment"> *</span></div>
-<div class="line"><span class="comment"> *   Copyright (C) 2021  Nicola Cassetta</span></div>
+<div class="line"><span class="comment"> *   Copyright (C) 2021, 2022  Nicola Cassetta</span></div>
 <div class="line"><span class="comment"> *   https://github.com/ncassetta/NiCMidi</span></div>
 <div class="line"><span class="comment"> *</span></div>
 <div class="line"><span class="comment"> *   This file is part of NiCMidi.</span></div>
 <div class="line"><span class="comment"> *</span></div>
 <div class="line"><span class="comment"> *   NiCMidi is free software: you can redistribute it and/or modify</span></div>
-<div class="line"><span class="comment"> *   it under the terms of the GNU General Public License as published by</span></div>
-<div class="line"><span class="comment"> *   the Free Software Foundation, either version 3 of the License, or</span></div>
-<div class="line"><span class="comment"> *   (at your option) any later version.</span></div>
+<div class="line"><span class="comment"> *   it under the terms of the GNU Lesser General Public License as</span></div>
+<div class="line"><span class="comment"> *   published by the Free Software Foundation, either version 3 of</span></div>
+<div class="line"><span class="comment"> *   the License, or (at your option) any later version.</span></div>
 <div class="line"><span class="comment"> *</span></div>
 <div class="line"><span class="comment"> *   NiCMidi is distributed in the hope that it will be useful,</span></div>
 <div class="line"><span class="comment"> *   but WITHOUT ANY WARRANTY; without even the implied warranty of</span></div>
 <div class="line"><span class="comment"> *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span></div>
-<div class="line"><span class="comment"> *   GNU General Public License for more details.</span></div>
+<div class="line"><span class="comment"> *   GNU Lesser General Public License for more details.</span></div>
 <div class="line"><span class="comment"> *</span></div>
-<div class="line"><span class="comment"> *   You should have received a copy of the GNU General Public License</span></div>
+<div class="line"><span class="comment"> *   You should have received a copy of the GNU Lesser General Public License</span></div>
 <div class="line"><span class="comment"> *   along with NiCMidi.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span></div>
 <div class="line"><span class="comment"> */</span></div>
 <div class="line"> </div>
-<div class="line"> <span class="comment">/*</span></div>
+<div class="line"><span class="comment">/*</span></div>
 <div class="line"><span class="comment">  A command line example of the features of the MIDIRecorder class.</span></div>
 <div class="line"><span class="comment">  You can record MIDI content through a MIDI in port in your system</span></div>
 <div class="line"><span class="comment">  and store the recorded content in an AdvancedSequencer.</span></div>
@@ -448,12 +448,12 @@ $(document).ready(function(){initNavTree('test_recorder_8cpp-example.html',''); 
 <div class="ttc" id="aclass_m_i_d_i_manager_html_ab79f1ed8b7f7ea3b55b95e2d9a0b51e7"><div class="ttname"><a href="class_m_i_d_i_manager.html#ab79f1ed8b7f7ea3b55b95e2d9a0b51e7">MIDIManager::AddMIDITick</a></div><div class="ttdeci">static void AddMIDITick(MIDITickComponent *tick)</div><div class="ttdoc">Inserts a MIDITickComponent object into the queue.</div></div>
 <div class="ttc" id="aclass_m_i_d_i_manager_html_ac5fbf7c0255b7bdecc32a5b06b65cb0b"><div class="ttname"><a href="class_m_i_d_i_manager.html#ac5fbf7c0255b7bdecc32a5b06b65cb0b">MIDIManager::GetNumMIDIIns</a></div><div class="ttdeci">static unsigned int GetNumMIDIIns()</div><div class="ttdoc">Returns the number of MIDI in ports in the system.</div></div>
 <div class="ttc" id="aclass_m_i_d_i_manager_html_aeebfa44a8493628e34a8822cd5339452"><div class="ttname"><a href="class_m_i_d_i_manager.html#aeebfa44a8493628e34a8822cd5339452">MIDIManager::GetMIDIOutName</a></div><div class="ttdeci">static const std::string &amp; GetMIDIOutName(unsigned int n)</div><div class="ttdoc">Returns the system name of the given MIDI out port.</div></div>
-<div class="ttc" id="aclass_m_i_d_i_message_html_a1a8861486a6a902064b1295880c5eb55"><div class="ttname"><a href="class_m_i_d_i_message.html#a1a8861486a6a902064b1295880c5eb55">MIDIMessage::SetVolumeChange</a></div><div class="ttdeci">void SetVolumeChange(unsigned char chan, unsigned char val)</div><div class="ttdoc">Makes the message a volume change (control == 0x07) message with given channel and value.</div><div class="ttdef"><b>Definition:</b> msg.h:255</div></div>
+<div class="ttc" id="aclass_m_i_d_i_message_html_a1a8861486a6a902064b1295880c5eb55"><div class="ttname"><a href="class_m_i_d_i_message.html#a1a8861486a6a902064b1295880c5eb55">MIDIMessage::SetVolumeChange</a></div><div class="ttdeci">void SetVolumeChange(unsigned char chan, unsigned char val)</div><div class="ttdoc">Makes the message a volume change (control == 0x07) message with given channel and value.</div><div class="ttdef"><b>Definition:</b> msg.h:256</div></div>
 <div class="ttc" id="aclass_m_i_d_i_message_html_a7edc0209b59a09b4d50d8dad9da89589"><div class="ttname"><a href="class_m_i_d_i_message.html#a7edc0209b59a09b4d50d8dad9da89589">MIDIMessage::SetProgramChange</a></div><div class="ttdeci">void SetProgramChange(unsigned char chan, unsigned char prog)</div><div class="ttdoc">Makes the message a program change message with given channel and program.</div></div>
-<div class="ttc" id="aclass_m_i_d_i_recorder_html"><div class="ttname"><a href="class_m_i_d_i_recorder.html">MIDIRecorder</a></div><div class="ttdoc">A MIDITickComponent which can record MIDI messages incoming from a MIDI in port, putting them into an...</div><div class="ttdef"><b>Definition:</b> recorder.h:179</div></div>
-<div class="ttc" id="aclass_m_i_d_i_sequencer_g_u_i_notifier_html_aab77e035ca123c8f8d53ca0c3380ae5e"><div class="ttname"><a href="class_m_i_d_i_sequencer_g_u_i_notifier.html#aab77e035ca123c8f8d53ca0c3380ae5e">MIDISequencerGUINotifier::SetSequencer</a></div><div class="ttdeci">virtual void SetSequencer(const MIDISequencer *seq)</div><div class="ttdoc">This sets the sequencer which generates messages sent to the GUI.</div><div class="ttdef"><b>Definition:</b> notifier.h:174</div></div>
-<div class="ttc" id="aclass_m_i_d_i_sequencer_g_u_i_notifier_text_html"><div class="ttname"><a href="class_m_i_d_i_sequencer_g_u_i_notifier_text.html">MIDISequencerGUINotifierText</a></div><div class="ttdoc">A MIDISequencerGUINotifier which sends text messages to a std::ostream (std::cout as default).</div><div class="ttdef"><b>Definition:</b> notifier.h:192</div></div>
-<div class="ttc" id="aclass_m_i_d_i_timed_message_html"><div class="ttname"><a href="class_m_i_d_i_timed_message.html">MIDITimedMessage</a></div><div class="ttdoc">The MIDITimedMessage class inherits from the MIDIMessage and represents a message associated with a s...</div><div class="ttdef"><b>Definition:</b> msg.h:379</div></div>
+<div class="ttc" id="aclass_m_i_d_i_recorder_html"><div class="ttname"><a href="class_m_i_d_i_recorder.html">MIDIRecorder</a></div><div class="ttdoc">A MIDITickComponent which can record MIDI messages incoming from a MIDI in port, putting them into an...</div><div class="ttdef"><b>Definition:</b> recorder.h:186</div></div>
+<div class="ttc" id="aclass_m_i_d_i_sequencer_g_u_i_notifier_html_aab77e035ca123c8f8d53ca0c3380ae5e"><div class="ttname"><a href="class_m_i_d_i_sequencer_g_u_i_notifier.html#aab77e035ca123c8f8d53ca0c3380ae5e">MIDISequencerGUINotifier::SetSequencer</a></div><div class="ttdeci">virtual void SetSequencer(const MIDISequencer *seq)</div><div class="ttdoc">This sets the sequencer which generates messages sent to the GUI.</div><div class="ttdef"><b>Definition:</b> notifier.h:173</div></div>
+<div class="ttc" id="aclass_m_i_d_i_sequencer_g_u_i_notifier_text_html"><div class="ttname"><a href="class_m_i_d_i_sequencer_g_u_i_notifier_text.html">MIDISequencerGUINotifierText</a></div><div class="ttdoc">A MIDISequencerGUINotifier which sends text messages to a std::ostream (std::cout as default).</div><div class="ttdef"><b>Definition:</b> notifier.h:191</div></div>
+<div class="ttc" id="aclass_m_i_d_i_timed_message_html"><div class="ttname"><a href="class_m_i_d_i_timed_message.html">MIDITimedMessage</a></div><div class="ttdoc">The MIDITimedMessage class inherits from the MIDIMessage and represents a message associated with a s...</div><div class="ttdef"><b>Definition:</b> msg.h:382</div></div>
 <div class="ttc" id="aclass_m_i_d_i_track_html"><div class="ttname"><a href="class_m_i_d_i_track.html">MIDITrack</a></div><div class="ttdoc">Manages a std::vector of MIDITimedMessage objects storing MIDI events, with methods for editing them.</div><div class="ttdef"><b>Definition:</b> track.h:80</div></div>
 <div class="ttc" id="aclass_m_i_d_i_track_html_a02f9e244e318a05db7858e2092af8aef"><div class="ttname"><a href="class_m_i_d_i_track.html#a02f9e244e318a05db7858e2092af8aef">MIDITrack::GetRecChannel</a></div><div class="ttdeci">int GetRecChannel()</div><div class="ttdoc">Returns the channel for recording (-1 for all channels).</div><div class="ttdef"><b>Definition:</b> track.h:128</div></div>
 <div class="ttc" id="aclass_m_i_d_i_track_html_a7542b0d6a57721f5199d77181f77c9c6"><div class="ttname"><a href="class_m_i_d_i_track.html#a7542b0d6a57721f5199d77181f77c9c6">MIDITrack::GetChannel</a></div><div class="ttdeci">int GetChannel()</div><div class="ttdoc">Returns the track channel (-1 if the track has not type TYPE_CHAN or TYPE_IRREG_CHAN).</div></div>

@@ -7,7 +7,7 @@ var class_m_i_d_i_sequencer_track_processor =
     [ "Process", "class_m_i_d_i_sequencer_track_processor.html#a1a86a5bb104f39bbb97f42f559df4f10", null ],
     [ "mute", "class_m_i_d_i_sequencer_track_processor.html#a3f57ec5608801bffc7b6187073748cc9", null ],
     [ "solo", "class_m_i_d_i_sequencer_track_processor.html#aed6dc63284898d3292f44e1dea2b6e56", null ],
-    [ "velocity_scale", "class_m_i_d_i_sequencer_track_processor.html#a4d3e0998bf8e2add59d58be6c1efc80f", null ],
+    [ "velocity_scale", "class_m_i_d_i_sequencer_track_processor.html#a298b7992ae3415b7890c81fce9e7d22a", null ],
     [ "rechannel", "class_m_i_d_i_sequencer_track_processor.html#ae82eee177ef0a58e3c33e8c168a997c6", null ],
     [ "transpose", "class_m_i_d_i_sequencer_track_processor.html#a3841c5481c61d80e765959344db15e1e", null ],
     [ "extra_proc", "class_m_i_d_i_sequencer_track_processor.html#a01a03c2fc264e1e0ce8fa722bf4a3c90", null ]

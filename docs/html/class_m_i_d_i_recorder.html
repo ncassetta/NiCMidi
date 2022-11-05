@@ -91,7 +91,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:acdb0a37702827ed782841761f76bff4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">The destructor.  <a href="class_m_i_d_i_recorder.html#acdb0a37702827ed782841761f76bff4a">More...</a><br /></td></tr>
 <tr class="separator:acdb0a37702827ed782841761f76bff4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a529108417592825416522c50551ca26c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a529108417592825416522c50551ca26c">Reset</a> ()</td></tr>
-<tr class="memdesc:a529108417592825416522c50551ca26c"><td class="mdescLeft">&#160;</td><td class="mdescRight">It sets all tracks to not enable state, empties the internal multitrack and sets the start and end recording times to 0 ... TiME_iNFiNiTE.  <a href="class_m_i_d_i_recorder.html#a529108417592825416522c50551ca26c">More...</a><br /></td></tr>
+<tr class="memdesc:a529108417592825416522c50551ca26c"><td class="mdescLeft">&#160;</td><td class="mdescRight">It sets all tracks to recording disabled, empties the internal multitrack and sets the start and end recording times to 0 ... TIME_INFINITE.  <a href="class_m_i_d_i_recorder.html#a529108417592825416522c50551ca26c">More...</a><br /></td></tr>
 <tr class="separator:a529108417592825416522c50551ca26c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a340df454d03d351784276991731d8705"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_m_i_d_i_multi_track.html">MIDIMultiTrack</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a340df454d03d351784276991731d8705">GetMultiTrack</a> () const</td></tr>
 <tr class="memdesc:a340df454d03d351784276991731d8705"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>.  <a href="class_m_i_d_i_recorder.html#a340df454d03d351784276991731d8705">More...</a><br /></td></tr>
@@ -100,19 +100,19 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a833ad3dd39f505a145bad717681a0b55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the recording mode.  <a href="class_m_i_d_i_recorder.html#a833ad3dd39f505a145bad717681a0b55">More...</a><br /></td></tr>
 <tr class="separator:a833ad3dd39f505a145bad717681a0b55"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a09414429295c2b8ed2a23baffa5a5418"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a09414429295c2b8ed2a23baffa5a5418">GetStartRecTime</a> () const</td></tr>
-<tr class="memdesc:a09414429295c2b8ed2a23baffa5a5418"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the start MIDI time of the recording.  <a href="class_m_i_d_i_recorder.html#a09414429295c2b8ed2a23baffa5a5418">More...</a><br /></td></tr>
+<tr class="memdesc:a09414429295c2b8ed2a23baffa5a5418"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the recording start time in MIDI ticks.  <a href="class_m_i_d_i_recorder.html#a09414429295c2b8ed2a23baffa5a5418">More...</a><br /></td></tr>
 <tr class="separator:a09414429295c2b8ed2a23baffa5a5418"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ed39fbbdd5bb5606d56aebad8bc0bc0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a1ed39fbbdd5bb5606d56aebad8bc0bc0">GetEndRecTime</a> () const</td></tr>
-<tr class="memdesc:a1ed39fbbdd5bb5606d56aebad8bc0bc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the end MIDI time of the recording.  <a href="class_m_i_d_i_recorder.html#a1ed39fbbdd5bb5606d56aebad8bc0bc0">More...</a><br /></td></tr>
+<tr class="memdesc:a1ed39fbbdd5bb5606d56aebad8bc0bc0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the recording end time in MIDI ticks.  <a href="class_m_i_d_i_recorder.html#a1ed39fbbdd5bb5606d56aebad8bc0bc0">More...</a><br /></td></tr>
 <tr class="separator:a1ed39fbbdd5bb5606d56aebad8bc0bc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a312ffbb153b19ed953b53c340bcfd3fd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_m_i_d_i_track.html">MIDITrack</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a312ffbb153b19ed953b53c340bcfd3fd">GetTrack</a> (int trk_num)</td></tr>
-<tr class="memdesc:a312ffbb153b19ed953b53c340bcfd3fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the pointer to a track of the internal multitrack.  <a href="class_m_i_d_i_recorder.html#a312ffbb153b19ed953b53c340bcfd3fd">More...</a><br /></td></tr>
-<tr class="separator:a312ffbb153b19ed953b53c340bcfd3fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5fadd0777e6178c74975f0f40b67b3c"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_m_i_d_i_track.html">MIDITrack</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#aa5fadd0777e6178c74975f0f40b67b3c">GetTrack</a> (int trk_num) const</td></tr>
-<tr class="memdesc:aa5fadd0777e6178c74975f0f40b67b3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the pointer to a track of the internal multitrack.  <a href="class_m_i_d_i_recorder.html#aa5fadd0777e6178c74975f0f40b67b3c">More...</a><br /></td></tr>
-<tr class="separator:aa5fadd0777e6178c74975f0f40b67b3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd49ae61e683bdfc151473e10704ad61"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_m_i_d_i_track.html">MIDITrack</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#acd49ae61e683bdfc151473e10704ad61">GetTrack</a> (unsigned int trk_num)</td></tr>
+<tr class="memdesc:acd49ae61e683bdfc151473e10704ad61"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the pointer to a track of the internal multitrack.  <a href="class_m_i_d_i_recorder.html#acd49ae61e683bdfc151473e10704ad61">More...</a><br /></td></tr>
+<tr class="separator:acd49ae61e683bdfc151473e10704ad61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af553effd46843b4ba2f03a70f01bcfb9"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_m_i_d_i_track.html">MIDITrack</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#af553effd46843b4ba2f03a70f01bcfb9">GetTrack</a> (unsigned int trk_num) const</td></tr>
+<tr class="memdesc:af553effd46843b4ba2f03a70f01bcfb9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the pointer to a track of the internal multitrack.  <a href="class_m_i_d_i_recorder.html#af553effd46843b4ba2f03a70f01bcfb9">More...</a><br /></td></tr>
+<tr class="separator:af553effd46843b4ba2f03a70f01bcfb9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c3f96bf45bb70bacfc467f5403e7313"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a5c3f96bf45bb70bacfc467f5403e7313">GetTrackInPort</a> (unsigned int trk_num) const</td></tr>
-<tr class="memdesc:a5c3f96bf45bb70bacfc467f5403e7313"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of the in port assigned to a track.  <a href="class_m_i_d_i_recorder.html#a5c3f96bf45bb70bacfc467f5403e7313">More...</a><br /></td></tr>
+<tr class="memdesc:a5c3f96bf45bb70bacfc467f5403e7313"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the number of the MIDI in port assigned to the given track.  <a href="class_m_i_d_i_recorder.html#a5c3f96bf45bb70bacfc467f5403e7313">More...</a><br /></td></tr>
 <tr class="separator:a5c3f96bf45bb70bacfc467f5403e7313"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af34813929338ad4645ce95248327a829"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#af34813929338ad4645ce95248327a829">GetTrackRecChannel</a> (unsigned int trk_num)</td></tr>
 <tr class="memdesc:af34813929338ad4645ce95248327a829"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the recording channel for the given track, or -1 for any channel.  <a href="class_m_i_d_i_recorder.html#af34813929338ad4645ce95248327a829">More...</a><br /></td></tr>
@@ -130,13 +130,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a2d3c59f8ca4636413e333d07ea1dc6e8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the recording start time.  <a href="class_m_i_d_i_recorder.html#a2d3c59f8ca4636413e333d07ea1dc6e8">More...</a><br /></td></tr>
 <tr class="separator:a2d3c59f8ca4636413e333d07ea1dc6e8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a26e0e8593de6d42f41010d7c6b4d134c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a26e0e8593de6d42f41010d7c6b4d134c">SetStartRecTime</a> (unsigned int meas, unsigned int beat=0)</td></tr>
-<tr class="memdesc:a26e0e8593de6d42f41010d7c6b4d134c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the recording start time, giving the measure and beat. See SetTrackRecChannel(MIDIClockTime).  <a href="class_m_i_d_i_recorder.html#a26e0e8593de6d42f41010d7c6b4d134c">More...</a><br /></td></tr>
+<tr class="memdesc:a26e0e8593de6d42f41010d7c6b4d134c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the recording start time, giving the measure and beat. See <a class="el" href="class_m_i_d_i_recorder.html#a2d3c59f8ca4636413e333d07ea1dc6e8" title="Sets the recording start time.">SetStartRecTime(MIDIClockTime)</a>.  <a href="class_m_i_d_i_recorder.html#a26e0e8593de6d42f41010d7c6b4d134c">More...</a><br /></td></tr>
 <tr class="separator:a26e0e8593de6d42f41010d7c6b4d134c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acdf973c44c2795a0a954b6b01598b57f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#acdf973c44c2795a0a954b6b01598b57f">SetEndRecTime</a> (<a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a> t)</td></tr>
 <tr class="memdesc:acdf973c44c2795a0a954b6b01598b57f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the recording end time.  <a href="class_m_i_d_i_recorder.html#acdf973c44c2795a0a954b6b01598b57f">More...</a><br /></td></tr>
 <tr class="separator:acdf973c44c2795a0a954b6b01598b57f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a626360aea1efc2f79d550f3c3919f561"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a626360aea1efc2f79d550f3c3919f561">SetEndRecTime</a> (unsigned int meas, unsigned int beat=0)</td></tr>
-<tr class="memdesc:a626360aea1efc2f79d550f3c3919f561"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the recording end time, giving the measure and beat. See SetTrackRecChannel(MIDIClockTime).  <a href="class_m_i_d_i_recorder.html#a626360aea1efc2f79d550f3c3919f561">More...</a><br /></td></tr>
+<tr class="memdesc:a626360aea1efc2f79d550f3c3919f561"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the recording end time, giving the measure and beat. See <a class="el" href="class_m_i_d_i_recorder.html#acdf973c44c2795a0a954b6b01598b57f" title="Sets the recording end time.">SetEndRecTime(MIDIClockTime)</a>.  <a href="class_m_i_d_i_recorder.html#a626360aea1efc2f79d550f3c3919f561">More...</a><br /></td></tr>
 <tr class="separator:a626360aea1efc2f79d550f3c3919f561"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3c1e3ef4d608f564ca706f3f9c80554b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_recorder.html#a3c1e3ef4d608f564ca706f3f9c80554b">InsertTrack</a> (int trk_num=-1)</td></tr>
 <tr class="memdesc:a3c1e3ef4d608f564ca706f3f9c80554b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inserts into the internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a> a new track.  <a href="class_m_i_d_i_recorder.html#a3c1e3ef4d608f564ca706f3f9c80554b">More...</a><br /></td></tr>
@@ -231,7 +231,14 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >A <a class="el" href="class_m_i_d_i_tick_component.html" title="A pure virtual class implementing an object which has a callback procedure to be called at every tick...">MIDITickComponent</a> which can record MIDI messages incoming from a MIDI in port, putting them into an internal <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>. </p>
-<p >You can select the port, channel and MIDI notes of the metronome clicks; moreover you can have three types of click: the ordinary (beat) click, the measure click (first beat of a measure) and a subdivision click. If you enable measure clicks the metronome can count the measures and the beats of a measure (so you can represent them in a graphical interface). </p>
+<p >These are its main features:</p><ul>
+<li>Can enable one or more tracks for recording, selecting the input port and channel for everyone</li>
+<li>Can select the time interval which will be affected by recording</li>
+<li>Can choose between merging old and new content on the tracks or overwriting.</li>
+<li>It plays a metronome click while recording (with a lead in measure before starting)</li>
+<li>A multilevel undo is provided</li>
+</ul>
+<p >The recorder is bounded to a <a class="el" href="class_m_i_d_i_sequencer.html" title="A MIDITickComponent which implements a basic sequencer, able to play the MIDI events contained in a M...">MIDISequencer</a> component (given in the constructor) which plays the tracks content while recording and sets the current time. Recorder and sequencer manage separate <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a> components: when the recording stops the recorder copies the new content into the sequencer <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>, keeping them synchronized. </p>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_recorder_8cpp-example.html#_a2">test_recorder.cpp</a>, and <a class="el" href="test_recorder2_8cpp-example.html#_a2">test_recorder2.cpp</a>.</dd>
 </dl>
 </div><h2 class="groupheader">Member Enumeration Documentation</h2>
@@ -329,7 +336,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>It sets all tracks to not enable state, empties the internal multitrack and sets the start and end recording times to 0 ... TiME_iNFiNiTE. </p>
+<p>It sets all tracks to recording disabled, empties the internal multitrack and sets the start and end recording times to 0 ... TIME_INFINITE. </p>
 
 <p>Implements <a class="el" href="class_m_i_d_i_tick_component.html#a2481415a5e73b0ecc5b92e7bb1d61ddb">MIDITickComponent</a>.</p>
 
@@ -386,7 +393,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns the recording mode. </p>
-<dl class="section return"><dt>Returns</dt><dd>One of REC_MERGE, REC_OVER. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>One of <a class="el" href="class_m_i_d_i_recorder.html#a8e80848ba8095ff5a8a8cf0a2d7cfd23a53bde32a0571b640bff450437683d00a">REC_MERGE</a>, <a class="el" href="class_m_i_d_i_recorder.html#a8e80848ba8095ff5a8a8cf0a2d7cfd23a785c2ccc23e2348fb937bdf2070b3d8a">REC_OVER</a>. </dd></dl>
 
 </div>
 </div>
@@ -413,7 +420,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns the start MIDI time of the recording. </p>
+<p>Returns the recording start time in MIDI ticks. </p>
 
 </div>
 </div>
@@ -440,12 +447,12 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns the end MIDI time of the recording. </p>
+<p>Returns the recording end time in MIDI ticks. </p>
 
 </div>
 </div>
-<a id="a312ffbb153b19ed953b53c340bcfd3fd" name="a312ffbb153b19ed953b53c340bcfd3fd"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a312ffbb153b19ed953b53c340bcfd3fd">&#9670;&nbsp;</a></span>GetTrack() <span class="overload">[1/2]</span></h2>
+<a id="acd49ae61e683bdfc151473e10704ad61" name="acd49ae61e683bdfc151473e10704ad61"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd49ae61e683bdfc151473e10704ad61">&#9670;&nbsp;</a></span>GetTrack() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -456,7 +463,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="class_m_i_d_i_track.html">MIDITrack</a> * MIDIRecorder::GetTrack </td>
           <td>(</td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">unsigned int&#160;</td>
           <td class="paramname"><em>trk_num</em></td><td>)</td>
           <td></td>
         </tr>
@@ -478,8 +485,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="aa5fadd0777e6178c74975f0f40b67b3c" name="aa5fadd0777e6178c74975f0f40b67b3c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa5fadd0777e6178c74975f0f40b67b3c">&#9670;&nbsp;</a></span>GetTrack() <span class="overload">[2/2]</span></h2>
+<a id="af553effd46843b4ba2f03a70f01bcfb9" name="af553effd46843b4ba2f03a70f01bcfb9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af553effd46843b4ba2f03a70f01bcfb9">&#9670;&nbsp;</a></span>GetTrack() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -490,7 +497,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">const <a class="el" href="class_m_i_d_i_track.html">MIDITrack</a> * MIDIRecorder::GetTrack </td>
           <td>(</td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">unsigned int&#160;</td>
           <td class="paramname"><em>trk_num</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -536,7 +543,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns the number of the in port assigned to a track. </p>
+<p>Returns the number of the MIDI in port assigned to the given track. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">trk_num</td><td>the track number </td></tr>
@@ -571,7 +578,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns the recording channel for the given track, or -1 for any channel. </p>
-<p >You can force a track to receive a given channel with SetTrackChannel(). See <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a> </p>
+<p >You can force a track to receive only a given channel with <a class="el" href="class_m_i_d_i_recorder.html#aa55477af2537a1283958538451fd42c0" title="Sets the recording channel for the given track.">SetTrackRecChannel()</a>. See <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a> </p>
 
 </div>
 </div>
@@ -670,7 +677,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Sets the recording mode. </p>
 <p >This cannot be called during recording. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">mode</td><td>one of REC_MERGE, REC_OVER </td></tr>
+    <tr><td class="paramname">mode</td><td>one of <a class="el" href="class_m_i_d_i_recorder.html#a8e80848ba8095ff5a8a8cf0a2d7cfd23a53bde32a0571b640bff450437683d00a">REC_MERGE</a>, <a class="el" href="class_m_i_d_i_recorder.html#a8e80848ba8095ff5a8a8cf0a2d7cfd23a785c2ccc23e2348fb937bdf2070b3d8a">REC_OVER</a> </td></tr>
   </table>
   </dd>
 </dl>
@@ -739,7 +746,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Sets the recording start time, giving the measure and beat. See SetTrackRecChannel(MIDIClockTime). </p>
+<p>Sets the recording start time, giving the measure and beat. See <a class="el" href="class_m_i_d_i_recorder.html#a2d3c59f8ca4636413e333d07ea1dc6e8" title="Sets the recording start time.">SetStartRecTime(MIDIClockTime)</a>. </p>
 
 </div>
 </div>
@@ -804,7 +811,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Sets the recording end time, giving the measure and beat. See SetTrackRecChannel(MIDIClockTime). </p>
+<p>Sets the recording end time, giving the measure and beat. See <a class="el" href="class_m_i_d_i_recorder.html#acdf973c44c2795a0a954b6b01598b57f" title="Sets the recording end time.">SetEndRecTime(MIDIClockTime)</a>. </p>
 
 </div>
 </div>
@@ -832,7 +839,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><b>true</b> if the track was effectively inserted </dd></dl>
-<dl class="section note"><dt>Note</dt><dd>The recorder cannot know what you do with the attached <a class="el" href="class_m_i_d_i_sequencer.html" title="A MIDITickComponent which implements a basic sequencer, able to play the MIDI events contained in a M...">MIDISequencer</a>, so it doesn't check anything, always inserts the track and returns <b>true</b>. If you insert a track in the attached <a class="el" href="class_m_i_d_i_sequencer.html" title="A MIDITickComponent which implements a basic sequencer, able to play the MIDI events contained in a M...">MIDISequencer</a> you <b>must</b> call this with the same parameter for syncronizing the recorder with its sequencer. If you change the number of tracks of the sequencer in a more drastic mode (for example loading a MIDI file) you must call <a class="el" href="class_m_i_d_i_recorder.html#a529108417592825416522c50551ca26c" title="It sets all tracks to not enable state, empties the internal multitrack and sets the start and end re...">MIDIRecorder::Reset()</a> (which disables all tracks for recording). </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>The recorder cannot know what you do with the attached <a class="el" href="class_m_i_d_i_sequencer.html" title="A MIDITickComponent which implements a basic sequencer, able to play the MIDI events contained in a M...">MIDISequencer</a>, so it doesn't check anything, always inserts the track and returns <b>true</b>. If you insert a track in the attached <a class="el" href="class_m_i_d_i_sequencer.html" title="A MIDITickComponent which implements a basic sequencer, able to play the MIDI events contained in a M...">MIDISequencer</a> you <b>must</b> call this with the same parameter for synchronizing the recorder with its sequencer. If you change the number of tracks of the sequencer in a more drastic mode (for example loading a MIDI file) you must call <a class="el" href="class_m_i_d_i_recorder.html#a529108417592825416522c50551ca26c" title="It sets all tracks to recording disabled, empties the internal multitrack and sets the start and end ...">MIDIRecorder::Reset()</a> (which disables all tracks for recording). </dd></dl>
 
 </div>
 </div>
@@ -952,7 +959,7 @@ Additional Inherited Members</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd><b>true</b> if <em>trk_num</em> is valid (and the track has been enabled), <b>false</b> otherwise. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd><b>true</b> if <em>trk_num</em> is valid (and the track has been disabled), <b>false</b> otherwise. </dd></dl>
 
 </div>
 </div>
@@ -972,7 +979,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Deletes the changes made in the last recording. </p>
-<p >You have multiple levels of undo. </p><dl class="section return"><dt>Returns</dt><dd><b>true</b> if undo is possible, <b>false</b> otherwise. </dd></dl>
+<p >You have multiple levels of undo. </p><dl class="section return"><dt>Returns</dt><dd><b>true</b> if undo has been done, <b>false</b> otherwise. </dd></dl>
 
 </div>
 </div>
@@ -1000,6 +1007,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Starts the recording from the enabled ports and channels. </p>
+<p >It starts the attached <a class="el" href="class_m_i_d_i_sequencer.html" title="A MIDITickComponent which implements a basic sequencer, able to play the MIDI events contained in a M...">MIDISequencer</a> from its current position, after a lead in measure. </p>
 
 <p>Reimplemented from <a class="el" href="class_m_i_d_i_tick_component.html#a7d0c188caac6b9443d7fb966a1602a82">MIDITickComponent</a>.</p>
 

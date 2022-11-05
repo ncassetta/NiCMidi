@@ -60,7 +60,7 @@ enum tInsMode
 };
 
 
-/// Defines the behaviour of the method MIDITrack::FindEventNunber() when searching events.
+/// Defines the behaviour of the method MIDITrack::FindEventNumber() when searching events.
 enum
 {
     COMPMODE_EQUAL,     ///< the method searches for an event matching equal operator.

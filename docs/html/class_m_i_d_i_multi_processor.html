@@ -58,7 +58,7 @@ $(document).ready(function(){initNavTree('class_m_i_d_i_multi_processor.html',''
 </div><!--header-->
 <div class="contents">
 
-<p>Allows the user to queue many <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> objects, passing the result of each one to the next.  
+<p>Allows the user to queue many <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> objects, passing the result of each one to the next.  
  <a href="class_m_i_d_i_multi_processor.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="processor_8h_source.html">processor.h</a>&gt;</code></p>
@@ -68,7 +68,7 @@ Inheritance diagram for MIDIMultiProcessor:</div>
  <div class="center">
   <img src="class_m_i_d_i_multi_processor.png" usemap="#MIDIMultiProcessor_map" alt=""/>
   <map id="MIDIMultiProcessor_map" name="MIDIMultiProcessor_map">
-<area href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing..." alt="MIDIProcessor" shape="rect" coords="0,0,123,24"/>
+<area href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin..." alt="MIDIProcessor" shape="rect" coords="0,0,123,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -89,23 +89,23 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6a95120694ccbc5401b325f25c5258f3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_multi_processor.html#a6a95120694ccbc5401b325f25c5258f3">Reset</a> ()</td></tr>
 <tr class="memdesc:a6a95120694ccbc5401b325f25c5258f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Empties the processors queue, removing all their pointers from it.  <a href="class_m_i_d_i_multi_processor.html#a6a95120694ccbc5401b325f25c5258f3">More...</a><br /></td></tr>
 <tr class="separator:a6a95120694ccbc5401b325f25c5258f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88147559084fac987ac4a6a60841a3e6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_m_i_d_i_processor.html">MIDIProcessor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_multi_processor.html#a88147559084fac987ac4a6a60841a3e6">GetProcessor</a> (int pos)</td></tr>
-<tr class="memdesc:a88147559084fac987ac4a6a60841a3e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> at the given position.  <a href="class_m_i_d_i_multi_processor.html#a88147559084fac987ac4a6a60841a3e6">More...</a><br /></td></tr>
-<tr class="separator:a88147559084fac987ac4a6a60841a3e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa8b997bf9a30bccf0ddd665bc412f52a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_m_i_d_i_processor.html">MIDIProcessor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_multi_processor.html#aa8b997bf9a30bccf0ddd665bc412f52a">GetProcessor</a> (int pos) const</td></tr>
-<tr class="memdesc:aa8b997bf9a30bccf0ddd665bc412f52a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> at the given position.  <a href="class_m_i_d_i_multi_processor.html#aa8b997bf9a30bccf0ddd665bc412f52a">More...</a><br /></td></tr>
-<tr class="separator:aa8b997bf9a30bccf0ddd665bc412f52a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37d8ab00d3e14f02b22d43dbf1008344"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_m_i_d_i_processor.html">MIDIProcessor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_multi_processor.html#a37d8ab00d3e14f02b22d43dbf1008344">GetProcessor</a> (unsigned int pos)</td></tr>
+<tr class="memdesc:a37d8ab00d3e14f02b22d43dbf1008344"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> at the given position.  <a href="class_m_i_d_i_multi_processor.html#a37d8ab00d3e14f02b22d43dbf1008344">More...</a><br /></td></tr>
+<tr class="separator:a37d8ab00d3e14f02b22d43dbf1008344"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a888b565cd0be6ad2a22313c2dab6bc3a"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_m_i_d_i_processor.html">MIDIProcessor</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_multi_processor.html#a888b565cd0be6ad2a22313c2dab6bc3a">GetProcessor</a> (unsigned int pos) const</td></tr>
+<tr class="memdesc:a888b565cd0be6ad2a22313c2dab6bc3a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> at the given position.  <a href="class_m_i_d_i_multi_processor.html#a888b565cd0be6ad2a22313c2dab6bc3a">More...</a><br /></td></tr>
+<tr class="separator:a888b565cd0be6ad2a22313c2dab6bc3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aee7b5c06a27d947fa1de34e5eb9f15f6"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_multi_processor.html#aee7b5c06a27d947fa1de34e5eb9f15f6">GetProcessMode</a> () const</td></tr>
 <tr class="memdesc:aee7b5c06a27d947fa1de34e5eb9f15f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the processing mode (see <a class="el" href="class_m_i_d_i_multi_processor.html#a36c0839594e457b5ba51803ba6ebf507" title="Determines the behaviour of the MIDIMultiProcessor if any of the processors return false.">SetProcessMode()</a>).  <a href="class_m_i_d_i_multi_processor.html#aee7b5c06a27d947fa1de34e5eb9f15f6">More...</a><br /></td></tr>
 <tr class="separator:aee7b5c06a27d947fa1de34e5eb9f15f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9a03bc0dadea40b286f8b7c7e326452d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_multi_processor.html#a9a03bc0dadea40b286f8b7c7e326452d">SetProcessor</a> (<a class="el" href="class_m_i_d_i_processor.html">MIDIProcessor</a> *proc, int pos=-1)</td></tr>
-<tr class="memdesc:a9a03bc0dadea40b286f8b7c7e326452d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inserts a <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> object into the queue.  <a href="class_m_i_d_i_multi_processor.html#a9a03bc0dadea40b286f8b7c7e326452d">More...</a><br /></td></tr>
+<tr class="memdesc:a9a03bc0dadea40b286f8b7c7e326452d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inserts a <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> object into the queue.  <a href="class_m_i_d_i_multi_processor.html#a9a03bc0dadea40b286f8b7c7e326452d">More...</a><br /></td></tr>
 <tr class="separator:a9a03bc0dadea40b286f8b7c7e326452d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af74262263ae37dab8f547d2eca3ae80f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_multi_processor.html#af74262263ae37dab8f547d2eca3ae80f">RemoveProcessor</a> (int pos)</td></tr>
-<tr class="memdesc:af74262263ae37dab8f547d2eca3ae80f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> at the given position.  <a href="class_m_i_d_i_multi_processor.html#af74262263ae37dab8f547d2eca3ae80f">More...</a><br /></td></tr>
-<tr class="separator:af74262263ae37dab8f547d2eca3ae80f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1ae372f8dfa531d4f6f7c036f35b5f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_multi_processor.html#ac1ae372f8dfa531d4f6f7c036f35b5f8">RemoveProcessor</a> (unsigned int pos)</td></tr>
+<tr class="memdesc:ac1ae372f8dfa531d4f6f7c036f35b5f8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Removes the <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> at the given position.  <a href="class_m_i_d_i_multi_processor.html#ac1ae372f8dfa531d4f6f7c036f35b5f8">More...</a><br /></td></tr>
+<tr class="separator:ac1ae372f8dfa531d4f6f7c036f35b5f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afae638967824e1c3f819b71bf5ec68c7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_multi_processor.html#afae638967824e1c3f819b71bf5ec68c7">RemoveProcessor</a> (const <a class="el" href="class_m_i_d_i_processor.html">MIDIProcessor</a> *proc)</td></tr>
-<tr class="memdesc:afae638967824e1c3f819b71bf5ec68c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Searches the given <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> in the queue and removes it (it does nothing if the processor is not in the queue).  <a href="class_m_i_d_i_multi_processor.html#afae638967824e1c3f819b71bf5ec68c7">More...</a><br /></td></tr>
+<tr class="memdesc:afae638967824e1c3f819b71bf5ec68c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Searches the given <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> in the queue and removes it (it does nothing if the processor is not in the queue).  <a href="class_m_i_d_i_multi_processor.html#afae638967824e1c3f819b71bf5ec68c7">More...</a><br /></td></tr>
 <tr class="separator:afae638967824e1c3f819b71bf5ec68c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a36c0839594e457b5ba51803ba6ebf507"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_multi_processor.html#a36c0839594e457b5ba51803ba6ebf507">SetProcessMode</a> (int mode)</td></tr>
 <tr class="memdesc:a36c0839594e457b5ba51803ba6ebf507"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines the behaviour of the <a class="el" href="class_m_i_d_i_multi_processor.html" title="Allows the user to queue many MIDIProcessor objects, passing the result of each one to the next.">MIDIMultiProcessor</a> if any of the processors return <b>false</b>.  <a href="class_m_i_d_i_multi_processor.html#a36c0839594e457b5ba51803ba6ebf507">More...</a><br /></td></tr>
@@ -122,7 +122,7 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ae9e03fea776c2ffb37f4d9326f4f0b66 inherit pub_methods_class_m_i_d_i_processor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >Allows the user to queue many <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> objects, passing the result of each one to the next. </p>
+<div class="textblock"><p >Allows the user to queue many <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> objects, passing the result of each one to the next. </p>
 </div><h2 class="groupheader">Member Enumeration Documentation</h2>
 <a id="af9c2c8eeefdd14021c1b7b3aba5b0bb3" name="af9c2c8eeefdd14021c1b7b3aba5b0bb3"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af9c2c8eeefdd14021c1b7b3aba5b0bb3">&#9670;&nbsp;</a></span>anonymous enum</h2>
@@ -198,8 +198,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a88147559084fac987ac4a6a60841a3e6" name="a88147559084fac987ac4a6a60841a3e6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a88147559084fac987ac4a6a60841a3e6">&#9670;&nbsp;</a></span>GetProcessor() <span class="overload">[1/2]</span></h2>
+<a id="a37d8ab00d3e14f02b22d43dbf1008344" name="a37d8ab00d3e14f02b22d43dbf1008344"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37d8ab00d3e14f02b22d43dbf1008344">&#9670;&nbsp;</a></span>GetProcessor() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -210,7 +210,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname"><a class="el" href="class_m_i_d_i_processor.html">MIDIProcessor</a> * MIDIMultiProcessor::GetProcessor </td>
           <td>(</td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">unsigned int&#160;</td>
           <td class="paramname"><em>pos</em></td><td>)</td>
           <td></td>
         </tr>
@@ -222,12 +222,12 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns a pointer to the <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> at the given position. </p>
+<p>Returns a pointer to the <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> at the given position. </p>
 
 </div>
 </div>
-<a id="aa8b997bf9a30bccf0ddd665bc412f52a" name="aa8b997bf9a30bccf0ddd665bc412f52a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa8b997bf9a30bccf0ddd665bc412f52a">&#9670;&nbsp;</a></span>GetProcessor() <span class="overload">[2/2]</span></h2>
+<a id="a888b565cd0be6ad2a22313c2dab6bc3a" name="a888b565cd0be6ad2a22313c2dab6bc3a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a888b565cd0be6ad2a22313c2dab6bc3a">&#9670;&nbsp;</a></span>GetProcessor() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -238,7 +238,7 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">const <a class="el" href="class_m_i_d_i_processor.html">MIDIProcessor</a> * MIDIMultiProcessor::GetProcessor </td>
           <td>(</td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">unsigned int&#160;</td>
           <td class="paramname"><em>pos</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -250,7 +250,7 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Returns a pointer to the <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> at the given position. </p>
+<p>Returns a pointer to the <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> at the given position. </p>
 
 </div>
 </div>
@@ -307,10 +307,10 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Inserts a <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> object into the queue. </p>
+<p>Inserts a <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> object into the queue. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">proc</td><td>the <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> to be inserted (it is <b>not</b> owned by the <a class="el" href="class_m_i_d_i_multi_processor.html" title="Allows the user to queue many MIDIProcessor objects, passing the result of each one to the next.">MIDIMultiProcessor</a>) </td></tr>
+    <tr><td class="paramname">proc</td><td>the <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> to be inserted (it is <b>not</b> owned by the <a class="el" href="class_m_i_d_i_multi_processor.html" title="Allows the user to queue many MIDIProcessor objects, passing the result of each one to the next.">MIDIMultiProcessor</a>) </td></tr>
     <tr><td class="paramname">pos</td><td>the position in the queue. If you leave the default value the processor will be appended to the queue, otherwise the new processor substitutes the old (the method does nothing if <em>pos</em> is not in the appropriate range) </td></tr>
   </table>
   </dd>
@@ -318,8 +318,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="af74262263ae37dab8f547d2eca3ae80f" name="af74262263ae37dab8f547d2eca3ae80f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af74262263ae37dab8f547d2eca3ae80f">&#9670;&nbsp;</a></span>RemoveProcessor() <span class="overload">[1/2]</span></h2>
+<a id="ac1ae372f8dfa531d4f6f7c036f35b5f8" name="ac1ae372f8dfa531d4f6f7c036f35b5f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1ae372f8dfa531d4f6f7c036f35b5f8">&#9670;&nbsp;</a></span>RemoveProcessor() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -327,14 +327,14 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void MIDIMultiProcessor::RemoveProcessor </td>
           <td>(</td>
-          <td class="paramtype">int&#160;</td>
+          <td class="paramtype">unsigned int&#160;</td>
           <td class="paramname"><em>pos</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Removes the <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> at the given position. </p>
+<p>Removes the <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> at the given position. </p>
 <p >It only removes the processor pointer from the queue, and does nothing if <em>pos</em> is not in the appropriate range. </p>
 
 </div>
@@ -355,7 +355,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Searches the given <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> in the queue and removes it (it does nothing if the processor is not in the queue). </p>
+<p>Searches the given <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> in the queue and removes it (it does nothing if the processor is not in the queue). </p>
 <p >It only removes the processor pointer from the queue. </p>
 
 </div>

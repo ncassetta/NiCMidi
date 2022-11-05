@@ -410,7 +410,8 @@ class MIDISequencer : public MIDITickComponent {
         /// \return see GoToTime()
         virtual bool                    GoToTimeMs (float time_ms);
         /// Sets the current time to the given measure and beat, updating the internal status. This method is
-        /// thread-safe and can be called during playback. Notifies the GUI a GROUP_ALL event to signify a GUI reset
+        /// thread-safe and can be called during playback. Notifies the GUI a GROUP_ALL event to signify a GUI reset.
+        /// See \ref NUMBERING.
         /// \return see GoToTime()
         virtual bool                    GoToMeasure (unsigned int measure, unsigned int beat = 0);
         /// Gets the next event (respect current position). This queries the state for the next event in the
@@ -419,8 +420,6 @@ class MIDISequencer : public MIDITickComponent {
         /// there are no events before the next metronome click you will get a Beat Marker internal event.
         /// \param[out] trk_num will return the track number of the next event
         /// \param[out] msg will return the MIDI event
-        /// \return **true** if there is effectively a next event (and the parameters are valid), **false** otherwise
-        ///
         /// \return **true** if there is effectively a next event (we are not at the end of the song or the
         /// play mode is set to PLAY_UNBOUNDED) , **false** otherwise (in this case *trk_num and *msg are
         /// undefined and the sequencer is leaved in its original state).

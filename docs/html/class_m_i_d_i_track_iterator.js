@@ -6,7 +6,7 @@ var class_m_i_d_i_track_iterator =
     [ "GetTrack", "class_m_i_d_i_track_iterator.html#af7b7a4d3bac7340489c2e4fca7a28be7", null ],
     [ "SetTrack", "class_m_i_d_i_track_iterator.html#ad7eecec10739f6aca73f0f30c91469b3", null ],
     [ "GetCurrentTime", "class_m_i_d_i_track_iterator.html#aae56da7adae388e5fc27852e247afbae", null ],
-    [ "GetCurrentEventNum", "class_m_i_d_i_track_iterator.html#a1e4fc9bfed816b42ed7ea122858b9afa", null ],
+    [ "GetCurrentEventNum", "class_m_i_d_i_track_iterator.html#aa7ddedb994ce0ad265d87d28108d6c2d", null ],
     [ "GetProgram", "class_m_i_d_i_track_iterator.html#a409d00fcc32f4b8521de5a7cff6a9394", null ],
     [ "GetControl", "class_m_i_d_i_track_iterator.html#ad3663863e16e3ee86f86018c3332b883", null ],
     [ "GetBender", "class_m_i_d_i_track_iterator.html#afd699a7b029aaac1861937e4388bbd16", null ],

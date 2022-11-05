@@ -60,28 +60,29 @@ class 	MIDIMessage {
         /// Frees the MIDISystemExclusive pointer without changing other bytes.
         void                    ClearSysEx();
         /// The assignment operator. It primarily frees the old MIDISystemExclusive object if it was allocated,
-        /// then duplicates the (eventual) new MIDISystemExclusive, so every MIDIBigMessage has its own object.
+        /// then duplicates the (eventual) new MIDISystemExclusive, so every MIDIMessage has its own object.
         const MIDIMessage&      operator= (const MIDIMessage &msg);
 
-        /// Returns the length in bytes of the entire message. It can return -1 for messages whose lrngth is
-        /// undefined /for example sysex).
+        /// Returns the length in bytes of the entire message. It can return -1 for messages whose length is
+        /// unknown (for example sysex).
         int	                    GetLength() const;
         /// Returns the status byte of the message. If the message is a channel message this contains the message
-        /// type in the top 4 bits and the channel in the bottom 4. See \ref MIDIENUM for status bytes
+        /// type in the top 4 bits and the channel in the bottom 4, for other messages this is the same of GetType().
+        /// See \ref MIDIENUM for status bytes.
         unsigned char	        GetStatus() const	        { return (unsigned char)status;	}
         /// If the message is a channel message, returns its MIDI channel.
         /// See \ref NUMBERING.
         unsigned char	        GetChannel() const          { return (unsigned char)(status  &0x0f);	}
-        /// If the message is a channel message, returns the relevant top 4 bits of the status byte.
-        /// These describe what type of channel message it is.
+        /// Returns the relevant top 4 bits of the status byte, which describe what type of channel message it is.
+        /// See \ref MIDIENUM for status bytes.
         unsigned char	        GetType() const             { return (unsigned char)(status & 0xf0);	}
-        /// If the message is a meta-message, returns the type byte.
+        /// If the message is a meta-message, returns the type byte. See \ref MIDIENUM for meta event types..
         unsigned char	        GetMetaType() const	        { return byte1;	}
-        /// Accesses the raw byte 1 of the message.
+        /// Returns the raw value of the data byte 1 of the message.
         unsigned char	        GetByte1() const	        { return byte1;	}
-        /// Accesses the raw byte 2 of the message.
+        /// Returns the raw value of the data byte 2 of the message.
         unsigned char	        GetByte2() const	        { return byte2;	}
-        /// Accesses the raw byte 3 of the message.
+        /// Returns the raw value of the data byte 3 of the message.
         unsigned char	        GetByte3() const	        { return byte3;	}
         /// Returns a pointer to the MIDISystemExclusive object (0 if it is not allocated).
         MIDISystemExclusive*    GetSysEx()                  { return sysex; }
@@ -89,7 +90,7 @@ class 	MIDIMessage {
         const MIDISystemExclusive*GetSysEx() const          { return sysex; }
         /// If the message is a note on, note off, or poly aftertouch message, returns the note number.
         unsigned char	        GetNote() const		        { return byte1;	}
-        /// If the message is a note on, note off, or poly aftertouch message, returns the velocity (or pressure).
+        /// If the message is a note on, note off, or poly aftertouch message, returns the note velocity (or pressure).
         unsigned char	        GetVelocity() const	        { return byte2;	}
         /// If the message is a channel pressure message, returns the pressure value.
         unsigned char           GetChannelPressure() const  { return byte1; }
@@ -199,9 +200,9 @@ class 	MIDIMessage {
         /// You can then call GetTimeSigNumerator() and GetTimeSigDenominator() for further information.
         bool	                IsTimeSig() const           { return (status == META_EVENT) && (byte1 == META_TIMESIG); }
         /// Returns **true** if the message is a key signature meta-message.
-        /// You can then call GetKeySigSharpFlats() and GetKeySigMajorMinor() for further information.
+        /// You can then call GetKeySigSharpsFlats() and GetKeySigMode() for further information.
         bool	                IsKeySig() const            { return (status == META_EVENT) && (byte1 == META_KEYSIG); }
-        /// Returns **true** if the message is a NoOp (not inizialized) message.
+        /// Returns **true** if the message is a NoOp (not initialized) message.
         bool	                IsNoOp() const              { return (status == STATUS_SERVICE) && (byte1 == NO_OP_VAL); }
         /// Returns **true** if the message is a beat marker message.
         /// This is an internal service message used by the MIDISequencer class to mark the metronome clicks.
@@ -209,15 +210,15 @@ class 	MIDIMessage {
 
         /// Sets all 8 bits of the status byte of the message. These define, for channel messages, the type and the channel.
         void	                SetStatus(unsigned char s)	        { status = s; }
-        /// Sets just the lower 4 bits of the status byte without changing the upper 4 bits.
+        /// Sets the lower 4 bits of the status byte without changing the upper 4 bits. See \ref NUMBERING.
         void	                SetChannel(unsigned char s)         { status = (unsigned char)((status & 0xf0) | (s & 0x0f)); }
-        /// Sets just the upper 4 bits of the status byte without changing the lower 4 bits.
+        /// Sets the upper 4 bits of the status byte without changing the lower 4 bits.
         void	                SetType(unsigned char s)            { status = (unsigned char)((status & 0x0f) | (s & 0xf0)); }
-        /// Sets the raw value of the data byte 1.
+        /// Sets the raw value of the data byte 1 of the message.
         void	                SetByte1(unsigned char b)		    { byte1 = b; }
-        /// Sets the raw value of the data byte 2.
+        /// Sets the raw value of the data byte 2 of the message.
         void	                SetByte2(unsigned char b)		    { byte2 = b; }
-        /// Sets the raw value of the data byte 3.
+        /// Sets the raw value of the data byte 3 of the message.
         void	                SetByte3(unsigned char b)		    { byte3 = b; }
         /// Sets the note number for note on, note off, and polyphonic aftertouch messages.
         void	                SetNote(unsigned char n) 		    { byte1 = n; }
@@ -241,11 +242,11 @@ class 	MIDIMessage {
         /// Makes the message a note off message with given channel, note and velocity.
         /// Frees the sysex pointer. The default behavior of this method is to put a NOTE OFF type message and copy
         /// the given velocity; you can also make the method put a NOTE ON with 0 velocity (ignoring the third parameter).
-        /// See the USeNoteOnForOff() static method.
+        /// See the UseNoteOnv0ForOff() static method.
         /// \param chan, note, vel see \ref NUMBERING
         void	                SetNoteOff(unsigned char chan, unsigned char note, unsigned char vel);
         /// Makes the message a polyphonic aftertouch message with given channel, note and pressure. Frees the sysex pointer.
-        /// \param chan, note,pres see \ref NUMBERING
+        /// \param chan, note, pres see \ref NUMBERING
         void	                SetPolyPressure(unsigned char chan, unsigned char note, unsigned char pres);
         /// Makes the message a control change message with given channel, controller and value. Frees the sysex pointer.
         /// \param chan, ctrl, val see \ref NUMBERING
@@ -272,7 +273,7 @@ class 	MIDIMessage {
         /// + All sound off         (type = C_ALL_SOUND_OFF)
         /// + Reset all controllers (type = C_RESET)
         /// + Local control         (type = C_LOCAL, value = 0x7f/0 for on/off)
-        /// + All notes off         (type = C_ALL_NOTES_OFF, \see SetAllNotesOff())
+        /// + All notes off         (type = C_ALL_NOTES_OFF, see SetAllNotesOff())
         /// + Omni mode off         (type = C_OMNI_OFF)
         /// + Omni mode on          (type = C_OMNI_ON)
         /// + Mono mode on          (type = C_MONO, value = number of channels to respond, 0 for all channels)
@@ -294,10 +295,11 @@ class 	MIDIMessage {
         /// Makes the message a song select system message with given song. Frees the sysex pointer.
         void	                SetSongSelect(unsigned char sng);
         /// Makes the message a one-byte system message with given status (type must be a valid MIDI system message
-        /// status byte). Sets other bytes to 0 and frees the sysex pointer. This is useful mainly for messages which
-        /// haven't data bytes, for others there are more appropriate methods.
+        /// status byte, see \ref MIDIENUM). Sets other bytes to 0 and frees the sysex pointer. This is useful mainly for
+        /// messages which haven't data bytes, for others there are more appropriate methods.
         void	                SetSystemMessage(unsigned char type);
         /// Makes the message a meta-message with given type and data value. The two bytes of data are given separately.
+        /// See \ref MIDIENUM for meta event types.
         void	                SetMetaEvent(unsigned char type, unsigned char v1, unsigned char v2);
         /// Makes the message a meta-message with given type and data value.
         /// You can use this for Sequence number (16 bit value) and Channel Prefix (8 bit value) messages.
@@ -305,7 +307,7 @@ class 	MIDIMessage {
         /// Makes the message a text meta-message with given type.
         /// text is a C string containing the ascii characters and is stored in the sysex object (the eventual old pointer
         /// is freed). You can use this for Generic text, Copyright, Track name, Instrument name, Lyric, Marker and Cue point
-        /// messages.
+        /// messages (see \ref MIDIENUM for meta text types).
         void	                SetText(const char* text, unsigned char type = META_GENERIC_TEXT);
         /// Makes the message a data end (i.e. end of track) meta-message.
         void	                SetDataEnd()                        { SetMetaEvent(META_END_OF_TRACK, 0); }
@@ -321,6 +323,7 @@ class 	MIDIMessage {
         void	                SetTimeSig(unsigned char num, unsigned char den,
                                            unsigned char clocks_per_metronome = 0, unsigned char num_32_per_quarter = 8);
         /// Makes the message a key signature meta-message with given accidents and mode.
+        /// \param sharp_flats, major_minor These are in SMF format: see GetKeySigSharpsFlats() and GetKeySigMode().
         void                    SetKeySig(signed char sharp_flats, unsigned char major_minor)
                                                                     { SetMetaEvent(META_KEYSIG, sharp_flats, major_minor); }
         /// The same of Clear(), makes the message an uninitialized message which will be ignored.
@@ -337,7 +340,7 @@ class 	MIDIMessage {
         /// Copies the given MIDISystemExclusive object into the message without changing other bytes.
         /// An eventual old object is freed.
         void                    CopySysEx(const MIDISystemExclusive* se);
-        /// The compare operator execute a bitwise comparison.
+        /// The compare operator executes a bitwise comparison.
         friend bool             operator== (const MIDIMessage &m1, const MIDIMessage &m2);
 
         /// This static method determines if the SetNoteOff() method will produce a MIDI NOTE_OFF
@@ -382,7 +385,7 @@ class 	MIDITimedMessage : public MIDIMessage {
         /// Creates a a NoOp MIDITimedMessage with the time set to 0. This is an undefined MIDI message),
         /// which will be ignored when playing.
                                 MIDITimedMessage();
-        /// Copy constructor. \see MIDIMessage::(MIDIMessage()
+        /// Copy constructor. \see MIDIMessage::MIDIMessage()
                                 MIDITimedMessage(const MIDITimedMessage &msg);
         /// Copy constructor (sets the time to 0). \see MIDIMessage::(MIDIMessage()
                                 MIDITimedMessage(const MIDIMessage &msg);

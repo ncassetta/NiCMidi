@@ -58,33 +58,33 @@ $(document).ready(function(){initNavTree('test_advancedsequencer_8cpp-example.ht
 <div class="fragment"><div class="line"><span class="comment">/*</span></div>
 <div class="line"><span class="comment"> *   Example file for NiCMidi - A C++ Class Library for MIDI</span></div>
 <div class="line"><span class="comment"> *</span></div>
-<div class="line"><span class="comment"> *   Copyright (C) 2021  Nicola Cassetta</span></div>
+<div class="line"><span class="comment"> *   Copyright (C) 2021, 2022  Nicola Cassetta</span></div>
 <div class="line"><span class="comment"> *   https://github.com/ncassetta/NiCMidi</span></div>
 <div class="line"><span class="comment"> *</span></div>
 <div class="line"><span class="comment"> *   This file is part of NiCMidi.</span></div>
 <div class="line"><span class="comment"> *</span></div>
 <div class="line"><span class="comment"> *   NiCMidi is free software: you can redistribute it and/or modify</span></div>
-<div class="line"><span class="comment"> *   it under the terms of the GNU General Public License as published by</span></div>
-<div class="line"><span class="comment"> *   the Free Software Foundation, either version 3 of the License, or</span></div>
-<div class="line"><span class="comment"> *   (at your option) any later version.</span></div>
+<div class="line"><span class="comment"> *   it under the terms of the GNU Lesser General Public License as</span></div>
+<div class="line"><span class="comment"> *   published by the Free Software Foundation, either version 3 of</span></div>
+<div class="line"><span class="comment"> *   the License, or (at your option) any later version.</span></div>
 <div class="line"><span class="comment"> *</span></div>
 <div class="line"><span class="comment"> *   NiCMidi is distributed in the hope that it will be useful,</span></div>
 <div class="line"><span class="comment"> *   but WITHOUT ANY WARRANTY; without even the implied warranty of</span></div>
 <div class="line"><span class="comment"> *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span></div>
-<div class="line"><span class="comment"> *   GNU General Public License for more details.</span></div>
+<div class="line"><span class="comment"> *   GNU Lesser General Public License for more details.</span></div>
 <div class="line"><span class="comment"> *</span></div>
-<div class="line"><span class="comment"> *   You should have received a copy of the GNU General Public License</span></div>
+<div class="line"><span class="comment"> *   You should have received a copy of the GNU Lesser General Public License</span></div>
 <div class="line"><span class="comment"> *   along with NiCMidi.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span></div>
 <div class="line"><span class="comment"> */</span></div>
 <div class="line"> </div>
-<div class="line"> <span class="comment">/*</span></div>
-<div class="line"><span class="comment"> A command line example of the features of the AdvancedSequencer</span></div>
-<div class="line"><span class="comment"> class. It creates an instance of the class and allows the user</span></div>
-<div class="line"><span class="comment"> to interact with it. You can load MIDI files and play them</span></div>
-<div class="line"><span class="comment"> changing a lot of parameters (muting, soloing, and transposing</span></div>
-<div class="line"><span class="comment"> tracks; jumping from a time to another, changing the tempo, etc.)</span></div>
-<div class="line"><span class="comment"> even while the sequencer is playing.</span></div>
-<div class="line"><span class="comment"> Requires functions.cpp, which contains command line I/O functions.</span></div>
+<div class="line"><span class="comment">/*</span></div>
+<div class="line"><span class="comment">  A command line example of the features of the AdvancedSequencer</span></div>
+<div class="line"><span class="comment">  class. It creates an instance of the class and allows the user</span></div>
+<div class="line"><span class="comment">  to interact with it. You can load MIDI files and play them</span></div>
+<div class="line"><span class="comment">  changing a lot of parameters (muting, soloing, and transposing</span></div>
+<div class="line"><span class="comment">  tracks; jumping from a time to another, changing the tempo, etc.)</span></div>
+<div class="line"><span class="comment">  even while the sequencer is playing.</span></div>
+<div class="line"><span class="comment">  Requires functions.cpp, which contains command line I/O functions.</span></div>
 <div class="line"><span class="comment">*/</span></div>
 <div class="line"> </div>
 <div class="line"> </div>
@@ -213,7 +213,7 @@ $(document).ready(function(){initNavTree('test_advancedsequencer_8cpp-example.ht
 <div class="line">                DumpMIDIMultiTrackWithPauses(sequencer.<a class="code hl_function" href="class_m_i_d_i_sequencer.html#a719912ec30fa489c89f0e34921a696af">GetMultiTrack</a>());</div>
 <div class="line">            <span class="keywordflow">else</span> {</div>
 <div class="line">                <span class="keywordtype">int</span> trk_num = atoi(par1.c_str());</div>
-<div class="line">                <span class="keywordflow">if</span> (multitrack-&gt;<a id="a15" name="a15"></a><a class="code hl_function" href="class_m_i_d_i_multi_track.html#a66f5deba7b6f0ebda53452ec123a504d">IsValidTrackNumber</a>(trk_num)) {</div>
+<div class="line">                <span class="keywordflow">if</span> (multitrack-&gt;<a id="a15" name="a15"></a><a class="code hl_function" href="class_m_i_d_i_multi_track.html#a03cb82dfb21c84a8637516be94939090">IsValidTrackNumber</a>(trk_num)) {</div>
 <div class="line">                    <a id="_a16" name="_a16"></a><a class="code hl_class" href="class_m_i_d_i_track.html">MIDITrack</a>* trk = sequencer.<a id="a17" name="a17"></a><a class="code hl_function" href="class_m_i_d_i_sequencer.html#acc784d2e36aa9bed8c2c010861f4cb03">GetTrack</a>(trk_num);</div>
 <div class="line">                    DumpMIDITrackWithPauses(trk, trk_num);</div>
 <div class="line">                }</div>
@@ -332,12 +332,12 @@ $(document).ready(function(){initNavTree('test_advancedsequencer_8cpp-example.ht
 <div class="ttc" id="aclass_advanced_sequencer_html_a0f18edfb1e5274b75b8250cbda86195f"><div class="ttname"><a href="class_advanced_sequencer.html#a0f18edfb1e5274b75b8250cbda86195f">AdvancedSequencer::SetTrackSolo</a></div><div class="ttdeci">bool SetTrackSolo(unsigned int trk_num)</div><div class="ttdoc">Soloes the given track muting all others.</div></div>
 <div class="ttc" id="aclass_advanced_sequencer_html_a43ca00f369a542d72bdb211b8dba681b"><div class="ttname"><a href="class_advanced_sequencer.html#a43ca00f369a542d72bdb211b8dba681b">AdvancedSequencer::Load</a></div><div class="ttdeci">virtual bool Load(const char *fname)</div><div class="ttdoc">Loads a MIDIFile into the internal MIDIMultiTrack.</div></div>
 <div class="ttc" id="aclass_advanced_sequencer_html_a44cec8167707480e6d9dc9f5eda8cc59"><div class="ttname"><a href="class_advanced_sequencer.html#a44cec8167707480e6d9dc9f5eda8cc59">AdvancedSequencer::SetTrackVelocityScale</a></div><div class="ttdeci">bool SetTrackVelocityScale(unsigned int trk_num, unsigned int scale)</div><div class="ttdoc">Sets a track velocity scale in percentage for the given track.</div></div>
-<div class="ttc" id="aclass_advanced_sequencer_html_a48e83ff1059f9f6db1dc57e7c7ab690a"><div class="ttname"><a href="class_advanced_sequencer.html#a48e83ff1059f9f6db1dc57e7c7ab690a">AdvancedSequencer::GetCurrentBeat</a></div><div class="ttdeci">unsigned int GetCurrentBeat() const</div><div class="ttdoc">Returns the number of current beat (first is 0).</div></div>
+<div class="ttc" id="aclass_advanced_sequencer_html_a48e83ff1059f9f6db1dc57e7c7ab690a"><div class="ttname"><a href="class_advanced_sequencer.html#a48e83ff1059f9f6db1dc57e7c7ab690a">AdvancedSequencer::GetCurrentBeat</a></div><div class="ttdeci">unsigned int GetCurrentBeat() const</div><div class="ttdoc">Returns the number of current beat (first is 0). See Numbering conventions.</div></div>
 <div class="ttc" id="aclass_advanced_sequencer_html_a49ca3a0f81e9e660e947116dedec471b"><div class="ttname"><a href="class_advanced_sequencer.html#a49ca3a0f81e9e660e947116dedec471b">AdvancedSequencer::SetMIDIThruEnable</a></div><div class="ttdeci">bool SetMIDIThruEnable(bool on_off)</div><div class="ttdoc">Enables or disables the embedded MIDIthru.</div></div>
 <div class="ttc" id="aclass_advanced_sequencer_html_a6afa0f0435f221166b5217d664ed1a69"><div class="ttname"><a href="class_advanced_sequencer.html#a6afa0f0435f221166b5217d664ed1a69">AdvancedSequencer::GetTrackMute</a></div><div class="ttdeci">bool GetTrackMute(unsigned int trk_num) const</div><div class="ttdoc">Returns true if a specific track is muted.</div><div class="ttdef"><b>Definition:</b> advancedsequencer.h:168</div></div>
 <div class="ttc" id="aclass_advanced_sequencer_html_a749448bc18bf009a95efee51efa92a37"><div class="ttname"><a href="class_advanced_sequencer.html#a749448bc18bf009a95efee51efa92a37">AdvancedSequencer::GoToMeasure</a></div><div class="ttdeci">virtual bool GoToMeasure(int measure, int beat=0)</div><div class="ttdoc">Sets the current time to the given measure and beat.</div></div>
 <div class="ttc" id="aclass_advanced_sequencer_html_a90c4d0447517bde303337d5d4647aead"><div class="ttname"><a href="class_advanced_sequencer.html#a90c4d0447517bde303337d5d4647aead">AdvancedSequencer::SetTrackTranspose</a></div><div class="ttdeci">bool SetTrackTranspose(unsigned int trk_num, int amt)</div><div class="ttdoc">Sets a transpose amount in semitones for the given track.</div></div>
-<div class="ttc" id="aclass_advanced_sequencer_html_a93b86bf991c34b5cdd94811ec3d99c52"><div class="ttname"><a href="class_advanced_sequencer.html#a93b86bf991c34b5cdd94811ec3d99c52">AdvancedSequencer::GetCurrentMeasure</a></div><div class="ttdeci">unsigned int GetCurrentMeasure() const</div><div class="ttdoc">Returns the current measure number (first is 0).</div></div>
+<div class="ttc" id="aclass_advanced_sequencer_html_a93b86bf991c34b5cdd94811ec3d99c52"><div class="ttname"><a href="class_advanced_sequencer.html#a93b86bf991c34b5cdd94811ec3d99c52">AdvancedSequencer::GetCurrentMeasure</a></div><div class="ttdeci">unsigned int GetCurrentMeasure() const</div><div class="ttdoc">Returns the current measure number (first is 0). See Numbering conventions.</div></div>
 <div class="ttc" id="aclass_advanced_sequencer_html_ad4889f405c8614649db12fce956a8e3c"><div class="ttname"><a href="class_advanced_sequencer.html#ad4889f405c8614649db12fce956a8e3c">AdvancedSequencer::UnmuteAllTracks</a></div><div class="ttdeci">void UnmuteAllTracks()</div><div class="ttdoc">Unmutes all muted tracks (this has no effect on tracks muted by SoloTrack()).</div></div>
 <div class="ttc" id="aclass_advanced_sequencer_html_ae7a5919177076591b87f5dbec1a1ea27"><div class="ttname"><a href="class_advanced_sequencer.html#ae7a5919177076591b87f5dbec1a1ea27">AdvancedSequencer::UnSoloTrack</a></div><div class="ttdeci">void UnSoloTrack()</div><div class="ttdoc">Unsoloes the soloed track unmuting all others.</div></div>
 <div class="ttc" id="aclass_advanced_sequencer_html_af493e6dd2d7ce83f7dcfe42832a28de4"><div class="ttname"><a href="class_advanced_sequencer.html#af493e6dd2d7ce83f7dcfe42832a28de4">AdvancedSequencer::GetMIDIThru</a></div><div class="ttdeci">MIDIThru * GetMIDIThru()</div><div class="ttdoc">Returns the address of the MIDIThru tick component.</div><div class="ttdef"><b>Definition:</b> advancedsequencer.h:148</div></div>
@@ -349,10 +349,10 @@ $(document).ready(function(){initNavTree('test_advancedsequencer_8cpp-example.ht
 <div class="ttc" id="aclass_m_i_d_i_manager_html_ac5fbf7c0255b7bdecc32a5b06b65cb0b"><div class="ttname"><a href="class_m_i_d_i_manager.html#ac5fbf7c0255b7bdecc32a5b06b65cb0b">MIDIManager::GetNumMIDIIns</a></div><div class="ttdeci">static unsigned int GetNumMIDIIns()</div><div class="ttdoc">Returns the number of MIDI in ports in the system.</div></div>
 <div class="ttc" id="aclass_m_i_d_i_manager_html_aeebfa44a8493628e34a8822cd5339452"><div class="ttname"><a href="class_m_i_d_i_manager.html#aeebfa44a8493628e34a8822cd5339452">MIDIManager::GetMIDIOutName</a></div><div class="ttdeci">static const std::string &amp; GetMIDIOutName(unsigned int n)</div><div class="ttdoc">Returns the system name of the given MIDI out port.</div></div>
 <div class="ttc" id="aclass_m_i_d_i_multi_track_html"><div class="ttname"><a href="class_m_i_d_i_multi_track.html">MIDIMultiTrack</a></div><div class="ttdoc">Holds an array of pointers to MIDITrack objects to be played simultaneously.</div><div class="ttdef"><b>Definition:</b> multitrack.h:50</div></div>
-<div class="ttc" id="aclass_m_i_d_i_multi_track_html_a66f5deba7b6f0ebda53452ec123a504d"><div class="ttname"><a href="class_m_i_d_i_multi_track.html#a66f5deba7b6f0ebda53452ec123a504d">MIDIMultiTrack::IsValidTrackNumber</a></div><div class="ttdeci">bool IsValidTrackNumber(int trk_num) const</div><div class="ttdoc">Returns true if trk_num is in thee range 0 ... GetNumTracks() - 1.</div><div class="ttdef"><b>Definition:</b> multitrack.h:95</div></div>
+<div class="ttc" id="aclass_m_i_d_i_multi_track_html_a03cb82dfb21c84a8637516be94939090"><div class="ttname"><a href="class_m_i_d_i_multi_track.html#a03cb82dfb21c84a8637516be94939090">MIDIMultiTrack::IsValidTrackNumber</a></div><div class="ttdeci">bool IsValidTrackNumber(unsigned int trk_num) const</div><div class="ttdoc">Returns true if trk_num is in thee range 0 ... GetNumTracks() - 1.</div><div class="ttdef"><b>Definition:</b> multitrack.h:96</div></div>
 <div class="ttc" id="aclass_m_i_d_i_out_driver_html_aa52638beda17cecd566bd15e119e1fc6"><div class="ttname"><a href="class_m_i_d_i_out_driver.html#aa52638beda17cecd566bd15e119e1fc6">MIDIOutDriver::GetPortName</a></div><div class="ttdeci">std::string GetPortName()</div><div class="ttdoc">Returns the name of the hardware out port.</div><div class="ttdef"><b>Definition:</b> driver.h:149</div></div>
 <div class="ttc" id="aclass_m_i_d_i_sequencer_html_a01946de82a9bf741647966715485cd91"><div class="ttname"><a href="class_m_i_d_i_sequencer.html#a01946de82a9bf741647966715485cd91">MIDISequencer::SetRepeatPlay</a></div><div class="ttdeci">virtual bool SetRepeatPlay(int on_off, int start_meas=-1, int end_meas=-1)</div><div class="ttdoc">Sets the repeat play (loop) parameters: you can set the repeat play status on/off,...</div></div>
-<div class="ttc" id="aclass_m_i_d_i_sequencer_html_a02771baa597331636944d40277ca9b29"><div class="ttname"><a href="class_m_i_d_i_sequencer.html#a02771baa597331636944d40277ca9b29">MIDISequencer::Play</a></div><div class="ttdeci">virtual void Play()</div><div class="ttdoc">This is an alias of Start().</div><div class="ttdef"><b>Definition:</b> sequencer.h:458</div></div>
+<div class="ttc" id="aclass_m_i_d_i_sequencer_html_a02771baa597331636944d40277ca9b29"><div class="ttname"><a href="class_m_i_d_i_sequencer.html#a02771baa597331636944d40277ca9b29">MIDISequencer::Play</a></div><div class="ttdeci">virtual void Play()</div><div class="ttdoc">This is an alias of Start().</div><div class="ttdef"><b>Definition:</b> sequencer.h:457</div></div>
 <div class="ttc" id="aclass_m_i_d_i_sequencer_html_a03e88ef9b1e7dada3a1b26a56680f389"><div class="ttname"><a href="class_m_i_d_i_sequencer.html#a03e88ef9b1e7dada3a1b26a56680f389">MIDISequencer::SetTrackTimeShift</a></div><div class="ttdeci">virtual bool SetTrackTimeShift(unsigned int trk_num, int offset)</div><div class="ttdoc">Sets the time shift offset (in MIDI ticks) for a track.</div></div>
 <div class="ttc" id="aclass_m_i_d_i_sequencer_html_a5a5ad826d66e6688da3c7c826a0243c2"><div class="ttname"><a href="class_m_i_d_i_sequencer.html#a5a5ad826d66e6688da3c7c826a0243c2">MIDISequencer::SetTrackOutPort</a></div><div class="ttdeci">virtual bool SetTrackOutPort(unsigned int trk_num, unsigned int port)</div><div class="ttdoc">Sets the MIDI out port for a track.</div></div>
 <div class="ttc" id="aclass_m_i_d_i_sequencer_html_a719912ec30fa489c89f0e34921a696af"><div class="ttname"><a href="class_m_i_d_i_sequencer.html#a719912ec30fa489c89f0e34921a696af">MIDISequencer::GetMultiTrack</a></div><div class="ttdeci">MIDIMultiTrack * GetMultiTrack()</div><div class="ttdoc">Returns a pointer to the internal MIDIMultiTrack.</div><div class="ttdef"><b>Definition:</b> sequencer.h:234</div></div>

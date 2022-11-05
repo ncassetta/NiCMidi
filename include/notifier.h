@@ -200,7 +200,7 @@ class MIDISequencerGUINotifierText : public MIDISequencerGUINotifier {
         /// \return 0 or 1.
         unsigned char           GetStartFrom() const             { return start_from; }
         /// Sets the numbering of measures and beats (starting from 0 or from 1)
-        /// \param f 0 or 1.
+        /// \param c 0 or 1.
         /// \return **true** if the parameter is correct, **false** otherwise
         bool            SetStartFrom(unsigned char c);
 

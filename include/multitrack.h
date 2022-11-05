@@ -187,7 +187,7 @@ class MIDIMultiTrack {
 /// Used by the MIDIMultiTrackIterator to keep track of the current state of the iterator. It
 /// remembers the current time and the next event in every track. The user does not need to
 /// deal with it, and the only useful thing is getting and restoring a state for faster processing (see
-/// MIDIMultiTrack::SetStatus()), so the details are not documented.
+/// MIDIMultiTrackIterator::SetState()), so the details are not documented.
 ///
 class MIDIMultiTrackIteratorState {
 /// \cond EXCLUDED
@@ -224,12 +224,9 @@ class MIDIMultiTrackIteratorState {
 /// current event, and stores its status in a MIDIMultiTrackIteratorState object. You can jump to any time in
 /// the multitrack and get its events in chronological order, starting with the first event with time greater
 /// than or equal to the current time, regardless of their track.
-/// \note This class also handles the time shifting of track events. For this it relies on an external
-/// **std::vector<int>** which must be passed by address to the SetTimeShiftVector() method. The class only reads
-/// the values in this vector and never changes it: you can turn time shifting on and off but not set the values
-/// for the tracks. This "strange" design is intended to allow a higher level class (typically the MIDISequencer)
-/// to handle the time shift, without overloading it.
-///
+/// This class also handles the time shifting of track events. You can set a different time shift amount
+/// for every track with the MIDITrack::SetTimeShift() method, and turn time shifting on and off with the
+/// SetTimeShiftMode() of this class. See also MIDISequencer::SetTimeShiftMode().
 class MIDIMultiTrackIterator {
     public:
 

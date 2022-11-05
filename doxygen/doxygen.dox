@@ -121,7 +121,7 @@
 ///   port->OpenPort();                // you must open the port before sending MIDI messages
 ///   MIDIMessage msg;
 ///   msg.SetNoteOn(0, 60, 100);       // makes msg1 a Note On message
-///   port->OutputMessage(&msg1);      // outputs the message (the note should sound)
+///   port->OutputMessage(&msg) ;      // outputs the message (the note should sound)
 ///   MIDITimer::Wait(2000);           // waits two seconds
 ///   msg.SetNoteOff(0, 60);           // makes msg the corresponding Note Off
 ///   port->OutputMessage(&msg);       // outputs the message (the note should stop)

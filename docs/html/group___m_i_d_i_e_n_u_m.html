@@ -218,7 +218,7 @@ $(document).ready(function(){initNavTree('group___m_i_d_i_e_n_u_m.html',''); ini
 <p><code>#include &lt;<a class="el" href="midi_8h.html">midi.h</a>&gt;</code></p>
 
 <p>These are the type values for a MIDI channel message. </p>
-<p >For a channel message (with status byte between 0x80 ... 0xef) only the upper four bits of the status determine its type (while lower four bits represent the channel); all status bytes between 0xf0 ... 0xff are considered system messages. You can use these in the <a class="el" href="class_m_i_d_i_message.html#ab51d5c5c796d03bd077f848328a3e1b8" title="Sets just the upper 4 bits of the status byte without changing the lower 4 bits.">MIDIMessage::SetType()</a> method. </p>
+<p >For a channel message (with status byte between 0x80 ... 0xef) only the upper four bits of the status determine its type (while lower four bits represent the channel); all status bytes between 0xf0 ... 0xff are considered system messages. You can use these in the <a class="el" href="class_m_i_d_i_message.html#ab51d5c5c796d03bd077f848328a3e1b8" title="Sets the upper 4 bits of the status byte without changing the lower 4 bits.">MIDIMessage::SetType()</a> method. </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga31b0d445fd3ac2d20f61b2e881a71801ad9f1e80e9d867906d5dfdd41c58eb7fd" name="gga31b0d445fd3ac2d20f61b2e881a71801ad9f1e80e9d867906d5dfdd41c58eb7fd"></a>NOTE_OFF&#160;</td><td class="fielddoc"><p >Note off. </p>
 </td></tr>

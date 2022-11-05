@@ -91,7 +91,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a0968d4149d6b6bb8ad0a5e63bea83772"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a pointer to the out processor.  <a href="class_m_i_d_i_out_driver.html#a0968d4149d6b6bb8ad0a5e63bea83772">More...</a><br /></td></tr>
 <tr class="separator:a0968d4149d6b6bb8ad0a5e63bea83772"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1bcc16f474a180ae8fcc96df653999db"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_out_driver.html#a1bcc16f474a180ae8fcc96df653999db">SetOutProcessor</a> (<a class="el" href="class_m_i_d_i_processor.html">MIDIProcessor</a> *proc)</td></tr>
-<tr class="memdesc:a1bcc16f474a180ae8fcc96df653999db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the out processor, which can manipulate all outgoing messages (see <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a>).  <a href="class_m_i_d_i_out_driver.html#a1bcc16f474a180ae8fcc96df653999db">More...</a><br /></td></tr>
+<tr class="memdesc:a1bcc16f474a180ae8fcc96df653999db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the out processor, which can manipulate all outgoing messages (see <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a>).  <a href="class_m_i_d_i_out_driver.html#a1bcc16f474a180ae8fcc96df653999db">More...</a><br /></td></tr>
 <tr class="separator:a1bcc16f474a180ae8fcc96df653999db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a05bc070e199c8c6f11aa2516c7f81423"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_out_driver.html#a05bc070e199c8c6f11aa2516c7f81423">OpenPort</a> ()</td></tr>
 <tr class="memdesc:a05bc070e199c8c6f11aa2516c7f81423"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens the hardware out port.  <a href="class_m_i_d_i_out_driver.html#a05bc070e199c8c6f11aa2516c7f81423">More...</a><br /></td></tr>
@@ -123,7 +123,7 @@ Static Protected Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Sends MIDI messages to an hardware MIDI out port. </p>
-<p >Every MIDI out port is denoted by a specific id number, enumerated by the RtMidi class, and by a name, given by the OS; this class communicates between the hardware ports and the other library classes. You can set a <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a> for processing outgoing MIDI messages.</p>
+<p >Every MIDI out port is denoted by a specific id number, enumerated by the RtMidi class, and by a name, given by the OS; this class communicates between the hardware ports and the other library classes. You can set a <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> for processing outgoing MIDI messages.</p>
 <p >When the program starts, the static <a class="el" href="class_m_i_d_i_manager.html" title="A static class that manages computer hardware resources (in and out MIDI ports) and timing.">MIDIManager</a> searches for all the hardware ports in the system and creates a driver for everyone of them, so you find them ready to use. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aa8948880e0372e3223da3c31a1eb5beb" name="aa8948880e0372e3223da3c31a1eb5beb"></a>
@@ -375,7 +375,7 @@ As said in the class description, the drivers are created automatically by the <
 </table>
 </div><div class="memdoc">
 
-<p>Sets the out processor, which can manipulate all outgoing messages (see <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...">MIDIProcessor</a>). </p>
+<p>Sets the out processor, which can manipulate all outgoing messages (see <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a>). </p>
 <p >If you want to eliminate a processor already set, call it with 0 as parameter (this only sets the processor pointer to 0! The driver doesn't own its processor). </p>
 
 </div>

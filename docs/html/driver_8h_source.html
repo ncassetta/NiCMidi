@@ -58,30 +58,30 @@ $(document).ready(function(){initNavTree('driver_8h_source.html',''); initResiza
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment"> *</span></div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment"> *   Copyright (C) 2004  J.D. Koftinoff Software, Ltd.</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment"> *   www.jdkoftinoff.com jeffk@jdkoftinoff.com</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment"> *   Copyright (C) 2021  Nicola Cassetta</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment"> *   Copyright (C) 2021, 2022  Nicola Cassetta</span></div>
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment"> *   https://github.com/ncassetta/NiCMidi</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment"> *</span></div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment"> *   This file is part of NiCMidi.</span></div>
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment"> *</span></div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment"> *   NiCMidi is free software: you can redistribute it and/or modify</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment"> *   it under the terms of the GNU General Public License as published by</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment"> *   the Free Software Foundation, either version 3 of the License, or</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment"> *   (at your option) any later version.</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment"> *   it under the terms of the GNU Lesser General Public License as</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment"> *   published by the Free Software Foundation, either version 3 of</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment"> *   the License, or (at your option) any later version.</span></div>
 <div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment"> *</span></div>
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment"> *   NiCMidi is distributed in the hope that it will be useful,</span></div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="comment"> *   but WITHOUT ANY WARRANTY; without even the implied warranty of</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment"> *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment"> *   GNU General Public License for more details.</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment"> *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="comment"> *   GNU Lesser General Public License for more details.</span></div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="comment"> *</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment"> *   You should have received a copy of the GNU General Public License</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment"> *   along with NiCMidi.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="comment"> *   You should have received a copy of the GNU Lesser General Public</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="comment"> *   License along with NiCMidi. If not, see &lt;http://www.gnu.org/licenses/&gt;.</span></div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment"> */</span></div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#ifndef _JDKMIDI_DRIVER_H</span></div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">#define _JDKMIDI_DRIVER_H</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#ifndef _NICMIDI_DRIVER_H</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">#define _NICMIDI_DRIVER_H</span></div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="preprocessor">#include &quot;<a class="code" href="msg_8h.html">msg.h</a>&quot;</span></div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="preprocessor">#include &quot;<a class="code" href="processor_8h.html">processor.h</a>&quot;</span></div>
@@ -290,8 +290,8 @@ $(document).ready(function(){initNavTree('driver_8h_source.html',''); initResiza
 <div class="ttc" id="aclass_m_i_d_i_out_driver_html_aa8948880e0372e3223da3c31a1eb5beb"><div class="ttname"><a href="class_m_i_d_i_out_driver.html#aa8948880e0372e3223da3c31a1eb5beb">MIDIOutDriver::MIDIOutDriver</a></div><div class="ttdeci">MIDIOutDriver(int id)</div><div class="ttdoc">Creates a MIDIOutDriver object which can send MIDI messages to the given hardware out port.</div></div>
 <div class="ttc" id="aclass_m_i_d_i_out_driver_html_ab42772028e2df6ff45af66bdb85bc9e2"><div class="ttname"><a href="class_m_i_d_i_out_driver.html#ab42772028e2df6ff45af66bdb85bc9e2">MIDIOutDriver::GetPortId</a></div><div class="ttdeci">int GetPortId() const</div><div class="ttdoc">Returns the id number of the hardware out port.</div><div class="ttdef"><b>Definition:</b> driver.h:147</div></div>
 <div class="ttc" id="aclass_m_i_d_i_out_driver_html_af285e0ab7abd72d7e6909be20c6f34c1"><div class="ttname"><a href="class_m_i_d_i_out_driver.html#af285e0ab7abd72d7e6909be20c6f34c1">MIDIOutDriver::IsPortOpen</a></div><div class="ttdeci">bool IsPortOpen() const</div><div class="ttdoc">Returns true is the hardware port is open.</div><div class="ttdef"><b>Definition:</b> driver.h:151</div></div>
-<div class="ttc" id="aclass_m_i_d_i_processor_html"><div class="ttname"><a href="class_m_i_d_i_processor.html">MIDIProcessor</a></div><div class="ttdoc">A pure virtual class implementing a device that can manipulate a MIDI message, inspecting or changing...</div><div class="ttdef"><b>Definition:</b> processor.h:47</div></div>
-<div class="ttc" id="aclass_m_i_d_i_timed_message_html"><div class="ttname"><a href="class_m_i_d_i_timed_message.html">MIDITimedMessage</a></div><div class="ttdoc">The MIDITimedMessage class inherits from the MIDIMessage and represents a message associated with a s...</div><div class="ttdef"><b>Definition:</b> msg.h:379</div></div>
+<div class="ttc" id="aclass_m_i_d_i_processor_html"><div class="ttname"><a href="class_m_i_d_i_processor.html">MIDIProcessor</a></div><div class="ttdoc">A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...</div><div class="ttdef"><b>Definition:</b> processor.h:47</div></div>
+<div class="ttc" id="aclass_m_i_d_i_timed_message_html"><div class="ttname"><a href="class_m_i_d_i_timed_message.html">MIDITimedMessage</a></div><div class="ttdoc">The MIDITimedMessage class inherits from the MIDIMessage and represents a message associated with a s...</div><div class="ttdef"><b>Definition:</b> msg.h:382</div></div>
 <div class="ttc" id="agroup___g_l_o_b_a_l_s_html_ga54224e8ae90b3b2f44d5afe5ab99f403"><div class="ttname"><a href="group___g_l_o_b_a_l_s.html#ga54224e8ae90b3b2f44d5afe5ab99f403">tMsecs</a></div><div class="ttdeci">unsigned long long tMsecs</div><div class="ttdoc">The type of a variable which can hold the elapsed time in milliseconds.</div><div class="ttdef"><b>Definition:</b> timer.h:44</div></div>
 <div class="ttc" id="amatrix_8h_html"><div class="ttname"><a href="matrix_8h.html">matrix.h</a></div><div class="ttdoc">Contains the definition of the class MIDIMatrix.</div></div>
 <div class="ttc" id="amsg_8h_html"><div class="ttname"><a href="msg_8h.html">msg.h</a></div><div class="ttdoc">Contains the definition of the classes MIDIMessage and MIDITimedMessage.</div></div>

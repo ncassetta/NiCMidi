@@ -42,8 +42,8 @@
 /// measures and the beats of a measure (so you can represent them in a graphical interface).
 /// When you change some parameter (tempo, measure, etc./) the metronome is not updated immediately, but only at
 /// the subsequent click (see UpdateValues()).
-/// \note Remember that you must call the MIDIManager::AddTick() to make effective the StaticTickProc(), then
-/// you can call Start() and Stop() methods to enable or disable the thru.
+/// \note Remember that you must call the MIDIManager::AddTick() to make effective the Start() and Stop() methods
+/// (see MIDITick).
 ///
 class Metronome : public MIDITickComponent {
     public:
@@ -56,7 +56,6 @@ class Metronome : public MIDITickComponent {
         virtual                         ~Metronome() { Stop(); }
         /// Stops the metronome and resets it to its default values.
         virtual void                    Reset();
-        /// Returns the number of MIDIticks for a quarter note
         /// Returns current MIDIClockTime in MIDI ticks from the start of the metronome.
         MIDIClockTime                   GetCurrentMIDIClockTime() const     { return cur_clock; }
         /// Returns current time in milliseconds from the start of the metronome.
@@ -79,7 +78,7 @@ class Metronome : public MIDITickComponent {
         unsigned int                    GetOutChannel() const               { return new_chan; }
         /// Returns the MIDI note number for the measure click.
         unsigned char                   GetMeasNote() const                 { return new_meas_note; }
-        /// Returns the MIDI note number for the ordinary beat click.metronome
+        /// Returns the MIDI note number for the ordinary beat click.
         unsigned char                   GetBeatNote() const                 { return new_beat_note; }
         /// Returns the MIDI note number for the subdivision click.
         unsigned char                   GetSubdNote() const                 { return new_subd_note; }
