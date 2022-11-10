@@ -123,14 +123,14 @@ MIDIFileHeader&                         GetMIDIFileHeader(const std::string& fil
 /// a master track with only system messages and 16 channel tracks (if you want to remember the original file format
 /// you can set the default parameter _head_). This is the fastest way to put a file into a multitrack, without worrying
 /// with intermediate reader objects.
-/// \param filename the name of the file
-/// \param tracks the MIDIMultiTrack to be loaded
-/// \param head if you give the address of a MIDIFileHeader object this will be filled with the original file parameters
+/// \param[in] filename the name of the file
+/// \param[out] tracks the MIDIMultiTrack to be loaded
+/// \param[out] head if you give the address of a MIDIFileHeader object this will be filled with the original file parameters
 /// (format, number of tracks, division, name) which you could reuse if you want to save the file.
 /// \return **true** if the loading is successful, otherwise **false**.
 bool                                    LoadMIDIFile(const char* filename, MIDIMultiTrack* tracks,
                                                      MIDIFileHeader* const head = 0);
-/// Loads a MIDI file into a MIDIMultiTrack object. \see LoadMIDIFile(const char*, MIDIMultiTrack, MIDIFileHeader* const).
+/// Loads a MIDI file into a MIDIMultiTrack object. \see LoadMIDIFile(const char*, MIDIMultiTrack*, MIDIFileHeader* const).
 bool                                    LoadMIDIFile(const std::string& filename, MIDIMultiTrack* tracks,
                                                      MIDIFileHeader* const head = 0);
 ///@}

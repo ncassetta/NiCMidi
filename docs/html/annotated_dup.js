@@ -18,6 +18,7 @@ var annotated_dup =
     [ "MIDIProcessorPrinter", "class_m_i_d_i_processor_printer.html", "class_m_i_d_i_processor_printer" ],
     [ "MIDIProcessorRechannelizer", "class_m_i_d_i_processor_rechannelizer.html", "class_m_i_d_i_processor_rechannelizer" ],
     [ "MIDIProcessorTransposer", "class_m_i_d_i_processor_transposer.html", "class_m_i_d_i_processor_transposer" ],
+    [ "MIDIRawMessage", "struct_m_i_d_i_raw_message.html", "struct_m_i_d_i_raw_message" ],
     [ "MIDIRecorder", "class_m_i_d_i_recorder.html", "class_m_i_d_i_recorder" ],
     [ "MIDISequencer", "class_m_i_d_i_sequencer.html", "class_m_i_d_i_sequencer" ],
     [ "MIDISequencerGUIEvent", "class_m_i_d_i_sequencer_g_u_i_event.html", "class_m_i_d_i_sequencer_g_u_i_event" ],

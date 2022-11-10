@@ -95,8 +95,8 @@ class MIDIFileEventHandler {
 
 
 /// A structure holding data which represent the header of a MIDI file. This is useful if you want to load a file, edit it
-/// and then save it with the same format and name. You can get the header of a MIDI file with the GetMIDIFileHeader()
-/// global function; see also LoadMIDIFile().
+/// and then save it with the same format and name (the AdvancedSequencer class does this automatically when it loads and
+/// saves MIDI files). You can get the header of a MIDI file with the GetMIDIFileHeader() global function; see also LoadMIDIFile().
 struct MIDIFileHeader {
     MIDIFileHeader() : format(0), ntrks(0), division(0), filename("") {}
     short format;               ///< The file format (currently only 0 and 1 are allowed by the library).

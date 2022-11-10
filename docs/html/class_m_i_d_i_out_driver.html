@@ -70,7 +70,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aa8948880e0372e3223da3c31a1eb5beb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a <a class="el" href="class_m_i_d_i_out_driver.html" title="Sends MIDI messages to an hardware MIDI out port.">MIDIOutDriver</a> object which can send MIDI messages to the given hardware out port.  <a href="class_m_i_d_i_out_driver.html#aa8948880e0372e3223da3c31a1eb5beb">More...</a><br /></td></tr>
 <tr class="separator:aa8948880e0372e3223da3c31a1eb5beb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a809f70c0cf02c912e16861d3b3b30731"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_out_driver.html#a809f70c0cf02c912e16861d3b3b30731">~MIDIOutDriver</a> ()</td></tr>
-<tr class="memdesc:a809f70c0cf02c912e16861d3b3b30731"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closes the hardware port and deletes the object.  <a href="class_m_i_d_i_out_driver.html#a809f70c0cf02c912e16861d3b3b30731">More...</a><br /></td></tr>
+<tr class="memdesc:a809f70c0cf02c912e16861d3b3b30731"><td class="mdescLeft">&#160;</td><td class="mdescRight">The destructor closes the hardware port and deletes the object.  <a href="class_m_i_d_i_out_driver.html#a809f70c0cf02c912e16861d3b3b30731">More...</a><br /></td></tr>
 <tr class="separator:a809f70c0cf02c912e16861d3b3b30731"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a139a22b508f276fcb5771a47cfe7c1b2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_out_driver.html#a139a22b508f276fcb5771a47cfe7c1b2">Reset</a> ()</td></tr>
 <tr class="memdesc:a139a22b508f276fcb5771a47cfe7c1b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the driver to default conditions:  <a href="class_m_i_d_i_out_driver.html#a139a22b508f276fcb5771a47cfe7c1b2">More...</a><br /></td></tr>
@@ -124,7 +124,7 @@ Static Protected Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Sends MIDI messages to an hardware MIDI out port. </p>
 <p >Every MIDI out port is denoted by a specific id number, enumerated by the RtMidi class, and by a name, given by the OS; this class communicates between the hardware ports and the other library classes. You can set a <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> for processing outgoing MIDI messages.</p>
-<p >When the program starts, the static <a class="el" href="class_m_i_d_i_manager.html" title="A static class that manages computer hardware resources (in and out MIDI ports) and timing.">MIDIManager</a> searches for all the hardware ports in the system and creates a driver for everyone of them, so you find them ready to use. </p>
+<p >When the program starts, the <a class="el" href="class_m_i_d_i_manager.html" title="A static class that manages computer hardware resources (in and out MIDI ports) and timing.">MIDIManager</a> searches for all the hardware ports in the system and creates a driver for everyone of them, so you find them ready to use. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aa8948880e0372e3223da3c31a1eb5beb" name="aa8948880e0372e3223da3c31a1eb5beb"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa8948880e0372e3223da3c31a1eb5beb">&#9670;&nbsp;</a></span>MIDIOutDriver()</h2>
@@ -151,7 +151,7 @@ Static Protected Attributes</h2></td></tr>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>If id is not valid or the function fails, a dummy port with no functionality is created. </dd>
 <dd>
-As said in the class description, the drivers are created automatically by the <a class="el" href="class_m_i_d_i_manager.html" title="A static class that manages computer hardware resources (in and out MIDI ports) and timing.">MIDIManager</a> when the program starts, so usually you must not create or destroy them by yourself. </dd></dl>
+As said in the class description, the drivers are created automatically by the <a class="el" href="class_m_i_d_i_manager.html" title="A static class that manages computer hardware resources (in and out MIDI ports) and timing.">MIDIManager</a> when the program starts, so usually you don't have to create or destroy them by yourself. </dd></dl>
 
 </div>
 </div>
@@ -178,7 +178,7 @@ As said in the class description, the drivers are created automatically by the <
 </table>
 </div><div class="memdoc">
 
-<p>Closes the hardware port and deletes the object. </p>
+<p>The destructor closes the hardware port and deletes the object. </p>
 
 </div>
 </div>
@@ -209,7 +209,7 @@ As said in the class description, the drivers are created automatically by the <
 <p>Resets the driver to default conditions: </p>
 <ul>
 <li>Hardware MIDI port closed (resets the open count)</li>
-<li>No extra processor (warning: this only sets the processor pointer to 0! The driver doesn't own its processor). </li>
+<li>No extra processor (<b>warning</b>: this only sets the processor pointer to 0! The driver doesn't own its processor). </li>
 </ul>
 
 </div>

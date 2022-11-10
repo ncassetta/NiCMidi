@@ -62,17 +62,19 @@
 ///@}
 
 
-// EXCLUDED FROM DOCUMENTATION BECAUSE UNDOCUMENTED
-// Used by the MIDIInDriver to keep track of incoming messages. It holds
-// a MIDIMessage, a timestamp in milliseconds (from the start of the timer) and the id of
-// the MIDI in port from which the message comes.
+
+/// Used by the MIDIInDriver to keep track of incoming messages. It holds a MIDIMessage, a timestamp in
+/// milliseconds (from the start of the timer) and the id of the MIDI in port from which the message comes.
+/// The MIDIInDriver keeps an internal queue of MIDIRawMessage arrived from its hardware MIDI in port, and
+/// you can get them by its methods.
 struct MIDIRawMessage {
                                         MIDIRawMessage() : timestamp(0), port(0) {}
+                                        /// The constructor.
                                         MIDIRawMessage(const MIDIMessage& m, tMsecs t, int p) :
                                                         msg(m), timestamp(t), port(p) {}
-        MIDIMessage                     msg;        // The MIDI Message received from the port
-        tMsecs                          timestamp;  // The absolute time in msecs
-        int                             port;       // The id of the MIDI in port which received the message
+        MIDIMessage                     msg;        ///< The MIDI Message received from the port
+        tMsecs                          timestamp;  ///< The absolute time in msecs
+        int                             port;       ///< The id of the MIDI in port which received the message
 };
 
 
@@ -123,7 +125,7 @@ class MIDIRawMessageQueue {
 /// name, given by the OS; this class communicates between the hardware ports and the other library
 /// classes. You can set a MIDIProcessor for processing outgoing MIDI messages.
 ///
-/// When the program starts, the static MIDIManager searches for all the hardware ports in the system and
+/// When the program starts, the MIDIManager searches for all the hardware ports in the system and
 /// creates a driver for everyone of them, so you find them ready to use.
 class MIDIOutDriver {
     public:
@@ -131,15 +133,15 @@ class MIDIOutDriver {
         /// \param id The id of the hardware port. Numbers of the ports and their names can be retrieved
         /// by the MIDIManager::GetNumMIDIOuts() and MIDIManager::GetMIDIOutName() static methods.
         /// \note If id is not valid or the function fails, a dummy port with no functionality is created.
-        /// \note As said in the class description, the drivers are created automatically by the
-        /// MIDIManager when the program starts, so usually you must not create or destroy them by yourself.
+        /// \note As said in the class description, the drivers are created automatically by the MIDIManager
+        /// when the program starts, so usually you don't have to create or destroy them by yourself.
                                 MIDIOutDriver (int id);
-        /// Closes the hardware port and deletes the object.
+        /// The destructor closes the hardware port and deletes the object.
         virtual                 ~MIDIOutDriver();
 
         /// Resets the driver to default conditions:
         /// - Hardware MIDI port closed (resets the open count)
-        /// - No extra processor (warning: this only sets the processor pointer to 0! The driver
+        /// - No extra processor (**warning**: this only sets the processor pointer to 0! The driver
         ///   doesn't own its processor).
         virtual void            Reset();
 
@@ -213,10 +215,11 @@ class MIDIOutDriver {
 /// Every MIDI in port is denoted by a specific id number, enumerated by the RtMidi class, and by a
 /// name, given by the OS; this class communicates between the hardware ports and the other library
 /// classes. The incoming MIDI messages are stamped with the system time in milliseconds and the
-/// port number (see the MIDIRawMessage struct) and put in a queue; you can get them with the
-/// InputMessage() and ReadMessage() methods. Moreover you can set a MIDIProcessor for processing them.
+/// port number (see the MIDIRawMessage struct and HardwareMsgIn() for details) and put in an internal
+/// queue; you can get them with the InputMessage() and ReadMessage() methods. Moreover you can set a
+/// MIDIProcessor for processing them as they arrive.
 ///
-/// When the program starts, the static MIDIManager searches for all the hardware ports in the system and
+/// When the program starts, the MIDIManager searches for all the hardware ports in the system and
 /// creates a driver for everyone of them, so you find them ready to use.
 class MIDIInDriver {
     public:
@@ -226,15 +229,15 @@ class MIDIInDriver {
         /// \param queue_size The size of the queue; you could try to change this if you have trouble in
         /// receiving MIDI messages from the hardware, otherwise left unchanged (default size is 256).
         /// \note If id is not valid or the function fails, a dummy port with no functionality is created.
-        /// \note As said in the class description, the drivers are created automatically by the
-        /// MIDIManager when the program starts, so usually you must not create or destroy them by yourself.
+        /// \note As said in the class description, the drivers are created automatically by the MIDIManager
+        /// when the program starts, so usually you don't have to create or destroy them by yourself.
                                 MIDIInDriver(int id, unsigned int queue_size = DEFAULT_QUEUE_SIZE);
-        /// Closes the hardware port and deletes the object.
+        /// The destructor closes the hardware port and deletes the object.
         virtual                 ~MIDIInDriver();
         /// Resets the driver to default conditions:
         /// - Hardware MIDI port closed (resets the open count)
         /// - In queue empty
-        /// - No extra processor (this only sets the processor pointer to 0! The driver
+        /// - No extra processor (**warning**: this only sets the processor pointer to 0! The driver
         ///   doesn't own its processor).
         virtual void            Reset();
 
@@ -256,10 +259,14 @@ class MIDIInDriver {
         /// Sets the in processor, which can manipulate all incoming messages (see MIDIProcessor). If you
         /// want to eliminate a processor already set, call it with 0 as parameter (this only sets the
         /// processor pointer to 0! The driver doesn't own its processor).
+        /// \note Processing of messages occurs before they are stored in the MIDIRawMessage queue. The
+        /// driver cannot know their MIDI time (as it depends by musical tempo and division) so it runs
+        /// on a MIDITimedMessage with time set to 0, which is then stored as a MIDIMessage. So every
+        /// processing involving the message time is ineffective.
         virtual void            SetProcessor(MIDIProcessor* proc);
 
         /// Opens the hardware in port. This usually requires a noticeable amount of time, so it's better
-        /// not to immediately start to send messages. If the port is already open the object remembers how many
+        /// not to immediately start to get messages. If the port is already open the object remembers how many
         /// times it was open, so a corresponding number of ClosePort() must be called to effectively close the port.
         virtual void            OpenPort();
         /// Closes the hardware out port. If the port was open more than once it only decrements the count
@@ -279,7 +286,6 @@ class MIDIInDriver {
         /// \param [out] msg the message got from the queue
         /// \return **true** if the queue was not empty (and _msg_ is valid), otherwise **false**.
         virtual bool            InputMessage(MIDIRawMessage& msg);
-        // TODO: the processor processes it?
         /// Gets the n-th message in the queue without deleting it (so the message remains
         /// available for other purposes).
         /// \param [out] msg is a direct reference to the queued message, so it's your
@@ -290,7 +296,9 @@ class MIDIInDriver {
 
 protected:
 
-        /// This is the RtMidi callback function (you must not call it directly)
+        /// This is the callback function executed by RtMidi when a message arrives to the hardware port.
+        /// It converts raw data taken from the port into a MIDIRawMessage (eventually processing it with
+        /// the processor) and pushes it on the internal queue. You must not call it directly.
         static void             HardwareMsgIn(double time,
                                               std::vector<unsigned char>* msg_bytes,
                                               void* p);

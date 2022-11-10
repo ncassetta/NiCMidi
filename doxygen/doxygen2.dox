@@ -251,6 +251,7 @@
 ///}
 /// \endcode
 ///
+/// This simple example outputs to stdout a description of every event which happens in the sequencer.
 /// In the following files you can see more elaborated examples of the typical usage of the notifier classes:
 /// + \ref test_stepsequencer.cpp (text notifier)
 /// + \ref test_win32_player.cpp (Windows notifier)

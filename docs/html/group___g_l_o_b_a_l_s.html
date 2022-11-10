@@ -831,9 +831,9 @@ Enumerations</h2></td></tr>
 <p>Loads a MIDI file into a <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a> object. </p>
 <p >If the file is in SMF 0 (with only a track) splits it into a master track with only system messages and 16 channel tracks (if you want to remember the original file format you can set the default parameter <em>head</em>). This is the fastest way to put a file into a multitrack, without worrying with intermediate reader objects. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">filename</td><td>the name of the file </td></tr>
-    <tr><td class="paramname">tracks</td><td>the <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a> to be loaded </td></tr>
-    <tr><td class="paramname">head</td><td>if you give the address of a <a class="el" href="struct_m_i_d_i_file_header.html" title="A structure holding data which represent the header of a MIDI file.">MIDIFileHeader</a> object this will be filled with the original file parameters (format, number of tracks, division, name) which you could reuse if you want to save the file. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">filename</td><td>the name of the file </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">tracks</td><td>the <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a> to be loaded </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">head</td><td>if you give the address of a <a class="el" href="struct_m_i_d_i_file_header.html" title="A structure holding data which represent the header of a MIDI file.">MIDIFileHeader</a> object this will be filled with the original file parameters (format, number of tracks, division, name) which you could reuse if you want to save the file. </td></tr>
   </table>
   </dd>
 </dl>
@@ -878,7 +878,7 @@ Enumerations</h2></td></tr>
 <p><code>#include &lt;<a class="el" href="filereadmultitrack_8h.html">filereadmultitrack.h</a>&gt;</code></p>
 
 <p>Loads a MIDI file into a <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a> object. </p>
-<dl class="section see"><dt>See also</dt><dd>LoadMIDIFile(const char*, MIDIMultiTrack, MIDIFileHeader* const). </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group___g_l_o_b_a_l_s.html#ga2aeb658536e62963f91dafccdbdd78c2" title="Loads a MIDI file into a MIDIMultiTrack object.">LoadMIDIFile(const char*, MIDIMultiTrack*, MIDIFileHeader* const)</a>. </dd></dl>
 
 </div>
 </div>
@@ -979,7 +979,7 @@ Enumerations</h2></td></tr>
 <p><code>#include &lt;<a class="el" href="filewritemultitrack_8h.html">filewritemultitrack.h</a>&gt;</code></p>
 
 <p>Writes the given <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a> object into a MIDI file. </p>
-<dl class="section see"><dt>See also</dt><dd>WriteMIDIFile(const char* filename, format, tracks, strip) </dd></dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="group___g_l_o_b_a_l_s.html#ga5992348e94d8fd82fd19323f27e6172c" title="Writes the given MIDIMultiTrack object into a MIDI file.">WriteMIDIFile(const char*, int, const MIDIMultiTrack*, bool)</a> </dd></dl>
 
 </div>
 </div>
@@ -1279,7 +1279,7 @@ Enumerations</h2></td></tr>
     <tr><td class="paramname">sharp_flats</td><td>the number of accidents as coded in a MIDI keysig mera messge </td></tr>
     <tr><td class="paramname">major_minor</td><td>the mode as coded in a MIDI keysig messages </td></tr>
     <tr><td class="paramname">uppercase</td><td>if true the key name (A, B, C, ...) is uppercase </td></tr>
-    <tr><td class="paramname">space</td><td>if true put a space between the key and the mode (es. A m) </td></tr>
+    <tr><td class="paramname">space</td><td>if true puts a space between the key and the mode (es. A m) </td></tr>
     <tr><td class="paramname">use_Mm</td><td>if true the mode is M or m, otherwise maj or min </td></tr>
   </table>
   </dd>
@@ -1326,7 +1326,7 @@ Enumerations</h2></td></tr>
 <p><code>#include &lt;<a class="el" href="midi_8h.html">midi.h</a>&gt;</code></p>
 
 <p>The default clocks per beat parameter when initializing a <a class="el" href="class_m_i_d_i_multi_track.html" title="Holds an array of pointers to MIDITrack objects to be played simultaneously.">MIDIMultiTrack</a>. </p>
-<p >This is the number of MIDI ticks for a quarter note in all the tracks of the multitrack (when initialized. You can change it with the <a class="el" href="class_m_i_d_i_multi_track.html#a6453984237aacd0922b6c208c5ea9fae" title="Changes the value of the clock per beat parameter for the tracks, updating the times of all MIDI even...">MIDIMultiTrack::SetClksPerBeat()</a> method. </p>
+<p >This is the number of MIDI ticks for a quarter note in all the tracks of the multitrack when it is constructed. You can change it with the <a class="el" href="class_m_i_d_i_multi_track.html#a6453984237aacd0922b6c208c5ea9fae" title="Changes the value of the clock per beat parameter for the tracks, updating the times of all MIDI even...">MIDIMultiTrack::SetClksPerBeat()</a> method. </p>
 
 </div>
 </div>

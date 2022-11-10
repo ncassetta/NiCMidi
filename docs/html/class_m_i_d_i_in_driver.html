@@ -69,7 +69,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a153e46a960e9920ba92e7a31aec7ebf6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a <a class="el" href="class_m_i_d_i_in_driver.html" title="Receives MIDI messages from an hardware MIDI in port.">MIDIInDriver</a> object which can receive MIDI messages from the given hardware in port.  <a href="class_m_i_d_i_in_driver.html#a153e46a960e9920ba92e7a31aec7ebf6">More...</a><br /></td></tr>
 <tr class="separator:a153e46a960e9920ba92e7a31aec7ebf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2dda0d01db1955d6f17e722dac11afb6"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_in_driver.html#a2dda0d01db1955d6f17e722dac11afb6">~MIDIInDriver</a> ()</td></tr>
-<tr class="memdesc:a2dda0d01db1955d6f17e722dac11afb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closes the hardware port and deletes the object.  <a href="class_m_i_d_i_in_driver.html#a2dda0d01db1955d6f17e722dac11afb6">More...</a><br /></td></tr>
+<tr class="memdesc:a2dda0d01db1955d6f17e722dac11afb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">The destructor closes the hardware port and deletes the object.  <a href="class_m_i_d_i_in_driver.html#a2dda0d01db1955d6f17e722dac11afb6">More...</a><br /></td></tr>
 <tr class="separator:a2dda0d01db1955d6f17e722dac11afb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a985dbf134be5ca331413349cb91750d2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_in_driver.html#a985dbf134be5ca331413349cb91750d2">Reset</a> ()</td></tr>
 <tr class="memdesc:a985dbf134be5ca331413349cb91750d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the driver to default conditions:  <a href="class_m_i_d_i_in_driver.html#a985dbf134be5ca331413349cb91750d2">More...</a><br /></td></tr>
@@ -113,23 +113,23 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a152f81ea08e0f39cf6174d58eb949555"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_in_driver.html#a152f81ea08e0f39cf6174d58eb949555">FlushQueue</a> ()</td></tr>
 <tr class="memdesc:a152f81ea08e0f39cf6174d58eb949555"><td class="mdescLeft">&#160;</td><td class="mdescRight">Empties the queue in a thread-safe way.  <a href="class_m_i_d_i_in_driver.html#a152f81ea08e0f39cf6174d58eb949555">More...</a><br /></td></tr>
 <tr class="separator:a152f81ea08e0f39cf6174d58eb949555"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ada4972775c41089123148764ce2bc32b"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_in_driver.html#ada4972775c41089123148764ce2bc32b">InputMessage</a> (MIDIRawMessage &amp;msg)</td></tr>
+<tr class="memitem:ada4972775c41089123148764ce2bc32b"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_in_driver.html#ada4972775c41089123148764ce2bc32b">InputMessage</a> (<a class="el" href="struct_m_i_d_i_raw_message.html">MIDIRawMessage</a> &amp;msg)</td></tr>
 <tr class="memdesc:ada4972775c41089123148764ce2bc32b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the next message in the queue, copying it into <em>msg</em> (the message is deleted from the queue).  <a href="class_m_i_d_i_in_driver.html#ada4972775c41089123148764ce2bc32b">More...</a><br /></td></tr>
 <tr class="separator:ada4972775c41089123148764ce2bc32b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a32c5efeffde710dfc2bf8deb22fe93ac"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_in_driver.html#a32c5efeffde710dfc2bf8deb22fe93ac">ReadMessage</a> (MIDIRawMessage &amp;msg, unsigned int n)</td></tr>
+<tr class="memitem:a32c5efeffde710dfc2bf8deb22fe93ac"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_in_driver.html#a32c5efeffde710dfc2bf8deb22fe93ac">ReadMessage</a> (<a class="el" href="struct_m_i_d_i_raw_message.html">MIDIRawMessage</a> &amp;msg, unsigned int n)</td></tr>
 <tr class="memdesc:a32c5efeffde710dfc2bf8deb22fe93ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the n-th message in the queue without deleting it (so the message remains available for other purposes).  <a href="class_m_i_d_i_in_driver.html#a32c5efeffde710dfc2bf8deb22fe93ac">More...</a><br /></td></tr>
 <tr class="separator:a32c5efeffde710dfc2bf8deb22fe93ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-static-methods" name="pro-static-methods"></a>
 Static Protected Member Functions</h2></td></tr>
 <tr class="memitem:a668b47e34401811a32dcaecf6be92828"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_in_driver.html#a668b47e34401811a32dcaecf6be92828">HardwareMsgIn</a> (double time, std::vector&lt; unsigned char &gt; *msg_bytes, void *p)</td></tr>
-<tr class="memdesc:a668b47e34401811a32dcaecf6be92828"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is the RtMidi callback function (you must not call it directly)  <a href="class_m_i_d_i_in_driver.html#a668b47e34401811a32dcaecf6be92828">More...</a><br /></td></tr>
+<tr class="memdesc:a668b47e34401811a32dcaecf6be92828"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is the callback function executed by RtMidi when a message arrives to the hardware port.  <a href="class_m_i_d_i_in_driver.html#a668b47e34401811a32dcaecf6be92828">More...</a><br /></td></tr>
 <tr class="separator:a668b47e34401811a32dcaecf6be92828"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Receives MIDI messages from an hardware MIDI in port. </p>
-<p >Every MIDI in port is denoted by a specific id number, enumerated by the RtMidi class, and by a name, given by the OS; this class communicates between the hardware ports and the other library classes. The incoming MIDI messages are stamped with the system time in milliseconds and the port number (see the MIDIRawMessage struct) and put in a queue; you can get them with the <a class="el" href="class_m_i_d_i_in_driver.html#ada4972775c41089123148764ce2bc32b" title="Gets the next message in the queue, copying it into msg (the message is deleted from the queue).">InputMessage()</a> and <a class="el" href="class_m_i_d_i_in_driver.html#a32c5efeffde710dfc2bf8deb22fe93ac" title="Gets the n-th message in the queue without deleting it (so the message remains available for other pu...">ReadMessage()</a> methods. Moreover you can set a <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> for processing them.</p>
-<p >When the program starts, the static <a class="el" href="class_m_i_d_i_manager.html" title="A static class that manages computer hardware resources (in and out MIDI ports) and timing.">MIDIManager</a> searches for all the hardware ports in the system and creates a driver for everyone of them, so you find them ready to use. </p>
+<p >Every MIDI in port is denoted by a specific id number, enumerated by the RtMidi class, and by a name, given by the OS; this class communicates between the hardware ports and the other library classes. The incoming MIDI messages are stamped with the system time in milliseconds and the port number (see the <a class="el" href="struct_m_i_d_i_raw_message.html" title="Used by the MIDIInDriver to keep track of incoming messages.">MIDIRawMessage</a> struct and <a class="el" href="class_m_i_d_i_in_driver.html#a668b47e34401811a32dcaecf6be92828" title="This is the callback function executed by RtMidi when a message arrives to the hardware port.">HardwareMsgIn()</a> for details) and put in an internal queue; you can get them with the <a class="el" href="class_m_i_d_i_in_driver.html#ada4972775c41089123148764ce2bc32b" title="Gets the next message in the queue, copying it into msg (the message is deleted from the queue).">InputMessage()</a> and <a class="el" href="class_m_i_d_i_in_driver.html#a32c5efeffde710dfc2bf8deb22fe93ac" title="Gets the n-th message in the queue without deleting it (so the message remains available for other pu...">ReadMessage()</a> methods. Moreover you can set a <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a> for processing them as they arrive.</p>
+<p >When the program starts, the <a class="el" href="class_m_i_d_i_manager.html" title="A static class that manages computer hardware resources (in and out MIDI ports) and timing.">MIDIManager</a> searches for all the hardware ports in the system and creates a driver for everyone of them, so you find them ready to use. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a153e46a960e9920ba92e7a31aec7ebf6" name="a153e46a960e9920ba92e7a31aec7ebf6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a153e46a960e9920ba92e7a31aec7ebf6">&#9670;&nbsp;</a></span>MIDIInDriver()</h2>
@@ -167,7 +167,7 @@ Static Protected Member Functions</h2></td></tr>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>If id is not valid or the function fails, a dummy port with no functionality is created. </dd>
 <dd>
-As said in the class description, the drivers are created automatically by the <a class="el" href="class_m_i_d_i_manager.html" title="A static class that manages computer hardware resources (in and out MIDI ports) and timing.">MIDIManager</a> when the program starts, so usually you must not create or destroy them by yourself. </dd></dl>
+As said in the class description, the drivers are created automatically by the <a class="el" href="class_m_i_d_i_manager.html" title="A static class that manages computer hardware resources (in and out MIDI ports) and timing.">MIDIManager</a> when the program starts, so usually you don't have to create or destroy them by yourself. </dd></dl>
 
 </div>
 </div>
@@ -194,7 +194,7 @@ As said in the class description, the drivers are created automatically by the <
 </table>
 </div><div class="memdoc">
 
-<p>Closes the hardware port and deletes the object. </p>
+<p>The destructor closes the hardware port and deletes the object. </p>
 
 </div>
 </div>
@@ -226,7 +226,7 @@ As said in the class description, the drivers are created automatically by the <
 <ul>
 <li>Hardware MIDI port closed (resets the open count)</li>
 <li>In queue empty</li>
-<li>No extra processor (this only sets the processor pointer to 0! The driver doesn't own its processor). </li>
+<li>No extra processor (<b>warning</b>: this only sets the processor pointer to 0! The driver doesn't own its processor). </li>
 </ul>
 
 </div>
@@ -447,7 +447,7 @@ As said in the class description, the drivers are created automatically by the <
 </div><div class="memdoc">
 
 <p>Sets the in processor, which can manipulate all incoming messages (see <a class="el" href="class_m_i_d_i_processor.html" title="A pure virtual class implementing an object that can manipulate a MIDI message, inspecting or changin...">MIDIProcessor</a>). </p>
-<p >If you want to eliminate a processor already set, call it with 0 as parameter (this only sets the processor pointer to 0! The driver doesn't own its processor). </p>
+<p >If you want to eliminate a processor already set, call it with 0 as parameter (this only sets the processor pointer to 0! The driver doesn't own its processor). </p><dl class="section note"><dt>Note</dt><dd>Processing of messages occurs before they are stored in the <a class="el" href="struct_m_i_d_i_raw_message.html" title="Used by the MIDIInDriver to keep track of incoming messages.">MIDIRawMessage</a> queue. The driver cannot know their MIDI time (as it depends by musical tempo and division) so it runs on a <a class="el" href="class_m_i_d_i_timed_message.html" title="The MIDITimedMessage class inherits from the MIDIMessage and represents a message associated with a s...">MIDITimedMessage</a> with time set to 0, which is then stored as a <a class="el" href="class_m_i_d_i_message.html" title="Stores data representing a MIDI event message.">MIDIMessage</a>. So every processing involving the message time is ineffective. </dd></dl>
 
 </div>
 </div>
@@ -475,7 +475,7 @@ As said in the class description, the drivers are created automatically by the <
 </div><div class="memdoc">
 
 <p>Opens the hardware in port. </p>
-<p >This usually requires a noticeable amount of time, so it's better not to immediately start to send messages. If the port is already open the object remembers how many times it was open, so a corresponding number of <a class="el" href="class_m_i_d_i_in_driver.html#a44da1c9efb38b7c85352d2f183fd5c40" title="Closes the hardware out port.">ClosePort()</a> must be called to effectively close the port. </p>
+<p >This usually requires a noticeable amount of time, so it's better not to immediately start to get messages. If the port is already open the object remembers how many times it was open, so a corresponding number of <a class="el" href="class_m_i_d_i_in_driver.html#a44da1c9efb38b7c85352d2f183fd5c40" title="Closes the hardware out port.">ClosePort()</a> must be called to effectively close the port. </p>
 
 </div>
 </div>
@@ -593,7 +593,7 @@ As said in the class description, the drivers are created automatically by the <
         <tr>
           <td class="memname">virtual bool MIDIInDriver::InputMessage </td>
           <td>(</td>
-          <td class="paramtype">MIDIRawMessage &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="struct_m_i_d_i_raw_message.html">MIDIRawMessage</a> &amp;&#160;</td>
           <td class="paramname"><em>msg</em></td><td>)</td>
           <td></td>
         </tr>
@@ -628,7 +628,7 @@ As said in the class description, the drivers are created automatically by the <
         <tr>
           <td class="memname">virtual bool MIDIInDriver::ReadMessage </td>
           <td>(</td>
-          <td class="paramtype">MIDIRawMessage &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="struct_m_i_d_i_raw_message.html">MIDIRawMessage</a> &amp;&#160;</td>
           <td class="paramname"><em>msg</em>, </td>
         </tr>
         <tr>
@@ -702,7 +702,8 @@ As said in the class description, the drivers are created automatically by the <
 </table>
 </div><div class="memdoc">
 
-<p>This is the RtMidi callback function (you must not call it directly) </p>
+<p>This is the callback function executed by RtMidi when a message arrives to the hardware port. </p>
+<p >It converts raw data taken from the port into a <a class="el" href="struct_m_i_d_i_raw_message.html" title="Used by the MIDIInDriver to keep track of incoming messages.">MIDIRawMessage</a> (eventually processing it with the processor) and pushes it on the internal queue. You must not call it directly. </p>
 
 </div>
 </div>

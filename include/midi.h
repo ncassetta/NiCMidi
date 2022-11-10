@@ -46,8 +46,8 @@ typedef unsigned long MIDIClockTime;
 /// Used by some functions which search for specific events in a time interval.
 const MIDIClockTime TIME_INFINITE = 0xffffffff;
 /// The default clocks per beat parameter when initializing a MIDIMultiTrack.
-/// This is the number of MIDI ticks for a quarter note in all the tracks of the multitrack (when initialized. You can
-/// change it with the MIDIMultiTrack::SetClksPerBeat() method.
+/// This is the number of MIDI ticks for a quarter note in all the tracks of the multitrack when it is constructed.
+/// You can change it with the MIDIMultiTrack::SetClksPerBeat() method.
 const unsigned int DEFAULT_CLKS_PER_BEAT = 120;
 ///@}
 
@@ -306,7 +306,7 @@ inline int GetNoteOctave(unsigned char note) {
 /// \param sharp_flats the number of accidents as coded in a MIDI keysig mera messge
 /// \param major_minor the mode as coded in a MIDI keysig messages
 /// \param uppercase if true the key name (A, B, C, ...) is uppercase
-/// \param space if true put a space between the key and the mode (es. A m)
+/// \param space if true puts a space between the key and the mode (es. A m)
 /// \param use_Mm if true the mode is M or m, otherwise maj or min
 const char* KeyName (signed char sharp_flats, unsigned char major_minor, bool uppercase = true,
                      bool space = false, bool use_Mm = true);

@@ -21,6 +21,7 @@ var hierarchy =
       [ "MIDISequencerState", "class_m_i_d_i_sequencer_state.html", null ],
       [ "MIDISequencerTrackProcessor", "class_m_i_d_i_sequencer_track_processor.html", null ]
     ] ],
+    [ "MIDIRawMessage", "struct_m_i_d_i_raw_message.html", null ],
     [ "MIDISequencerGUIEvent", "class_m_i_d_i_sequencer_g_u_i_event.html", null ],
     [ "MIDISequencerGUINotifier", "class_m_i_d_i_sequencer_g_u_i_notifier.html", [
       [ "MIDISequencerGUINotifierText", "class_m_i_d_i_sequencer_g_u_i_notifier_text.html", null ],
