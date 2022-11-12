@@ -47,7 +47,7 @@ using namespace std;
 MIDIMultiTrack multitrack;
 // a text notifier
 MIDISequencerGUINotifierText notifier;
-// this ctor creates the sequencer from the given multitrack
+// this constructor creates the sequencer from the given multitrack
 MIDISequencer sequencer(&multitrack, &notifier);
 
 extern string command, par1, par2;          // used by GetCommand() for parsing the user input
@@ -87,9 +87,6 @@ All commands can be given during playback\n";
 
 
 int main(int argc, char **argv) {
-    // you must add the sequencer to the MIDIManager queue (AdvancedSequencer
-    // does it by itself
-    MIDIManager::AddMIDITick(&sequencer);
     notifier.SetEnable(false);
     cout << "TYPE help TO GET A LIST OF AVAILABLE COMMANDS" << endl << endl;
     while (command != "quit") {                     // main loop

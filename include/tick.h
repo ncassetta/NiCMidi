@@ -57,19 +57,19 @@ typedef enum {
 /// of a MIDITimer.
 /// You can use this feature to send, receive or manipulate MIDI messages with accurate timing: the MIDISequencer,
 /// MIDIThru and MIDIRecorder classes inherit by this.
-/// To use a MIDITickComponent object you must add it to the MIDIManager queue with the MIDIManager::AddMIDITick()
-/// method; then you can call the Start() and Stop() methods of the object to start and stop the callback. A priority
-/// parameter is supplied to determine the position of the MIDITickComponent in the MIDIManager queue.
+/// To use a MIDITickComponent object it must be placed in the MIDIManager queue with the MIDIManager::AddMIDITick()
+/// method: this is done by the base class constructor so the user doesn't need to do this; you can hence call the
+/// Start() and Stop() methods of the object to start and stop the callback. A priority parameter is supplied to
+/// determine the position of the MIDITickComponent in the MIDIManager queue.
 ///
 class MIDITickComponent {
     public:
-        /// The constructor.
+        /// The constructor. It adds the component to the MIDIManager queue calling MIDIManager::AddMIDITick(), so
+        /// the user doesn't need to do it manually.
         /// \param pr the priority (see \ref tPriority)
         /// \param func a pointer to the static callback: this should be the address of the StaticTickProc() you
         /// have implemented in your subclass
-                                    MIDITickComponent(tPriority pr, MIDITick func) : tick_proc(func),
-                                                      dev_time_offset(0), sys_time_offset(0),
-                                                      priority(pr), running(false) {}
+                                    MIDITickComponent(tPriority pr, MIDITick func);
 
         /// The destructor.
         /// Before deleting the object it tries to remove its pointer from the MIDIManager queue to prevent the
@@ -78,7 +78,7 @@ class MIDITickComponent {
         virtual                    ~MIDITickComponent();
 
 
-        /// A pure virtual method reinitializing the class parameters.
+        /// A pure virtual method which should reinitialize the class parameters.
         virtual void                Reset() = 0;
 
         /// Returns the address of the StaticTickProc() method, which will be called by the MIDIManager at every
@@ -98,10 +98,6 @@ class MIDITickComponent {
         /// calculate the elapsed time. In your derived class you probably will want to redefine this for doing
         /// other things before starting the callback (for example opening MIDI ports): however in your derived
         /// method you must call this base class method.
-        ///
-        /// You must call this **after** inserting the object into the MIDIManager queue with the
-        /// MIDIManager::AddMIDITick() method, or you will have no effect.
-
         virtual void                Start();
         /// Sets the running status as **false** and stops the callback.
         /// \see Start()
@@ -114,14 +110,15 @@ class MIDITickComponent {
         /// \param sys_time the now system time
         /// \param pt the _this_ pointer of the object instance.
         ///
-        /// You must implement it in your subclass and give the function address in the constructor. Typically this should
+        /// You must implement it in your subclass and give this function address in the constructor. Typically this should
         /// only cast the void pointer *pt* to a pointer to your object and then call the pt->TickProc(sys_time), i.e\. your
         /// non static procedure.
         static void                 StaticTickProc(tMsecs sys_time, void* pt)   {}
-        /// This is the pure virtual function you must implement in your subclass.
+        /// This is the pure virtual function you must implement in your subclass. This function is called at every timer
+        /// tick and in it you should do all the work of your component.
         virtual void                TickProc(tMsecs sys_time) = 0;
 
-        /// The pointer to the static callback (probably set by the constructor to StaticTickProc()).
+        /// The pointer to the static callback (set by the constructor to StaticTickProc()).
         const MIDITick*             tick_proc;
 
         /// A time offset set by the user and which you can use for your calculations.

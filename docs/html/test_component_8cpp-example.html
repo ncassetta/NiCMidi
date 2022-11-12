@@ -79,8 +79,7 @@ $(document).ready(function(){initNavTree('test_component_8cpp-example.html','');
 <div class="line"><span class="comment">/*</span></div>
 <div class="line"><span class="comment">  Example of a basic custom MIDITickComponent which only plays a note</span></div>
 <div class="line"><span class="comment">  every second. The file shows how to redefine the base class methods</span></div>
-<div class="line"><span class="comment">  and how to add the component to the MIDIManager queue, making it</span></div>
-<div class="line"><span class="comment">  effective.</span></div>
+<div class="line"><span class="comment">  making it effective.</span></div>
 <div class="line"><span class="comment">*/</span></div>
 <div class="line"> </div>
 <div class="line"> </div>
@@ -119,7 +118,7 @@ $(document).ready(function(){initNavTree('test_component_8cpp-example.html','');
 <div class="line"> </div>
 <div class="line"><span class="comment">// The constructor must call the base class constructor with the priority and the StaticTickProc</span></div>
 <div class="line"><span class="comment">// pointer as parameters.</span></div>
-<div class="line"><span class="comment">// In our case, as we have only one object in the MIDIManager queue, the priority is irrelevant.</span></div>
+<div class="line"><span class="comment">// In our case, as we have only this component  in the MIDIManager queue, the priority is irrelevant.</span></div>
 <div class="line"><span class="comment">//</span></div>
 <div class="line">TestComp::TestComp() : <a class="code hl_class" href="class_m_i_d_i_tick_component.html">MIDITickComponent</a>(<a id="a6" name="a6"></a><a class="code hl_enumvalue" href="group___g_l_o_b_a_l_s.html#gga0a0f2a20deed4dac868a5f7cd436d4daae4ea70e6309210e7d536ca84cf733fc8">PR_PRE_SEQ</a>, StaticTickProc) {}</div>
 <div class="line"> </div>
@@ -152,8 +151,8 @@ $(document).ready(function(){initNavTree('test_component_8cpp-example.html','');
 <div class="line"><span class="comment">// pointer and then call the (virtual) derived class callback (i.e. TickProc).</span></div>
 <div class="line"><span class="comment">//</span></div>
 <div class="line"><span class="keywordtype">void</span> TestComp::StaticTickProc(<a class="code hl_typedef" href="group___g_l_o_b_a_l_s.html#ga54224e8ae90b3b2f44d5afe5ab99f403">tMsecs</a> sys_time, <span class="keywordtype">void</span>* pt) {</div>
-<div class="line">    TestComp* c_pt = <span class="keyword">static_cast&lt;</span>TestComp*<span class="keyword">&gt;</span>(pt);</div>
-<div class="line">    c_pt-&gt;TickProc(sys_time);</div>
+<div class="line">    TestComp* class_pt = <span class="keyword">static_cast&lt;</span>TestComp*<span class="keyword">&gt;</span>(pt);</div>
+<div class="line">    class_pt-&gt;TickProc(sys_time);</div>
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="line"> </div>
@@ -181,14 +180,13 @@ $(document).ready(function(){initNavTree('test_component_8cpp-example.html','');
 <div class="line">    }</div>
 <div class="line">}</div>
 <div class="line"> </div>
-<div class="line"><span class="comment">// The main() creates a class instance, adds it to the MIDIManager queue and then calls</span></div>
-<div class="line"><span class="comment">// Start() and Stop() for enabling and disabling the callback</span></div>
+<div class="line"><span class="comment">// The main() creates a class instance and then calls Start() and Stop() for enabling and</span></div>
+<div class="line"><span class="comment">// disabling the callback</span></div>
 <div class="line"><span class="keywordtype">int</span> main() {</div>
 <div class="line">    TestComp comp;                              <span class="comment">// creates the component</span></div>
-<div class="line">    <a id="a14" name="a14"></a><a class="code hl_function" href="class_m_i_d_i_manager.html#ab79f1ed8b7f7ea3b55b95e2d9a0b51e7">MIDIManager::AddMIDITick</a>(&amp;comp);            <span class="comment">// adds it to the MIDIManager queue</span></div>
 <div class="line">    comp.Start();                               <span class="comment">// starts the callback</span></div>
 <div class="line">    cout &lt;&lt; <span class="stringliteral">&quot;Waiting 10 secs ... &quot;</span> &lt;&lt; endl;</div>
-<div class="line">    <a id="a15" name="a15"></a><a class="code hl_function" href="class_m_i_d_i_timer.html#adbf80f5b6708bf6f84b3d354aa006bae">MIDITimer::Wait</a>(10000);                     <span class="comment">// waits 10 secs</span></div>
+<div class="line">    <a id="a14" name="a14"></a><a class="code hl_function" href="class_m_i_d_i_timer.html#adbf80f5b6708bf6f84b3d354aa006bae">MIDITimer::Wait</a>(10000);                     <span class="comment">// waits 10 secs</span></div>
 <div class="line">    comp.Stop();                                <span class="comment">// stops the callback</span></div>
 <div class="line">    cout &lt;&lt; <span class="stringliteral">&quot;Waiting 5 secs without playing ... &quot;</span> &lt;&lt; endl;</div>
 <div class="line">    <a class="code hl_function" href="class_m_i_d_i_timer.html#adbf80f5b6708bf6f84b3d354aa006bae">MIDITimer::Wait</a>(5000);                      <span class="comment">// waits 5 secs</span></div>
@@ -197,15 +195,14 @@ $(document).ready(function(){initNavTree('test_component_8cpp-example.html','');
 <div class="line">}</div>
 <div class="line"> </div>
 <div class="ttc" id="aclass_m_i_d_i_manager_html_a520b1ab350178329a07b17a81c6a0e3d"><div class="ttname"><a href="class_m_i_d_i_manager.html#a520b1ab350178329a07b17a81c6a0e3d">MIDIManager::GetOutDriver</a></div><div class="ttdeci">static MIDIOutDriver * GetOutDriver(unsigned int n)</div><div class="ttdoc">Returns a pointer to the MIDIOutDriver with given port id.</div></div>
-<div class="ttc" id="aclass_m_i_d_i_manager_html_ab79f1ed8b7f7ea3b55b95e2d9a0b51e7"><div class="ttname"><a href="class_m_i_d_i_manager.html#ab79f1ed8b7f7ea3b55b95e2d9a0b51e7">MIDIManager::AddMIDITick</a></div><div class="ttdeci">static void AddMIDITick(MIDITickComponent *tick)</div><div class="ttdoc">Inserts a MIDITickComponent object into the queue.</div></div>
 <div class="ttc" id="aclass_m_i_d_i_message_html_a4a9e52c8594c0ef43d2845557dce05c8"><div class="ttname"><a href="class_m_i_d_i_message.html#a4a9e52c8594c0ef43d2845557dce05c8">MIDIMessage::SetNoteOff</a></div><div class="ttdeci">void SetNoteOff(unsigned char chan, unsigned char note, unsigned char vel)</div><div class="ttdoc">Makes the message a note off message with given channel, note and velocity.</div></div>
 <div class="ttc" id="aclass_m_i_d_i_message_html_aacdcc337086ad7f19b40b133021c73da"><div class="ttname"><a href="class_m_i_d_i_message.html#aacdcc337086ad7f19b40b133021c73da">MIDIMessage::SetNoteOn</a></div><div class="ttdeci">void SetNoteOn(unsigned char chan, unsigned char note, unsigned char vel)</div><div class="ttdoc">Makes the message a note on message with given channel, note and velocity.</div></div>
 <div class="ttc" id="aclass_m_i_d_i_out_driver_html_a05bc070e199c8c6f11aa2516c7f81423"><div class="ttname"><a href="class_m_i_d_i_out_driver.html#a05bc070e199c8c6f11aa2516c7f81423">MIDIOutDriver::OpenPort</a></div><div class="ttdeci">virtual void OpenPort()</div><div class="ttdoc">Opens the hardware out port.</div></div>
 <div class="ttc" id="aclass_m_i_d_i_out_driver_html_a497b9672e71323f202f815b80560b930"><div class="ttname"><a href="class_m_i_d_i_out_driver.html#a497b9672e71323f202f815b80560b930">MIDIOutDriver::OutputMessage</a></div><div class="ttdeci">virtual void OutputMessage(const MIDITimedMessage &amp;msg)</div><div class="ttdoc">Makes a copy of the message, processes it with the out processor and then sends it to the hardware po...</div></div>
 <div class="ttc" id="aclass_m_i_d_i_out_driver_html_a7cb891e252c90efc5412e5f7ee39c40a"><div class="ttname"><a href="class_m_i_d_i_out_driver.html#a7cb891e252c90efc5412e5f7ee39c40a">MIDIOutDriver::ClosePort</a></div><div class="ttdeci">virtual void ClosePort()</div><div class="ttdoc">Closes the hardware out port.</div></div>
-<div class="ttc" id="aclass_m_i_d_i_tick_component_html"><div class="ttname"><a href="class_m_i_d_i_tick_component.html">MIDITickComponent</a></div><div class="ttdoc">A pure virtual class implementing an object which has a callback procedure to be called at every tick...</div><div class="ttdef"><b>Definition:</b> tick.h:64</div></div>
-<div class="ttc" id="aclass_m_i_d_i_tick_component_html_a2481415a5e73b0ecc5b92e7bb1d61ddb"><div class="ttname"><a href="class_m_i_d_i_tick_component.html#a2481415a5e73b0ecc5b92e7bb1d61ddb">MIDITickComponent::Reset</a></div><div class="ttdeci">virtual void Reset()=0</div><div class="ttdoc">A pure virtual method reinitializing the class parameters.</div></div>
-<div class="ttc" id="aclass_m_i_d_i_tick_component_html_a5ae346eb7ba960926adb8513300c93ec"><div class="ttname"><a href="class_m_i_d_i_tick_component.html#a5ae346eb7ba960926adb8513300c93ec">MIDITickComponent::StaticTickProc</a></div><div class="ttdeci">static void StaticTickProc(tMsecs sys_time, void *pt)</div><div class="ttdoc">This is the static callback procedure which the MIDIManager will call at every MIDITimer tick.</div><div class="ttdef"><b>Definition:</b> tick.h:120</div></div>
+<div class="ttc" id="aclass_m_i_d_i_tick_component_html"><div class="ttname"><a href="class_m_i_d_i_tick_component.html">MIDITickComponent</a></div><div class="ttdoc">A pure virtual class implementing an object which has a callback procedure to be called at every tick...</div><div class="ttdef"><b>Definition:</b> tick.h:65</div></div>
+<div class="ttc" id="aclass_m_i_d_i_tick_component_html_a2481415a5e73b0ecc5b92e7bb1d61ddb"><div class="ttname"><a href="class_m_i_d_i_tick_component.html#a2481415a5e73b0ecc5b92e7bb1d61ddb">MIDITickComponent::Reset</a></div><div class="ttdeci">virtual void Reset()=0</div><div class="ttdoc">A pure virtual method which should reinitialize the class parameters.</div></div>
+<div class="ttc" id="aclass_m_i_d_i_tick_component_html_a5ae346eb7ba960926adb8513300c93ec"><div class="ttname"><a href="class_m_i_d_i_tick_component.html#a5ae346eb7ba960926adb8513300c93ec">MIDITickComponent::StaticTickProc</a></div><div class="ttdeci">static void StaticTickProc(tMsecs sys_time, void *pt)</div><div class="ttdoc">This is the static callback procedure which the MIDIManager will call at every MIDITimer tick.</div><div class="ttdef"><b>Definition:</b> tick.h:116</div></div>
 <div class="ttc" id="aclass_m_i_d_i_tick_component_html_a7d0c188caac6b9443d7fb966a1602a82"><div class="ttname"><a href="class_m_i_d_i_tick_component.html#a7d0c188caac6b9443d7fb966a1602a82">MIDITickComponent::Start</a></div><div class="ttdeci">virtual void Start()</div><div class="ttdoc">Sets the running status as true and starts to call the callback.</div></div>
 <div class="ttc" id="aclass_m_i_d_i_tick_component_html_a87ff95c9f608f42f64920b1a0f9de239"><div class="ttname"><a href="class_m_i_d_i_tick_component.html#a87ff95c9f608f42f64920b1a0f9de239">MIDITickComponent::TickProc</a></div><div class="ttdeci">virtual void TickProc(tMsecs sys_time)=0</div><div class="ttdoc">This is the pure virtual function you must implement in your subclass.</div></div>
 <div class="ttc" id="aclass_m_i_d_i_tick_component_html_aec496a4b1afd838003f324d5962b7078"><div class="ttname"><a href="class_m_i_d_i_tick_component.html#aec496a4b1afd838003f324d5962b7078">MIDITickComponent::Stop</a></div><div class="ttdeci">virtual void Stop()</div><div class="ttdoc">Sets the running status as false and stops the callback.</div></div>

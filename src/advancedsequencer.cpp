@@ -113,7 +113,6 @@ AdvancedSequencer::AdvancedSequencer(MIDISequencerGUINotifier *n) :
     file_loaded (false),
     owns_tracks (true)                          // remembers that the multitrack is owned
 {
-    MIDIManager::AddMIDITick(this);
     // sets warp_positions and num_measures (needed even if multitrack is empty, otherwise warp_position would be empty)
     ExtractWarpPositions();
     // sets the embedded MIDIThru only if the system has almost an in port

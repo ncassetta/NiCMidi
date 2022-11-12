@@ -85,8 +85,6 @@ int main( int argc, char **argv ) {
         cin.get();
         return EXIT_SUCCESS;
     }
-    // adds the thru to the MIDIManager queue
-    MIDIManager::AddMIDITick(thru);
     // plugs the MIDIProcessorPrinter into the metronome, so all MIDI message will
     // be printed to stdout
     thru->SetProcessor(&printer);

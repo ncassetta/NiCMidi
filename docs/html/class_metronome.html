@@ -205,7 +205,7 @@ Static Protected Member Functions</h2></td></tr>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_attribs_class_m_i_d_i_tick_component"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_class_m_i_d_i_tick_component')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="class_m_i_d_i_tick_component.html">MIDITickComponent</a></td></tr>
 <tr class="memitem:aa58c6aa5524fa27f95cedd1637f2219e inherit pro_attribs_class_m_i_d_i_tick_component"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="group___g_l_o_b_a_l_s.html#ga95ac1cfb9f621ecc71b185b19c8f2d42">MIDITick</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_tick_component.html#aa58c6aa5524fa27f95cedd1637f2219e">tick_proc</a></td></tr>
-<tr class="memdesc:aa58c6aa5524fa27f95cedd1637f2219e inherit pro_attribs_class_m_i_d_i_tick_component"><td class="mdescLeft">&#160;</td><td class="mdescRight">The pointer to the static callback (probably set by the constructor to <a class="el" href="class_m_i_d_i_tick_component.html#a5ae346eb7ba960926adb8513300c93ec" title="This is the static callback procedure which the MIDIManager will call at every MIDITimer tick.">StaticTickProc()</a>).  <a href="class_m_i_d_i_tick_component.html#aa58c6aa5524fa27f95cedd1637f2219e">More...</a><br /></td></tr>
+<tr class="memdesc:aa58c6aa5524fa27f95cedd1637f2219e inherit pro_attribs_class_m_i_d_i_tick_component"><td class="mdescLeft">&#160;</td><td class="mdescRight">The pointer to the static callback (set by the constructor to <a class="el" href="class_m_i_d_i_tick_component.html#a5ae346eb7ba960926adb8513300c93ec" title="This is the static callback procedure which the MIDIManager will call at every MIDITimer tick.">StaticTickProc()</a>).  <a href="class_m_i_d_i_tick_component.html#aa58c6aa5524fa27f95cedd1637f2219e">More...</a><br /></td></tr>
 <tr class="separator:aa58c6aa5524fa27f95cedd1637f2219e inherit pro_attribs_class_m_i_d_i_tick_component"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa1e943c2f7c8b7149d4c2299f859da58 inherit pro_attribs_class_m_i_d_i_tick_component"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___g_l_o_b_a_l_s.html#ga54224e8ae90b3b2f44d5afe5ab99f403">tMsecs</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_tick_component.html#aa1e943c2f7c8b7149d4c2299f859da58">dev_time_offset</a></td></tr>
 <tr class="memdesc:aa1e943c2f7c8b7149d4c2299f859da58 inherit pro_attribs_class_m_i_d_i_tick_component"><td class="mdescLeft">&#160;</td><td class="mdescRight">A time offset set by the user and which you can use for your calculations.  <a href="class_m_i_d_i_tick_component.html#aa1e943c2f7c8b7149d4c2299f859da58">More...</a><br /></td></tr>
@@ -219,7 +219,7 @@ Additional Inherited Members</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >A <a class="el" href="class_m_i_d_i_tick_component.html" title="A pure virtual class implementing an object which has a callback procedure to be called at every tick...">MIDITickComponent</a> implementing a metronome. </p>
-<p >You can select the port, channel and MIDI notes of the metronome clicks; moreover you can have three types of click: the ordinary (beat) click, the measure click (first beat of a measure) and a subdivision click. If you enable measure clicks the metronome can count the measures and the beats of a measure (so you can represent them in a graphical interface). When you change some parameter (tempo, measure, etc./) the metronome is not updated immediately, but only at the subsequent click (see <a class="el" href="class_metronome.html#a618809dd9364694377b0b1cf80a72fc3" title="Copies the temp values assigned by the set methods into the effective ones.">UpdateValues()</a>). </p><dl class="section note"><dt>Note</dt><dd>Remember that you must call the MIDIManager::AddTick() to make effective the <a class="el" href="class_metronome.html#a5ae7bdfcba8c9e50d9dc689a9b222457" title="Starts the metronome.">Start()</a> and <a class="el" href="class_metronome.html#a301af072c227c7f4fbe6059ec838485a" title="Stops the metronome.">Stop()</a> methods (see MIDITick). </dd></dl>
+<p >You can select the port, channel and MIDI notes of the metronome clicks; moreover you can have three types of click: the ordinary (beat) click, the measure click (first beat of a measure) and a subdivision click. If you enable measure clicks the metronome can count the measures and the beats of a measure (so you can represent them in a graphical interface). When you change some parameter (tempo, measure, etc./) the metronome is not updated immediately, but only at the subsequent click (see <a class="el" href="class_metronome.html#a618809dd9364694377b0b1cf80a72fc3" title="Copies the temp values assigned by the set methods into the effective ones.">UpdateValues()</a>). </p>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#_a0">test_metronome.cpp</a>.</dd>
 </dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
@@ -383,7 +383,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Returns current measure (1st measure is 0). </p>
 <p >Measures count is suspended if you disable the measure click (see <a class="el" href="class_metronome.html#a796d8f44bc4c20b01f6661b496f89aea" title="Sets the numerator of the current timesig.">SetTimeSigNumerator()</a>). </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a8">test_metronome.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a7">test_metronome.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -412,7 +412,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns current beat in the measure (1st beat is 0). </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a9">test_metronome.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a8">test_metronome.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -441,7 +441,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns current tempo scale in percentage (100 = no scaling, 200 = twice faster, etc.). </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a23">test_metronome.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a22">test_metronome.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -470,7 +470,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns current tempo (BPM) without scaling. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a22">test_metronome.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a21">test_metronome.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -499,7 +499,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns current tempo (BPM) taking into account scaling (this is the true actual tempo). </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a11">test_metronome.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a10">test_metronome.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -528,7 +528,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns the number of the MIDI out port assigned to the metronome. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a20">test_metronome.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a19">test_metronome.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -558,7 +558,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Returns the number of the MIDI channel assigned to the metronome. </p>
 <p >See <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a>. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a21">test_metronome.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a20">test_metronome.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -587,7 +587,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns the MIDI note number for the measure click. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a26">test_metronome.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a25">test_metronome.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -616,7 +616,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns the MIDI note number for the ordinary beat click. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a27">test_metronome.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a26">test_metronome.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -645,7 +645,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns the MIDI note number for the subdivision click. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a28">test_metronome.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a27">test_metronome.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -674,7 +674,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns the subdivision type. It can be 0 (subd clicks disabled), 2, 3, 4, 5, 6. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a25">test_metronome.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a24">test_metronome.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -704,7 +704,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Returns the numerator of the current timesig. </p>
 <p >If it is 0 the measure clicks are disabled, otherwise the 1st click of a measure will sound with different note and volume. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a24">test_metronome.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a23">test_metronome.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -727,7 +727,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Sets the musical tempo. </p>
 <p >You can set it between 1.0 bpm and 300.0 bpm. </p><dl class="section return"><dt>Returns</dt><dd><b>true</b> if <em>t</em> is a valid tempo, <b>false</b> otherwise. </dd></dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a10">test_metronome.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a9">test_metronome.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -756,7 +756,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><b>true</b> if <em>scale</em> is a valid number, <b>false</b> otherwise (actually only if it is 0). </dd></dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a12">test_metronome.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a11">test_metronome.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -785,7 +785,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><b>true</b> if <em>port</em> is a valid port number, <b>false</b> otherwise. </dd></dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a18">test_metronome.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a17">test_metronome.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -808,7 +808,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Sets the MIDI channel for the metronome clicks. </p>
 <p >See <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a>. </p><dl class="section return"><dt>Returns</dt><dd><b>true</b> if <em>chan</em> is a valid channel number, <b>false</b> otherwise. </dd></dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a19">test_metronome.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a18">test_metronome.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -831,7 +831,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Sets the MIDI note number for the measure click (the 1st beat of the measure). </p>
 <p >It is only effective if you have already set the timesig numerator (see SetTimesigNumerator()). </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a15">test_metronome.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a14">test_metronome.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -853,7 +853,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Sets the MIDI note number for the ordinary beat click. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a16">test_metronome.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a15">test_metronome.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -875,7 +875,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Sets the MIDI note number for the subdivision click. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a17">test_metronome.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a16">test_metronome.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -898,7 +898,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Sets the subdivision type. </p>
 <p >It can be 0 (subd clicks disabled), 2, 3, 4, 5, 6. </p><dl class="section return"><dt>Returns</dt><dd><b>true</b> if <em>type</em> is a valid subdivision number, <b>false</b> otherwise. </dd></dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a13">test_metronome.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a12">test_metronome.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -921,7 +921,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Sets the numerator of the current timesig. </p>
 <p >If it is 0 the measure clicks are disabled, otherwise the 1st click of a measure will sound with different note and volume. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a14">test_metronome.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a13">test_metronome.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -952,7 +952,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Starts the metronome. </p>
 
 <p>Reimplemented from <a class="el" href="class_m_i_d_i_tick_component.html#a7d0c188caac6b9443d7fb966a1602a82">MIDITickComponent</a>.</p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a6">test_metronome.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a5">test_metronome.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -983,7 +983,7 @@ Additional Inherited Members</h2></td></tr>
 <p>Stops the metronome. </p>
 
 <p>Reimplemented from <a class="el" href="class_m_i_d_i_tick_component.html#aec496a4b1afd838003f324d5962b7078">MIDITickComponent</a>.</p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a7">test_metronome.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_metronome_8cpp-example.html#a6">test_metronome.cpp</a>.</dd>
 </dl>
 
 </div>

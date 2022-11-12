@@ -40,8 +40,6 @@
 /// You can choose the in and out ports, select an unique channel for receiving and sending messages
 /// (or receive and send on any channel) and insert a MIDIProcessor between in and out ports for messages
 /// elaboration.
-/// \note Remember that you must call the MIDIManager::AddTick() to make effective the StaticTickProc(), then
-/// you can call Start() and Stop() methods to enable or disable the thru.
 ///
 class MIDIThru : public MIDITickComponent {
     public:

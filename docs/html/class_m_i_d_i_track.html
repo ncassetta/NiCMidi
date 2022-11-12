@@ -245,7 +245,7 @@ Protected Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Manages a std::vector of <a class="el" href="class_m_i_d_i_timed_message.html" title="The MIDITimedMessage class inherits from the MIDIMessage and represents a message associated with a s...">MIDITimedMessage</a> objects storing MIDI events, with methods for editing them. </p>
 <p >Events are ordered by time and a <a class="el" href="class_m_i_d_i_track.html" title="Manages a std::vector of MIDITimedMessage objects storing MIDI events, with methods for editing them.">MIDITrack</a> has at least the MIDI data end meta-event (EOT) at its end (it cannot be deleted). Moreover, the <a class="el" href="class_m_i_d_i_track.html#aebcfcd295f4a26e61e25a7043abce16e" title="Analyses the events in the track upgrading its status attribute.">Analyze()</a> method examines the events in a track, classifying it into various types (for example, a master track contains only MIDI meta events, a single channel track contains events with the same MIDI channel, etc.) useful for editing purposes. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#_a16">test_advancedsequencer.cpp</a>, <a class="el" href="test_advancedsequencer_noinput_8cpp-example.html#_a3">test_advancedsequencer_noinput.cpp</a>, <a class="el" href="test_recorder_8cpp-example.html#_a11">test_recorder.cpp</a>, <a class="el" href="test_sequencer_8cpp-example.html#_a13">test_sequencer.cpp</a>, <a class="el" href="test_stepsequencer_8cpp-example.html#_a5">test_stepsequencer.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#_a3">test_writefile.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_8cpp-example.html#_a16">test_advancedsequencer.cpp</a>, <a class="el" href="test_advancedsequencer_noinput_8cpp-example.html#_a3">test_advancedsequencer_noinput.cpp</a>, <a class="el" href="test_recorder_8cpp-example.html#_a10">test_recorder.cpp</a>, <a class="el" href="test_sequencer_8cpp-example.html#_a12">test_sequencer.cpp</a>, <a class="el" href="test_stepsequencer_8cpp-example.html#_a5">test_stepsequencer.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#_a3">test_writefile.cpp</a>.</dd>
 </dl>
 </div><h2 class="groupheader">Member Enumeration Documentation</h2>
 <a id="a7efdfe2e025c856e36916525de60dae7" name="a7efdfe2e025c856e36916525de60dae7"></a>
@@ -623,7 +623,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Returns the track channel (-1 if the track has not type TYPE_CHAN or TYPE_IRREG_CHAN). </p>
 <p >See <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a> </p><dl class="section note"><dt>Note</dt><dd>This is <b>not</b> const, because it may call <a class="el" href="class_m_i_d_i_track.html#aebcfcd295f4a26e61e25a7043abce16e" title="Analyses the events in the track upgrading its status attribute.">Analyze()</a>, causing an update of the track status. </dd></dl>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_recorder_8cpp-example.html#a13">test_recorder.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_recorder_8cpp-example.html#a12">test_recorder.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -693,7 +693,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Returns the channel for recording (-1 for all channels). </p>
 <p >See <a class="el" href="_n_u_m_b_e_r_i_n_g.html">Numbering conventions</a> </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_recorder_8cpp-example.html#a12">test_recorder.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_recorder_8cpp-example.html#a11">test_recorder.cpp</a>.</dd>
 </dl>
 
 </div>

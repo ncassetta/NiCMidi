@@ -37,9 +37,6 @@ AdvancedSequencer sequencer(&text_n);       // an AdvancedSequencer (with GUI no
 MIDIRecorder recorder(&sequencer);          // a MIDIRecorder //FCKX
 
 int main( int argc, char **argv ) {
-
-    MIDIManager::AddMIDITick(&recorder);
-
     MIDIClockTime t = sequencer.MeasToMIDI(5,0);
     recorder.SetEndRecTime(t);
     recorder.EnableTrack(1);

@@ -176,10 +176,8 @@ class MIDISequencerState : public MIDIProcessor {
 /// - an (optional) MIDISequencerGUINotifier, that notifies the GUI about MIDI events when they happen
 /// - a MIDISequencerState which keeps track of actual sequencer status (tempo, keysig, track parameters, etc.).
 ///
-/// If you want to play events contained in the multitrack you must add your instance to the MIDIManager queue of
-/// MIDITickComponent objects with the MIDIManager::AddMIDITick() method, then you can call Start() (aliased by Play())
-/// and Stop() to start and stop a separate thread which takes care of playing. All methods are thread safe and can be
-/// called during playback.
+/// You can call Start() (aliased by Play()) and Stop() to start and stop a separate thread which takes care of playing.
+/// All methods are thread safe and can be called during playback.
 /// Moreover the class allows the user to:
 /// - assign a separate MIDI out port for each track
 /// - assign a separate time shift amount (positive or negative) in MIDI ticks for every track

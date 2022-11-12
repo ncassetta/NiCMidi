@@ -83,8 +83,6 @@ int main( int argc, char **argv ) {
         cin.get();
         return EXIT_SUCCESS;
     }
-    // adds the metronome to the MIDIManager queue
-    MIDIManager::AddMIDITick(&metro);
 
     cout << "TYPE help TO GET A LIST OF AVAILABLE COMMANDS\n\n";
     while (command != "quit") {                     // main loop

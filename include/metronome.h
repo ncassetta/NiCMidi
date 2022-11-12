@@ -42,8 +42,6 @@
 /// measures and the beats of a measure (so you can represent them in a graphical interface).
 /// When you change some parameter (tempo, measure, etc./) the metronome is not updated immediately, but only at
 /// the subsequent click (see UpdateValues()).
-/// \note Remember that you must call the MIDIManager::AddTick() to make effective the Start() and Stop() methods
-/// (see MIDITick).
 ///
 class Metronome : public MIDITickComponent {
     public:

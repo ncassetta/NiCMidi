@@ -269,9 +269,9 @@
 ///
 /// The MIDIThru is an object which can receive messages from a MIDI in port and immediately send them to a MIDI out one. It therefore allows the user to play a MIDI instrument connected to the computer while listening to his performance.
 ///
-/// The constructor selects as input and output port the respective port 0 on the computer, otherwise leaves them undefined (but in this case the %MIDIThru is useless). There are methods for changing ports, the MIDI input and output channel (you can select one or accept and send all channels) and you can plug a MIDIProcessor into the object for manipulating messages passing through.
+/// The constructor raises an exception if in your system there aren't at least a MIDI in port and a MIDI out port, otherrwise selects as input and output port the respective port 0 on the computer. There are methods for changing ports, the MIDI input and output channel (you can select one or accept and send all channels) and you can plug a MIDIProcessor into the object for manipulating messages passing through.
 ///
-/// As for other MIDITickComponent derived classes, once created the object you must add it to the MIDIManager queue with the MIDIManager::AddMIDITick() method, then you can call the MIDIThru::Start() and MIDIThru::Stop() methods for turning on and off the object. Events taken from the in port are however left into its queue for an eventual other MIDITickComponent which can use them (for example a MIDIRecorder), so the priority is usually not relevant. The AdvancedSequencer class embeds a MIDIThru  controlled from within the class.
+/// You can call the MIDIThru::Start() and MIDIThru::Stop() methods for turning on and off the object. Events taken from the in port are however left into its queue for an eventual other MIDITickComponent which can use them (for example a MIDIRecorder), so the priority is usually not relevant. The AdvancedSequencer class embeds a MIDIThru  controlled from within the class.
 ///
 /// An example of the use of the %MIDIThru is in the file:
 /// + \ref test_thru.cpp
@@ -281,7 +281,7 @@
 ///
 /// The Metronome class implements all the features of an ordinary metronome: you can set the musical tempo (between 1 and 300 bpm), enable measure counting (with a different click on first beat) choosing different musical times and also enable a subdivision click. Moreover, you can choose the MIDI notes (which will be ordinarily sent on MIDI channel 10) for normal, first beat and subdivision clicks.
 ///
-/// This class also inherits from the MIDITickComponent and must be added to the MIDIManager queue with the MIDIManager::AddMIDITick() method. The metronome only sends messages to the output port, so the priority is usually not relevant.
+/// This class also inherits from the MIDITickComponent. The metronome only sends messages to the output port, so the priority is usually not relevant.
 ///
 /// An example of the use of the %Metronome is in the file:
 /// + \ref test_metronome.cpp

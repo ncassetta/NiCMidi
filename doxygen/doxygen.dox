@@ -277,9 +277,9 @@
 /// ----------------------------
 ///
 /// The core of MIDI timed playback is the pure virtual MIDITickComponent class: this is the prototype for all objects that have a callback procedure to be called at every tick of the MIDITimer; the AdvancedSequencer, MIDISequencer, MIDIThru, Metronome and MIDIRecorder classes all inherit from it. Let us analyze its most important methods:
-/// + The constructor MIDITickComponent::MIDITickComponent(tPriority pr, MIDITick func) must be called by your subclass constructor. See its documentation for details on the parameters. Once the component ha been created, it must be  added to the %MIDIManager queue with the MIDIManager::AddMIDITick() method to make it effective.
-/// + The destructor MIDITickComponent::~MIDITickComponent() removes the component from the %MIDIManager queue in order to prevent the use of an invalid pointer, so you do not need to call MIDIManager::RemoveMIDITick() by yourself.
-/// + The MIDITickComponent::Start() method enables the callback. Moreover, it initialize the internal parameter MIDITickComponent::sys_time_offset to the start time, so every subsequent call of the callback can perform time calculations. You may want to redefine it in your subclass in order to initialize your component at start (for example, in the derived classes of the library it opens the appropriate MIDI ports).
+/// + The constructor MIDITickComponent::MIDITickComponent(tPriority pr, MIDITick func) must be called by your subclass constructor. See its documentation for details on the parameters. It adds the newly created object to the %MIDIManager queue with the MIDIManager::AddMIDITick() method to make it effective, so the component is ready to play.
+/// + The destructor MIDITickComponent::~MIDITickComponent() removes the component from the %MIDIManager queue in order to prevent the use of an invalid pointer, so you do not need to call MIDIManager::RemoveMIDITick().
+/// + The MIDITickComponent::Start() method enables the callback. Moreover, it initialize the internal parameter MIDITickComponent::sys_time_offset to the start absolute time, so every subsequent call of the callback can perform time calculations. You may want to redefine it in your subclass in order to initialize your component at start (for example, in the derived classes of the library it opens the appropriate MIDI ports).
 /// + The MIDITickComponent::Stop() method disables the callback (again, you can redefine it if you want to perform ending operations).
 ///
 /// Due to the difficulty of calling member functions as callbacks in C++ this class actually needs two methods (one static and one member) to implement the callback mechanism:
@@ -293,16 +293,16 @@
 ///
 /// \endcode
 ///
-/// + The member MIDITickComponent::TickProc(tMsecs sys_time) is pure virtual in the base class: you must implement it and do  all your work here. You can know the number of msecs elapsed from the Start() call with sys_time - sys_time_offset and use it to perform time calculations and send, receive or manipulate MIDI messages with accurate timing.
+/// + The member MIDITickComponent::TickProc(tMsecs sys_time) is pure virtual in the base class: you must implement it and do all your work here. You can know the number of msecs elapsed from the Start() call with sys_time - sys_time_offset and use it to perform time calculations and send, receive or manipulate MIDI messages with accurate timing.
 ///
-/// We repeat that if you want to use a MIDITickComponent you must first add it to the manager queue, then you can call its methods Start() and Stop() for enabling/disabling the callback. This is an example of the usage of the Metronome:
+/// This is an example of the usage of the Metronome:
 /// \code
 ///#include "metronome.h"
 ///#include "manager.h"
 ///
 ///int main() {
-///   Metronome metro;                   // creates the metronome
-///   MIDIManager::AddMIDITick(&metro);  // adds it to the MIDIManager queue
+///   Metronome metro;                   // creates the metronome and adds it to the
+///                                      // MIDIManager queue
 ///   metro.SetTempo(100);               // sets the musical tempo
 ///   metro.Start();
 ///   MIDITimer::Wait(10000);            // waits 10 seconds
@@ -314,7 +314,6 @@
 /// ----------------------------
 ///
 /// The AdvancedSequencer class inherits from MIDITickComponent, but has some special features.
-/// + It automatically adds itself to the MIDIManager queue in the constructor, so it is ready to play when created.
 /// + Its Start() method is aliased with Play(), following the ordinary naming conventions in a sequencer.
 ///
 /// More detailed examples of the usage of the derived classes are  in the following files:

@@ -27,6 +27,12 @@
 #include "../include/manager.h"
 
 
+MIDITickComponent::MIDITickComponent(tPriority pr, MIDITick func) :
+    tick_proc(func), dev_time_offset(0), sys_time_offset(0), priority(pr), running(false) {
+    MIDIManager::AddMIDITick(this);
+}
+
+
 MIDITickComponent::~MIDITickComponent() {
     Stop();
     MIDIManager::RemoveMIDITick(this);

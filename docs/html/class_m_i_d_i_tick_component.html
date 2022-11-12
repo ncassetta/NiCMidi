@@ -87,7 +87,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aaa199a871af1e28a9229d19608ffa975"><td class="mdescLeft">&#160;</td><td class="mdescRight">The destructor.  <a href="class_m_i_d_i_tick_component.html#aaa199a871af1e28a9229d19608ffa975">More...</a><br /></td></tr>
 <tr class="separator:aaa199a871af1e28a9229d19608ffa975"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2481415a5e73b0ecc5b92e7bb1d61ddb"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_tick_component.html#a2481415a5e73b0ecc5b92e7bb1d61ddb">Reset</a> ()=0</td></tr>
-<tr class="memdesc:a2481415a5e73b0ecc5b92e7bb1d61ddb"><td class="mdescLeft">&#160;</td><td class="mdescRight">A pure virtual method reinitializing the class parameters.  <a href="class_m_i_d_i_tick_component.html#a2481415a5e73b0ecc5b92e7bb1d61ddb">More...</a><br /></td></tr>
+<tr class="memdesc:a2481415a5e73b0ecc5b92e7bb1d61ddb"><td class="mdescLeft">&#160;</td><td class="mdescRight">A pure virtual method which should reinitialize the class parameters.  <a href="class_m_i_d_i_tick_component.html#a2481415a5e73b0ecc5b92e7bb1d61ddb">More...</a><br /></td></tr>
 <tr class="separator:a2481415a5e73b0ecc5b92e7bb1d61ddb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a12e59aee239bfeabb370f2e4618b63da"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___g_l_o_b_a_l_s.html#ga95ac1cfb9f621ecc71b185b19c8f2d42">MIDITick</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_tick_component.html#a12e59aee239bfeabb370f2e4618b63da">GetFunc</a> () const</td></tr>
 <tr class="memdesc:a12e59aee239bfeabb370f2e4618b63da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the address of the <a class="el" href="class_m_i_d_i_tick_component.html#a5ae346eb7ba960926adb8513300c93ec" title="This is the static callback procedure which the MIDIManager will call at every MIDITimer tick.">StaticTickProc()</a> method, which will be called by the <a class="el" href="class_m_i_d_i_manager.html" title="A static class that manages computer hardware resources (in and out MIDI ports) and timing.">MIDIManager</a> at every clock tick.  <a href="class_m_i_d_i_tick_component.html#a12e59aee239bfeabb370f2e4618b63da">More...</a><br /></td></tr>
@@ -126,7 +126,7 @@ Static Protected Member Functions</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:aa58c6aa5524fa27f95cedd1637f2219e"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="group___g_l_o_b_a_l_s.html#ga95ac1cfb9f621ecc71b185b19c8f2d42">MIDITick</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_tick_component.html#aa58c6aa5524fa27f95cedd1637f2219e">tick_proc</a></td></tr>
-<tr class="memdesc:aa58c6aa5524fa27f95cedd1637f2219e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The pointer to the static callback (probably set by the constructor to <a class="el" href="class_m_i_d_i_tick_component.html#a5ae346eb7ba960926adb8513300c93ec" title="This is the static callback procedure which the MIDIManager will call at every MIDITimer tick.">StaticTickProc()</a>).  <a href="class_m_i_d_i_tick_component.html#aa58c6aa5524fa27f95cedd1637f2219e">More...</a><br /></td></tr>
+<tr class="memdesc:aa58c6aa5524fa27f95cedd1637f2219e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The pointer to the static callback (set by the constructor to <a class="el" href="class_m_i_d_i_tick_component.html#a5ae346eb7ba960926adb8513300c93ec" title="This is the static callback procedure which the MIDIManager will call at every MIDITimer tick.">StaticTickProc()</a>).  <a href="class_m_i_d_i_tick_component.html#aa58c6aa5524fa27f95cedd1637f2219e">More...</a><br /></td></tr>
 <tr class="separator:aa58c6aa5524fa27f95cedd1637f2219e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa1e943c2f7c8b7149d4c2299f859da58"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___g_l_o_b_a_l_s.html#ga54224e8ae90b3b2f44d5afe5ab99f403">tMsecs</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_tick_component.html#aa1e943c2f7c8b7149d4c2299f859da58">dev_time_offset</a></td></tr>
 <tr class="memdesc:aa1e943c2f7c8b7149d4c2299f859da58"><td class="mdescLeft">&#160;</td><td class="mdescRight">A time offset set by the user and which you can use for your calculations.  <a href="class_m_i_d_i_tick_component.html#aa1e943c2f7c8b7149d4c2299f859da58">More...</a><br /></td></tr>
@@ -140,7 +140,7 @@ Protected Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >A pure virtual class implementing an object which has a callback procedure to be called at every tick of a <a class="el" href="class_m_i_d_i_timer.html" title="A static class which provides the timing required for MIDI playback, using the C++11 &lt;chrono&gt; methods...">MIDITimer</a>. </p>
-<p >You can use this feature to send, receive or manipulate MIDI messages with accurate timing: the <a class="el" href="class_m_i_d_i_sequencer.html" title="A MIDITickComponent which implements a basic sequencer, able to play the MIDI events contained in a M...">MIDISequencer</a>, <a class="el" href="class_m_i_d_i_thru.html" title="A MIDITickComponent which immediately echoes to an out MIDI port all messages incoming from an in MID...">MIDIThru</a> and <a class="el" href="class_m_i_d_i_recorder.html" title="A MIDITickComponent which can record MIDI messages incoming from a MIDI in port, putting them into an...">MIDIRecorder</a> classes inherit by this. To use a <a class="el" href="class_m_i_d_i_tick_component.html" title="A pure virtual class implementing an object which has a callback procedure to be called at every tick...">MIDITickComponent</a> object you must add it to the <a class="el" href="class_m_i_d_i_manager.html" title="A static class that manages computer hardware resources (in and out MIDI ports) and timing.">MIDIManager</a> queue with the <a class="el" href="class_m_i_d_i_manager.html#ab79f1ed8b7f7ea3b55b95e2d9a0b51e7" title="Inserts a MIDITickComponent object into the queue.">MIDIManager::AddMIDITick()</a> method; then you can call the <a class="el" href="class_m_i_d_i_tick_component.html#a7d0c188caac6b9443d7fb966a1602a82" title="Sets the running status as true and starts to call the callback.">Start()</a> and <a class="el" href="class_m_i_d_i_tick_component.html#aec496a4b1afd838003f324d5962b7078" title="Sets the running status as false and stops the callback.">Stop()</a> methods of the object to start and stop the callback. A priority parameter is supplied to determine the position of the <a class="el" href="class_m_i_d_i_tick_component.html" title="A pure virtual class implementing an object which has a callback procedure to be called at every tick...">MIDITickComponent</a> in the <a class="el" href="class_m_i_d_i_manager.html" title="A static class that manages computer hardware resources (in and out MIDI ports) and timing.">MIDIManager</a> queue. </p>
+<p >You can use this feature to send, receive or manipulate MIDI messages with accurate timing: the <a class="el" href="class_m_i_d_i_sequencer.html" title="A MIDITickComponent which implements a basic sequencer, able to play the MIDI events contained in a M...">MIDISequencer</a>, <a class="el" href="class_m_i_d_i_thru.html" title="A MIDITickComponent which immediately echoes to an out MIDI port all messages incoming from an in MID...">MIDIThru</a> and <a class="el" href="class_m_i_d_i_recorder.html" title="A MIDITickComponent which can record MIDI messages incoming from a MIDI in port, putting them into an...">MIDIRecorder</a> classes inherit by this. To use a <a class="el" href="class_m_i_d_i_tick_component.html" title="A pure virtual class implementing an object which has a callback procedure to be called at every tick...">MIDITickComponent</a> object it must be placed in the <a class="el" href="class_m_i_d_i_manager.html" title="A static class that manages computer hardware resources (in and out MIDI ports) and timing.">MIDIManager</a> queue with the <a class="el" href="class_m_i_d_i_manager.html#ab79f1ed8b7f7ea3b55b95e2d9a0b51e7" title="Inserts a MIDITickComponent object into the queue.">MIDIManager::AddMIDITick()</a> method: this is done by the base class constructor so the user doesn't need to do this; you can hence call the <a class="el" href="class_m_i_d_i_tick_component.html#a7d0c188caac6b9443d7fb966a1602a82" title="Sets the running status as true and starts to call the callback.">Start()</a> and <a class="el" href="class_m_i_d_i_tick_component.html#aec496a4b1afd838003f324d5962b7078" title="Sets the running status as false and stops the callback.">Stop()</a> methods of the object to start and stop the callback. A priority parameter is supplied to determine the position of the <a class="el" href="class_m_i_d_i_tick_component.html" title="A pure virtual class implementing an object which has a callback procedure to be called at every tick...">MIDITickComponent</a> in the <a class="el" href="class_m_i_d_i_manager.html" title="A static class that manages computer hardware resources (in and out MIDI ports) and timing.">MIDIManager</a> queue. </p>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_component_8cpp-example.html#_a0">test_component.cpp</a>.</dd>
 </dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
@@ -149,9 +149,6 @@ Protected Attributes</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">MIDITickComponent::MIDITickComponent </td>
@@ -171,15 +168,10 @@ Protected Attributes</h2></td></tr>
           <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 <p>The constructor. </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >It adds the component to the <a class="el" href="class_m_i_d_i_manager.html" title="A static class that manages computer hardware resources (in and out MIDI ports) and timing.">MIDIManager</a> queue calling <a class="el" href="class_m_i_d_i_manager.html#ab79f1ed8b7f7ea3b55b95e2d9a0b51e7" title="Inserts a MIDITickComponent object into the queue.">MIDIManager::AddMIDITick()</a>, so the user doesn't need to do it manually. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">pr</td><td>the priority (see <a class="el" href="group___g_l_o_b_a_l_s.html#ga0a0f2a20deed4dac868a5f7cd436d4da">tPriority</a>) </td></tr>
     <tr><td class="paramname">func</td><td>a pointer to the static callback: this should be the address of the <a class="el" href="class_m_i_d_i_tick_component.html#a5ae346eb7ba960926adb8513300c93ec" title="This is the static callback procedure which the MIDIManager will call at every MIDITimer tick.">StaticTickProc()</a> you have implemented in your subclass </td></tr>
@@ -241,7 +233,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>A pure virtual method reinitializing the class parameters. </p>
+<p>A pure virtual method which should reinitialize the class parameters. </p>
 
 <p>Implemented in <a class="el" href="class_advanced_sequencer.html#a25bbcdd2d298109777d78ec74000aacb">AdvancedSequencer</a>, <a class="el" href="class_metronome.html#a654d332e489825d84c5098d3b6ecedc6">Metronome</a>, <a class="el" href="class_m_i_d_i_recorder.html#a529108417592825416522c50551ca26c">MIDIRecorder</a>, <a class="el" href="class_m_i_d_i_sequencer.html#ac7607c3c1668244b1dc4f5ddf5482af6">MIDISequencer</a>, and <a class="el" href="class_m_i_d_i_thru.html#a26b46ec36071ea1dc632a1baf524940b">MIDIThru</a>.</p>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_component_8cpp-example.html#a1">test_component.cpp</a>.</dd>
@@ -354,7 +346,7 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Returns <b>true</b> if the callback procedure is active. </p>
-<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_noinput_8cpp-example.html#a17">test_advancedsequencer_noinput.cpp</a>, <a class="el" href="test_thru_8cpp-example.html#a23">test_thru.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a6">test_writefile.cpp</a>.</dd>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_advancedsequencer_noinput_8cpp-example.html#a17">test_advancedsequencer_noinput.cpp</a>, <a class="el" href="test_thru_8cpp-example.html#a22">test_thru.cpp</a>, and <a class="el" href="test_writefile_8cpp-example.html#a6">test_writefile.cpp</a>.</dd>
 </dl>
 
 </div>
@@ -404,8 +396,7 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Sets the running status as <b>true</b> and starts to call the callback. </p>
-<p >Moreover it set the <a class="el" href="class_m_i_d_i_tick_component.html#a4e2599186c5ce9bcdf83837f844183e6">sys_time_offset</a> parameter to the now time so, at every subsequent call of the callback, you can calculate the elapsed time. In your derived class you probably will want to redefine this for doing other things before starting the callback (for example opening MIDI ports): however in your derived method you must call this base class method.</p>
-<p >You must call this <b>after</b> inserting the object into the <a class="el" href="class_m_i_d_i_manager.html" title="A static class that manages computer hardware resources (in and out MIDI ports) and timing.">MIDIManager</a> queue with the <a class="el" href="class_m_i_d_i_manager.html#ab79f1ed8b7f7ea3b55b95e2d9a0b51e7" title="Inserts a MIDITickComponent object into the queue.">MIDIManager::AddMIDITick()</a> method, or you will have no effect. </p>
+<p >Moreover it set the <a class="el" href="class_m_i_d_i_tick_component.html#a4e2599186c5ce9bcdf83837f844183e6">sys_time_offset</a> parameter to the now time so, at every subsequent call of the callback, you can calculate the elapsed time. In your derived class you probably will want to redefine this for doing other things before starting the callback (for example opening MIDI ports): however in your derived method you must call this base class method. </p>
 
 <p>Reimplemented in <a class="el" href="class_advanced_sequencer.html#a54570b531a912b9a35f99f69e0ba5235">AdvancedSequencer</a>, <a class="el" href="class_metronome.html#a5ae7bdfcba8c9e50d9dc689a9b222457">Metronome</a>, <a class="el" href="class_m_i_d_i_recorder.html#ab1000a44dcb29976cda7969e04a77a28">MIDIRecorder</a>, <a class="el" href="class_m_i_d_i_sequencer.html#a6816e40d574829ffc196bfa4b5fa177a">MIDISequencer</a>, and <a class="el" href="class_m_i_d_i_thru.html#aa9a317d6b06984e143d88e38dbc53904">MIDIThru</a>.</p>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_component_8cpp-example.html#a2">test_component.cpp</a>.</dd>
@@ -487,7 +478,7 @@ Protected Attributes</h2></td></tr>
   </table>
   </dd>
 </dl>
-<p>You must implement it in your subclass and give the function address in the constructor. Typically this should only cast the void pointer <em>pt</em> to a pointer to your object and then call the pt-&gt;TickProc(sys_time), i.e. your non static procedure. </p>
+<p>You must implement it in your subclass and give this function address in the constructor. Typically this should only cast the void pointer <em>pt</em> to a pointer to your object and then call the pt-&gt;TickProc(sys_time), i.e. your non static procedure. </p>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_component_8cpp-example.html#a4">test_component.cpp</a>.</dd>
 </dl>
 
@@ -518,6 +509,7 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>This is the pure virtual function you must implement in your subclass. </p>
+<p >This function is called at every timer tick and in it you should do all the work of your component. </p>
 
 <p>Implemented in <a class="el" href="class_metronome.html#ac085d3105bc1062a24dbad6697ab7418">Metronome</a>, <a class="el" href="class_m_i_d_i_recorder.html#acf2da44386b821659f3ad69ccf3172ec">MIDIRecorder</a>, <a class="el" href="class_m_i_d_i_sequencer.html#a991bc1eaf60cdd4f2e296a51d81243b2">MIDISequencer</a>, and <a class="el" href="class_m_i_d_i_thru.html#afd8a30c279357943c10fd68c6151cd7b">MIDIThru</a>.</p>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="test_component_8cpp-example.html#a5">test_component.cpp</a>.</dd>
@@ -546,7 +538,7 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>The pointer to the static callback (probably set by the constructor to <a class="el" href="class_m_i_d_i_tick_component.html#a5ae346eb7ba960926adb8513300c93ec" title="This is the static callback procedure which the MIDIManager will call at every MIDITimer tick.">StaticTickProc()</a>). </p>
+<p>The pointer to the static callback (set by the constructor to <a class="el" href="class_m_i_d_i_tick_component.html#a5ae346eb7ba960926adb8513300c93ec" title="This is the static callback procedure which the MIDIManager will call at every MIDITimer tick.">StaticTickProc()</a>). </p>
 
 </div>
 </div>

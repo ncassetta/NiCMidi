@@ -103,7 +103,6 @@ other commands even during playback\n";
 
 
 int main (int argc, char **argv) {
-    MIDIManager::AddMIDITick(&recorder);
     text_n.SetSequencer(&sequencer);
     cout << "TYPE help TO GET A LIST OF AVAILABLE COMMANDS" << endl << endl;
     while (command != "quit") {                     // main loop

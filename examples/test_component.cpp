@@ -23,8 +23,7 @@
 /*
   Example of a basic custom MIDITickComponent which only plays a note
   every second. The file shows how to redefine the base class methods
-  and how to add the component to the MIDIManager queue, making it
-  effective.
+  making it effective.
 */
 
 
@@ -63,7 +62,7 @@ class TestComp : public MIDITickComponent {
 
 // The constructor must call the base class constructor with the priority and the StaticTickProc
 // pointer as parameters.
-// In our case, as we have only one object in the MIDIManager queue, the priority is irrelevant.
+// In our case, as we have only this component  in the MIDIManager queue, the priority is irrelevant.
 //
 TestComp::TestComp() : MIDITickComponent(PR_PRE_SEQ, StaticTickProc) {}
 
@@ -96,8 +95,8 @@ void TestComp::Stop() {
 // pointer and then call the (virtual) derived class callback (i.e. TickProc).
 //
 void TestComp::StaticTickProc(tMsecs sys_time, void* pt) {
-    TestComp* c_pt = static_cast<TestComp*>(pt);
-    c_pt->TickProc(sys_time);
+    TestComp* class_pt = static_cast<TestComp*>(pt);
+    class_pt->TickProc(sys_time);
 }
 
 
@@ -125,11 +124,10 @@ void TestComp::TickProc(tMsecs sys_time) {
     }
 }
 
-// The main() creates a class instance, adds it to the MIDIManager queue and then calls
-// Start() and Stop() for enabling and disabling the callback
+// The main() creates a class instance and then calls Start() and Stop() for enabling and
+// disabling the callback
 int main() {
     TestComp comp;                              // creates the component
-    MIDIManager::AddMIDITick(&comp);            // adds it to the MIDIManager queue
     comp.Start();                               // starts the callback
     cout << "Waiting 10 secs ... " << endl;
     MIDITimer::Wait(10000);                     // waits 10 secs
