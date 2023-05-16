@@ -50,7 +50,7 @@ void DumpMIDITimedMessage (MIDITimedMessage* const msg, std::ostream& ost = std:
 void DumpMIDITrack (MIDITrack* const trk, std::ostream& ost = std::cout);
 /// Prints the main properties of the given MIDItrack.
 /// It prints the track name, its type (see \ref MIDITrack::GetType()), the number of events and the end time.
-/// For printing the track messages use DumpMIDITrack().
+/// Use DumpMIDITrack() for printing the track messages.
 /// \param trk a pointer to the track
 /// \param num will be printed in the first line as track number.
 /// \param ost the output stream
@@ -58,8 +58,8 @@ void DumpMIDITrack (MIDITrack* const trk, std::ostream& ost = std::cout);
 int DumpMIDITrackAttr (MIDITrack* const trk, int num, std::ostream& ost = std::cout);
 /// Prints all the properties of the given MIDItrack.
 /// It prints the track name, its type (see \ref MIDITrack::GetType()) with a detailed description, the in and
-/// out ports, the time shift amount, the number of events and the end time.
-/// For printing the track messages use DumpMIDITrack().
+/// out ports, the recording channel, the time shift amount, the number of events and the end time.
+/// Use DumpMIDITrack() for printing the track messages.
 /// \param trk a pointer to the track
 /// \param num will be printed in the first line as track number.
 /// \param ost the output stream

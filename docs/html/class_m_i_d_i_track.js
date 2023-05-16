@@ -43,7 +43,6 @@ var class_m_i_d_i_track =
     [ "CloseOpenEvents", "class_m_i_d_i_track.html#aabe76a34f76248ebd5d61a1a914dad25", null ],
     [ "FindEventNumber", "class_m_i_d_i_track.html#afb3a453d6cd66ac4b8137e31a97f2983", null ],
     [ "FindEventNumber", "class_m_i_d_i_track.html#ad59cab9671016ecfc82afa675dd462b5", null ],
-    [ "PrintProperties", "class_m_i_d_i_track.html#af0952fb868742d33ad8c44c7cd199068", null ],
     [ "SetInsertMode", "class_m_i_d_i_track.html#abb1384c8ef089487f9cc32ac9d31cf5b", null ],
     [ "Analyze", "class_m_i_d_i_track.html#aebcfcd295f4a26e61e25a7043abce16e", null ]
 ];

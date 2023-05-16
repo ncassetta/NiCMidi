@@ -268,7 +268,7 @@
 ///
 /// + **Timing**: The manager takes the control of the (also static) MIDITimer, redirecting its background thread to call the static method MIDIManager::TickProc() at every timer tick.
 ///
-/// + **Communications with other classes**: The MIDIManager handles a queue of MIDITickComponent objects (i.e. objects "which have a callback", see below): you can insert a pointer to such an object in the queue with the MIDIManager::AddMIDITick() method and remove it with MIDIManager::RemoveMIDITick(). The MIDIManager::TickProc() (which is called at every timer tick) calls in turn all the callbacks of the queued objects, giving them the absolute time as parameter. So every MIDITickComponent object can perform its tasks with accurate timing. This is a sketch of MIDIManager calling mechanism:
+/// + **Communications with other classes**: The MIDIManager handles a queue of MIDITickComponent objects (i.e. objects "which have a callback", see below): it can insert a pointer to such an object in the queue with the MIDIManager::AddMIDITick() method and remove it with MIDIManager::RemoveMIDITick(). The MIDIManager::TickProc() (which is called at every timer tick) calls in turn all the callbacks of the queued objects, giving them the absolute time as parameter. So every MIDITickComponent object can perform its tasks with accurate timing. This is a sketch of MIDIManager calling mechanism:
 /// \image html "MIDIManager.png"
 ///
 /// This modular design allows the user to stack many components which all share the same timing (for example a sequencer, a metronome, a recorder ...) and encourages him to develop its own objects.
@@ -279,7 +279,7 @@
 /// The core of MIDI timed playback is the pure virtual MIDITickComponent class: this is the prototype for all objects that have a callback procedure to be called at every tick of the MIDITimer; the AdvancedSequencer, MIDISequencer, MIDIThru, Metronome and MIDIRecorder classes all inherit from it. Let us analyze its most important methods:
 /// + The constructor MIDITickComponent::MIDITickComponent(tPriority pr, MIDITick func) must be called by your subclass constructor. See its documentation for details on the parameters. It adds the newly created object to the %MIDIManager queue with the MIDIManager::AddMIDITick() method to make it effective, so the component is ready to play.
 /// + The destructor MIDITickComponent::~MIDITickComponent() removes the component from the %MIDIManager queue in order to prevent the use of an invalid pointer, so you do not need to call MIDIManager::RemoveMIDITick().
-/// + The MIDITickComponent::Start() method enables the callback. Moreover, it initialize the internal parameter MIDITickComponent::sys_time_offset to the start absolute time, so every subsequent call of the callback can perform time calculations. You may want to redefine it in your subclass in order to initialize your component at start (for example, in the derived classes of the library it opens the appropriate MIDI ports).
+/// + The MIDITickComponent::Start() method enables the callback. Moreover, it initializes the internal parameter MIDITickComponent::sys_time_offset to the start absolute time, so every subsequent call of the callback can perform time calculations. You may want to redefine it in your subclass in order to initialize your component at start (for example, in the derived classes of the library it opens the appropriate MIDI ports).
 /// + The MIDITickComponent::Stop() method disables the callback (again, you can redefine it if you want to perform ending operations).
 ///
 /// Due to the difficulty of calling member functions as callbacks in C++ this class actually needs two methods (one static and one member) to implement the callback mechanism:
@@ -310,11 +310,8 @@
 ///}
 /// \endcode
 ///
-/// The %AdvancedSequencer class
-/// ----------------------------
-///
-/// The AdvancedSequencer class inherits from MIDITickComponent, but has some special features.
-/// + Its Start() method is aliased with Play(), following the ordinary naming conventions in a sequencer.
+/// In the AdvancedSequencer class the Start() method is aliased with Play(), following the ordinary naming
+/// conventions in a sequencer.
 ///
 /// More detailed examples of the usage of the derived classes are  in the following files:
 /// + \ref test_thru.cpp (use of MIDIThru)

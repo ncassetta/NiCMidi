@@ -77,6 +77,12 @@ enum
 /// classifying it into various types (for example, a master track contains only MIDI meta events, a single
 /// channel track contains events with the same MIDI channel, etc.) useful for editing purposes.
 ///
+/// The following parameters are associated with the track:
+/// + The out port for playing
+/// + The in port for recording
+/// + The recording channel
+/// + The time shifting amount (in MIDI ticks)
+///
 class  MIDITrack {
     public:
         /// The constructor creates an empty track with only the EOT event.
@@ -219,10 +225,9 @@ class  MIDITrack {
         /// \bug In the latter case the method could leave the track in an inconsistent state (a Note On without
         /// corresponding Note Off or viceversa).
         bool                        DeleteNote(const MIDITimedMessage& msg);
-
         /// Inserts the event as last, adjusting the data end. This function should be used with caution, as it doesn't
         /// check temporal order and track consistency. You could use it if you would manually copy tracks
-        /// (MultiTrack::AssignEventsToTracks() does it).
+        /// (MIDIMultiTrack::AssignEventsToTracks() does it).
         void                        PushEvent(const MIDITimedMessage& msg);
         /// Shifts forward by a _length_ time the track events from _start_ onwards. If _src_ == 0 it leaves the newly
         /// created interval empty, otherwise copies the contents of _src_ into it. The events in the time interval
@@ -252,7 +257,6 @@ class  MIDITrack {
         /// a track in cut, copy and paste editing.
         // TODO: restored old version: test this (involves even interval methods)
         void                        CloseOpenEvents(MIDIClockTime from, MIDIClockTime to);
-
         /// Finds an event in the track matching a given event.
         /// \param[in] msg the event to look for
         /// \param[out] event_num contains the event number in the track if the event was found; otherwise it contains
@@ -264,16 +268,12 @@ class  MIDITrack {
         /// \return **true** if an event matching _msg_ was found, **false** otherwise.
         bool                        FindEventNumber(const MIDITimedMessage& msg, int *event_num,
                                                     int mode = COMPMODE_EQUAL) const;
-
         /// Finds the first event in the track with the given time.
         /// \param[in] time the time to look for.
         /// \param[out] event_num contains the event number in the track if an event was found; otherwise it contains
         /// **-1** if *time* was invalid, or the number of the last event before *time*.
         /// \return **true** if an event with given time was found, **false** otherwise.
         bool                        FindEventNumber (MIDIClockTime time, int *event_num) const;
-
-        /// Returns in a std::string the track properties.
-        std::string                 PrintProperties();
 
         /// Sets the default behaviour for the methods InsertEvent() and InsertNote(). This can be overriden
         /// by them by mean of the last (default) parameter.
@@ -362,7 +362,7 @@ class MIDITrackIterator {
                                                                 { return (notes_on[n] > 0); }
         /// Returns **true** if the hold pedal is on at current time.
         bool                        IsPedalOn() const           { return controls[64] > 64; }
-        /// Finds the MIDITimedMessage in the track corresponding to the note off for the given note.
+        /// Finds the next MIDITimedMessage in the track corresponding to the note off for the given note.
         /// \param[in] note : the note on
         /// \param[out] msg : a pointer to the note off message
         /// \return **true** if msg is valid, **false** otherwise (a note off was not found).
@@ -371,7 +371,7 @@ class MIDITrackIterator {
         /// \param[out] msg : a pointer to the pedal off message
         /// \return **true** if msg is valid, **false** otherwise (a pedal off was not found).
         bool                        FindPedalOff(MIDITimedMessage** msg);
-        /// Goes to the given time, which becomes the current time, and sets then the current event as the
+        /// Goes to the given time, which becomes the current time. This sets the current event to the
         /// first event in the track with time greater or equal to _time_.
         bool                        GoToTime(MIDIClockTime time);
         /// Returns the next event in the track.
@@ -379,8 +379,8 @@ class MIDITrackIterator {
         /// \return **true** if there is effectively a next event (we aren't at the end of the
         /// track), **false** otherwise (and **msg doesn't contain a valid value).
         bool                        GetNextEvent(MIDITimedMessage** msg);
-        /// Gets the time of the next event in the track (it can be different from current time if
-        /// at current time there are not events).
+        /// Gets the time of the next event in the track. It can be different from current time if
+        /// at current time there are not events.
         /// \param t here we get the time of next event, if valid.
         /// \return **true** if there is effectively a next event (we aren't at the end of the
         /// track), **false** otherwise (*t doesn't contain a valid time).

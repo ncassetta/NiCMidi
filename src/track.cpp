@@ -202,12 +202,6 @@ MIDIClockTime MIDITrack::GetNoteLength(const MIDITimedMessage& msg) const {
 }
 
 
-void MIDITrack::SetInsertMode(tInsMode mode) {
-    if (mode != INSMODE_DEFAULT)
-        ins_mode = mode;
-}
-
-
 bool MIDITrack::InsertEvent(const MIDITimedMessage& msg, tInsMode mode) {
     if (msg.IsDataEnd()) return false;                  // DATA_END only auto managed
 
@@ -640,6 +634,12 @@ bool MIDITrack::FindEventNumber(MIDIClockTime time, int* event_num) const {
 }
 
 
+void MIDITrack::SetInsertMode(tInsMode mode) {
+    if (mode != INSMODE_DEFAULT)
+        ins_mode = mode;
+}
+
+
 void MIDITrack::Analyze() {
     signed char channel = -1;
     const MIDITimedMessage* msg;
@@ -679,7 +679,7 @@ void MIDITrack::Analyze() {
 ////////////////////////////////////////////////////////////////////////////
 
 
-// this is interely added by me!!!! NC
+// this is entirely added by me!!!! NC
 
 MIDITrackIterator::MIDITrackIterator(MIDITrack* trk) : track(trk) {
     Reset();

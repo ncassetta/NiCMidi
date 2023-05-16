@@ -92,7 +92,7 @@ int DumpMIDITrackAttrVerbose(MIDITrack* const trk, int num, std::ostream& ost) {
     int type = trk->GetType();
     int status = trk->GetStatus();
     MIDITimedMessage* msg;
-    int lines = 6;          // this is the minimum number of text lines always written
+    int lines = 7;          // this is the minimum number of text lines always written
 
     sprintf(s, "%2d", num);
     ost << "Track " << s << "   Name: ";
@@ -136,6 +136,10 @@ int DumpMIDITrackAttrVerbose(MIDITrack* const trk, int num, std::ostream& ost) {
         ost << "In port: " << MIDIManager::GetMIDIInName(trk->GetInPort()) << std::endl;
     else
         ost << "In port: Not Valid" << std::endl;
+    if (trk->GetRecChannel() != -1)
+        ost << "Recording channel: " << trk->GetRecChannel() << std::endl;
+    else
+        ost << "Recording channel: any" << std::endl;
     if (MIDIManager::IsValidOutPortNumber(trk->GetOutPort()))
         ost << "Out port: " << MIDIManager::GetMIDIOutName(trk->GetOutPort()) << std::endl;
     else

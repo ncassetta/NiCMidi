@@ -61,50 +61,49 @@ enum SAMPLE_RATE {
 ///
 /// Performs conversions between number of samples, milliseconds and smpte format
 /// (hours::minutes::seconds::frames::subframes).
-/// You can choose between several smpte formats and sample rates
-/// (see \ref SMPTE_RATE and \ref SAMPLE_RATE). Moreover you can set an initial time offset to
-/// be added to every value passed to the SMPTE.
+/// You can choose between several smpte formats and sample rates (see \ref SMPTE_RATE and
+/// \ref SAMPLE_RATE). Moreover you can set an initial time offset to be added to every value
+/// passed to the SMPTE.
 /// \note Many get functions are NOT const because they can perform internal conversions
 ///
 class  SMPTE {
     public:
 
-        /// The constructor sets the SMPTE rate to SMPTE_30, the sample rate to SAMPLE_48000
+        /// The constructor sets the smpte rate to SMPTE_30, the sample rate to SAMPLE_48000
         /// and the offset time to 0.
-        /// \note There is no need for explicit copy ctor and operator=
                             SMPTE (SMPTE_RATE smpte_rate = SMPTE_RATE_30,
                                    SAMPLE_RATE sample_rate = SAMPLE_48000);
-
-        /// Sets the smpte rate. See SMPTE_RATE for avalaible smpte rate formats.
+        /// Sets the smpte rate. See \ref SMPTE_RATE for avalaible smpte rate formats.
         void                SetSMPTERate (SMPTE_RATE r)     { smpte_rate = r; sample_number_dirty = true; }
-
-        /// Returns the smpte rate.
+        /// Returns the smpte rate. See \ref SMPTE_RATE for avalaible smpte rate formats.
         SMPTE_RATE          GetSMPTERate() const            { return smpte_rate; }
-
-        /// Sets the sample rate. See SAMPLE_RATES for avalaible sample rates formats.
+        /// Sets the sample rate. See \ref SAMPLE_RATE for avalaible sample rates formats.
         void                SetSampleRate (SAMPLE_RATE r)   { sample_rate = r; sample_number_dirty = true; }
 
-        /// Returns the sample rate.
+        /// Returns the sample rate. See \ref SAMPLE_RATE for avalaible sample rates formats.
         SAMPLE_RATE         GetSampleRate() const           { return sample_rate; }
 
-        /// \name To get and set the sample number
-        ///@{
+        /* NEW */
+        /// Sets an offset to be added to the current time, given the amount of samples.
+        void                SetOffset (unsigned long n)     { sample_offset = n; }
+        /// Sets an offset to be added to the current time, given the smpte time parameters.
+        void                SetOffset (unsigned char h, unsigned char m, unsigned char s,
+                                       unsigned char f = 0, unsigned char sf = 0);
+        /// Returns the time offset (in samples).
+        unsigned long       GetOffset () const              { return sample_offset; }
+        /* end NEW */
+
         /// Performs a smpte-to-samples or milliseconds-to-samples conversion.
         /// You must first load the SMPTE with the smpte values (using SetTime() or SetHours() ...)
         /// or the number of milliseconds (using SetMilliSeconds()) to convert; then you can call
         /// this to get the converted value.
         /// \note This is NOT const! May perform an internal conversion.
         unsigned long       GetSampleNumber();
-
         /// Loads the SMPTE with the given amount of samples.
         /// You can then call GetHour(), GetMinutes() etc.\ to perform a samples-to-smpte conversion or
         /// GetMilliseconds() to perform a sample-to-milliseconds conversion.
         void                SetSampleNumber (unsigned long n)
                                                             { sample_number = n; sample_number_dirty = true; }
-        ///@}
-
-        /// \name To get and set the milliseconds
-        ///@{
         /// Performs a smpte-to-millisecond or sample-to-millisecond conversion.
         /// You must first load the SMPTE with the number of samples (using SetSampleNumber())
         /// or with smpte values (using SetTime() or SetHours() ...) to convert; then you can call
@@ -115,15 +114,15 @@ class  SMPTE {
         /// You can then call GetSampleNumber() to perform a milliseconds-to-sample conversion or GetHours(),
         /// GetMinutes() etc.\ to perform a milliseconds-to-smpte conversion.
         void                SetMilliSeconds (unsigned long msecs);
-        ///@}
 
-        /// \name To get and set the smpte values
+        /// \name Conversion to smpte
         /// These perform a samples-to-smpte or milliseconds-to-smpte conversion.\ You must first
         /// load the SMPTE with the number of samples (using SetSampleNumber()) or the number of
         /// milliseconds (using SetMilliSeconds()) to convert; then you can call these to get the
         /// converted smpte values.
         /// \note These are NOT const! May perform an internal conversion.
         ///@{
+
         /// Returns the smpte hours.
         unsigned char       GetHours();             // TODO: is this right? perhaps hours could be an int
         /// Returns the smpte minutes.
@@ -134,26 +133,33 @@ class  SMPTE {
         unsigned char       GetFrames();
         /// Returns the smpte subframes.
         unsigned char       GetSubFrames();
+        ///@}
+
+        /// \name Conversion from smpte
+        /// Use these to convert from smpte.
+        ///@{
+
         /// Loads the SMPTE with the given time (in smpte format).
         /// You can then call GetSampleNumber() to perform a smpte-to-sample conversion or GetMilliSeconds() to
         /// perform a smpte-to-milliseconds conversion.
         void                SetTime (unsigned char h, unsigned char m, unsigned char s,
                                      unsigned char f = 0, unsigned char sf = 0);
-        /// See SetTime(). This only affect the  smpte hours, leaving unchanged other parameters.
+        /// Loads the SMPTE with the given smpte hours, leaving unchanged other parameters.
         void                SetHours (unsigned char h)      { hours = h; sample_number_dirty = true; }
-        /// See SetTime(). This only affect the  smpte minutes, leaving unchanged other parameters.
+        /// Loads the SMPTE with the given smpte minutes, leaving unchanged other parameters.
         void                SetMinutes (unsigned char m)    { minutes = m; sample_number_dirty = true; }
-        /// See SetTime(). This only affect the  smpte seconds, leaving unchanged other parameters.
+        /// Loads the SMPTE with the given smpte seconds, leaving unchanged other parameters.
         void                SetSeconds (unsigned char s)    { seconds = s; sample_number_dirty = true; }
-        /// See SetTime(). This only affect the  smpte frames, leaving unchanged other parameters.
+        /// Loads the SMPTE with the given smpte frames, leaving unchanged other parameters.
         void                SetFrames (unsigned char f)     { frames = f; sample_number_dirty = true; }
-        /// See SetTime(). This only affect the  smpte subframes, leaving unchanged other parameters.
+        /// Loads the SMPTE with the given smpte subframes, leaving unchanged other parameters.
         void                SetSubFrames (unsigned char sf) { sub_frames = sf; sample_number_dirty = true; }
         ///@}
 
         /// \name To add, increment and decrement samples
         /// These functions add, increment or decrement the current sample number.
         ///@{
+
         /// Adds n samples.
         void                AddSamples (long n);
         /// Adds one sample.
@@ -165,6 +171,7 @@ class  SMPTE {
         /// \name To add, increment and decrement smpte
         /// These functions add, increment or decrement smpte time parameters.
         ///@{
+
         /// Adds hours to smpte time.
         void                AddHours (signed char h);
         /// Adds minutes to smpte time.
@@ -220,14 +227,6 @@ class  SMPTE {
         SMPTE&          operator- (SMPTE &s);
         */
         ///@}
-
-    /* NEW */
-        /// Sets an offset to be added to the current time to the given amount of samples.
-        void                SetOffset (unsigned long n)     { sample_offset = n; }
-        /// Sets an offset to be added to the current time to the given smpte time parameters.
-        void                SetOffset (unsigned char h, unsigned char m, unsigned char s,
-                                       unsigned char f = 0, unsigned char sf = 0);
-
 
     protected:
         /// Performs internal samples-to-smpte conversion.

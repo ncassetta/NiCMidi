@@ -42,7 +42,7 @@ using namespace std;
 //                        G L O B A L S                         //
 //////////////////////////////////////////////////////////////////
 
-Metronome metro;                                // a Metronome (without GUI notifier)
+Metronome* metro;                               // a Metronome (without GUI notifier)
 
 extern string command, par1, par2;              // used by GetCommand() for parsing the user input
 
@@ -76,10 +76,14 @@ All commands can be given during playback\n";
 
 
 int main( int argc, char **argv ) {
-    // tests if a MIDI out port is present in the system
-    if (MIDIManager::GetNumMIDIOuts() == 0) {
-        cout << "This program has no functionality without MIDI out ports!\n" <<
-                "Press a key to quit\n";
+    try {
+        metro = new Metronome;
+    }
+    catch( ... ) {
+        // tests if MIDI ports are present in the system
+        cout << "The Metronome constructor throws an exception if in the system is not present\n" <<
+                 "almost a MIDI out port!\n" <<
+                 "Press a key to quit\n";
         cin.get();
         return EXIT_SUCCESS;
     }
@@ -103,35 +107,35 @@ int main( int argc, char **argv ) {
                 cout << i << ": " << MIDIManager::GetMIDIOutName( i ) << endl;
         }
         else if (command == "start") {               // starts the metronome
-            metro.Start();
+            metro->Start();
             cout << "Metronome started" << endl;
         }
         else if (command == "stop") {               // stops the metronome
-            metro.Stop();
-            cout << "Metronome stopped at " << metro.GetCurrentMeasure() << ":"
-                 << metro.GetCurrentBeat() << endl;
+            metro->Stop();
+            cout << "Metronome stopped at " << metro->GetCurrentMeasure() << ":"
+                 << metro->GetCurrentBeat() << endl;
         }
         else if (command == "tempo") {              // changes the metronome tempo
             float tempo = atof(par1.c_str());
-            if (metro.SetTempo(tempo)) {
+            if (metro->SetTempo(tempo)) {
                 cout << "Tempo set to " << tempo <<
-                        "  Effective tempo: " << metro.GetTempoWithScale() << " bpm" << endl;
+                        "  Effective tempo: " << metro->GetTempoWithScale() << " bpm" << endl;
             }
             else
                 cout << "Invalid tempo" << endl;
         }
         else if (command == "tscale") {             // scales the metronome tempo
             int scale = atoi(par1.c_str());
-            if (metro.SetTempoScale(scale)) {
+            if (metro->SetTempoScale(scale)) {
                 cout << "Tempo scale : " << scale <<
-                        "%  Effective tempo: " << metro.GetTempoWithScale() << " bpm" << endl;
+                        "%  Effective tempo: " << metro->GetTempoWithScale() << " bpm" << endl;
             }
             else
                 cout << "Invalid tempo scale" << endl;
         }
         else if (command == "subd") {               // sets the number of subdivision of each beat
             unsigned int type = atoi(par1.c_str());          // 0 disables subdivision clicks
-            if (metro.SetSubdType(type)) {
+            if (metro->SetSubdType(type)) {
                 if (type == 0)
                     cout << "Subdivision click disabled" << endl;
                 else
@@ -142,7 +146,7 @@ int main( int argc, char **argv ) {
         }
         else if (command == "meas") {               // sets the number of beats of a measure
             unsigned int beats = atoi(par1.c_str());         // 0 disables measure clicks
-            metro.SetTimeSigNumerator(beats);
+            metro->SetTimeSigNumerator(beats);
             if (beats == 0)
                 cout << "First beat disabled" << endl;
             else
@@ -151,52 +155,53 @@ int main( int argc, char **argv ) {
 
         else if (command == "measnote") {           // sets the note for 1st beat of a measure
             unsigned int note = atoi(par1.c_str()) & 0x7f;
-            metro.SetMeasNote(note);
+            metro->SetMeasNote(note);
             cout << "First beat note set to " << note << endl;
         }
         else if (command == "beatnote") {           // sets the note for ordinary beats
             unsigned int note = atoi(par1.c_str()) & 0x7f;
-            metro.SetBeatNote(note);
+            metro->SetBeatNote(note);
             cout << "Beat note set to " << note << endl;
         }
         else if (command == "subdnote") {           // sets the note for subdivisions
             unsigned int note = atoi(par1.c_str()) & 0x7f;
-            metro.SetSubdNote(note);
+            metro->SetSubdNote(note);
             cout << "Subdivision note set to " << note << endl;
         }
         else if (command == "outport") {            // changes the midi out port
             int port = atoi(par1.c_str());
-            if (metro.SetOutPort(port))
+            if (metro->SetOutPort(port))
                 cout << "Assigned out port n. " << port << endl;
             else
                 cout << "Invalid port number" << endl;
         }
         else if (command == "outchan") {            // changes the midi out chan
             int chan = atoi(par1.c_str());
-            if (metro.SetOutChannel(chan))
+            if (metro->SetOutChannel(chan))
                 cout << "Assigned out channel n. " << (int)chan << endl;
             else
                 cout << "Invalid channel number" << endl;
         }
         else if (command == "status") {
             cout << "\nMETRONOME STATUS:\n";
-            cout << "MIDI out port:             " << MIDIManager::GetMIDIOutName(metro.GetOutPort()) << endl;
-            cout << "MIDI out channel:          " << int(metro.GetOutChannel()) << endl;
-            cout << "Tempo:                     " << metro.GetTempoWithoutScale() << " bpm" << endl;
-            cout << "Tempo scale:               " << metro.GetTempoScale() << "% (effective tempo: " <<
-                    metro.GetTempoWithScale() << " bpm)" << endl;
-            cout << "Measure beats:             " << int(metro.GetTimeSigNumerator());
-            cout << (metro.GetTimeSigNumerator() == 0 ? " (disabled)" : "") << endl;
-            cout << "Subdivision:               " << int(metro.GetSubdType());
-            cout << (metro.GetSubdType() == 0 ? " (disabled)" : "") << endl;
-            cout << "Measure beat note:         " << int(metro.GetMeasNote()) << endl;
-            cout << "Ordinary beat note:        " << int(metro.GetBeatNote()) << endl;
-            cout << "Subdivision note:          " << int(metro.GetSubdNote()) << endl;
+            cout << "MIDI out port:             " << MIDIManager::GetMIDIOutName(metro->GetOutPort()) << endl;
+            cout << "MIDI out channel:          " << int(metro->GetOutChannel()) << endl;
+            cout << "Tempo:                     " << metro->GetTempoWithoutScale() << " bpm" << endl;
+            cout << "Tempo scale:               " << metro->GetTempoScale() << "% (effective tempo: " <<
+                    metro->GetTempoWithScale() << " bpm)" << endl;
+            cout << "Measure beats:             " << int(metro->GetTimeSigNumerator());
+            cout << (metro->GetTimeSigNumerator() == 0 ? " (disabled)" : "") << endl;
+            cout << "Subdivision:               " << int(metro->GetSubdType());
+            cout << (metro->GetSubdType() == 0 ?" (disabled)" : "") << endl;
+            cout << "Measure beat note:         " << int(metro->GetMeasNote()) << endl;
+            cout << "Ordinary beat note:        " << int(metro->GetBeatNote()) << endl;
+            cout << "Subdivision note:          " << int(metro->GetSubdNote()) << endl;
         }
         else if (command == "help")                 // prints help screen
             cout << helpstring;
         else if (command != "quit" )                // unrecognized command
             cout << "Unrecognized command" << endl;
     }
+    delete metro;
     return EXIT_SUCCESS;
 }

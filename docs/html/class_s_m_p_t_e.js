@@ -5,6 +5,9 @@ var class_s_m_p_t_e =
     [ "GetSMPTERate", "class_s_m_p_t_e.html#a858f82976e1f69b2be7c28f230a970f8", null ],
     [ "SetSampleRate", "class_s_m_p_t_e.html#a5f8431c00b4d8824e35a4b43b809c497", null ],
     [ "GetSampleRate", "class_s_m_p_t_e.html#a4249d7e219fd11eb6dba3e0f5bed252b", null ],
+    [ "SetOffset", "class_s_m_p_t_e.html#aed72b2832193ce424a63da398c7fd545", null ],
+    [ "SetOffset", "class_s_m_p_t_e.html#a144a9cbc804c5a5064df8013d713b6f1", null ],
+    [ "GetOffset", "class_s_m_p_t_e.html#a453df3a64328eeae403d1e42e2ffdb49", null ],
     [ "GetSampleNumber", "class_s_m_p_t_e.html#a6eb975cd92d8eb53ddabca5064caf595", null ],
     [ "SetSampleNumber", "class_s_m_p_t_e.html#a7d57fb3abf380e83d2e2d37ffa062ed5", null ],
     [ "GetMilliSeconds", "class_s_m_p_t_e.html#a9fe02af9b325a843787092f4e25c7636", null ],
@@ -44,8 +47,6 @@ var class_s_m_p_t_e =
     [ "operator>", "class_s_m_p_t_e.html#ae7a710c8ab4c7f713d34dc5ec5f7d4e0", null ],
     [ "operator<=", "class_s_m_p_t_e.html#a5d71c5ac5bb1bf7f212824ff8aae6aa0", null ],
     [ "operator>=", "class_s_m_p_t_e.html#a0ee93e98a1ccd8ea60f6b8ed589629f0", null ],
-    [ "SetOffset", "class_s_m_p_t_e.html#aed72b2832193ce424a63da398c7fd545", null ],
-    [ "SetOffset", "class_s_m_p_t_e.html#a144a9cbc804c5a5064df8013d713b6f1", null ],
     [ "SampleToTime", "class_s_m_p_t_e.html#aa330492d66159659e708e3495d742432", null ],
     [ "TimeToSample", "class_s_m_p_t_e.html#ab5109897254fe0cd05def6b395523efb", null ],
     [ "Compare", "class_s_m_p_t_e.html#a348e37d59f9c12aa76d6e7b0945e7604", null ]

@@ -34,16 +34,14 @@ using namespace std;
 
 
 // If you want to implement your own MIDITickComponent derived class you must at least redefine
-// the StaticTickProc() and TickProc() methods (and probably Start() and Stop() also).
-// Before using the class you must add it to the MIDIManager queue with the
-// MIDIManager::AddMIDITick().
-// This is a very simple example which play a fixed note every second; see the comments
+// the Reset(), StaticTickProc() and TickProc() methods (and probably Start() and Stop() also).
+// This is a very simple example which plays a fixed note every second; see the comments
 // to every method for details.
 //
 class TestComp : public MIDITickComponent {
     public:
                                 TestComp();
-        virtual void            Reset() {}
+        virtual void            Reset() {}              // here Reset() does nothing
         virtual void            Start();
         virtual void            Stop();
 
@@ -62,7 +60,7 @@ class TestComp : public MIDITickComponent {
 
 // The constructor must call the base class constructor with the priority and the StaticTickProc
 // pointer as parameters.
-// In our case, as we have only this component  in the MIDIManager queue, the priority is irrelevant.
+// In our case, as we have only this component in the MIDIManager queue, the priority is irrelevant.
 //
 TestComp::TestComp() : MIDITickComponent(PR_PRE_SEQ, StaticTickProc) {}
 
@@ -91,7 +89,7 @@ void TestComp::Stop() {
 
 // This is the typical implementation of the static callback.
 // The MIDIManager gives it two parameters: the now absolute time (sys_time) and the object
-// "this" pointer (as void*); the callback only should cast the void pointer to a class
+// "this" pointer (as a void*); the callback only should cast the void pointer to a class
 // pointer and then call the (virtual) derived class callback (i.e. TickProc).
 //
 void TestComp::StaticTickProc(tMsecs sys_time, void* pt) {

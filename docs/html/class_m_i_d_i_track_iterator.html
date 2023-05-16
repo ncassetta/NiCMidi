@@ -104,19 +104,19 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a0fcf21e6e230db61d5da9efba258449a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <b>true</b> if the hold pedal is on at current time.  <a href="class_m_i_d_i_track_iterator.html#a0fcf21e6e230db61d5da9efba258449a">More...</a><br /></td></tr>
 <tr class="separator:a0fcf21e6e230db61d5da9efba258449a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a921c52ab49bdae2fc959cba57e571b0a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_track_iterator.html#a921c52ab49bdae2fc959cba57e571b0a">FindNoteOff</a> (unsigned char note, <a class="el" href="class_m_i_d_i_timed_message.html">MIDITimedMessage</a> **msg)</td></tr>
-<tr class="memdesc:a921c52ab49bdae2fc959cba57e571b0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the <a class="el" href="class_m_i_d_i_timed_message.html" title="The MIDITimedMessage class inherits from the MIDIMessage and represents a message associated with a s...">MIDITimedMessage</a> in the track corresponding to the note off for the given note.  <a href="class_m_i_d_i_track_iterator.html#a921c52ab49bdae2fc959cba57e571b0a">More...</a><br /></td></tr>
+<tr class="memdesc:a921c52ab49bdae2fc959cba57e571b0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the next <a class="el" href="class_m_i_d_i_timed_message.html" title="The MIDITimedMessage class inherits from the MIDIMessage and represents a message associated with a s...">MIDITimedMessage</a> in the track corresponding to the note off for the given note.  <a href="class_m_i_d_i_track_iterator.html#a921c52ab49bdae2fc959cba57e571b0a">More...</a><br /></td></tr>
 <tr class="separator:a921c52ab49bdae2fc959cba57e571b0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4b8a26996c99667bf8ef083f3e576d6a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_track_iterator.html#a4b8a26996c99667bf8ef083f3e576d6a">FindPedalOff</a> (<a class="el" href="class_m_i_d_i_timed_message.html">MIDITimedMessage</a> **msg)</td></tr>
 <tr class="memdesc:a4b8a26996c99667bf8ef083f3e576d6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finds the next hold pedal off <a class="el" href="class_m_i_d_i_timed_message.html" title="The MIDITimedMessage class inherits from the MIDIMessage and represents a message associated with a s...">MIDITimedMessage</a> in the track.  <a href="class_m_i_d_i_track_iterator.html#a4b8a26996c99667bf8ef083f3e576d6a">More...</a><br /></td></tr>
 <tr class="separator:a4b8a26996c99667bf8ef083f3e576d6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b182c98e0e4461d07a24ada0053a007"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_track_iterator.html#a8b182c98e0e4461d07a24ada0053a007">GoToTime</a> (<a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a> time)</td></tr>
-<tr class="memdesc:a8b182c98e0e4461d07a24ada0053a007"><td class="mdescLeft">&#160;</td><td class="mdescRight">Goes to the given time, which becomes the current time, and sets then the current event as the first event in the track with time greater or equal to <em>time</em>.  <a href="class_m_i_d_i_track_iterator.html#a8b182c98e0e4461d07a24ada0053a007">More...</a><br /></td></tr>
+<tr class="memdesc:a8b182c98e0e4461d07a24ada0053a007"><td class="mdescLeft">&#160;</td><td class="mdescRight">Goes to the given time, which becomes the current time.  <a href="class_m_i_d_i_track_iterator.html#a8b182c98e0e4461d07a24ada0053a007">More...</a><br /></td></tr>
 <tr class="separator:a8b182c98e0e4461d07a24ada0053a007"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8fd20b42bb5df9e10f6f4fea6227e320"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_track_iterator.html#a8fd20b42bb5df9e10f6f4fea6227e320">GetNextEvent</a> (<a class="el" href="class_m_i_d_i_timed_message.html">MIDITimedMessage</a> **msg)</td></tr>
 <tr class="memdesc:a8fd20b42bb5df9e10f6f4fea6227e320"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the next event in the track.  <a href="class_m_i_d_i_track_iterator.html#a8fd20b42bb5df9e10f6f4fea6227e320">More...</a><br /></td></tr>
 <tr class="separator:a8fd20b42bb5df9e10f6f4fea6227e320"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aab926867727ac1ab44f1cd7a504118d0"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_track_iterator.html#aab926867727ac1ab44f1cd7a504118d0">GetNextEventTime</a> (<a class="el" href="group___g_l_o_b_a_l_s.html#ga1f54d7f8d2631dc21e78751494337221">MIDIClockTime</a> *t) const</td></tr>
-<tr class="memdesc:aab926867727ac1ab44f1cd7a504118d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the time of the next event in the track (it can be different from current time if at current time there are not events).  <a href="class_m_i_d_i_track_iterator.html#aab926867727ac1ab44f1cd7a504118d0">More...</a><br /></td></tr>
+<tr class="memdesc:aab926867727ac1ab44f1cd7a504118d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the time of the next event in the track.  <a href="class_m_i_d_i_track_iterator.html#aab926867727ac1ab44f1cd7a504118d0">More...</a><br /></td></tr>
 <tr class="separator:aab926867727ac1ab44f1cd7a504118d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67b9c50677a3f5f168a714c1bf6c652e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_m_i_d_i_track_iterator.html#a67b9c50677a3f5f168a714c1bf6c652e">EventIsNow</a> (const <a class="el" href="class_m_i_d_i_timed_message.html">MIDITimedMessage</a> &amp;msg)</td></tr>
 <tr class="memdesc:a67b9c50677a3f5f168a714c1bf6c652e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns <b>true</b> if at the current time there is an event of the same kind of <em>msg</em> (see <a class="el" href="class_m_i_d_i_timed_message.html#a1a69bf878a1a429fc64c81470185997a" title="Used by methods that search and insert events in a MIDITrack to find events that are of the same kind...">MIDITimedMessage::IsSameKind()</a>).  <a href="class_m_i_d_i_track_iterator.html#a67b9c50677a3f5f168a714c1bf6c652e">More...</a><br /></td></tr>
@@ -484,7 +484,7 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Finds the <a class="el" href="class_m_i_d_i_timed_message.html" title="The MIDITimedMessage class inherits from the MIDIMessage and represents a message associated with a s...">MIDITimedMessage</a> in the track corresponding to the note off for the given note. </p>
+<p>Finds the next <a class="el" href="class_m_i_d_i_timed_message.html" title="The MIDITimedMessage class inherits from the MIDIMessage and represents a message associated with a s...">MIDITimedMessage</a> in the track corresponding to the note off for the given note. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">note</td><td>: the note on </td></tr>
@@ -539,7 +539,8 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Goes to the given time, which becomes the current time, and sets then the current event as the first event in the track with time greater or equal to <em>time</em>. </p>
+<p>Goes to the given time, which becomes the current time. </p>
+<p >This sets the current event to the first event in the track with time greater or equal to <em>time</em>. </p>
 
 </div>
 </div>
@@ -586,8 +587,8 @@ Public Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Gets the time of the next event in the track (it can be different from current time if at current time there are not events). </p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Gets the time of the next event in the track. </p>
+<p >It can be different from current time if at current time there are not events. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">t</td><td>here we get the time of next event, if valid. </td></tr>
   </table>
